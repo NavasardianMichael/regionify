@@ -1,10 +1,10 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
+import { AboutPage } from '@/pages/AboutPage';
+import { ContactPage } from '@/pages/ContactPage';
+import { HomePage } from '@/pages/HomePage';
+import { VisualizerPage } from '@/pages/VisualizerPage';
 import { theme } from '@/styles/antd-theme';
-import { AboutPage } from './pages/AboutPage';
-import { ContactPage } from './pages/ContactPage';
-import { HomePage } from './pages/HomePage';
-import { VisualizerPage } from './pages/VisualizerPage';
 import './App.css';
 
 function App() {
