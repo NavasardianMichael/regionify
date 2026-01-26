@@ -1,10 +1,10 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import About from '@/pages/About';
-import Contact from '@/pages/Contact';
-import Home from '@/pages/Home';
-import Visualizer from '@/pages/Visualizer';
 import { theme } from '@/styles/antd-theme';
+import { AboutPage } from './pages/AboutPage';
+import { ContactPage } from './pages/ContactPage';
+import { HomePage } from './pages/HomePage';
+import { VisualizerPage } from './pages/VisualizerPage';
 import './App.css';
 
 function App() {
@@ -41,10 +41,10 @@ function App() {
           </nav>
           <main className="mx-auto max-w-7xl px-6 py-8">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/visualizer" element={<Visualizer />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/visualizer" element={<VisualizerPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/about" element={<AboutPage />} />
             </Routes>
           </main>
         </div>
