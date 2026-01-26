@@ -175,3 +175,10 @@ import { useAuth } from '@/hooks/useAuth';
 - Ignoring ESLint/TypeScript warnings
 - Inline styles (use Tailwind or CSS modules)
 - Direct DOM manipulation (use React refs if needed)
+
+## AI Agent Behavior
+
+- When the user says "it's best practice" or similar phrases indicating a new best practice, automatically add the mentioned practice as a new bullet point to the "Custom Best Practices" section below.
+- Keep entries concise and actionable.
+
+## Custom Best Practices
