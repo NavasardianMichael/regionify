@@ -1,0 +1,28 @@
+import type { JurisdictionOption } from '@/types/visualizer';
+
+export const JURISDICTION_OPTIONS: JurisdictionOption[] = [
+  { value: 'russia', label: 'Russia (Divisions)', mapFile: 'russiaHigh.svg' },
+  { value: 'usa', label: 'United States', mapFile: 'usaHigh.svg' },
+  { value: 'china', label: 'China', mapFile: 'chinaHigh.svg' },
+  { value: 'india', label: 'India', mapFile: 'indiaHigh.svg' },
+  { value: 'brazil', label: 'Brazil', mapFile: 'brazilHigh.svg' },
+  { value: 'canada', label: 'Canada', mapFile: 'canadaHigh.svg' },
+  { value: 'australia', label: 'Australia', mapFile: 'australiaHigh.svg' },
+  { value: 'germany', label: 'Germany', mapFile: 'germanyHigh.svg' },
+  { value: 'france', label: 'France', mapFile: 'franceHigh.svg' },
+  { value: 'uk', label: 'United Kingdom', mapFile: 'unitedKingdomHigh.svg' },
+  { value: 'japan', label: 'Japan', mapFile: 'japanHigh.svg' },
+  { value: 'mexico', label: 'Mexico', mapFile: 'mexicoHigh.svg' },
+  { value: 'spain', label: 'Spain', mapFile: 'spainHigh.svg' },
+  { value: 'italy', label: 'Italy', mapFile: 'italyHigh.svg' },
+  { value: 'ukraine', label: 'Ukraine', mapFile: 'ukraineHigh.svg' },
+  { value: 'poland', label: 'Poland', mapFile: 'polandHigh.svg' },
+  { value: 'turkey', label: 'Turkey', mapFile: 'turkeyHigh.svg' },
+  { value: 'indonesia', label: 'Indonesia', mapFile: 'indonesiaHigh.svg' },
+  { value: 'world', label: 'World', mapFile: 'worldHigh.svg' },
+  { value: 'europe', label: 'Europe', mapFile: 'europeHigh.svg' },
+  { value: 'africa', label: 'Africa', mapFile: 'africaHigh.svg' },
+  { value: 'asia', label: 'Asia', mapFile: 'asiaHigh.svg' },
+  { value: 'north-america', label: 'North America', mapFile: 'northAmericaHigh.svg' },
+  { value: 'south-america', label: 'South America', mapFile: 'southAmericaHigh.svg' },
+];
