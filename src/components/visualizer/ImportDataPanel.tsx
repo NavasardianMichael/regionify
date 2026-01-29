@@ -5,6 +5,7 @@ import { Button, Flex, Segmented, Spin, Typography, Upload } from 'antd';
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
+import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 
@@ -150,12 +151,7 @@ export const ImportDataPanel: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <Flex align="center" gap="small">
-        <DatabaseOutlined className="text-base text-gray-500" />
-        <Typography.Title level={3} className="text-primary text-base font-semibold">
-          Import Data
-        </Typography.Title>
-      </Flex>
+      <SectionTitle IconComponent={DatabaseOutlined}>Import Data</SectionTitle>
 
       <Segmented
         options={IMPORT_OPTIONS}

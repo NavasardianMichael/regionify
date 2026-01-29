@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { CreditCardOutlined, HomeOutlined, MailOutlined, TableOutlined } from '@ant-design/icons';
 import { ConfigProvider, Flex, Spin, Typography } from 'antd';
+import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 import { theme } from '@/styles/antd-theme';
 import './App.css';
 
@@ -44,17 +46,17 @@ const Navigation = () => {
             const isActive = location.pathname === item.path;
             return (
               <li key={item.path}>
-                <Link
+                <AppNavLink
                   to={item.path}
                   className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary-50 text-primary'
-                      : 'hover:text-primary text-gray-600 hover:bg-gray-100'
+                      ? 'bg-primary-50 text-primary!'
+                      : 'hover:text-primary! text-gray-600! hover:bg-gray-100'
                   }`}
                 >
                   <Icon />
                   {item.label}
-                </Link>
+                </AppNavLink>
               </li>
             );
           })}
@@ -70,16 +72,18 @@ function App() {
       <BrowserRouter>
         <Flex vertical className="h-screen overflow-hidden bg-gray-100">
           <Navigation />
-          <Flex component="main" vertical flex={1} className="p-md min-h-0">
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/visualizer" element={<VisualizerPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/about" element={<AboutPage />} />
-              </Routes>
-            </Suspense>
-          </Flex>
+          <main className={`min-h-0 flex-1 ${APP_LAYOUT_CLASSNAMES.padding}`}>
+            <Flex vertical className="h-full">
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/visualizer" element={<VisualizerPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                </Routes>
+              </Suspense>
+            </Flex>
+          </main>
         </Flex>
       </BrowserRouter>
     </ConfigProvider>

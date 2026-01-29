@@ -10,6 +10,7 @@ import {
 import { Button, ColorPicker, Flex, InputNumber, Spin, Tooltip, Typography } from 'antd';
 import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
+import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const EditLegendItemModal = lazy(() => import('./EditLegendItemModal'));
 
@@ -85,12 +86,7 @@ const LegendConfigPanel: FC = () => {
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
-        <Flex align="center" gap="small">
-          <Typography.Text className="text-base text-gray-500">◐</Typography.Text>
-          <Typography.Title level={3} className="text-primary text-base font-semibold">
-            Legend Configuration
-          </Typography.Title>
-        </Flex>
+        <SectionTitle IconComponent={HolderOutlined}>Legend Configuration</SectionTitle>
         <Flex gap={4}>
           <Tooltip title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}>
             <Button

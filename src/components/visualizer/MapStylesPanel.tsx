@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { BorderOutlined, ExpandOutlined, EyeOutlined } from '@ant-design/icons';
 import { Collapse, ColorPicker, Flex, InputNumber, Slider, Switch, Typography } from 'antd';
 import { useMapStylesStore } from '@/store/mapStyles/store';
+import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const MapStylesPanel: FC = () => {
   const border = useMapStylesStore((state) => state.border);
@@ -131,13 +132,7 @@ const MapStylesPanel: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <Flex align="center" gap="small">
-        <Typography.Text className="text-base text-gray-500">◇</Typography.Text>
-        <Typography.Title level={3} className="text-primary text-base font-semibold">
-          Map Styles
-        </Typography.Title>
-      </Flex>
-
+      <SectionTitle IconComponent={ExpandOutlined}>Map Styles</SectionTitle>
       <Collapse items={items} defaultActiveKey={['border']} ghost expandIconPlacement="end" />
     </Flex>
   );
