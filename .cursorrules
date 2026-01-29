@@ -175,6 +175,8 @@ import { useAuth } from '@/hooks/useAuth';
 - Ignoring ESLint/TypeScript warnings
 - Inline styles (use Tailwind or CSS modules)
 - Direct DOM manipulation (use React refs if needed)
+- Using `useEffect` for derived state or synchronous logic (prefer `useMemo`, event handlers, or computed values)
+- Avoid `overflow-hidden` unless required for layout specificity (e.g., rounded corners clipping, text truncation, viewport containment).
 
 ## AI Agent Behavior
 
@@ -182,3 +184,15 @@ import { useAuth } from '@/hooks/useAuth';
 - Keep entries concise and actionable.
 
 ## Custom Best Practices
+
+- Avoid deprecated Ant Design props; always use the latest recommended prop names.
+- Prefer flexbox over CSS grid for simple layouts.
+- Use flex grow (`flex-1`, `min-h-0`) instead of calculated heights (`h-[calc(...)]`) for container-fitting content.
+- Prefer library types for handlers passed as props (e.g., `SelectProps['onChange']` instead of manual typing).
+- Avoid inline object/array creation in JSX (causes re-renders); memoize with `useMemo` or define outside component.
+- Prefer Ant Design components over native HTML elements (e.g., `Typography.Text` over `<span>`, `Typography.Title` over `<h1>`–`<h6>`).
+- Use Ant Design `Flex` component instead of `<div>` with flex classes for flexbox layouts.
+- Avoid nested ternaries for conditional rendering; use one of these patterns instead:
+  1. Early return with `if` statements
+  2. Mapped variable with `{ [key]: Component or tsx) }` structure
+  3. Memoized variable (`useMemo`) with internal `if`/`return` logic
