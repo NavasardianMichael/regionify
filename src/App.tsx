@@ -1,12 +1,24 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { CreditCardOutlined, HomeOutlined, MailOutlined, TableOutlined } from '@ant-design/icons';
-import { ConfigProvider } from 'antd';
-import { AboutPage } from '@/pages/AboutPage';
-import { ContactPage } from '@/pages/ContactPage';
-import { HomePage } from '@/pages/HomePage';
-import { VisualizerPage } from '@/pages/VisualizerPage';
+import { ConfigProvider, Spin } from 'antd';
 import { theme } from '@/styles/antd-theme';
 import './App.css';
+
+const HomePage = lazy(() => import('@/pages/HomePage').then((m) => ({ default: m.HomePage })));
+const VisualizerPage = lazy(() =>
+  import('@/pages/VisualizerPage').then((m) => ({ default: m.VisualizerPage })),
+);
+const ContactPage = lazy(() =>
+  import('@/pages/ContactPage').then((m) => ({ default: m.ContactPage })),
+);
+const AboutPage = lazy(() => import('@/pages/AboutPage').then((m) => ({ default: m.AboutPage })));
+
+const PageLoader = () => (
+  <div className="flex h-full items-center justify-center">
+    <Spin size="large" />
+  </div>
+);
 
 const NAV_ITEMS = [
   { path: '/', label: 'Home', icon: HomeOutlined },
@@ -59,12 +71,14 @@ function App() {
         <div className="flex min-h-screen flex-col bg-gray-100">
           <Navigation />
           <main className="p-md flex-1">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/visualizer" element={<VisualizerPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/about" element={<AboutPage />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/visualizer" element={<VisualizerPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/about" element={<AboutPage />} />
+              </Routes>
+            </Suspense>
           </main>
         </div>
       </BrowserRouter>

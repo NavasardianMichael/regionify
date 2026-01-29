@@ -1,9 +1,10 @@
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Spin } from 'antd';
-import { useLegendStylesStore } from '@/store/useLegendStylesStore';
-import { useMapStylesStore } from '@/store/useMapStylesStore';
-import { useVisualizerStore } from '@/store/useVisualizerStore';
+import { useLegendDataStore } from '@/store/legendData/store';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { useVisualizerStore } from '@/store/mapData/store';
+import { useMapStylesStore } from '@/store/mapStyles/store';
 
 type MapViewerProps = {
   className?: string;
@@ -18,10 +19,18 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
-  const selectedJurisdiction = useVisualizerStore((state) => state.selectedJurisdiction);
-  const legendItems = useVisualizerStore((state) => state.legendItems);
-  const mapStyles = useMapStylesStore((state) => state.mapStyles);
-  const legendStyles = useLegendStylesStore((state) => state.legendStyles);
+  const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
+  const legendItemsData = useLegendDataStore((state) => state.items);
+  const border = useMapStylesStore((state) => state.border);
+  const shadow = useMapStylesStore((state) => state.shadow);
+  const zoomControls = useMapStylesStore((state) => state.zoomControls);
+  const labels = useLegendStylesStore((state) => state.labels);
+  const position = useLegendStylesStore((state) => state.position);
+
+  const legendItems = useMemo(
+    () => legendItemsData.allIds.map((id) => legendItemsData.byId[id]),
+    [legendItemsData.allIds, legendItemsData.byId],
+  );
 
   const applyStylesToSvg = useCallback(
     (svg: string) => {
@@ -91,11 +100,11 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           // Update the CSS in the style element to use our colors
           let cssText = styleElement.textContent || '';
           // Replace stroke properties
-          if (mapStyles.border.show) {
-            cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, `stroke: ${mapStyles.border.color};`);
+          if (border.show) {
+            cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, `stroke: ${border.color};`);
             cssText = cssText.replace(
               /stroke-width\s*:\s*[^;]+;/g,
-              `stroke-width: ${mapStyles.border.width};`,
+              `stroke-width: ${border.width};`,
             );
           } else {
             cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, 'stroke: none;');
@@ -105,16 +114,16 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
         // Also apply inline styles to ensure they take precedence
         paths.forEach((path) => {
-          if (mapStyles.border.show) {
-            path.style.stroke = mapStyles.border.color;
-            path.style.strokeWidth = String(mapStyles.border.width);
+          if (border.show) {
+            path.style.stroke = border.color;
+            path.style.strokeWidth = String(border.width);
           } else {
             path.style.stroke = 'none';
           }
         });
 
         // Apply shadow if enabled
-        if (mapStyles.shadow.show) {
+        if (shadow.show) {
           // Remove existing shadow filter if any
           const existingFilter = svgElement.querySelector('#mapShadow');
           if (existingFilter) {
@@ -132,10 +141,10 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           filter.setAttribute('id', 'mapShadow');
           filter.innerHTML = `
             <feDropShadow 
-              dx="${mapStyles.shadow.offsetX}" 
-              dy="${mapStyles.shadow.offsetY}" 
-              stdDeviation="${mapStyles.shadow.blur / 2}" 
-              flood-color="${mapStyles.shadow.color}"
+              dx="${shadow.offsetX}" 
+              dy="${shadow.offsetY}" 
+              stdDeviation="${shadow.blur / 2}" 
+              flood-color="${shadow.color}"
               flood-opacity="0.3"
             />
           `;
@@ -156,12 +165,12 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
       return svg;
     },
-    [mapStyles],
+    [border, shadow],
   );
 
   // Load SVG content when jurisdiction changes
   useEffect(() => {
-    if (!selectedJurisdiction) {
+    if (!selectedJurisdictionId) {
       setSvgContent('');
       return;
     }
@@ -169,7 +178,8 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     const loadMap = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/src/assets/images/maps/${selectedJurisdiction.mapFile}`);
+        const mapFile = `${selectedJurisdictionId}High.svg`;
+        const response = await fetch(`/src/assets/images/maps/${mapFile}`);
         if (response.ok) {
           let svg = await response.text();
           // Apply styles to SVG
@@ -184,16 +194,17 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     };
 
     loadMap();
-  }, [selectedJurisdiction, applyStylesToSvg]);
+  }, [selectedJurisdictionId, applyStylesToSvg]);
 
   // Re-apply styles when map styles change - we only want this to trigger on mapStyles change
   useEffect(() => {
-    if (!selectedJurisdiction) return;
+    if (!selectedJurisdictionId) return;
 
     // Reload the SVG with new styles
     const loadMap = async () => {
       try {
-        const response = await fetch(`/src/assets/images/maps/${selectedJurisdiction.mapFile}`);
+        const mapFile = `${selectedJurisdictionId}High.svg`;
+        const response = await fetch(`/src/assets/images/maps/${mapFile}`);
         if (response.ok) {
           let svg = await response.text();
           svg = applyStylesToSvg(svg);
@@ -205,7 +216,7 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     };
     loadMap();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapStyles]);
+  }, [border, shadow]);
 
   const handleZoomIn = useCallback(() => {
     setZoom((prev) => Math.min(prev * 1.2, 5));
@@ -250,7 +261,7 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   }, []);
 
   const legendPositionClasses = useMemo(() => {
-    switch (legendStyles.position) {
+    switch (position) {
       case 'floating':
         return 'top-4 right-4';
       case 'bottom':
@@ -260,22 +271,7 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       default:
         return 'top-4 right-4';
     }
-  }, [legendStyles.position]);
-
-  const zoomPosition = useMemo(() => {
-    switch (mapStyles.zoomControls.position) {
-      case 'top-left':
-        return 'top-4 left-4';
-      case 'top-right':
-        return 'top-4 right-4';
-      case 'bottom-left':
-        return 'bottom-4 left-4';
-      case 'bottom-right':
-        return 'bottom-4 right-4';
-      default:
-        return 'bottom-4 right-4';
-    }
-  }, [mapStyles.zoomControls.position]);
+  }, [position]);
 
   return (
     <div className={`relative h-full overflow-hidden rounded-lg bg-[#1E3A5F] ${className}`}>
@@ -314,7 +310,7 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       </div>
 
       {/* Intensity Ratio Legend */}
-      {legendStyles.position !== 'hidden' && legendStyles.labels.show && legendItems.length > 0 && (
+      {position !== 'hidden' && labels.show && legendItems.length > 0 && (
         <div
           className={`absolute ${legendPositionClasses} p-sm rounded-lg bg-white/95 shadow-md backdrop-blur-sm`}
         >
@@ -323,8 +319,8 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             <span
               className="text-xs font-medium"
               style={{
-                color: legendStyles.labels.color,
-                fontSize: `${legendStyles.labels.fontSize}px`,
+                color: labels.color,
+                fontSize: `${labels.fontSize}px`,
               }}
             >
               INTENSITY RATIO
@@ -336,8 +332,8 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: item.color }} />
                 <span
                   style={{
-                    color: legendStyles.labels.color,
-                    fontSize: `${legendStyles.labels.fontSize}px`,
+                    color: labels.color,
+                    fontSize: `${labels.fontSize}px`,
                   }}
                 >
                   {item.name}
@@ -348,8 +344,8 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               <div className="h-3 w-3 rounded-sm border border-gray-300 bg-gray-100" />
               <span
                 style={{
-                  color: legendStyles.labels.color,
-                  fontSize: `${legendStyles.labels.fontSize}px`,
+                  color: labels.color,
+                  fontSize: `${labels.fontSize}px`,
                 }}
               >
                 No Data
@@ -360,8 +356,11 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       )}
 
       {/* Zoom Controls */}
-      {mapStyles.zoomControls.show && (
-        <div className={`absolute ${zoomPosition} gap-xs flex flex-col`}>
+      {zoomControls.show && (
+        <div
+          className="gap-xs absolute flex flex-col"
+          style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
+        >
           <Button
             type="default"
             icon={<PlusOutlined />}

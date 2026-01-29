@@ -1,4 +1,4 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, useCallback, useMemo, useState } from 'react';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -8,8 +8,8 @@ import {
   SortDescendingOutlined,
 } from '@ant-design/icons';
 import { Button, ColorPicker, Input, InputNumber, Modal, Tooltip } from 'antd';
-import { useVisualizerStore } from '@/store/useVisualizerStore';
-import type { LegendItem } from '@/types/visualizer';
+import { useLegendDataStore } from '@/store/legendData/store';
+import type { LegendItem } from '@/store/legendData/types';
 
 export const LegendConfigPanel: FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -17,17 +17,22 @@ export const LegendConfigPanel: FC = () => {
   const [editingItem, setEditingItem] = useState<LegendItem | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  const legendItems = useVisualizerStore((state) => state.legendItems);
-  const addLegendItem = useVisualizerStore((state) => state.addLegendItem);
-  const updateLegendItem = useVisualizerStore((state) => state.updateLegendItem);
-  const removeLegendItem = useVisualizerStore((state) => state.removeLegendItem);
-  const reorderLegendItems = useVisualizerStore((state) => state.reorderLegendItems);
-  const sortLegendItems = useVisualizerStore((state) => state.sortLegendItems);
+  const items = useLegendDataStore((state) => state.items);
+  const addItem = useLegendDataStore((state) => state.addItem);
+  const updateItem = useLegendDataStore((state) => state.updateItem);
+  const removeItem = useLegendDataStore((state) => state.removeItem);
+  const reorderItems = useLegendDataStore((state) => state.reorderItems);
+  const sortItems = useLegendDataStore((state) => state.sortItems);
+
+  const legendItems = useMemo(
+    () => items.allIds.map((id) => items.byId[id]),
+    [items.allIds, items.byId],
+  );
 
   const handleSort = useCallback(() => {
-    sortLegendItems(sortDirection);
+    sortItems(sortDirection);
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-  }, [sortDirection, sortLegendItems]);
+  }, [sortDirection, sortItems]);
 
   const handleEditClick = useCallback((item: LegendItem) => {
     setEditingItem({ ...item });
@@ -36,7 +41,7 @@ export const LegendConfigPanel: FC = () => {
 
   const handleModalOk = useCallback(() => {
     if (editingItem) {
-      updateLegendItem(editingItem.id, {
+      updateItem(editingItem.id, {
         name: editingItem.name,
         min: editingItem.min,
         max: editingItem.max,
@@ -45,7 +50,7 @@ export const LegendConfigPanel: FC = () => {
     }
     setIsModalOpen(false);
     setEditingItem(null);
-  }, [editingItem, updateLegendItem]);
+  }, [editingItem, updateItem]);
 
   const handleModalCancel = useCallback(() => {
     setIsModalOpen(false);
@@ -60,16 +65,20 @@ export const LegendConfigPanel: FC = () => {
     (e: React.DragEvent, index: number) => {
       e.preventDefault();
       if (draggedIndex !== null && draggedIndex !== index) {
-        reorderLegendItems(draggedIndex, index);
+        reorderItems(draggedIndex, index);
         setDraggedIndex(index);
       }
     },
-    [draggedIndex, reorderLegendItems],
+    [draggedIndex, reorderItems],
   );
 
   const handleDragEnd = useCallback(() => {
     setDraggedIndex(null);
   }, []);
+
+  const handleAddItem = useCallback(() => {
+    addItem({ name: 'New', min: 0, max: 100, color: '#6B7280' });
+  }, [addItem]);
 
   return (
     <div className="space-y-md">
@@ -127,7 +136,7 @@ export const LegendConfigPanel: FC = () => {
             </button>
             <InputNumber
               value={item.min}
-              onChange={(value) => updateLegendItem(item.id, { min: value ?? 0 })}
+              onChange={(value) => updateItem(item.id, { min: value ?? 0 })}
               size="small"
               min={0}
               controls={false}
@@ -135,7 +144,7 @@ export const LegendConfigPanel: FC = () => {
             />
             <InputNumber
               value={item.max}
-              onChange={(value) => updateLegendItem(item.id, { max: value ?? 0 })}
+              onChange={(value) => updateItem(item.id, { max: value ?? 0 })}
               size="small"
               min={0}
               controls={false}
@@ -143,7 +152,7 @@ export const LegendConfigPanel: FC = () => {
             />
             <ColorPicker
               value={item.color}
-              onChange={(color) => updateLegendItem(item.id, { color: color.toHexString() })}
+              onChange={(color) => updateItem(item.id, { color: color.toHexString() })}
               size="small"
             />
             <Tooltip title="Remove">
@@ -152,7 +161,7 @@ export const LegendConfigPanel: FC = () => {
                 icon={<DeleteOutlined />}
                 size="small"
                 danger
-                onClick={() => removeLegendItem(item.id)}
+                onClick={() => removeItem(item.id)}
                 disabled={legendItems.length <= 1}
                 className="p-0!"
               />
@@ -161,7 +170,7 @@ export const LegendConfigPanel: FC = () => {
         ))}
       </div>
 
-      <Button type="dashed" icon={<PlusOutlined />} block onClick={addLegendItem}>
+      <Button type="dashed" icon={<PlusOutlined />} block onClick={handleAddItem}>
         Add Level
       </Button>
 

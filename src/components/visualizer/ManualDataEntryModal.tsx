@@ -1,7 +1,7 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, InputNumber, Modal } from 'antd';
-import { useVisualizerStore } from '@/store/useVisualizerStore';
+import { useVisualizerStore } from '@/store/mapData/store';
 
 type ManualDataRow = {
   id: string;

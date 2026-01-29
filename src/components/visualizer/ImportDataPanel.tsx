@@ -1,12 +1,18 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, lazy, Suspense, useCallback, useState } from 'react';
 import { CloudUploadOutlined, DatabaseOutlined, EditOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { Button, Segmented, Upload } from 'antd';
-import { useVisualizerStore } from '@/store/useVisualizerStore';
-import type { DataImportType, RegionData } from '@/types/visualizer';
-import { ManualDataEntryModal } from './ManualDataEntryModal';
+import { Button, Segmented, Spin, Upload } from 'antd';
+import { useVisualizerStore } from '@/store/mapData/store';
+import type { RegionData } from '@/store/mapData/types';
+import type { ImportDataType } from '@/types/mapData';
 
-const IMPORT_OPTIONS: { label: string; value: DataImportType }[] = [
+const ManualDataEntryModal = lazy(() =>
+  import('./ManualDataEntryModal').then((m) => ({ default: m.ManualDataEntryModal })),
+);
+
+type ParsedData = { regionId: string; value: number };
+
+const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
   { label: 'CSV', value: 'csv' },
   { label: 'Excel', value: 'excel' },
   { label: 'JSON', value: 'json' },
@@ -14,9 +20,9 @@ const IMPORT_OPTIONS: { label: string; value: DataImportType }[] = [
   { label: 'Manual', value: 'manual' },
 ];
 
-const parseCSV = (content: string): RegionData[] => {
+const parseCSV = (content: string): ParsedData[] => {
   const lines = content.trim().split('\n');
-  const data: RegionData[] = [];
+  const data: ParsedData[] = [];
 
   // Skip header row
   for (let i = 1; i < lines.length; i++) {
@@ -30,7 +36,7 @@ const parseCSV = (content: string): RegionData[] => {
   return data;
 };
 
-const parseJSON = (content: string): RegionData[] => {
+const parseJSON = (content: string): ParsedData[] => {
   try {
     const parsed = JSON.parse(content);
     if (Array.isArray(parsed)) {
@@ -44,12 +50,24 @@ const parseJSON = (content: string): RegionData[] => {
   }
 };
 
+const convertToRegionData = (
+  parsed: ParsedData[],
+): { allIds: string[]; byId: Record<string, RegionData> } => {
+  const allIds = parsed.map((item) => item.regionId);
+  const byId = Object.fromEntries(
+    parsed.map((item) => [
+      item.regionId,
+      { id: item.regionId, label: item.regionId, value: item.value },
+    ]),
+  );
+  return { allIds, byId };
+};
+
 export const ImportDataPanel: FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
 
-  const importType = useVisualizerStore((state) => state.importType);
-  const setImportType = useVisualizerStore((state) => state.setImportType);
-  const setRegionData = useVisualizerStore((state) => state.setRegionData);
+  const importDataType = useVisualizerStore((state) => state.importDataType);
+  const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options) => {
@@ -59,15 +77,16 @@ export const ImportDataPanel: FC = () => {
       reader.onload = (e) => {
         try {
           const content = e.target?.result as string;
-          let data: RegionData[] = [];
+          let parsed: ParsedData[] = [];
 
-          if (importType === 'csv') {
-            data = parseCSV(content);
-          } else if (importType === 'json') {
-            data = parseJSON(content);
+          if (importDataType === 'csv') {
+            parsed = parseCSV(content);
+          } else if (importDataType === 'json') {
+            parsed = parseJSON(content);
           }
 
-          setRegionData(data);
+          const data = convertToRegionData(parsed);
+          setVisualizerState({ data });
           onSuccess?.(data);
         } catch (error) {
           onError?.(error as Error);
@@ -80,11 +99,11 @@ export const ImportDataPanel: FC = () => {
 
       reader.readAsText(file as File);
     },
-    [importType, setRegionData],
+    [importDataType, setVisualizerState],
   );
 
   const getAcceptType = useCallback(() => {
-    switch (importType) {
+    switch (importDataType) {
       case 'csv':
         return '.csv';
       case 'excel':
@@ -94,10 +113,10 @@ export const ImportDataPanel: FC = () => {
       default:
         return '*';
     }
-  }, [importType]);
+  }, [importDataType]);
 
   const getButtonText = useCallback(() => {
-    switch (importType) {
+    switch (importDataType) {
       case 'csv':
         return 'Choose CSV File';
       case 'excel':
@@ -111,7 +130,7 @@ export const ImportDataPanel: FC = () => {
       default:
         return 'Choose File';
     }
-  }, [importType]);
+  }, [importDataType]);
 
   return (
     <div className="space-y-md">
@@ -122,8 +141,8 @@ export const ImportDataPanel: FC = () => {
 
       <Segmented
         options={IMPORT_OPTIONS}
-        value={importType}
-        onChange={(value) => setImportType(value as DataImportType)}
+        value={importDataType}
+        onChange={(value) => setVisualizerState({ importDataType: value as ImportDataType })}
         block
         size="middle"
         className="[&_.ant-segmented-item]:px-3 [&_.ant-segmented-item]:py-1.5"
@@ -131,7 +150,7 @@ export const ImportDataPanel: FC = () => {
 
       <p className="text-sm text-gray-500">Upload your dataset to visualize regional metrics.</p>
 
-      {importType === 'manual' ? (
+      {importDataType === 'manual' ? (
         <Button
           type="primary"
           icon={<EditOutlined />}
@@ -141,7 +160,7 @@ export const ImportDataPanel: FC = () => {
         >
           Enter Data Manually
         </Button>
-      ) : importType === 'sheets' ? (
+      ) : importDataType === 'sheets' ? (
         <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
           Connect Google Sheets
         </Button>
@@ -167,7 +186,14 @@ RU-SPE, 1800`}
         </pre>
       </div>
 
-      <ManualDataEntryModal open={isManualModalOpen} onClose={() => setIsManualModalOpen(false)} />
+      {isManualModalOpen && (
+        <Suspense fallback={<Spin />}>
+          <ManualDataEntryModal
+            open={isManualModalOpen}
+            onClose={() => setIsManualModalOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

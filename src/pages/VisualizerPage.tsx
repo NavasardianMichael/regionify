@@ -1,7 +1,8 @@
 import { type FC, useState } from 'react';
 import { DownloadOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Card, Select } from 'antd';
-import { useVisualizerStore } from '@/store/useVisualizerStore';
+import { useVisualizerStore } from '@/store/mapData/store';
+import type { JurisdictionId } from '@/types/mapData';
 import { JURISDICTION_OPTIONS } from '@/constants/jurisdictions';
 import { ImportDataPanel } from '@/components/visualizer/ImportDataPanel';
 import { LegendConfigPanel } from '@/components/visualizer/LegendConfigPanel';
@@ -13,12 +14,11 @@ export const VisualizerPage: FC = () => {
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
 
-  const selectedJurisdiction = useVisualizerStore((state) => state.selectedJurisdiction);
-  const setSelectedJurisdiction = useVisualizerStore((state) => state.setSelectedJurisdiction);
+  const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
+  const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
 
   const handleJurisdictionChange = (value: string) => {
-    const jurisdiction = JURISDICTION_OPTIONS.find((j) => j.value === value);
-    setSelectedJurisdiction(jurisdiction ?? null);
+    setVisualizerState({ selectedJurisdictionId: value as JurisdictionId });
   };
 
   const handleDownload = () => {
@@ -67,7 +67,7 @@ export const VisualizerPage: FC = () => {
                 Select Jurisdiction
               </span>
               <Select
-                value={selectedJurisdiction?.value}
+                value={selectedJurisdictionId ?? undefined}
                 onChange={handleJurisdictionChange}
                 options={JURISDICTION_OPTIONS.map((j) => ({ value: j.value, label: j.label }))}
                 placeholder="Select a region..."
