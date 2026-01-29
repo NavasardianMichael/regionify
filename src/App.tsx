@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { CreditCardOutlined, HomeOutlined, MailOutlined, TableOutlined } from '@ant-design/icons';
-import { ConfigProvider, Flex, Spin, Typography } from 'antd';
+import { ConfigProvider, Flex, Spin } from 'antd';
+import logoImage from '@/assets/images/logo/Gemini_Generated_Image_av3wacav3wacav3w.png';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { theme } from '@/styles/antd-theme';
@@ -31,15 +32,9 @@ const Navigation = () => {
   return (
     <nav className="border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
-        <Flex align="center" gap="small">
-          <Flex align="center" gap={4}>
-            <div className="bg-primary h-6 w-1.5 rounded" />
-            <div className="bg-primary h-4 w-1.5 rounded" />
-          </Flex>
-          <Typography.Text className="text-primary text-lg font-semibold">
-            RegionViz
-          </Typography.Text>
-        </Flex>
+        <Link to="/">
+          <img src={logoImage} alt="Region Map" className="h-8 w-auto" width={120} height={32} />
+        </Link>
         <Flex component="ul" gap={4}>
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;

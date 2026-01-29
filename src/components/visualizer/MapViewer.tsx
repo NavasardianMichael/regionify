@@ -5,6 +5,7 @@ import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
+import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 
 type MapViewerProps = {
   className?: string;
@@ -12,12 +13,24 @@ type MapViewerProps = {
 
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const legendRef = useRef<HTMLDivElement>(null);
   const [svgContent, setSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  // Legend drag state - use refs for smooth animation without re-renders
+  const [isLegendDragging, setIsLegendDragging] = useState(false);
+  const legendDragStartRef = useRef({ x: 0, y: 0 });
+  const legendOffsetRef = useRef({ x: 0, y: 0 });
+  const rafIdRef = useRef<number | null>(null);
+
+  // Legend resize state
+  const [isLegendResizing, setIsLegendResizing] = useState(false);
+  const resizeStartRef = useRef({ x: 0, width: 0 });
+  const currentWidthRef = useRef(0);
 
   const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
   const legendItemsData = useLegendDataStore((state) => state.items);
@@ -26,6 +39,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const zoomControls = useMapStylesStore((state) => state.zoomControls);
   const labels = useLegendStylesStore((state) => state.labels);
   const position = useLegendStylesStore((state) => state.position);
+  const floatingPosition = useLegendStylesStore((state) => state.floatingPosition);
+  const floatingSize = useLegendStylesStore((state) => state.floatingSize);
+  const backgroundColor = useLegendStylesStore((state) => state.backgroundColor);
+  const setLegendStylesState = useLegendStylesStore((state) => state.setLegendStylesState);
 
   const legendItems = useMemo(
     () => legendItemsData.allIds.map((id) => legendItemsData.byId[id]),
@@ -260,10 +277,147 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     setZoom((prev) => Math.min(Math.max(prev * delta, 0.5), 5));
   }, []);
 
+  // Legend drag handlers - optimized with CSS transforms and requestAnimationFrame
+  const handleLegendMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (position !== LEGEND_POSITIONS.floating) return;
+      e.stopPropagation();
+      e.preventDefault();
+
+      setIsLegendDragging(true);
+      legendDragStartRef.current = { x: e.clientX, y: e.clientY };
+      legendOffsetRef.current = { x: 0, y: 0 };
+
+      // Add will-change for GPU acceleration
+      if (legendRef.current) {
+        legendRef.current.style.willChange = 'transform';
+      }
+    },
+    [position],
+  );
+
+  const updateLegendTransform = useCallback(() => {
+    if (legendRef.current && isLegendDragging) {
+      legendRef.current.style.transform = `translate(${legendOffsetRef.current.x}px, ${legendOffsetRef.current.y}px)`;
+    }
+    rafIdRef.current = null;
+  }, [isLegendDragging]);
+
+  const handleLegendMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isLegendDragging && containerRef.current && legendRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const legendRect = legendRef.current.getBoundingClientRect();
+
+        // Calculate new offset
+        let offsetX = e.clientX - legendDragStartRef.current.x;
+        let offsetY = e.clientY - legendDragStartRef.current.y;
+
+        // Constrain within container bounds
+        const currentLeft = floatingPosition.x + offsetX;
+        const currentTop = floatingPosition.y + offsetY;
+
+        if (currentLeft < 0) offsetX = -floatingPosition.x;
+        if (currentTop < 0) offsetY = -floatingPosition.y;
+        if (currentLeft + legendRect.width > containerRect.width) {
+          offsetX = containerRect.width - legendRect.width - floatingPosition.x;
+        }
+        if (currentTop + legendRect.height > containerRect.height) {
+          offsetY = containerRect.height - legendRect.height - floatingPosition.y;
+        }
+
+        legendOffsetRef.current = { x: offsetX, y: offsetY };
+
+        // Use requestAnimationFrame to batch DOM updates
+        if (rafIdRef.current === null) {
+          rafIdRef.current = requestAnimationFrame(updateLegendTransform);
+        }
+      }
+
+      if (isLegendResizing && legendRef.current) {
+        const newWidth = Math.max(
+          120,
+          resizeStartRef.current.width + (e.clientX - resizeStartRef.current.x),
+        );
+        currentWidthRef.current = newWidth;
+
+        // Apply width directly via transform scale or width
+        if (rafIdRef.current === null) {
+          rafIdRef.current = requestAnimationFrame(() => {
+            if (legendRef.current) {
+              legendRef.current.style.width = `${currentWidthRef.current}px`;
+            }
+            rafIdRef.current = null;
+          });
+        }
+      }
+    },
+    [isLegendDragging, isLegendResizing, floatingPosition, updateLegendTransform],
+  );
+
+  const handleLegendMouseUp = useCallback(() => {
+    // Cancel any pending animation frame
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+
+    // Commit final position to store
+    if (isLegendDragging) {
+      const finalX = floatingPosition.x + legendOffsetRef.current.x;
+      const finalY = floatingPosition.y + legendOffsetRef.current.y;
+      setLegendStylesState({ floatingPosition: { x: finalX, y: finalY } });
+
+      // Reset transform and will-change
+      if (legendRef.current) {
+        legendRef.current.style.transform = '';
+        legendRef.current.style.willChange = 'auto';
+      }
+    }
+
+    // Commit final width to store
+    if (isLegendResizing && currentWidthRef.current > 0) {
+      setLegendStylesState({ floatingSize: { ...floatingSize, width: currentWidthRef.current } });
+      currentWidthRef.current = 0;
+    }
+
+    setIsLegendDragging(false);
+    setIsLegendResizing(false);
+  }, [isLegendDragging, isLegendResizing, floatingPosition, floatingSize, setLegendStylesState]);
+
+  // Legend resize handler
+  const handleResizeMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      setIsLegendResizing(true);
+      resizeStartRef.current = { x: e.clientX, width: floatingSize.width };
+      currentWidthRef.current = floatingSize.width;
+
+      if (legendRef.current) {
+        legendRef.current.style.willChange = 'width';
+      }
+    },
+    [floatingSize.width],
+  );
+
+  // Add global mouse event listeners for legend drag/resize
+  useEffect(() => {
+    if (isLegendDragging || isLegendResizing) {
+      window.addEventListener('mousemove', handleLegendMouseMove);
+      window.addEventListener('mouseup', handleLegendMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleLegendMouseMove);
+        window.removeEventListener('mouseup', handleLegendMouseUp);
+      };
+    }
+  }, [isLegendDragging, isLegendResizing, handleLegendMouseMove, handleLegendMouseUp]);
+
   const legendPositionClasses = useMemo(() => {
     switch (position) {
       case 'floating':
-        return 'top-4 right-4';
+        return '';
       case 'bottom':
         return 'bottom-4 left-1/2 -translate-x-1/2';
       case 'hidden':
@@ -274,7 +428,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   }, [position]);
 
   return (
-    <div className={`relative h-full overflow-hidden rounded-lg bg-[#1E3A5F] ${className}`}>
+    <div className={`relative h-full overflow-hidden rounded-lg ${className}`}>
       {/* Map Container - using button for accessibility */}
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
@@ -314,7 +468,23 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       {/* Intensity Ratio Legend */}
       {position !== 'hidden' && labels.show && legendItems.length > 0 && (
         <div
-          className={`absolute ${legendPositionClasses} p-sm rounded-lg bg-white/95 shadow-md backdrop-blur-sm`}
+          ref={legendRef}
+          className={`absolute ${legendPositionClasses} p-sm rounded-lg shadow-md backdrop-blur-sm ${
+            position === LEGEND_POSITIONS.floating
+              ? 'cursor-move transition-shadow duration-200 select-none hover:shadow-[0_0_20px_rgba(24,41,77,0.3)]'
+              : ''
+          }`}
+          style={
+            position === LEGEND_POSITIONS.floating
+              ? {
+                  left: floatingPosition.x,
+                  top: floatingPosition.y,
+                  width: floatingSize.width,
+                  backgroundColor,
+                }
+              : { backgroundColor }
+          }
+          onMouseDown={position === LEGEND_POSITIONS.floating ? handleLegendMouseDown : undefined}
         >
           <Flex align="center" gap={4} className="mb-xs">
             <Typography.Text className="text-xs text-green-500">●</Typography.Text>
@@ -331,8 +501,12 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           <Flex vertical gap="small">
             {legendItems.map((item) => (
               <Flex key={item.id} align="center" gap="small">
-                <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: item.color }} />
+                <div
+                  className="h-3 w-3 shrink-0 rounded-sm"
+                  style={{ backgroundColor: item.color }}
+                />
                 <Typography.Text
+                  className="truncate"
                   style={{
                     color: labels.color,
                     fontSize: `${labels.fontSize}px`,
@@ -343,7 +517,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               </Flex>
             ))}
             <Flex align="center" gap="small">
-              <div className="h-3 w-3 rounded-sm border border-gray-300 bg-gray-100" />
+              <div className="h-3 w-3 shrink-0 rounded-sm border border-gray-300 bg-gray-100" />
               <Typography.Text
                 style={{
                   color: labels.color,
@@ -354,6 +528,27 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               </Typography.Text>
             </Flex>
           </Flex>
+          {/* Resize handle for floating legend */}
+          {position === LEGEND_POSITIONS.floating && (
+            <div
+              role="slider"
+              tabIndex={0}
+              aria-label="Resize legend"
+              aria-valuemin={120}
+              aria-valuemax={400}
+              aria-valuenow={floatingSize.width}
+              className="absolute -right-1 -bottom-1 h-6 w-6 cursor-se-resize rounded-bl-lg transition-colors hover:bg-gray-100"
+              onMouseDown={handleResizeMouseDown}
+            >
+              <svg
+                className="h-full w-full p-1 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22Z" />
+              </svg>
+            </div>
+          )}
         </div>
       )}
 

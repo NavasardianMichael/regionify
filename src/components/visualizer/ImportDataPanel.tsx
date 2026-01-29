@@ -108,20 +108,19 @@ export const ImportDataPanel: FC = () => {
           type="primary"
           icon={<EditOutlined />}
           block
-          size="large"
           onClick={() => setIsManualModalOpen(true)}
         >
           Enter Data Manually
         </Button>
       ),
       sheets: (
-        <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+        <Button type="primary" icon={<CloudUploadOutlined />} block>
           Connect Google Sheets
         </Button>
       ),
       csv: (
         <Upload accept=".csv" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
-          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+          <Button type="primary" icon={<CloudUploadOutlined />} block>
             Choose CSV File
           </Button>
         </Upload>
@@ -133,20 +132,70 @@ export const ImportDataPanel: FC = () => {
           showUploadList={false}
           maxCount={1}
         >
-          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+          <Button type="primary" icon={<CloudUploadOutlined />} block>
             Choose Excel File
           </Button>
         </Upload>
       ),
       json: (
         <Upload accept=".json" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
-          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+          <Button type="primary" icon={<CloudUploadOutlined />} block>
             Choose JSON File
           </Button>
         </Upload>
       ),
     }),
     [handleFileUpload],
+  );
+
+  const expectedFormatExamples: Record<ImportDataType, JSX.Element> = useMemo(
+    () => ({
+      csv: (
+        <pre className="font-mono text-xs text-gray-600">
+          {`region_id,value
+RU-MOW,2500
+RU-SPE,1800`}
+        </pre>
+      ),
+      excel: (
+        <Flex vertical gap={4} className="text-xs text-gray-600">
+          <Typography.Text className="text-xs text-gray-600">
+            Excel file with columns:
+          </Typography.Text>
+          <pre className="font-mono text-xs text-gray-600">
+            {`| region_id | value |
+| RU-MOW    | 2500  |
+| RU-SPE    | 1800  |`}
+          </pre>
+        </Flex>
+      ),
+      json: (
+        <pre className="font-mono text-xs text-gray-600">
+          {`[
+  { "regionId": "RU-MOW", "value": 2500 },
+  { "regionId": "RU-SPE", "value": 1800 }
+]`}
+        </pre>
+      ),
+      sheets: (
+        <Flex vertical gap={4} className="text-xs text-gray-600">
+          <Typography.Text className="text-xs text-gray-600">
+            Google Sheet with columns:
+          </Typography.Text>
+          <pre className="font-mono text-xs text-gray-600">
+            {`| region_id | value |
+| RU-MOW    | 2500  |
+| RU-SPE    | 1800  |`}
+          </pre>
+        </Flex>
+      ),
+      manual: (
+        <Typography.Text className="text-xs text-gray-600">
+          Enter region IDs and their corresponding values using the form.
+        </Typography.Text>
+      ),
+    }),
+    [],
   );
 
   return (
@@ -158,8 +207,6 @@ export const ImportDataPanel: FC = () => {
         value={importDataType}
         onChange={(value) => setVisualizerState({ importDataType: value as ImportDataType })}
         block
-        size="middle"
-        className="[&_.ant-segmented-item]:px-3 [&_.ant-segmented-item]:py-1.5"
       />
 
       <Typography.Paragraph className="text-sm text-gray-500">
@@ -172,11 +219,7 @@ export const ImportDataPanel: FC = () => {
         <Typography.Text className="text-xs font-medium text-gray-500">
           EXPECTED FORMAT:
         </Typography.Text>
-        <pre className="font-mono text-xs text-gray-600">
-          {`region_id, value
-RU-MOW, 2500
-RU-SPE, 1800`}
-        </pre>
+        {expectedFormatExamples[importDataType]}
       </Flex>
 
       {isManualModalOpen && (

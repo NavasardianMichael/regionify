@@ -30,9 +30,23 @@ export const theme: ThemeConfig = {
     Button: {
       primaryShadow: 'none',
     },
+    Input: {
+      activeShadow: 'none',
+    },
+    InputNumber: {
+      activeShadow: 'none',
+    },
     Layout: {
       headerBg: '#18294D',
       siderBg: '#18294D',
+    },
+    Select: {
+      colorPrimary: '#18294D',
+      colorPrimaryHover: '#18294D',
+      optionSelectedBg: '#18294D',
+      optionSelectedColor: '#FFFFFF',
+      activeBorderColor: '#d9d9d9',
+      activeOutlineColor: 'transparent',
     },
     Spin: {
       colorPrimary: '#18294D',

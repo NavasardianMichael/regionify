@@ -11,6 +11,7 @@ export const useLegendStylesStore = create<LegendStylesState>((set) => ({
   position: LEGEND_POSITIONS.floating,
   floatingPosition: { x: 20, y: 20 },
   floatingSize: { width: 160, height: 'auto' },
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
 
   setLegendStylesState: (data) => set((state) => ({ ...state, ...data })),
   setLabels: (data) => set((state) => ({ ...state, labels: { ...state.labels, ...data } })),

@@ -140,7 +140,6 @@ const LegendConfigPanel: FC = () => {
               size="small"
               min={0}
               controls={false}
-              className="w-full"
             />
             <InputNumber
               value={item.max}
@@ -148,7 +147,6 @@ const LegendConfigPanel: FC = () => {
               size="small"
               min={0}
               controls={false}
-              className="w-full"
             />
             <ColorPicker
               value={item.color}
@@ -163,7 +161,6 @@ const LegendConfigPanel: FC = () => {
                 danger
                 onClick={() => removeItem(item.id)}
                 disabled={legendItems.length <= 1}
-                className="p-0!"
               />
             </Tooltip>
           </div>
