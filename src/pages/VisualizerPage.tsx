@@ -1,88 +1,107 @@
-import { type FC, useState } from 'react';
-import { DownloadOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Card, Select } from 'antd';
+import { type FC, lazy, Suspense, useMemo, useState } from 'react';
+import { DownloadOutlined, GlobalOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, Card, Flex, Select, type SelectProps, Spin, Typography } from 'antd';
 import { useVisualizerStore } from '@/store/mapData/store';
-import type { JurisdictionId } from '@/types/mapData';
 import { JURISDICTION_OPTIONS } from '@/constants/jurisdictions';
-import { ImportDataPanel } from '@/components/visualizer/ImportDataPanel';
-import { LegendConfigPanel } from '@/components/visualizer/LegendConfigPanel';
-import { LegendStylesPanel } from '@/components/visualizer/LegendStylesPanel';
-import { MapStylesPanel } from '@/components/visualizer/MapStylesPanel';
-import { MapViewer } from '@/components/visualizer/MapViewer';
 
-export const VisualizerPage: FC = () => {
+const ImportDataPanel = lazy(() => import('@/components/visualizer/ImportDataPanel'));
+const LegendConfigPanel = lazy(() => import('@/components/visualizer/LegendConfigPanel'));
+const LegendStylesPanel = lazy(() => import('@/components/visualizer/LegendStylesPanel'));
+const MapStylesPanel = lazy(() => import('@/components/visualizer/MapStylesPanel'));
+const MapViewer = lazy(() => import('@/components/visualizer/MapViewer'));
+
+const VisualizerPage: FC = () => {
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
 
   const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
   const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
 
-  const handleJurisdictionChange = (value: string) => {
-    setVisualizerState({ selectedJurisdictionId: value as JurisdictionId });
+  const handleJurisdictionChange: SelectProps['onChange'] = (selectedJurisdictionId) => {
+    setVisualizerState({ selectedJurisdictionId });
   };
+
+  const showSearchConfig = useMemo<SelectProps['showSearch']>(
+    () => ({
+      filterOption: (input, option) =>
+        (option?.label as string).toLowerCase().includes(input.toLowerCase()),
+    }),
+    [],
+  );
 
   const handleDownload = () => {
     // TODO: Implement download functionality
   };
 
   return (
-    <div className="gap-md flex h-[calc(100vh-73px)] overflow-hidden">
+    <Flex gap="middle" flex={1} className="h-full min-h-0 overflow-hidden">
       {/* Left Sidebar */}
-      <aside
-        className={`relative flex shrink-0 flex-col transition-all duration-300 ${
+      <Flex
+        component="aside"
+        vertical
+        className={`relative shrink-0 overflow-visible transition-all duration-300 ${
           leftSidebarCollapsed ? 'w-0' : 'w-96'
         }`}
       >
-        <div
-          className={`gap-lg p-md scrollbar-thin flex h-full flex-col overflow-x-hidden overflow-y-auto rounded-lg bg-white shadow-sm ${
+        <Flex
+          vertical
+          gap="large"
+          className={`p-md scrollbar-thin h-full overflow-x-hidden overflow-y-auto rounded-lg bg-white shadow-sm ${
             leftSidebarCollapsed ? 'invisible w-0 p-0' : ''
           }`}
         >
-          <ImportDataPanel />
+          <Suspense fallback={<Spin className="m-auto" />}>
+            <ImportDataPanel />
+          </Suspense>
           <div className="border-t border-gray-200" />
-          <LegendConfigPanel />
-        </div>
+          <Suspense fallback={<Spin className="m-auto" />}>
+            <LegendConfigPanel />
+          </Suspense>
+        </Flex>
         {/* Collapse Button */}
-        <button
-          type="button"
+        <Button
+          type="text"
+          shape="circle"
+          size="small"
           onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
-          className="absolute top-1/2 -right-3 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-colors hover:bg-gray-50"
+          className="absolute top-1/2 -right-3 z-10 h-6 w-6 -translate-y-1/2 border border-gray-200 bg-white shadow-sm"
           aria-label={leftSidebarCollapsed ? 'Expand left sidebar' : 'Collapse left sidebar'}
-        >
-          {leftSidebarCollapsed ? (
-            <RightOutlined className="text-xs text-gray-500" />
-          ) : (
-            <LeftOutlined className="text-xs text-gray-500" />
-          )}
-        </button>
-      </aside>
+          icon={
+            leftSidebarCollapsed ? (
+              <RightOutlined className="text-xs text-gray-500" />
+            ) : (
+              <LeftOutlined className="text-xs text-gray-500" />
+            )
+          }
+        />
+      </Flex>
 
       {/* Center Content */}
-      <main className="gap-md flex min-w-0 flex-1 flex-col overflow-hidden">
+      <Flex component="main" vertical gap="middle" flex={1} className="min-w-0 overflow-hidden">
         {/* Header Card */}
         <Card size="small" className="shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">
-                Select Jurisdiction
-              </span>
+          <Flex align="center" justify="space-between">
+            <Flex vertical gap="small">
+              <Flex align="center" gap="small">
+                <GlobalOutlined className="text-base text-gray-500" />
+                <Typography.Title level={3} className="text-primary text-base font-semibold">
+                  Select Jurisdiction
+                </Typography.Title>
+              </Flex>
               <Select
-                value={selectedJurisdictionId ?? undefined}
+                value={selectedJurisdictionId}
                 onChange={handleJurisdictionChange}
-                options={JURISDICTION_OPTIONS.map((j) => ({ value: j.value, label: j.label }))}
+                options={JURISDICTION_OPTIONS}
                 placeholder="Select a region..."
                 className="w-64"
                 size="large"
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
+                showSearch={showSearchConfig}
               />
-            </div>
+            </Flex>
             <Button icon={<DownloadOutlined />} size="large" onClick={handleDownload}>
               Download
             </Button>
-          </div>
+          </Flex>
         </Card>
 
         {/* Map Visualization */}
@@ -96,43 +115,64 @@ export const VisualizerPage: FC = () => {
               flexDirection: 'column',
               overflow: 'hidden',
               padding: 12,
+              minHeight: 0,
             },
           }}
         >
-          <h2 className="mb-sm text-primary text-base font-semibold">Map Visualization</h2>
-          <MapViewer className="min-h-0 flex-1" />
+          <Typography.Title
+            level={2}
+            className="mb-sm text-primary shrink-0 text-base font-semibold"
+          >
+            Map Visualization
+          </Typography.Title>
+          <Suspense fallback={<Spin className="m-auto flex-1" />}>
+            <MapViewer className="min-h-0 flex-1" />
+          </Suspense>
         </Card>
-      </main>
+      </Flex>
 
       {/* Right Sidebar */}
-      <aside
-        className={`relative flex shrink-0 flex-col transition-all duration-300 ${
+      <Flex
+        component="aside"
+        vertical
+        className={`relative shrink-0 overflow-visible transition-all duration-300 ${
           rightSidebarCollapsed ? 'w-0' : 'w-72'
         }`}
       >
-        {/* Collapse Button */}
-        <button
-          type="button"
-          onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
-          className="absolute top-1/2 -left-3 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-colors hover:bg-gray-50"
-          aria-label={rightSidebarCollapsed ? 'Expand right sidebar' : 'Collapse right sidebar'}
-        >
-          {rightSidebarCollapsed ? (
-            <LeftOutlined className="text-xs text-gray-500" />
-          ) : (
-            <RightOutlined className="text-xs text-gray-500" />
-          )}
-        </button>
-        <div
-          className={`gap-lg p-md scrollbar-thin flex h-full flex-col overflow-x-hidden overflow-y-auto rounded-lg bg-white shadow-sm ${
+        <Flex
+          vertical
+          gap="large"
+          className={`p-md scrollbar-thin h-full overflow-x-hidden overflow-y-auto rounded-lg bg-white shadow-sm ${
             rightSidebarCollapsed ? 'invisible w-0 p-0' : ''
           }`}
         >
-          <MapStylesPanel />
+          <Suspense fallback={<Spin className="m-auto" />}>
+            <MapStylesPanel />
+          </Suspense>
           <div className="border-t border-gray-200" />
-          <LegendStylesPanel />
-        </div>
-      </aside>
-    </div>
+          <Suspense fallback={<Spin className="m-auto" />}>
+            <LegendStylesPanel />
+          </Suspense>
+        </Flex>
+        {/* Collapse Button */}
+        <Button
+          type="text"
+          shape="circle"
+          size="small"
+          onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
+          className="absolute top-1/2 -left-3 z-10 h-6 w-6 -translate-y-1/2 border border-gray-200 bg-white shadow-sm"
+          aria-label={rightSidebarCollapsed ? 'Expand right sidebar' : 'Collapse right sidebar'}
+          icon={
+            rightSidebarCollapsed ? (
+              <LeftOutlined className="text-xs text-gray-500" />
+            ) : (
+              <RightOutlined className="text-xs text-gray-500" />
+            )
+          }
+        />
+      </Flex>
+    </Flex>
   );
 };
+
+export default VisualizerPage;

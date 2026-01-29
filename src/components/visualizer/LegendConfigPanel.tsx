@@ -1,4 +1,4 @@
-import { type FC, useCallback, useMemo, useState } from 'react';
+import { type FC, lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -7,11 +7,13 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from '@ant-design/icons';
-import { Button, ColorPicker, Input, InputNumber, Modal, Tooltip } from 'antd';
+import { Button, ColorPicker, Flex, InputNumber, Spin, Tooltip, Typography } from 'antd';
 import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
 
-export const LegendConfigPanel: FC = () => {
+const EditLegendItemModal = lazy(() => import('./EditLegendItemModal'));
+
+const LegendConfigPanel: FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<LegendItem | null>(null);
@@ -81,13 +83,15 @@ export const LegendConfigPanel: FC = () => {
   }, [addItem]);
 
   return (
-    <div className="space-y-md">
-      <div className="flex items-center justify-between">
-        <div className="gap-sm flex items-center">
-          <span className="text-base text-gray-500">◐</span>
-          <h3 className="text-primary text-base font-semibold">Legend Configuration</h3>
-        </div>
-        <div className="gap-xs flex">
+    <Flex vertical gap="middle">
+      <Flex align="center" justify="space-between">
+        <Flex align="center" gap="small">
+          <Typography.Text className="text-base text-gray-500">◐</Typography.Text>
+          <Typography.Title level={3} className="text-primary text-base font-semibold">
+            Legend Configuration
+          </Typography.Title>
+        </Flex>
+        <Flex gap={4}>
           <Tooltip title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}>
             <Button
               type="text"
@@ -99,18 +103,18 @@ export const LegendConfigPanel: FC = () => {
               className="text-gray-500"
             />
           </Tooltip>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
-      <div className="space-y-xs">
+      <Flex vertical gap="small">
         {/* Header */}
         <div className="gap-xs px-xs grid grid-cols-[20px_1fr_52px_52px_32px_20px] items-center text-xs font-medium text-gray-500">
-          <span />
-          <span>Name</span>
-          <span>Min</span>
-          <span>Max</span>
-          <span>Color</span>
-          <span />
+          <Typography.Text />
+          <Typography.Text>Name</Typography.Text>
+          <Typography.Text>Min</Typography.Text>
+          <Typography.Text>Max</Typography.Text>
+          <Typography.Text>Color</Typography.Text>
+          <Typography.Text />
         </div>
 
         {/* Legend Items */}
@@ -131,7 +135,7 @@ export const LegendConfigPanel: FC = () => {
               className="flex cursor-pointer items-center gap-1 overflow-hidden text-left"
               onClick={() => handleEditClick(item)}
             >
-              <span className="truncate text-sm">{item.name}</span>
+              <Typography.Text className="truncate text-sm">{item.name}</Typography.Text>
               <EditOutlined className="shrink-0 text-xs text-gray-400" />
             </button>
             <InputNumber
@@ -168,61 +172,26 @@ export const LegendConfigPanel: FC = () => {
             </Tooltip>
           </div>
         ))}
-      </div>
+      </Flex>
 
       <Button type="dashed" icon={<PlusOutlined />} block onClick={handleAddItem}>
         Add Level
       </Button>
 
       {/* Edit Modal */}
-      <Modal
-        title="Edit Legend Item"
-        open={isModalOpen}
-        onOk={handleModalOk}
-        onCancel={handleModalCancel}
-        destroyOnHidden
-      >
-        {editingItem && (
-          <div className="space-y-md py-md">
-            <div className="space-y-xs">
-              <span className="text-sm font-medium text-gray-700">Name</span>
-              <Input
-                value={editingItem.name}
-                onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                placeholder="Legend name"
-              />
-            </div>
-            <div className="gap-md grid grid-cols-2">
-              <div className="space-y-xs">
-                <span className="text-sm font-medium text-gray-700">Min Value</span>
-                <InputNumber
-                  value={editingItem.min}
-                  onChange={(value) => setEditingItem({ ...editingItem, min: value ?? 0 })}
-                  min={0}
-                  className="w-full"
-                />
-              </div>
-              <div className="space-y-xs">
-                <span className="text-sm font-medium text-gray-700">Max Value</span>
-                <InputNumber
-                  value={editingItem.max}
-                  onChange={(value) => setEditingItem({ ...editingItem, max: value ?? 0 })}
-                  min={0}
-                  className="w-full"
-                />
-              </div>
-            </div>
-            <div className="space-y-xs">
-              <span className="text-sm font-medium text-gray-700">Color</span>
-              <ColorPicker
-                value={editingItem.color}
-                onChange={(color) => setEditingItem({ ...editingItem, color: color.toHexString() })}
-                showText
-              />
-            </div>
-          </div>
-        )}
-      </Modal>
-    </div>
+      {isModalOpen && (
+        <Suspense fallback={<Spin />}>
+          <EditLegendItemModal
+            open={isModalOpen}
+            editingItem={editingItem}
+            onOk={handleModalOk}
+            onCancel={handleModalCancel}
+            onItemChange={setEditingItem}
+          />
+        </Suspense>
+      )}
+    </Flex>
   );
 };
+
+export default LegendConfigPanel;

@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, message } from 'antd';
+import { Button, Card, Flex, Form, Input, message, Typography } from 'antd';
 
 type ContactFormValues = {
   name: string;
@@ -9,15 +9,15 @@ type ContactFormValues = {
   message: string;
 };
 
-export const ContactPage: FC = () => {
+const ContactPage: FC = () => {
   const [form] = Form.useForm<ContactFormValues>();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (values: ContactFormValues) => {
+  const handleSubmit = async (_values: ContactFormValues) => {
     setLoading(true);
     try {
       // TODO: Implement actual form submission
-      console.log('Form submitted:', values);
+      // console.log('Form submitted:', values);
       message.success('Message sent successfully!');
       form.resetFields();
     } catch {
@@ -28,17 +28,26 @@ export const ContactPage: FC = () => {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-140px)] w-full flex-col items-center justify-center bg-gray-50 px-4 py-8">
-      <Card className="w-full max-w-[448px] shadow-sm" styles={{ body: { padding: 24 } }}>
+    <Flex
+      vertical
+      align="center"
+      justify="center"
+      className="min-h-[calc(100vh-140px)] w-full bg-gray-50 px-4 py-8"
+    >
+      <Card className="w-full max-w-112 shadow-sm" styles={{ body: { padding: 24 } }}>
         <div className="mb-6 text-center">
-          <h1 className="text-primary text-2xl font-bold">Contact Us</h1>
-          <p className="mt-2 text-gray-500">Have a question We are here to help.</p>
+          <Typography.Title level={1} className="text-primary text-2xl font-bold">
+            Contact Us
+          </Typography.Title>
+          <Typography.Paragraph className="mt-2 text-gray-500">
+            Have a question? We are here to help.
+          </Typography.Paragraph>
         </div>
 
         <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
           <Form.Item
             name="name"
-            label={<span className="font-medium text-gray-700">Name</span>}
+            label={<Typography.Text className="font-medium text-gray-700">Name</Typography.Text>}
             rules={[{ required: true, message: 'Please enter your name' }]}
           >
             <Input placeholder="Enter your full name" size="large" />
@@ -46,7 +55,7 @@ export const ContactPage: FC = () => {
 
           <Form.Item
             name="email"
-            label={<span className="font-medium text-gray-700">Email</span>}
+            label={<Typography.Text className="font-medium text-gray-700">Email</Typography.Text>}
             rules={[
               { required: true, message: 'Please enter your email' },
               { type: 'email', message: 'Please enter a valid email' },
@@ -57,7 +66,7 @@ export const ContactPage: FC = () => {
 
           <Form.Item
             name="message"
-            label={<span className="font-medium text-gray-700">Message</span>}
+            label={<Typography.Text className="font-medium text-gray-700">Message</Typography.Text>}
             rules={[{ required: true, message: 'Please enter your message' }]}
           >
             <Input.TextArea placeholder="How can we assist you?" rows={4} size="large" />
@@ -71,13 +80,14 @@ export const ContactPage: FC = () => {
         </Form>
       </Card>
 
-      <Link
-        to="/"
-        className="text-primary hover:text-primary-400 mt-6 flex items-center gap-2 transition-colors"
-      >
-        <ArrowLeftOutlined />
-        <span>Back to Home</span>
+      <Link to="/" className="text-primary hover:text-primary-400 mt-6 transition-colors">
+        <Flex align="center" gap="small">
+          <ArrowLeftOutlined />
+          <Typography.Text>Back to Home</Typography.Text>
+        </Flex>
       </Link>
-    </div>
+    </Flex>
   );
 };
+
+export default ContactPage;

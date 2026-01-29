@@ -1,7 +1,9 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Input, InputNumber, Modal } from 'antd';
+import { Button, Flex, Input, InputNumber, Modal, Typography } from 'antd';
+import type { DefaultOptionType } from 'antd/es/select';
 import { useVisualizerStore } from '@/store/mapData/store';
+import { JURISDICTION_OPTIONS } from '@/constants/jurisdictions';
 
 type ManualDataRow = {
   id: string;
@@ -16,22 +18,27 @@ type Props = {
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
-export const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
-  const regionData = useVisualizerStore((state) => state.regionData);
-  const setRegionData = useVisualizerStore((state) => state.setRegionData);
-  const selectedJurisdiction = useVisualizerStore((state) => state.selectedJurisdiction);
+const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
+  const data = useVisualizerStore((state) => state.data);
+  const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
+  const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
+
+  const selectedJurisdiction = useMemo(
+    () => JURISDICTION_OPTIONS.find((j: DefaultOptionType) => j.value === selectedJurisdictionId),
+    [selectedJurisdictionId],
+  );
 
   // Initialize rows from existing region data
   const initialRows = useMemo<ManualDataRow[]>(() => {
-    if (regionData.length > 0) {
-      return regionData.map((data) => ({
+    if (data.allIds.length > 0) {
+      return data.allIds.map((id) => ({
         id: generateId(),
-        regionName: data.regionId,
-        value: data.value,
+        regionName: data.byId[id].id,
+        value: data.byId[id].value,
       }));
     }
     return [{ id: generateId(), regionName: '', value: 0 }];
-  }, [regionData]);
+  }, [data]);
 
   const [rows, setRows] = useState<ManualDataRow[]>(initialRows);
 
@@ -39,12 +46,12 @@ export const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
   const handleAfterOpenChange = useCallback(
     (visible: boolean) => {
       if (visible) {
-        if (regionData.length > 0) {
+        if (data.allIds.length > 0) {
           setRows(
-            regionData.map((data) => ({
+            data.allIds.map((id) => ({
               id: generateId(),
-              regionName: data.regionId,
-              value: data.value,
+              regionName: data.byId[id].id,
+              value: data.byId[id].value,
             })),
           );
         } else {
@@ -52,7 +59,7 @@ export const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
         }
       }
     },
-    [regionData],
+    [data],
   );
 
   const handleAddRow = useCallback(() => {
@@ -75,15 +82,17 @@ export const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
   }, []);
 
   const handleApply = useCallback(() => {
-    const validData = rows
-      .filter((row) => row.regionName.trim() !== '')
-      .map((row) => ({
-        regionId: row.regionName.trim(),
-        value: row.value,
-      }));
-    setRegionData(validData);
+    const validRows = rows.filter((row) => row.regionName.trim() !== '');
+    const allIds = validRows.map((row) => row.regionName.trim());
+    const byId = Object.fromEntries(
+      validRows.map((row) => [
+        row.regionName.trim(),
+        { id: row.regionName.trim(), label: row.regionName.trim(), value: row.value },
+      ]),
+    );
+    setVisualizerState({ data: { allIds, byId } });
     onClose();
-  }, [rows, setRegionData, onClose]);
+  }, [rows, setVisualizerState, onClose]);
 
   const handleCancel = useCallback(() => {
     onClose();
@@ -101,41 +110,47 @@ export const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
       width={640}
       destroyOnClose
     >
-      <div className="space-y-md">
+      <Flex vertical gap="middle">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-primary text-lg font-semibold">Manual Data Entry</h2>
-            <p className="text-sm text-gray-500">Edit regional values for {jurisdictionLabel}</p>
-          </div>
-          <div className="gap-sm flex">
+        <Flex align="flex-start" justify="space-between">
+          <Flex vertical>
+            <Typography.Title level={2} className="text-primary text-lg font-semibold">
+              Manual Data Entry
+            </Typography.Title>
+            <Typography.Paragraph className="text-sm text-gray-500">
+              Edit regional values for {jurisdictionLabel}
+            </Typography.Paragraph>
+          </Flex>
+          <Flex gap="small">
             <Button icon={<PlusOutlined />} onClick={handleAddRow}>
               Add Row
             </Button>
             <Button icon={<DeleteOutlined />} danger type="text" onClick={handleClearAll}>
               Clear All
             </Button>
-          </div>
-        </div>
+          </Flex>
+        </Flex>
 
         {/* Table */}
         <div className="scrollbar-thin max-h-80 overflow-y-auto">
           {/* Table Header */}
           <div className="gap-sm py-xs sticky top-0 z-10 grid grid-cols-[40px_1fr_140px_40px] items-center bg-white text-xs font-medium tracking-wide text-gray-500 uppercase">
-            <span className="text-center">#</span>
-            <span>Region Name</span>
-            <span>Value (Numerical)</span>
-            <span />
+            <Typography.Text className="text-center">#</Typography.Text>
+            <Typography.Text>Region Name</Typography.Text>
+            <Typography.Text>Value (Numerical)</Typography.Text>
+            <Typography.Text />
           </div>
 
           {/* Table Rows */}
-          <div className="space-y-xs">
+          <Flex vertical gap="small">
             {rows.map((row, index) => (
               <div
                 key={row.id}
                 className="gap-sm grid grid-cols-[40px_1fr_140px_40px] items-center"
               >
-                <span className="text-center text-sm text-gray-500">{index + 1}</span>
+                <Typography.Text className="text-center text-sm text-gray-500">
+                  {index + 1}
+                </Typography.Text>
                 <Input
                   value={row.regionName}
                   onChange={(e) => handleUpdateRow(row.id, 'regionName', e.target.value)}
@@ -156,17 +171,19 @@ export const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
                 />
               </div>
             ))}
-          </div>
+          </Flex>
         </div>
 
         {/* Footer */}
-        <div className="gap-sm pt-md flex justify-end border-t border-gray-100">
+        <Flex gap="small" justify="flex-end" className="pt-md border-t border-gray-100">
           <Button onClick={handleCancel}>Cancel</Button>
           <Button type="primary" onClick={handleApply}>
             Apply Data
           </Button>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </Modal>
   );
 };
+
+export default ManualDataEntryModal;

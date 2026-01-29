@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { AimOutlined, FontSizeOutlined } from '@ant-design/icons';
-import { Collapse, ColorPicker, Segmented, Slider, Switch } from 'antd';
+import { Collapse, ColorPicker, Flex, Segmented, Slider, Switch, Typography } from 'antd';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import type { LegendPosition } from '@/types/legendStyles';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
@@ -11,7 +11,7 @@ const POSITION_OPTIONS: { value: LegendPosition; label: string }[] = [
   { value: LEGEND_POSITIONS.hidden, label: 'Hidden' },
 ];
 
-export const LegendStylesPanel: FC = () => {
+const LegendStylesPanel: FC = () => {
   const labels = useLegendStylesStore((state) => state.labels);
   const position = useLegendStylesStore((state) => state.position);
   const setLabels = useLegendStylesStore((state) => state.setLabels);
@@ -21,31 +21,33 @@ export const LegendStylesPanel: FC = () => {
     {
       key: 'labels',
       label: (
-        <div className="gap-sm flex items-center">
+        <Flex align="center" gap="small">
           <FontSizeOutlined className="text-gray-500" />
-          <span>Labels</span>
-        </div>
+          <Typography.Text>Labels</Typography.Text>
+        </Flex>
       ),
       children: (
-        <div className="space-y-md">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Show Labels</span>
+        <Flex vertical gap="middle">
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">Show Labels</Typography.Text>
             <Switch checked={labels.show} onChange={(checked) => setLabels({ show: checked })} />
-          </div>
-          <div className="space-y-xs">
-            <span className="text-sm text-gray-600">Text Color</span>
+          </Flex>
+          <Flex vertical gap="small">
+            <Typography.Text className="text-sm text-gray-600">Text Color</Typography.Text>
             <ColorPicker
               value={labels.color}
               onChange={(color) => setLabels({ color: color.toHexString() })}
               showText
             />
-          </div>
-          <div className="space-y-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Font Size</span>
-              <span className="text-sm text-gray-500">{labels.fontSize}pt</span>
-            </div>
-            <div className="gap-sm flex items-center">
+          </Flex>
+          <Flex vertical gap="small">
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">Font Size</Typography.Text>
+              <Typography.Text className="text-sm text-gray-500">
+                {labels.fontSize}pt
+              </Typography.Text>
+            </Flex>
+            <Flex align="center" gap="small">
               <Slider
                 min={8}
                 max={24}
@@ -53,22 +55,24 @@ export const LegendStylesPanel: FC = () => {
                 onChange={(value) => setLabels({ fontSize: value })}
                 className="flex-1"
               />
-              <span className="w-8 text-right text-sm">{labels.fontSize}</span>
-            </div>
-          </div>
-        </div>
+              <Typography.Text className="w-8 text-right text-sm">
+                {labels.fontSize}
+              </Typography.Text>
+            </Flex>
+          </Flex>
+        </Flex>
       ),
     },
     {
       key: 'position',
       label: (
-        <div className="gap-sm flex items-center">
+        <Flex align="center" gap="small">
           <AimOutlined className="text-gray-500" />
-          <span>Position</span>
-        </div>
+          <Typography.Text>Position</Typography.Text>
+        </Flex>
       ),
       children: (
-        <div className="space-y-md">
+        <Flex vertical gap="middle">
           <Segmented
             value={position}
             onChange={(value) => setLegendStylesState({ position: value as LegendPosition })}
@@ -76,23 +80,27 @@ export const LegendStylesPanel: FC = () => {
             block
           />
           {position === 'floating' && (
-            <p className="text-xs text-gray-500">
+            <Typography.Paragraph className="text-xs text-gray-500">
               Drag and resize the legend on the map to reposition it.
-            </p>
+            </Typography.Paragraph>
           )}
-        </div>
+        </Flex>
       ),
     },
   ];
 
   return (
-    <div className="space-y-md">
-      <div className="gap-sm flex items-center">
-        <span className="text-base text-gray-500">◈</span>
-        <h3 className="text-primary text-base font-semibold">Legend Styles</h3>
-      </div>
+    <Flex vertical gap="middle">
+      <Flex align="center" gap="small">
+        <Typography.Text className="text-base text-gray-500">◈</Typography.Text>
+        <Typography.Title level={3} className="text-primary text-base font-semibold">
+          Legend Styles
+        </Typography.Title>
+      </Flex>
 
       <Collapse items={items} defaultActiveKey={['labels']} ghost expandIconPlacement="end" />
-    </div>
+    </Flex>
   );
 };
+
+export default LegendStylesPanel;

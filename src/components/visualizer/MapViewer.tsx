@@ -1,6 +1,6 @@
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Spin } from 'antd';
+import { Button, Flex, Spin, Typography } from 'antd';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useVisualizerStore } from '@/store/mapData/store';
@@ -10,7 +10,7 @@ type MapViewerProps = {
   className?: string;
 };
 
-export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
+const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svgContent, setSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -303,9 +303,11 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             dangerouslySetInnerHTML={{ __html: svgContent }}
           />
         ) : (
-          <div className="text-center text-white/60">
-            <p className="text-lg">Select a jurisdiction to view the map</p>
-          </div>
+          <Flex vertical align="center" justify="center" className="text-white/60">
+            <Typography.Text className="text-lg text-white/60">
+              Select a jurisdiction to view the map
+            </Typography.Text>
+          </Flex>
         )}
       </div>
 
@@ -314,9 +316,9 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         <div
           className={`absolute ${legendPositionClasses} p-sm rounded-lg bg-white/95 shadow-md backdrop-blur-sm`}
         >
-          <div className="mb-xs gap-xs flex items-center">
-            <span className="text-xs text-green-500">●</span>
-            <span
+          <Flex align="center" gap={4} className="mb-xs">
+            <Typography.Text className="text-xs text-green-500">●</Typography.Text>
+            <Typography.Text
               className="text-xs font-medium"
               style={{
                 color: labels.color,
@@ -324,41 +326,43 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               }}
             >
               INTENSITY RATIO
-            </span>
-          </div>
-          <div className="space-y-xs">
+            </Typography.Text>
+          </Flex>
+          <Flex vertical gap="small">
             {legendItems.map((item) => (
-              <div key={item.id} className="gap-sm flex items-center">
+              <Flex key={item.id} align="center" gap="small">
                 <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: item.color }} />
-                <span
+                <Typography.Text
                   style={{
                     color: labels.color,
                     fontSize: `${labels.fontSize}px`,
                   }}
                 >
                   {item.name}
-                </span>
-              </div>
+                </Typography.Text>
+              </Flex>
             ))}
-            <div className="gap-sm flex items-center">
+            <Flex align="center" gap="small">
               <div className="h-3 w-3 rounded-sm border border-gray-300 bg-gray-100" />
-              <span
+              <Typography.Text
                 style={{
                   color: labels.color,
                   fontSize: `${labels.fontSize}px`,
                 }}
               >
                 No Data
-              </span>
-            </div>
-          </div>
+              </Typography.Text>
+            </Flex>
+          </Flex>
         </div>
       )}
 
       {/* Zoom Controls */}
       {zoomControls.show && (
-        <div
-          className="gap-xs absolute flex flex-col"
+        <Flex
+          vertical
+          gap={4}
+          className="absolute"
           style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
         >
           <Button
@@ -379,8 +383,10 @@ export const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             onClick={handleResetView}
             className="shadow-md"
           />
-        </div>
+        </Flex>
       )}
     </div>
   );
 };
+
+export default MapViewer;

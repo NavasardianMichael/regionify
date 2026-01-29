@@ -79,10 +79,7 @@ export default defineConfig([
       // React rules
       'react/prop-types': 'off', // Using TypeScript
       'react/jsx-no-target-blank': 'error',
-      'react/jsx-curly-brace-presence': [
-        'error',
-        { props: 'never', children: 'never' },
-      ],
+      'react/jsx-curly-brace-presence': ['error', { props: 'never', children: 'never' }],
       'react/self-closing-comp': 'error',
       'react/jsx-boolean-value': ['error', 'never'],
 
@@ -109,7 +106,6 @@ export default defineConfig([
       'jsx-a11y/no-static-element-interactions': 'warn',
 
       // General best practices
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'error',
       'no-var': 'error',
     },

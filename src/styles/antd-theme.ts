@@ -34,5 +34,8 @@ export const theme: ThemeConfig = {
       headerBg: '#18294D',
       siderBg: '#18294D',
     },
+    Spin: {
+      colorPrimary: '#18294D',
+    },
   },
 };

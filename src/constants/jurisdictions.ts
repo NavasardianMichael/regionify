@@ -1,4 +1,4 @@
-import type { SelectProps } from 'antd';
+import type { DefaultOptionType } from 'antd/es/select';
 
 export const JURISDICTION_IDS = {
   afghanistan: 'afghanistan',
@@ -275,7 +275,7 @@ export const JURISDICTION_IDS = {
   zimbabwe: 'zimbabwe',
 } as const;
 
-export const JURISDICTION_OPTIONS: SelectProps['options'] = [
+export const JURISDICTION_OPTIONS: DefaultOptionType[] = [
   { value: JURISDICTION_IDS.afghanistan, label: 'Afghanistan', mapFile: 'afghanistanHigh.svg' },
   { value: JURISDICTION_IDS.africa, label: 'Africa', mapFile: 'africaHigh.svg' },
   { value: JURISDICTION_IDS.albania, label: 'Albania', mapFile: 'albaniaHigh.svg' },

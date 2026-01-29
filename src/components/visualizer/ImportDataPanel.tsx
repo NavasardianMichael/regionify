@@ -1,14 +1,12 @@
-import { type FC, lazy, Suspense, useCallback, useState } from 'react';
+import { type FC, type JSX, lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { CloudUploadOutlined, DatabaseOutlined, EditOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { Button, Segmented, Spin, Upload } from 'antd';
+import { Button, Flex, Segmented, Spin, Typography, Upload } from 'antd';
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
 
-const ManualDataEntryModal = lazy(() =>
-  import('./ManualDataEntryModal').then((m) => ({ default: m.ManualDataEntryModal })),
-);
+const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 
 type ParsedData = { regionId: string; value: number };
 
@@ -102,42 +100,62 @@ export const ImportDataPanel: FC = () => {
     [importDataType, setVisualizerState],
   );
 
-  const getAcceptType = useCallback(() => {
-    switch (importDataType) {
-      case 'csv':
-        return '.csv';
-      case 'excel':
-        return '.xlsx,.xls';
-      case 'json':
-        return '.json';
-      default:
-        return '*';
-    }
-  }, [importDataType]);
-
-  const getButtonText = useCallback(() => {
-    switch (importDataType) {
-      case 'csv':
-        return 'Choose CSV File';
-      case 'excel':
-        return 'Choose Excel File';
-      case 'json':
-        return 'Choose JSON File';
-      case 'sheets':
-        return 'Connect Google Sheets';
-      case 'manual':
-        return 'Enter Data Manually';
-      default:
-        return 'Choose File';
-    }
-  }, [importDataType]);
+  const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
+    () => ({
+      manual: (
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          block
+          size="large"
+          onClick={() => setIsManualModalOpen(true)}
+        >
+          Enter Data Manually
+        </Button>
+      ),
+      sheets: (
+        <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+          Connect Google Sheets
+        </Button>
+      ),
+      csv: (
+        <Upload accept=".csv" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
+          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+            Choose CSV File
+          </Button>
+        </Upload>
+      ),
+      excel: (
+        <Upload
+          accept=".xlsx,.xls"
+          customRequest={handleFileUpload}
+          showUploadList={false}
+          maxCount={1}
+        >
+          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+            Choose Excel File
+          </Button>
+        </Upload>
+      ),
+      json: (
+        <Upload accept=".json" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
+          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
+            Choose JSON File
+          </Button>
+        </Upload>
+      ),
+    }),
+    [handleFileUpload],
+  );
 
   return (
-    <div className="space-y-md">
-      <div className="gap-sm flex items-center">
+    <Flex vertical gap="middle">
+      <Flex align="center" gap="small">
         <DatabaseOutlined className="text-base text-gray-500" />
-        <h3 className="text-primary text-base font-semibold">Import Data</h3>
-      </div>
+        <Typography.Title level={3} className="text-primary text-base font-semibold">
+          Import Data
+        </Typography.Title>
+      </Flex>
 
       <Segmented
         options={IMPORT_OPTIONS}
@@ -148,43 +166,22 @@ export const ImportDataPanel: FC = () => {
         className="[&_.ant-segmented-item]:px-3 [&_.ant-segmented-item]:py-1.5"
       />
 
-      <p className="text-sm text-gray-500">Upload your dataset to visualize regional metrics.</p>
+      <Typography.Paragraph className="text-sm text-gray-500">
+        Upload your dataset to visualize regional metrics.
+      </Typography.Paragraph>
 
-      {importDataType === 'manual' ? (
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          block
-          size="large"
-          onClick={() => setIsManualModalOpen(true)}
-        >
-          Enter Data Manually
-        </Button>
-      ) : importDataType === 'sheets' ? (
-        <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
-          Connect Google Sheets
-        </Button>
-      ) : (
-        <Upload
-          accept={getAcceptType()}
-          customRequest={handleFileUpload}
-          showUploadList={false}
-          maxCount={1}
-        >
-          <Button type="primary" icon={<CloudUploadOutlined />} block size="large">
-            {getButtonText()}
-          </Button>
-        </Upload>
-      )}
+      {importActionComponents[importDataType]}
 
-      <div className="p-sm rounded-md bg-gray-50">
-        <p className="mb-xs text-xs font-medium text-gray-500">EXPECTED FORMAT:</p>
+      <Flex vertical gap="small" className="p-sm rounded-md bg-gray-50">
+        <Typography.Text className="text-xs font-medium text-gray-500">
+          EXPECTED FORMAT:
+        </Typography.Text>
         <pre className="font-mono text-xs text-gray-600">
           {`region_id, value
 RU-MOW, 2500
 RU-SPE, 1800`}
         </pre>
-      </div>
+      </Flex>
 
       {isManualModalOpen && (
         <Suspense fallback={<Spin />}>
@@ -194,6 +191,8 @@ RU-SPE, 1800`}
           />
         </Suspense>
       )}
-    </div>
+    </Flex>
   );
 };
+
+export default ImportDataPanel;
