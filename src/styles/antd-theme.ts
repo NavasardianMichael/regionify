@@ -51,5 +51,9 @@ export const theme: ThemeConfig = {
     Spin: {
       colorPrimary: '#18294D',
     },
+    Collapse: {
+      headerPadding: '8px 0',
+      contentPadding: '4px',
+    },
   },
 };

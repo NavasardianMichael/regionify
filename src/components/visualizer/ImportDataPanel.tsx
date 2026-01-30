@@ -1,5 +1,10 @@
 import { type FC, type JSX, lazy, Suspense, useCallback, useMemo, useState } from 'react';
-import { CloudUploadOutlined, DatabaseOutlined, EditOutlined } from '@ant-design/icons';
+import {
+  CloudUploadOutlined,
+  DatabaseOutlined,
+  EditOutlined,
+  FileExcelOutlined,
+} from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, Flex, Segmented, Spin, Typography, Upload } from 'antd';
 import {
@@ -204,7 +209,7 @@ RU-SPE,1800`}
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={DatabaseOutlined}>Import Data</SectionTitle>
+      <SectionTitle IconComponent={FileExcelOutlined}>Import Data</SectionTitle>
 
       <Segmented
         options={IMPORT_OPTIONS}

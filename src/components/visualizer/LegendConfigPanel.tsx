@@ -1,5 +1,6 @@
 import { type FC, lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import {
+  BarChartOutlined,
   DeleteOutlined,
   EditOutlined,
   HolderOutlined,
@@ -118,7 +119,7 @@ const LegendConfigPanel: FC = () => {
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
-        <SectionTitle IconComponent={HolderOutlined}>Legend Configuration</SectionTitle>
+        <SectionTitle IconComponent={BarChartOutlined}>Legend Configuration</SectionTitle>
         <Flex gap={4}>
           <Tooltip title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}>
             <Button
@@ -146,7 +147,7 @@ const LegendConfigPanel: FC = () => {
       {/* Legend Items */}
       <Flex vertical gap="small">
         {/* Header Row */}
-        <div className={`grid ${GRID_COLS} gap-2 px-2 text-xs font-medium text-gray-500`}>
+        <div className={`grid ${GRID_COLS} gap-2 text-xs font-medium text-gray-500`}>
           <span />
           <Typography.Text className="text-xs text-gray-500">Name</Typography.Text>
           <Typography.Text className="text-xs text-gray-500">Min</Typography.Text>
@@ -163,7 +164,7 @@ const LegendConfigPanel: FC = () => {
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
-              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none p-2 transition-opacity ${
+              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none py-2 transition-opacity ${
                 draggedIndex === index ? 'opacity-50' : ''
               }`}
             >

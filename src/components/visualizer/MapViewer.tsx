@@ -9,6 +9,7 @@ import {
   selectLabels,
   selectPosition,
   selectSetLegendStylesState,
+  selectTitle,
   useLegendStylesStore,
 } from '@/store/legendStyles/store';
 import { selectSelectedRegionId, useVisualizerStore } from '@/store/mapData/store';
@@ -51,6 +52,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const shadow = useMapStylesStore(selectShadow);
   const zoomControls = useMapStylesStore(selectZoomControls);
   const labels = useLegendStylesStore(selectLabels);
+  const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
   const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const floatingSize = useLegendStylesStore(selectFloatingSize);
@@ -70,42 +72,100 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       const svgElement = doc.querySelector('svg');
 
       if (svgElement) {
-        // Get the bounding box of all paths to create a proper viewBox
+        // Calculate viewBox from actual path bounding boxes using getBBox simulation
+        // We need to find the actual bounds of all paths
         const paths = svgElement.querySelectorAll('path');
         let minX = Infinity,
           minY = Infinity,
           maxX = -Infinity,
           maxY = -Infinity;
 
-        // Calculate bounds from path data
+        // Parse SVG path data to get actual coordinates
         paths.forEach((path) => {
           const d = path.getAttribute('d');
           if (d) {
-            // Extract all numbers from path data to estimate bounds
-            const numbers = d.match(/[-+]?[0-9]*\.?[0-9]+/g);
-            if (numbers) {
-              for (let i = 0; i < numbers.length; i += 2) {
-                const x = parseFloat(numbers[i]);
-                const y = parseFloat(numbers[i + 1] || '0');
-                if (!isNaN(x) && !isNaN(y)) {
+            // Parse path commands properly - extract coordinates from M, L, C, etc.
+            // Match coordinate pairs after commands like M, L, H, V, C, S, Q, T, A, Z
+            const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
+            let match;
+            let currentX = 0;
+            let currentY = 0;
+
+            while ((match = coordRegex.exec(d)) !== null) {
+              const command = match[1];
+              const params = match[2].trim();
+              const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
+
+              const isRelative = command === command.toLowerCase();
+              const cmd = command.toUpperCase();
+
+              if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
+                for (let i = 0; i < numbers.length; i += 2) {
+                  const x = isRelative ? currentX + numbers[i] : numbers[i];
+                  const y = isRelative ? currentY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
+                  currentX = x;
+                  currentY = y;
                   minX = Math.min(minX, x);
                   minY = Math.min(minY, y);
                   maxX = Math.max(maxX, x);
                   maxY = Math.max(maxY, y);
+                }
+              } else if (cmd === 'H') {
+                for (const num of numbers) {
+                  const x = isRelative ? currentX + num : num;
+                  currentX = x;
+                  minX = Math.min(minX, x);
+                  maxX = Math.max(maxX, x);
+                }
+              } else if (cmd === 'V') {
+                for (const num of numbers) {
+                  const y = isRelative ? currentY + num : num;
+                  currentY = y;
+                  minY = Math.min(minY, y);
+                  maxY = Math.max(maxY, y);
+                }
+              } else if (cmd === 'C') {
+                // Cubic bezier: x1 y1 x2 y2 x y
+                for (let i = 0; i < numbers.length; i += 6) {
+                  for (let j = 0; j < 6; j += 2) {
+                    const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
+                    const y = isRelative
+                      ? currentY + (numbers[i + j + 1] ?? 0)
+                      : (numbers[i + j + 1] ?? 0);
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                  }
+                  currentX = isRelative ? currentX + numbers[i + 4] : numbers[i + 4];
+                  currentY = isRelative ? currentY + (numbers[i + 5] ?? 0) : (numbers[i + 5] ?? 0);
+                }
+              } else if (cmd === 'S' || cmd === 'Q') {
+                // Smooth cubic/quadratic: (x1 y1) x y
+                const step = cmd === 'S' ? 4 : 4;
+                for (let i = 0; i < numbers.length; i += step) {
+                  for (let j = 0; j < step; j += 2) {
+                    const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
+                    const y = isRelative
+                      ? currentY + (numbers[i + j + 1] ?? 0)
+                      : (numbers[i + j + 1] ?? 0);
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                  }
+                  currentX = isRelative ? currentX + numbers[i + step - 2] : numbers[i + step - 2];
+                  currentY = isRelative
+                    ? currentY + (numbers[i + step - 1] ?? 0)
+                    : (numbers[i + step - 1] ?? 0);
                 }
               }
             }
           }
         });
 
-        // Set viewBox if we found valid bounds and there's no existing viewBox
-        if (
-          !svgElement.getAttribute('viewBox') &&
-          isFinite(minX) &&
-          isFinite(minY) &&
-          isFinite(maxX) &&
-          isFinite(maxY)
-        ) {
+        // Always set viewBox based on calculated bounds
+        if (isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
           const padding = 10;
           const width = maxX - minX + padding * 2;
           const height = maxY - minY + padding * 2;
@@ -431,8 +491,6 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     switch (position) {
       case 'floating':
         return '';
-      case 'bottom':
-        return 'bottom-4 left-1/2 -translate-x-1/2';
       case 'hidden':
         return 'hidden';
       default:
@@ -440,109 +498,109 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     }
   }, [position]);
 
-  return (
-    <div className={`relative h-full overflow-hidden rounded-lg ${className}`}>
-      {/* Map Container - using button for accessibility */}
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        ref={containerRef}
-        className="flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
-      >
-        {isLoading ? (
-          <Spin size="large" />
-        ) : svgContent ? (
-          <div
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-              width: '80%',
-              height: '80%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            className="map-svg-container [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
-            dangerouslySetInnerHTML={{ __html: svgContent }}
-          />
-        ) : (
-          <Flex vertical align="center" justify="center" className="text-white/60">
-            <Typography.Text className="text-lg text-white/60">
-              Select a region to view the map
-            </Typography.Text>
-          </Flex>
-        )}
-      </div>
+  const isBottomLegend = position === LEGEND_POSITIONS.bottom;
 
-      {/* Intensity Ratio Legend */}
-      {position !== 'hidden' && labels.show && legendItems.length > 0 && (
-        <div
-          ref={legendRef}
-          className={`absolute ${legendPositionClasses} p-sm rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm ${
-            position === LEGEND_POSITIONS.floating
-              ? 'cursor-move transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]'
-              : ''
-          }`}
-          style={
-            position === LEGEND_POSITIONS.floating
-              ? {
-                  left: floatingPosition.x,
-                  top: floatingPosition.y,
-                  width: floatingSize.width,
-                  backgroundColor,
-                }
-              : { backgroundColor }
-          }
-          onMouseDown={position === LEGEND_POSITIONS.floating ? handleLegendMouseDown : undefined}
-        >
-          <Flex align="center" gap={4} className="mb-xs">
-            <Typography.Text className="text-xs text-green-500">●</Typography.Text>
+  // Render legend content (shared between floating and bottom positions)
+  const legendContent = (
+    <>
+      {title.show && (
+        <Flex align="center" gap={4} className="mb-xs">
+          <Typography.Text className="text-xs text-green-500">●</Typography.Text>
+          <Typography.Text
+            className="text-xs font-medium"
+            style={{
+              color: labels.color,
+              fontSize: `${labels.fontSize}px`,
+            }}
+          >
+            {title.text}
+          </Typography.Text>
+        </Flex>
+      )}
+      <Flex vertical gap="small">
+        {legendItems.map((item) => (
+          <Flex key={item.id} align="center" gap="small">
+            <div className="h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: item.color }} />
             <Typography.Text
-              className="text-xs font-medium"
+              className="truncate"
               style={{
                 color: labels.color,
                 fontSize: `${labels.fontSize}px`,
               }}
             >
-              INTENSITY RATIO
+              {item.name}
             </Typography.Text>
           </Flex>
-          <Flex vertical gap="small">
-            {legendItems.map((item) => (
-              <Flex key={item.id} align="center" gap="small">
-                <div
-                  className="h-3 w-3 shrink-0 rounded-sm"
-                  style={{ backgroundColor: item.color }}
-                />
-                <Typography.Text
-                  className="truncate"
-                  style={{
-                    color: labels.color,
-                    fontSize: `${labels.fontSize}px`,
-                  }}
-                >
-                  {item.name}
-                </Typography.Text>
-              </Flex>
-            ))}
-            <Flex align="center" gap="small">
-              <div className="h-3 w-3 shrink-0 rounded-sm border border-gray-300 bg-gray-100" />
-              <Typography.Text
-                style={{
-                  color: labels.color,
-                  fontSize: `${labels.fontSize}px`,
-                }}
-              >
-                No Data
+        ))}
+        <Flex align="center" gap="small">
+          <div className="h-3 w-3 shrink-0 rounded-sm border border-gray-300 bg-gray-100" />
+          <Typography.Text
+            style={{
+              color: labels.color,
+              fontSize: `${labels.fontSize}px`,
+            }}
+          >
+            No Data
+          </Typography.Text>
+        </Flex>
+      </Flex>
+    </>
+  );
+
+  return (
+    <Flex vertical className={`h-full ${className}`}>
+      {/* Map Container */}
+      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg">
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        <div
+          ref={containerRef}
+          className="absolute inset-0 flex cursor-grab items-center justify-center active:cursor-grabbing"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
+        >
+          {isLoading ? (
+            <Spin size="large" />
+          ) : svgContent ? (
+            <div
+              style={{
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                width: '80%',
+                height: '80%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              className="map-svg-container [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
+              dangerouslySetInnerHTML={{ __html: svgContent }}
+            />
+          ) : (
+            <Flex vertical align="center" justify="center" className="text-white/60">
+              <Typography.Text className="text-lg text-white/60">
+                Select a region to view the map
               </Typography.Text>
             </Flex>
-          </Flex>
-          {/* Resize handle for floating legend */}
-          {position === LEGEND_POSITIONS.floating && (
+          )}
+        </div>
+
+        {/* Floating Legend (inside map container) */}
+        {position === LEGEND_POSITIONS.floating && labels.show && legendItems.length > 0 && (
+          <div
+            ref={legendRef}
+            className={`absolute ${legendPositionClasses} p-sm cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]`}
+            style={{
+              left: floatingPosition.x,
+              top: floatingPosition.y,
+              width: floatingSize.width,
+              backgroundColor,
+            }}
+            onMouseDown={handleLegendMouseDown}
+          >
+            {legendContent}
+            {/* Resize handle for floating legend */}
             <div
               role="slider"
               tabIndex={0}
@@ -561,39 +619,46 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22Z" />
               </svg>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Zoom Controls */}
+        {zoomControls.show && (
+          <Flex
+            vertical
+            gap={4}
+            className="absolute"
+            style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
+          >
+            <Button
+              type="default"
+              icon={<PlusOutlined />}
+              onClick={handleZoomIn}
+              className="shadow-md"
+            />
+            <Button
+              type="default"
+              icon={<MinusOutlined />}
+              onClick={handleZoomOut}
+              className="shadow-md"
+            />
+            <Button
+              type="default"
+              icon={<FullscreenOutlined />}
+              onClick={handleResetView}
+              className="shadow-md"
+            />
+          </Flex>
+        )}
+      </div>
+
+      {/* Bottom Legend (outside map container, with border separator) */}
+      {isBottomLegend && labels.show && legendItems.length > 0 && (
+        <div className="p-md pt-md shrink-0 border-t border-gray-200" style={{ backgroundColor }}>
+          {legendContent}
         </div>
       )}
-
-      {/* Zoom Controls */}
-      {zoomControls.show && (
-        <Flex
-          vertical
-          gap={4}
-          className="absolute"
-          style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
-        >
-          <Button
-            type="default"
-            icon={<PlusOutlined />}
-            onClick={handleZoomIn}
-            className="shadow-md"
-          />
-          <Button
-            type="default"
-            icon={<MinusOutlined />}
-            onClick={handleZoomOut}
-            className="shadow-md"
-          />
-          <Button
-            type="default"
-            icon={<FullscreenOutlined />}
-            onClick={handleResetView}
-            className="shadow-md"
-          />
-        </Flex>
-      )}
-    </div>
+    </Flex>
   );
 };
 

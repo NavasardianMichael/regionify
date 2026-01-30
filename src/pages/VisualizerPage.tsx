@@ -3,6 +3,7 @@ import { DownloadOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Spin, Splitter, Typography } from 'antd';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import ExportMapModal from '@/components/visualizer/ExportMapModal';
+import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
 import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
 import LegendConfigPanel from '@/components/visualizer/LegendConfigPanel';
 import LegendStylesPanel from '@/components/visualizer/LegendStylesPanel';
@@ -68,6 +69,8 @@ const VisualizerPage: FC = () => {
             <MapStylesPanel />
             <Divider />
             <LegendStylesPanel />
+            <Divider />
+            <GeneralStylesPack />
           </CardLayout>
         </Splitter.Panel>
       </Splitter>

@@ -1,11 +1,5 @@
 import { type FC, useCallback } from 'react';
-import {
-  BorderOutlined,
-  EditOutlined,
-  ExpandOutlined,
-  EyeOutlined,
-  UndoOutlined,
-} from '@ant-design/icons';
+import { BgColorsOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import { Button, Collapse, ColorPicker, Flex, InputNumber, Slider, Switch, Typography } from 'antd';
 import {
   selectBorder,
@@ -86,7 +80,6 @@ const MapStylesPanel: FC = () => {
       key: 'border',
       label: (
         <Flex align="center" gap="small">
-          <BorderOutlined className="text-gray-500" />
           <Typography.Text>Border</Typography.Text>
         </Flex>
       ),
@@ -126,7 +119,6 @@ const MapStylesPanel: FC = () => {
       key: 'shadow',
       label: (
         <Flex align="center" gap="small">
-          <EyeOutlined className="text-gray-500" />
           <Typography.Text>Shadow</Typography.Text>
         </Flex>
       ),
@@ -181,7 +173,6 @@ const MapStylesPanel: FC = () => {
       key: 'zoom',
       label: (
         <Flex align="center" gap="small">
-          <ExpandOutlined className="text-gray-500" />
           <Typography.Text>Zoom Controls</Typography.Text>
         </Flex>
       ),
@@ -201,15 +192,7 @@ const MapStylesPanel: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={ExpandOutlined}>Map Styles</SectionTitle>
-      <Flex wrap gap="small">
-        <Button icon={<UndoOutlined />} onClick={handleResetStyles} className="min-w-40 grow">
-          Reset Styles
-        </Button>
-        <Button icon={<EditOutlined />} onClick={handleApplyRandomStyles} className="min-w-40 grow">
-          Apply Random Styles Pack
-        </Button>
-      </Flex>
+      <SectionTitle IconComponent={BgColorsOutlined}>Map Styles</SectionTitle>
       <Collapse items={items} defaultActiveKey={['border']} ghost expandIconPlacement="end" />
     </Flex>
   );

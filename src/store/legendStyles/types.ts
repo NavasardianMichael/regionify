@@ -6,9 +6,15 @@ export type LegendLabelsConfig = {
   fontSize: number;
 };
 
+export type LegendTitleConfig = {
+  show: boolean;
+  text: string;
+};
+
 export type LegendStylesState = {
   // State
   labels: LegendLabelsConfig;
+  title: LegendTitleConfig;
   position: LegendPosition;
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };
@@ -17,4 +23,5 @@ export type LegendStylesState = {
   // Actions
   setLegendStylesState: (data: Partial<LegendStylesState>) => void;
   setLabels: (data: Partial<LegendLabelsConfig>) => void;
+  setTitle: (data: Partial<LegendTitleConfig>) => void;
 };

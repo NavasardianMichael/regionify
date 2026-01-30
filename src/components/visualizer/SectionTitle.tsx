@@ -16,7 +16,7 @@ export const SectionTitle: FC<Props> = ({ className, children, IconComponent, ..
 
   return (
     <Flex align="center" gap="small">
-      {IconComponent && <IconComponent className="text-primary text-sm" />}
+      {IconComponent && <IconComponent className="text-primary text-lg" />}
       <Typography.Title level={3} className={computedClassName} {...props}>
         {children}
       </Typography.Title>

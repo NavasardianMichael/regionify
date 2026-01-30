@@ -1,11 +1,13 @@
 import { type FC, useMemo } from 'react';
-import { AimOutlined, FontSizeOutlined } from '@ant-design/icons';
-import { Collapse, ColorPicker, Flex, Segmented, Slider, Switch, Typography } from 'antd';
+import { AimOutlined, EditOutlined, FontSizeOutlined } from '@ant-design/icons';
+import { Collapse, ColorPicker, Flex, Input, Segmented, Slider, Switch, Typography } from 'antd';
 import {
   selectLabels,
   selectPosition,
   selectSetLabels,
   selectSetLegendStylesState,
+  selectSetTitle,
+  selectTitle,
   useLegendStylesStore,
 } from '@/store/legendStyles/store';
 import type { LegendPosition } from '@/types/legendStyles';
@@ -20,12 +22,40 @@ const POSITION_OPTIONS: { value: LegendPosition; label: string }[] = [
 
 const LegendStylesPanel: FC = () => {
   const labels = useLegendStylesStore(selectLabels);
+  const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
   const setLabels = useLegendStylesStore(selectSetLabels);
+  const setTitle = useLegendStylesStore(selectSetTitle);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
   const items = useMemo(
     () => [
+      {
+        key: 'title',
+        label: (
+          <Flex align="center" gap="small">
+            <EditOutlined className="text-gray-500" />
+            <Typography.Text>Title</Typography.Text>
+          </Flex>
+        ),
+        children: (
+          <Flex vertical gap="middle">
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">Show Title</Typography.Text>
+              <Switch checked={title.show} onChange={(checked) => setTitle({ show: checked })} />
+            </Flex>
+            <Flex vertical gap="small">
+              <Typography.Text className="text-sm text-gray-600">Title Text</Typography.Text>
+              <Input
+                value={title.text}
+                onChange={(e) => setTitle({ text: e.target.value })}
+                placeholder="Enter legend title"
+                disabled={!title.show}
+              />
+            </Flex>
+          </Flex>
+        ),
+      },
       {
         key: 'labels',
         label: (
@@ -96,7 +126,7 @@ const LegendStylesPanel: FC = () => {
         ),
       },
     ],
-    [labels, position, setLabels, setLegendStylesState],
+    [labels, title, position, setLabels, setTitle, setLegendStylesState],
   );
 
   return (

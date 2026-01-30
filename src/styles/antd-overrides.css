@@ -1,0 +1,14 @@
+#root {
+  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
+    > .ant-splitter-bar
+    .ant-splitter-bar-collapse-bar:hover:not(.ant-splitter-bar-collapse-bar-customize) {
+    background-color: var(--color-primary) !important;
+    color: #fff !important;
+    transition: 0.3s;
+  }
+
+  /* :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter-horizontal
+    > .ant-splitter-bar
+    .ant-splitter-bar-collapse-bar-start {
+  } */
+}
