@@ -25,3 +25,12 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
   setZoomControls: (data) =>
     set((state) => ({ ...state, zoomControls: { ...state.zoomControls, ...data } })),
 }));
+
+// Selectors
+export const selectBorder = (state: MapStylesState) => state.border;
+export const selectShadow = (state: MapStylesState) => state.shadow;
+export const selectZoomControls = (state: MapStylesState) => state.zoomControls;
+export const selectSetMapStylesState = (state: MapStylesState) => state.setMapStylesState;
+export const selectSetBorder = (state: MapStylesState) => state.setBorder;
+export const selectSetShadow = (state: MapStylesState) => state.setShadow;
+export const selectSetZoomControls = (state: MapStylesState) => state.setZoomControls;

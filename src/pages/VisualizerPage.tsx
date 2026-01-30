@@ -1,20 +1,8 @@
-import { type FC, lazy, Suspense, useMemo, useRef, useState } from 'react';
-import { GlobalOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Divider,
-  Flex,
-  type RefSelectProps,
-  Select,
-  type SelectProps,
-  Spin,
-  Typography,
-} from 'antd';
-import { useVisualizerStore } from '@/store/mapData/store';
-import { JURISDICTION_OPTIONS } from '@/constants/jurisdictions';
-import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
+import { type FC, lazy, Suspense, useState } from 'react';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, Divider, Flex, Spin, Typography } from 'antd';
 import { CardLayout } from '@/components/visualizer/CardLayout';
-import { SectionTitle } from '@/components/visualizer/SectionTitle';
+import { JurisdictionSelect } from '@/components/visualizer/JurisdictionSelect';
 
 const SIDEBAR_WIDTH = 'w-90';
 const SIDEBAR_WIDTH_PX = 360; // 90 * 4 = 360px
@@ -28,23 +16,6 @@ const MapViewer = lazy(() => import('@/components/visualizer/MapViewer'));
 const VisualizerPage: FC = () => {
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
-  const selectRef = useRef<RefSelectProps>(null);
-
-  const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
-  const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
-
-  const handleJurisdictionChange: SelectProps['onChange'] = (selectedJurisdictionId) => {
-    setVisualizerState({ selectedJurisdictionId });
-    selectRef.current?.blur();
-  };
-
-  const showSearchConfig = useMemo<SelectProps['showSearch']>(
-    () => ({
-      filterOption: (input, option) =>
-        (option?.label as string).toLowerCase().includes(input.toLowerCase()),
-    }),
-    [],
-  );
 
   return (
     <Flex gap="middle" flex={1} className="relative h-full min-h-0 overflow-hidden">
@@ -73,6 +44,8 @@ const VisualizerPage: FC = () => {
           }`}
         >
           <CardLayout component="aside" vertical className={`${SIDEBAR_WIDTH} h-full`}>
+            <JurisdictionSelect />
+            <Divider />
             <ImportDataPanel />
             <Divider />
             <LegendConfigPanel />
@@ -81,22 +54,7 @@ const VisualizerPage: FC = () => {
       </Flex>
 
       {/* Center Content */}
-      <Flex component="main" vertical flex={1} className={`min-w-0 ${APP_LAYOUT_CLASSNAMES.gap}`}>
-        {/* Select Jurisdiction Card */}
-        <CardLayout className="h-auto shrink-0">
-          <SectionTitle IconComponent={GlobalOutlined}>Select Jurisdiction</SectionTitle>
-          <Select
-            ref={selectRef}
-            value={selectedJurisdictionId}
-            onChange={handleJurisdictionChange}
-            options={JURISDICTION_OPTIONS}
-            placeholder="Select a region..."
-            className="w-64"
-            size="large"
-            showSearch={showSearchConfig}
-          />
-        </CardLayout>
-
+      <Flex component="main" flex={1}>
         {/* Map Visualization */}
         <CardLayout className="min-h-0 flex-1">
           <Typography.Title

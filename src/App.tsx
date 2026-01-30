@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { CreditCardOutlined, HomeOutlined, MailOutlined, TableOutlined } from '@ant-design/icons';
 import { ConfigProvider, Flex, Spin } from 'antd';
-import logoImage from '@/assets/images/logo/Gemini_Generated_Image_av3wacav3wacav3w.png';
+import logoImage from '@/assets/images/logo/logo-high-resolution-with-text.png';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { theme } from '@/styles/antd-theme';
@@ -33,7 +33,7 @@ const Navigation = () => {
     <nav className="border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
         <Link to="/">
-          <img src={logoImage} alt="Region Map" className="h-8 w-auto" width={120} height={32} />
+          <img src={logoImage} alt="Region Map" className="h-12 w-auto" width={120} height={32} />
         </Link>
         <Flex component="ul" gap={4}>
           {NAV_ITEMS.map((item) => {

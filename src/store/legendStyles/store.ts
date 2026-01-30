@@ -16,3 +16,12 @@ export const useLegendStylesStore = create<LegendStylesState>((set) => ({
   setLegendStylesState: (data) => set((state) => ({ ...state, ...data })),
   setLabels: (data) => set((state) => ({ ...state, labels: { ...state.labels, ...data } })),
 }));
+
+// Selectors
+export const selectLabels = (state: LegendStylesState) => state.labels;
+export const selectPosition = (state: LegendStylesState) => state.position;
+export const selectFloatingPosition = (state: LegendStylesState) => state.floatingPosition;
+export const selectFloatingSize = (state: LegendStylesState) => state.floatingSize;
+export const selectBackgroundColor = (state: LegendStylesState) => state.backgroundColor;
+export const selectSetLegendStylesState = (state: LegendStylesState) => state.setLegendStylesState;
+export const selectSetLabels = (state: LegendStylesState) => state.setLabels;

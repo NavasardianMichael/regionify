@@ -19,6 +19,8 @@ export const useLegendDataStore = create<LegendDataState>((set) => ({
 
   setLegendDataState: (data) => set((state) => ({ ...state, ...data })),
 
+  setItems: (items) => set(() => ({ items: createItemsState(items) })),
+
   addItem: (item) =>
     set((state) => {
       const id = generateId();
@@ -71,3 +73,13 @@ export const useLegendDataStore = create<LegendDataState>((set) => ({
       return { items: { ...state.items, allIds: sorted } };
     }),
 }));
+
+// Selectors
+export const selectLegendItems = (state: LegendDataState) => state.items;
+export const selectAddItem = (state: LegendDataState) => state.addItem;
+export const selectUpdateItem = (state: LegendDataState) => state.updateItem;
+export const selectRemoveItem = (state: LegendDataState) => state.removeItem;
+export const selectReorderItems = (state: LegendDataState) => state.reorderItems;
+export const selectSortItems = (state: LegendDataState) => state.sortItems;
+export const selectSetItems = (state: LegendDataState) => state.setItems;
+export const selectSetLegendDataState = (state: LegendDataState) => state.setLegendDataState;

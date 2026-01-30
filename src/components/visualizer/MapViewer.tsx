@@ -1,10 +1,23 @@
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
-import { useLegendDataStore } from '@/store/legendData/store';
-import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { useVisualizerStore } from '@/store/mapData/store';
-import { useMapStylesStore } from '@/store/mapStyles/store';
+import { selectLegendItems, useLegendDataStore } from '@/store/legendData/store';
+import {
+  selectBackgroundColor,
+  selectFloatingPosition,
+  selectFloatingSize,
+  selectLabels,
+  selectPosition,
+  selectSetLegendStylesState,
+  useLegendStylesStore,
+} from '@/store/legendStyles/store';
+import { selectSelectedJurisdictionId, useVisualizerStore } from '@/store/mapData/store';
+import {
+  selectBorder,
+  selectShadow,
+  selectZoomControls,
+  useMapStylesStore,
+} from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 
 type MapViewerProps = {
@@ -32,17 +45,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const resizeStartRef = useRef({ x: 0, width: 0 });
   const currentWidthRef = useRef(0);
 
-  const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
-  const legendItemsData = useLegendDataStore((state) => state.items);
-  const border = useMapStylesStore((state) => state.border);
-  const shadow = useMapStylesStore((state) => state.shadow);
-  const zoomControls = useMapStylesStore((state) => state.zoomControls);
-  const labels = useLegendStylesStore((state) => state.labels);
-  const position = useLegendStylesStore((state) => state.position);
-  const floatingPosition = useLegendStylesStore((state) => state.floatingPosition);
-  const floatingSize = useLegendStylesStore((state) => state.floatingSize);
-  const backgroundColor = useLegendStylesStore((state) => state.backgroundColor);
-  const setLegendStylesState = useLegendStylesStore((state) => state.setLegendStylesState);
+  const selectedJurisdictionId = useVisualizerStore(selectSelectedJurisdictionId);
+  const legendItemsData = useLegendDataStore(selectLegendItems);
+  const border = useMapStylesStore(selectBorder);
+  const shadow = useMapStylesStore(selectShadow);
+  const zoomControls = useMapStylesStore(selectZoomControls);
+  const labels = useLegendStylesStore(selectLabels);
+  const position = useLegendStylesStore(selectPosition);
+  const floatingPosition = useLegendStylesStore(selectFloatingPosition);
+  const floatingSize = useLegendStylesStore(selectFloatingSize);
+  const backgroundColor = useLegendStylesStore(selectBackgroundColor);
+  const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
   const legendItems = useMemo(
     () => legendItemsData.allIds.map((id) => legendItemsData.byId[id]),
@@ -469,9 +482,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       {position !== 'hidden' && labels.show && legendItems.length > 0 && (
         <div
           ref={legendRef}
-          className={`absolute ${legendPositionClasses} p-sm rounded-lg shadow-md backdrop-blur-sm ${
+          className={`absolute ${legendPositionClasses} p-sm rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm ${
             position === LEGEND_POSITIONS.floating
-              ? 'cursor-move transition-shadow duration-200 select-none hover:shadow-[0_0_20px_rgba(24,41,77,0.3)]'
+              ? 'cursor-move transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]'
               : ''
           }`}
           style={

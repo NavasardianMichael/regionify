@@ -1,16 +1,24 @@
 import type { FC } from 'react';
 import { BorderOutlined, ExpandOutlined, EyeOutlined } from '@ant-design/icons';
 import { Collapse, ColorPicker, Flex, InputNumber, Slider, Switch, Typography } from 'antd';
-import { useMapStylesStore } from '@/store/mapStyles/store';
+import {
+  selectBorder,
+  selectSetBorder,
+  selectSetShadow,
+  selectSetZoomControls,
+  selectShadow,
+  selectZoomControls,
+  useMapStylesStore,
+} from '@/store/mapStyles/store';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const MapStylesPanel: FC = () => {
-  const border = useMapStylesStore((state) => state.border);
-  const shadow = useMapStylesStore((state) => state.shadow);
-  const zoomControls = useMapStylesStore((state) => state.zoomControls);
-  const setBorder = useMapStylesStore((state) => state.setBorder);
-  const setShadow = useMapStylesStore((state) => state.setShadow);
-  const setZoomControls = useMapStylesStore((state) => state.setZoomControls);
+  const border = useMapStylesStore(selectBorder);
+  const shadow = useMapStylesStore(selectShadow);
+  const zoomControls = useMapStylesStore(selectZoomControls);
+  const setBorder = useMapStylesStore(selectSetBorder);
+  const setShadow = useMapStylesStore(selectSetShadow);
+  const setZoomControls = useMapStylesStore(selectSetZoomControls);
 
   const items = [
     {

@@ -8,24 +8,33 @@ import {
   SortDescendingOutlined,
 } from '@ant-design/icons';
 import { Button, ColorPicker, Flex, InputNumber, Spin, Tooltip, Typography } from 'antd';
-import { useLegendDataStore } from '@/store/legendData/store';
+import {
+  selectAddItem,
+  selectLegendItems,
+  selectRemoveItem,
+  selectReorderItems,
+  selectSetItems,
+  selectSortItems,
+  selectUpdateItem,
+  useLegendDataStore,
+} from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
-const EditLegendItemModal = lazy(() => import('./EditLegendItemModal'));
+const EditLegendModal = lazy(() => import('./EditLegendModal'));
 
 const LegendConfigPanel: FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<LegendItem | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  const items = useLegendDataStore((state) => state.items);
-  const addItem = useLegendDataStore((state) => state.addItem);
-  const updateItem = useLegendDataStore((state) => state.updateItem);
-  const removeItem = useLegendDataStore((state) => state.removeItem);
-  const reorderItems = useLegendDataStore((state) => state.reorderItems);
-  const sortItems = useLegendDataStore((state) => state.sortItems);
+  const items = useLegendDataStore(selectLegendItems);
+  const addItem = useLegendDataStore(selectAddItem);
+  const updateItem = useLegendDataStore(selectUpdateItem);
+  const removeItem = useLegendDataStore(selectRemoveItem);
+  const reorderItems = useLegendDataStore(selectReorderItems);
+  const sortItems = useLegendDataStore(selectSortItems);
+  const setItems = useLegendDataStore(selectSetItems);
 
   const legendItems = useMemo(
     () => items.allIds.map((id) => items.byId[id]),
@@ -37,51 +46,61 @@ const LegendConfigPanel: FC = () => {
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
   }, [sortDirection, sortItems]);
 
-  const handleEditClick = useCallback((item: LegendItem) => {
-    setEditingItem({ ...item });
+  const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
 
-  const handleModalOk = useCallback(() => {
-    if (editingItem) {
-      updateItem(editingItem.id, {
-        name: editingItem.name,
-        min: editingItem.min,
-        max: editingItem.max,
-        color: editingItem.color,
-      });
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  const handleSaveFromModal = useCallback(
+    (newItems: LegendItem[]) => {
+      setItems(newItems);
+      setIsModalOpen(false);
+    },
+    [setItems],
+  );
+
+  const handleAddLegendRange = useCallback(() => {
+    addItem({ name: 'New Range', min: 0, max: 100, color: '#6B7280' });
+  }, [addItem]);
+
+  const handleDragStartLegendRange = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    const index = e.currentTarget.dataset.index;
+    if (index !== undefined) {
+      setDraggedIndex(parseInt(index, 10));
     }
-    setIsModalOpen(false);
-    setEditingItem(null);
-  }, [editingItem, updateItem]);
-
-  const handleModalCancel = useCallback(() => {
-    setIsModalOpen(false);
-    setEditingItem(null);
   }, []);
 
-  const handleDragStart = useCallback((index: number) => {
-    setDraggedIndex(index);
-  }, []);
-
-  const handleDragOver = useCallback(
-    (e: React.DragEvent, index: number) => {
+  const handleDragOverLegendRange = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
-      if (draggedIndex !== null && draggedIndex !== index) {
-        reorderItems(draggedIndex, index);
-        setDraggedIndex(index);
+      const index = e.currentTarget.dataset.index;
+      if (index !== undefined) {
+        const targetIndex = parseInt(index, 10);
+        if (draggedIndex !== null && draggedIndex !== targetIndex) {
+          reorderItems(draggedIndex, targetIndex);
+          setDraggedIndex(targetIndex);
+        }
       }
     },
     [draggedIndex, reorderItems],
   );
 
-  const handleDragEnd = useCallback(() => {
+  const handleDragEndLegendRange = useCallback(() => {
     setDraggedIndex(null);
   }, []);
 
-  const handleAddItem = useCallback(() => {
-    addItem({ name: 'New', min: 0, max: 100, color: '#6B7280' });
-  }, [addItem]);
+  const handleRemoveLegendRange = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      const id = e.currentTarget.dataset.id;
+      if (id) {
+        removeItem(id);
+      }
+    },
+    [removeItem],
+  );
 
   return (
     <Flex vertical gap="middle">
@@ -96,6 +115,15 @@ const LegendConfigPanel: FC = () => {
               }
               size="small"
               onClick={handleSort}
+              className="text-gray-500"
+            />
+          </Tooltip>
+          <Tooltip title="Edit All">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={handleOpenModal}
               className="text-gray-500"
             />
           </Tooltip>
@@ -117,23 +145,18 @@ const LegendConfigPanel: FC = () => {
         {legendItems.map((item, index) => (
           <div
             key={item.id}
+            data-id={item.id}
+            data-index={index}
             draggable
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDragEnd={handleDragEnd}
-            className={`gap-xs p-xs grid grid-cols-[20px_1fr_52px_52px_32px_20px] items-center rounded-md border border-gray-200 bg-white transition-opacity ${
+            onDragStart={handleDragStartLegendRange}
+            onDragOver={handleDragOverLegendRange}
+            onDragEnd={handleDragEndLegendRange}
+            className={`gap-xs p-xs grid grid-cols-[20px_1fr_52px_52px_32px_20px] items-center bg-white transition-opacity ${
               draggedIndex === index ? 'opacity-50' : ''
             }`}
           >
             <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
-            <button
-              type="button"
-              className="flex cursor-pointer items-center gap-1 overflow-hidden text-left"
-              onClick={() => handleEditClick(item)}
-            >
-              <Typography.Text className="truncate text-sm">{item.name}</Typography.Text>
-              <EditOutlined className="shrink-0 text-xs text-gray-400" />
-            </button>
+            <Typography.Text className="truncate text-sm">{item.name}</Typography.Text>
             <InputNumber
               value={item.min}
               onChange={(value) => updateItem(item.id, { min: value ?? 0 })}
@@ -159,7 +182,8 @@ const LegendConfigPanel: FC = () => {
                 icon={<DeleteOutlined />}
                 size="small"
                 danger
-                onClick={() => removeItem(item.id)}
+                data-id={item.id}
+                onClick={handleRemoveLegendRange}
                 disabled={legendItems.length <= 1}
               />
             </Tooltip>
@@ -167,19 +191,26 @@ const LegendConfigPanel: FC = () => {
         ))}
       </Flex>
 
-      <Button type="dashed" icon={<PlusOutlined />} block onClick={handleAddItem}>
-        Add Level
-      </Button>
+      <Flex justify="center">
+        <Tooltip title="Add Range">
+          <Button
+            type="text"
+            icon={<PlusOutlined />}
+            size="small"
+            onClick={handleAddLegendRange}
+            className="text-gray-500"
+          />
+        </Tooltip>
+      </Flex>
 
       {/* Edit Modal */}
       {isModalOpen && (
         <Suspense fallback={<Spin />}>
-          <EditLegendItemModal
+          <EditLegendModal
             open={isModalOpen}
-            editingItem={editingItem}
-            onOk={handleModalOk}
-            onCancel={handleModalCancel}
-            onItemChange={setEditingItem}
+            items={legendItems}
+            onSave={handleSaveFromModal}
+            onCancel={handleCloseModal}
           />
         </Suspense>
       )}

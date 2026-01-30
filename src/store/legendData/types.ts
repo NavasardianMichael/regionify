@@ -15,6 +15,7 @@ export type LegendDataState = {
 
   // Actions
   setLegendDataState: (data: Partial<LegendDataState>) => void;
+  setItems: (items: LegendItem[]) => void;
   addItem: (item: Omit<LegendItem, 'id'>) => void;
   updateItem: (id: string, data: Partial<Omit<LegendItem, 'id'>>) => void;
   removeItem: (id: string) => void;

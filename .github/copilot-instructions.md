@@ -122,10 +122,17 @@ import { useAuth } from '@/hooks/useAuth';
   }));
   ```
 
-- Use selectors to avoid unnecessary re-renders:
+- Create selectors separately in the store file and export them:
+
   ```tsx
-  const user = useAuthStore((state) => state.user);
+  // Selectors
+  export const selectUser = (state: AuthState) => state.user;
+  export const selectIsLoggedIn = (state: AuthState) => !!state.user;
+
+  // Usage in components
+  const user = useAuthStore(selectUser);
   ```
+
 - Keep stores simple; derive computed values in components or custom hooks.
 - Use `persist` middleware for localStorage persistence when needed.
 - Do not couple store logic with API calls directly; use hooks or helpers.
@@ -196,3 +203,4 @@ import { useAuth } from '@/hooks/useAuth';
   1. Early return with `if` statements
   2. Mapped variable with `{ [key]: Component or tsx) }` structure
   3. Memoized variable (`useMemo`) with internal `if`/`return` logic
+- In loops (e.g., `.map()`), avoid inline event handler functions; instead use `data-*` attributes (or `name`/`id`) on elements and a single memoized (`useCallback`) handler that extracts the identifier from `event.currentTarget.dataset`.

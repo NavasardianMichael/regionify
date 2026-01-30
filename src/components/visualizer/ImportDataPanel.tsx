@@ -2,7 +2,11 @@ import { type FC, type JSX, lazy, Suspense, useCallback, useMemo, useState } fro
 import { CloudUploadOutlined, DatabaseOutlined, EditOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, Flex, Segmented, Spin, Typography, Upload } from 'antd';
-import { useVisualizerStore } from '@/store/mapData/store';
+import {
+  selectImportDataType,
+  selectSetVisualizerState,
+  useVisualizerStore,
+} from '@/store/mapData/store';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
@@ -65,8 +69,8 @@ const convertToRegionData = (
 export const ImportDataPanel: FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
 
-  const importDataType = useVisualizerStore((state) => state.importDataType);
-  const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
+  const importDataType = useVisualizerStore(selectImportDataType);
+  const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options) => {
@@ -215,7 +219,7 @@ RU-SPE,1800`}
 
       {importActionComponents[importDataType]}
 
-      <Flex vertical gap="small" className="p-sm rounded-md bg-gray-50">
+      <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">
         <Typography.Text className="text-xs font-medium text-gray-500">
           EXPECTED FORMAT:
         </Typography.Text>

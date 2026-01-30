@@ -1,7 +1,13 @@
 import { type FC, useMemo } from 'react';
 import { AimOutlined, FontSizeOutlined } from '@ant-design/icons';
 import { Collapse, ColorPicker, Flex, Segmented, Slider, Switch, Typography } from 'antd';
-import { useLegendStylesStore } from '@/store/legendStyles/store';
+import {
+  selectLabels,
+  selectPosition,
+  selectSetLabels,
+  selectSetLegendStylesState,
+  useLegendStylesStore,
+} from '@/store/legendStyles/store';
 import type { LegendPosition } from '@/types/legendStyles';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
@@ -13,10 +19,10 @@ const POSITION_OPTIONS: { value: LegendPosition; label: string }[] = [
 ];
 
 const LegendStylesPanel: FC = () => {
-  const labels = useLegendStylesStore((state) => state.labels);
-  const position = useLegendStylesStore((state) => state.position);
-  const setLabels = useLegendStylesStore((state) => state.setLabels);
-  const setLegendStylesState = useLegendStylesStore((state) => state.setLegendStylesState);
+  const labels = useLegendStylesStore(selectLabels);
+  const position = useLegendStylesStore(selectPosition);
+  const setLabels = useLegendStylesStore(selectSetLabels);
+  const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
   const items = useMemo(
     () => [

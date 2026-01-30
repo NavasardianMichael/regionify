@@ -2,7 +2,12 @@ import { type FC, useCallback, useMemo, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, InputNumber, Modal, Typography } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
-import { useVisualizerStore } from '@/store/mapData/store';
+import {
+  selectData,
+  selectSelectedJurisdictionId,
+  selectSetVisualizerState,
+  useVisualizerStore,
+} from '@/store/mapData/store';
 import { JURISDICTION_OPTIONS } from '@/constants/jurisdictions';
 
 type ManualDataRow = {
@@ -19,9 +24,9 @@ type Props = {
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
 const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
-  const data = useVisualizerStore((state) => state.data);
-  const setVisualizerState = useVisualizerStore((state) => state.setVisualizerState);
-  const selectedJurisdictionId = useVisualizerStore((state) => state.selectedJurisdictionId);
+  const data = useVisualizerStore(selectData);
+  const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
+  const selectedJurisdictionId = useVisualizerStore(selectSelectedJurisdictionId);
 
   const selectedJurisdiction = useMemo(
     () => JURISDICTION_OPTIONS.find((j: DefaultOptionType) => j.value === selectedJurisdictionId),
@@ -62,26 +67,29 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     [data],
   );
 
-  const handleAddRow = useCallback(() => {
+  const handleAddDataRow = useCallback(() => {
     setRows((prev) => [...prev, { id: generateId(), regionName: '', value: 0 }]);
   }, []);
 
-  const handleRemoveRow = useCallback((id: string) => {
-    setRows((prev) => prev.filter((row) => row.id !== id));
+  const handleRemoveDataRow = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const rowId = e.currentTarget.dataset.id;
+    if (rowId) {
+      setRows((prev) => prev.filter((row) => row.id !== rowId));
+    }
   }, []);
 
-  const handleUpdateRow = useCallback(
+  const handleUpdateDataRow = useCallback(
     (id: string, field: 'regionName' | 'value', value: string | number) => {
       setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
     },
     [],
   );
 
-  const handleClearAll = useCallback(() => {
+  const handleClearAllDataRows = useCallback(() => {
     setRows([{ id: generateId(), regionName: '', value: 0 }]);
   }, []);
 
-  const handleApply = useCallback(() => {
+  const handleApplyData = useCallback(() => {
     const validRows = rows.filter((row) => row.regionName.trim() !== '');
     const allIds = validRows.map((row) => row.regionName.trim());
     const byId = Object.fromEntries(
@@ -94,7 +102,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     onClose();
   }, [rows, setVisualizerState, onClose]);
 
-  const handleCancel = useCallback(() => {
+  const handleCancelDataEntry = useCallback(() => {
     onClose();
   }, [onClose]);
 
@@ -104,7 +112,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     <Modal
       title={null}
       open={open}
-      onCancel={handleCancel}
+      onCancel={handleCancelDataEntry}
       afterOpenChange={handleAfterOpenChange}
       footer={null}
       width={640}
@@ -122,10 +130,10 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
             </Typography.Paragraph>
           </Flex>
           <Flex gap="small">
-            <Button icon={<PlusOutlined />} onClick={handleAddRow}>
+            <Button icon={<PlusOutlined />} onClick={handleAddDataRow}>
               Add Row
             </Button>
-            <Button icon={<DeleteOutlined />} danger type="text" onClick={handleClearAll}>
+            <Button icon={<DeleteOutlined />} danger type="text" onClick={handleClearAllDataRows}>
               Clear All
             </Button>
           </Flex>
@@ -153,12 +161,12 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
                 </Typography.Text>
                 <Input
                   value={row.regionName}
-                  onChange={(e) => handleUpdateRow(row.id, 'regionName', e.target.value)}
+                  onChange={(e) => handleUpdateDataRow(row.id, 'regionName', e.target.value)}
                   placeholder="Enter region name"
                 />
                 <InputNumber
                   value={row.value}
-                  onChange={(value) => handleUpdateRow(row.id, 'value', value ?? 0)}
+                  onChange={(value) => handleUpdateDataRow(row.id, 'value', value ?? 0)}
                   min={0}
                   className="w-full"
                 />
@@ -166,7 +174,8 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
                   type="text"
                   icon={<DeleteOutlined />}
                   danger
-                  onClick={() => handleRemoveRow(row.id)}
+                  data-id={row.id}
+                  onClick={handleRemoveDataRow}
                   disabled={rows.length <= 1}
                 />
               </div>
@@ -176,8 +185,8 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
 
         {/* Footer */}
         <Flex gap="small" justify="flex-end" className="pt-md border-t border-gray-100">
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button type="primary" onClick={handleApply}>
+          <Button onClick={handleCancelDataEntry}>Cancel</Button>
+          <Button type="primary" onClick={handleApplyData}>
             Apply Data
           </Button>
         </Flex>
