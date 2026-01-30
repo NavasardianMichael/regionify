@@ -6,7 +6,7 @@ type Props = FlexProps;
 
 export const CardLayout: FC<Props> = ({ className, children, ...props }) => {
   const computedClassName = useMemo(() => {
-    return `scrollbar-thin overflow-y-auto rounded-lg bg-white ${APP_LAYOUT_CLASSNAMES.padding} ${className ?? ''}`;
+    return `scrollbar-thin overflow-y-auto bg-white ${APP_LAYOUT_CLASSNAMES.padding} ${className ?? ''}`;
   }, [className]);
 
   return (

@@ -7,7 +7,7 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from '@ant-design/icons';
-import { Button, ColorPicker, Flex, InputNumber, Tooltip, Typography } from 'antd';
+import { Button, ColorPicker, Flex, Input, InputNumber, Tooltip, Typography } from 'antd';
 import {
   selectAddItem,
   selectLegendItems,
@@ -23,6 +23,9 @@ import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const EditLegendModal = lazy(() => import('./EditLegendModal'));
 
+// Grid column template for consistent sizing
+const GRID_COLS = 'grid-cols-[24px_minmax(80px,1fr)_60px_60px_36px_32px]';
+
 const LegendConfigPanel: FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,9 +35,9 @@ const LegendConfigPanel: FC = () => {
   const addItem = useLegendDataStore(selectAddItem);
   const updateItem = useLegendDataStore(selectUpdateItem);
   const removeItem = useLegendDataStore(selectRemoveItem);
-  const reorderItems = useLegendDataStore(selectReorderItems);
   const sortItems = useLegendDataStore(selectSortItems);
   const setItems = useLegendDataStore(selectSetItems);
+  const reorderItems = useLegendDataStore(selectReorderItems);
 
   const legendItems = useMemo(
     () => items.allIds.map((id) => items.byId[id]),
@@ -66,14 +69,24 @@ const LegendConfigPanel: FC = () => {
     addItem({ name: 'New Range', min: 0, max: 100, color: '#6B7280' });
   }, [addItem]);
 
-  const handleDragStartLegendRange = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+  const handleRemoveLegendRange = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      const id = e.currentTarget.dataset.id;
+      if (id) {
+        removeItem(id);
+      }
+    },
+    [removeItem],
+  );
+
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     const index = e.currentTarget.dataset.index;
     if (index !== undefined) {
       setDraggedIndex(parseInt(index, 10));
     }
   }, []);
 
-  const handleDragOverLegendRange = useCallback(
+  const handleDragOver = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       const index = e.currentTarget.dataset.index;
@@ -88,18 +101,18 @@ const LegendConfigPanel: FC = () => {
     [draggedIndex, reorderItems],
   );
 
-  const handleDragEndLegendRange = useCallback(() => {
+  const handleDragEnd = useCallback(() => {
     setDraggedIndex(null);
   }, []);
 
-  const handleRemoveLegendRange = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const id = e.currentTarget.dataset.id;
       if (id) {
-        removeItem(id);
+        updateItem(id, { name: e.target.value });
       }
     },
-    [removeItem],
+    [updateItem],
   );
 
   return (
@@ -118,7 +131,7 @@ const LegendConfigPanel: FC = () => {
               className="text-gray-500"
             />
           </Tooltip>
-          <Tooltip title="Edit All">
+          <Tooltip title="Expand to Edit">
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -130,78 +143,85 @@ const LegendConfigPanel: FC = () => {
         </Flex>
       </Flex>
 
+      {/* Legend Items */}
       <Flex vertical gap="small">
-        {/* Header */}
-        <div className="gap-xs px-xs grid grid-cols-[20px_1fr_52px_52px_32px_20px] items-center text-xs font-medium text-gray-500">
-          <Typography.Text />
-          <Typography.Text>Name</Typography.Text>
-          <Typography.Text>Min</Typography.Text>
-          <Typography.Text>Max</Typography.Text>
-          <Typography.Text>Color</Typography.Text>
-          <Typography.Text />
+        {/* Header Row */}
+        <div className={`grid ${GRID_COLS} gap-2 px-2 text-xs font-medium text-gray-500`}>
+          <span />
+          <Typography.Text className="text-xs text-gray-500">Name</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">Min</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">Max</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">Color</Typography.Text>
+          <span />
         </div>
-
-        {/* Legend Items */}
-        {legendItems.map((item, index) => (
-          <div
-            key={item.id}
-            data-id={item.id}
-            data-index={index}
-            draggable
-            onDragStart={handleDragStartLegendRange}
-            onDragOver={handleDragOverLegendRange}
-            onDragEnd={handleDragEndLegendRange}
-            className={`gap-xs p-xs grid grid-cols-[20px_1fr_52px_52px_32px_20px] items-center bg-white transition-opacity ${
-              draggedIndex === index ? 'opacity-50' : ''
-            }`}
-          >
-            <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
-            <Typography.Text className="truncate text-sm">{item.name}</Typography.Text>
-            <InputNumber
-              value={item.min}
-              onChange={(value) => updateItem(item.id, { min: value ?? 0 })}
-              size="small"
-              min={0}
-              controls={false}
-            />
-            <InputNumber
-              value={item.max}
-              onChange={(value) => updateItem(item.id, { max: value ?? 0 })}
-              size="small"
-              min={0}
-              controls={false}
-            />
-            <ColorPicker
-              value={item.color}
-              onChange={(color) => updateItem(item.id, { color: color.toHexString() })}
-              size="small"
-            />
-            <Tooltip title="Remove">
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                size="small"
-                danger
+        <Flex vertical gap="small">
+          {legendItems.map((item, index) => (
+            <div
+              key={item.id}
+              data-index={index}
+              draggable
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none p-2 transition-opacity ${
+                draggedIndex === index ? 'opacity-50' : ''
+              }`}
+            >
+              <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
+              <Input
+                value={item.name}
                 data-id={item.id}
-                onClick={handleRemoveLegendRange}
-                disabled={legendItems.length <= 1}
+                onChange={handleNameChange}
+                placeholder="Name"
+                size="small"
+                className="min-w-0"
               />
-            </Tooltip>
-          </div>
-        ))}
+              <InputNumber
+                value={item.min}
+                onChange={(val) => updateItem(item.id, { min: val ?? 0 })}
+                size="small"
+                min={0}
+                controls={false}
+                className="box-border w-full!"
+              />
+              <InputNumber
+                value={item.max}
+                onChange={(val) => updateItem(item.id, { max: val ?? 0 })}
+                size="small"
+                min={0}
+                controls={false}
+                className="box-border w-full!"
+              />
+              <ColorPicker
+                value={item.color}
+                onChange={(color) => updateItem(item.id, { color: color.toHexString() })}
+                size="small"
+              />
+              <Tooltip title="Remove">
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  size="small"
+                  danger
+                  data-id={item.id}
+                  onClick={handleRemoveLegendRange}
+                  disabled={legendItems.length <= 1}
+                />
+              </Tooltip>
+            </div>
+          ))}
+        </Flex>
       </Flex>
 
-      <Flex justify="center">
-        <Tooltip title="Add Range">
-          <Button
-            type="text"
-            icon={<PlusOutlined />}
-            size="small"
-            onClick={handleAddLegendRange}
-            className="text-gray-500"
-          />
-        </Tooltip>
-      </Flex>
+      <Tooltip title="Add Range">
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          size="small"
+          onClick={handleAddLegendRange}
+          className="w-full text-gray-500"
+        />
+      </Tooltip>
 
       {/* Edit Modal */}
       <Suspense fallback={null}>

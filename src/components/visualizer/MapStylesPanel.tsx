@@ -1,6 +1,12 @@
-import type { FC } from 'react';
-import { BorderOutlined, ExpandOutlined, EyeOutlined } from '@ant-design/icons';
-import { Collapse, ColorPicker, Flex, InputNumber, Slider, Switch, Typography } from 'antd';
+import { type FC, useCallback } from 'react';
+import {
+  BorderOutlined,
+  EditOutlined,
+  ExpandOutlined,
+  EyeOutlined,
+  UndoOutlined,
+} from '@ant-design/icons';
+import { Button, Collapse, ColorPicker, Flex, InputNumber, Slider, Switch, Typography } from 'antd';
 import {
   selectBorder,
   selectSetBorder,
@@ -12,6 +18,33 @@ import {
 } from '@/store/mapStyles/store';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
+const DEFAULT_BORDER = {
+  show: true,
+  color: '#18294D',
+  width: 1,
+};
+
+const DEFAULT_SHADOW = {
+  show: false,
+  color: 'rgba(0, 0, 0, 0.3)',
+  blur: 10,
+  offsetX: 0,
+  offsetY: 4,
+};
+
+const DEFAULT_ZOOM_CONTROLS = {
+  show: true,
+};
+
+// Random color palettes for Apply Random Styles
+const RANDOM_BORDER_COLORS = ['#18294D', '#1890ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1'];
+const RANDOM_SHADOW_COLORS = [
+  'rgba(0, 0, 0, 0.3)',
+  'rgba(24, 144, 255, 0.3)',
+  'rgba(82, 196, 26, 0.3)',
+  'rgba(250, 140, 22, 0.3)',
+];
+
 const MapStylesPanel: FC = () => {
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
@@ -19,6 +52,34 @@ const MapStylesPanel: FC = () => {
   const setBorder = useMapStylesStore(selectSetBorder);
   const setShadow = useMapStylesStore(selectSetShadow);
   const setZoomControls = useMapStylesStore(selectSetZoomControls);
+
+  const handleResetStyles = useCallback(() => {
+    setBorder(DEFAULT_BORDER);
+    setShadow(DEFAULT_SHADOW);
+    setZoomControls(DEFAULT_ZOOM_CONTROLS);
+  }, [setBorder, setShadow, setZoomControls]);
+
+  const handleApplyRandomStyles = useCallback(() => {
+    const randomBorderColor =
+      RANDOM_BORDER_COLORS[Math.floor(Math.random() * RANDOM_BORDER_COLORS.length)];
+    const randomShadowColor =
+      RANDOM_SHADOW_COLORS[Math.floor(Math.random() * RANDOM_SHADOW_COLORS.length)];
+    const randomBorderWidth = Math.floor(Math.random() * 4) + 1;
+    const randomShadowBlur = Math.floor(Math.random() * 20) + 5;
+
+    setBorder({
+      show: true,
+      color: randomBorderColor,
+      width: randomBorderWidth,
+    });
+    setShadow({
+      show: Math.random() > 0.5,
+      color: randomShadowColor,
+      blur: randomShadowBlur,
+      offsetX: Math.floor(Math.random() * 6) - 3,
+      offsetY: Math.floor(Math.random() * 6),
+    });
+  }, [setBorder, setShadow]);
 
   const items = [
     {
@@ -141,6 +202,14 @@ const MapStylesPanel: FC = () => {
   return (
     <Flex vertical gap="middle">
       <SectionTitle IconComponent={ExpandOutlined}>Map Styles</SectionTitle>
+      <Flex wrap gap="small">
+        <Button icon={<UndoOutlined />} onClick={handleResetStyles} className="min-w-40 grow">
+          Reset Styles
+        </Button>
+        <Button icon={<EditOutlined />} onClick={handleApplyRandomStyles} className="min-w-40 grow">
+          Apply Random Styles Pack
+        </Button>
+      </Flex>
       <Collapse items={items} defaultActiveKey={['border']} ghost expandIconPlacement="end" />
     </Flex>
   );

@@ -68,16 +68,14 @@ function App() {
         <Flex vertical className="h-screen overflow-hidden bg-gray-100">
           <Navigation />
           <main className={`min-h-0 flex-1 ${APP_LAYOUT_CLASSNAMES.padding}`}>
-            <Flex vertical className="h-full">
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/visualizer" element={<VisualizerPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                </Routes>
-              </Suspense>
-            </Flex>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/visualizer" element={<VisualizerPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/about" element={<AboutPage />} />
+              </Routes>
+            </Suspense>
           </main>
         </Flex>
       </BrowserRouter>

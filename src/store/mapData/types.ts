@@ -1,4 +1,4 @@
-import type { ImportDataType, JurisdictionId } from '@/types/mapData';
+import type { ImportDataType, RegionId } from '@/types/mapData';
 
 export type RegionData = {
   id: string;
@@ -6,7 +6,7 @@ export type RegionData = {
   value: number;
 };
 
-export type JurisdictionOption = {
+export type RegionOption = {
   value: string;
   label: string;
   mapFile: string;
@@ -15,7 +15,7 @@ export type JurisdictionOption = {
 export type VisualizerState = {
   // State
   importDataType: ImportDataType;
-  selectedJurisdictionId: JurisdictionId | null;
+  selectedRegionId: RegionId | null;
   data: {
     allIds: RegionData['id'][];
     byId: Record<RegionData['id'], RegionData>;

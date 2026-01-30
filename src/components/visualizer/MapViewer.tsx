@@ -11,7 +11,7 @@ import {
   selectSetLegendStylesState,
   useLegendStylesStore,
 } from '@/store/legendStyles/store';
-import { selectSelectedJurisdictionId, useVisualizerStore } from '@/store/mapData/store';
+import { selectSelectedRegionId, useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
   selectShadow,
@@ -45,7 +45,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const resizeStartRef = useRef({ x: 0, width: 0 });
   const currentWidthRef = useRef(0);
 
-  const selectedJurisdictionId = useVisualizerStore(selectSelectedJurisdictionId);
+  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const legendItemsData = useLegendDataStore(selectLegendItems);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
@@ -198,9 +198,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     [border, shadow],
   );
 
-  // Load SVG content when jurisdiction changes
+  // Load SVG content when region changes
   useEffect(() => {
-    if (!selectedJurisdictionId) {
+    if (!selectedRegionId) {
       setSvgContent('');
       return;
     }
@@ -208,7 +208,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     const loadMap = async () => {
       setIsLoading(true);
       try {
-        const mapFile = `${selectedJurisdictionId}High.svg`;
+        const mapFile = `${selectedRegionId}High.svg`;
         const response = await fetch(`/src/assets/images/maps/${mapFile}`);
         if (response.ok) {
           let svg = await response.text();
@@ -224,16 +224,16 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     };
 
     loadMap();
-  }, [selectedJurisdictionId, applyStylesToSvg]);
+  }, [selectedRegionId, applyStylesToSvg]);
 
   // Re-apply styles when map styles change - we only want this to trigger on mapStyles change
   useEffect(() => {
-    if (!selectedJurisdictionId) return;
+    if (!selectedRegionId) return;
 
     // Reload the SVG with new styles
     const loadMap = async () => {
       try {
-        const mapFile = `${selectedJurisdictionId}High.svg`;
+        const mapFile = `${selectedRegionId}High.svg`;
         const response = await fetch(`/src/assets/images/maps/${mapFile}`);
         if (response.ok) {
           let svg = await response.text();
@@ -472,7 +472,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         ) : (
           <Flex vertical align="center" justify="center" className="text-white/60">
             <Typography.Text className="text-lg text-white/60">
-              Select a jurisdiction to view the map
+              Select a region to view the map
             </Typography.Text>
           </Flex>
         )}

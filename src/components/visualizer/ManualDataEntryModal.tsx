@@ -4,11 +4,11 @@ import { Button, Flex, Input, InputNumber, Modal, Typography } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
 import {
   selectData,
-  selectSelectedJurisdictionId,
+  selectSelectedRegionId,
   selectSetVisualizerState,
   useVisualizerStore,
 } from '@/store/mapData/store';
-import { JURISDICTION_OPTIONS } from '@/constants/jurisdictions';
+import { REGION_OPTIONS } from '@/constants/regions';
 
 type ManualDataRow = {
   id: string;
@@ -26,11 +26,11 @@ const generateId = () => Math.random().toString(36).substring(2, 9);
 const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
   const data = useVisualizerStore(selectData);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
-  const selectedJurisdictionId = useVisualizerStore(selectSelectedJurisdictionId);
+  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
 
-  const selectedJurisdiction = useMemo(
-    () => JURISDICTION_OPTIONS.find((j: DefaultOptionType) => j.value === selectedJurisdictionId),
-    [selectedJurisdictionId],
+  const selectedRegion = useMemo(
+    () => REGION_OPTIONS.find((j: DefaultOptionType) => j.value === selectedRegionId),
+    [selectedRegionId],
   );
 
   // Initialize rows from existing region data
@@ -106,7 +106,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     onClose();
   }, [onClose]);
 
-  const jurisdictionLabel = selectedJurisdiction?.label ?? 'Selected Region';
+  const regionLabel = selectedRegion?.label ?? 'Selected Region';
 
   return (
     <Modal
@@ -126,7 +126,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
               Manual Data Entry
             </Typography.Title>
             <Typography.Paragraph className="text-sm text-gray-500">
-              Edit regional values for {jurisdictionLabel}
+              Edit regional values for {regionLabel}
             </Typography.Paragraph>
           </Flex>
           <Flex gap="small">

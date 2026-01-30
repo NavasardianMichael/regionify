@@ -2,8 +2,7 @@ import type { VisualizerState } from './types';
 
 // State selectors
 export const selectImportDataType = (state: VisualizerState) => state.importDataType;
-export const selectSelectedJurisdictionId = (state: VisualizerState) =>
-  state.selectedJurisdictionId;
+export const selectSelectedRegionId = (state: VisualizerState) => state.selectedRegionId;
 export const selectData = (state: VisualizerState) => state.data;
 export const selectDataAllIds = (state: VisualizerState) => state.data.allIds;
 export const selectDataById = (state: VisualizerState) => state.data.byId;

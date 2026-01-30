@@ -18,6 +18,9 @@ type Props = {
 
 const generateId = () => `legend-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+// Grid column template for consistent sizing
+const GRID_COLS = 'grid-cols-[24px_minmax(120px,1fr)_100px_100px_36px_32px]';
+
 const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
   const [localItems, setLocalItems] = useState<LegendItem[]>(() => [...items]);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -108,9 +111,27 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
 
   return (
     <Modal
-      title={
-        <Flex align="center" justify="space-between" className="pr-md">
-          <Typography.Text className="text-lg font-semibold">Edit Legend Ranges</Typography.Text>
+      title="Edit Legend Ranges"
+      open={open}
+      onCancel={onCancel}
+      afterOpenChange={handleAfterOpenChange}
+      footer={
+        <Flex justify="end" gap="small">
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button type="primary" onClick={handleSaveLegendRanges}>
+            Done
+          </Button>
+        </Flex>
+      }
+      width={800}
+      destroyOnHidden
+    >
+      <Flex vertical gap="small" className="py-md">
+        {/* Actions Row */}
+        <Flex align="center" justify="space-between">
+          <Typography.Text className="text-xs font-medium text-gray-500">
+            {localItems.length} range{localItems.length !== 1 ? 's' : ''}
+          </Typography.Text>
           <Flex gap={4}>
             <Tooltip title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}>
               <Button
@@ -134,30 +155,15 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
             </Tooltip>
           </Flex>
         </Flex>
-      }
-      open={open}
-      onCancel={onCancel}
-      afterOpenChange={handleAfterOpenChange}
-      footer={
-        <Flex justify="end" gap="small">
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button type="primary" onClick={handleSaveLegendRanges}>
-            Done
-          </Button>
-        </Flex>
-      }
-      width={700}
-      destroyOnHidden
-    >
-      <Flex vertical gap="small" className="py-md">
-        {/* Header */}
-        <div className="gap-sm grid grid-cols-[24px_1fr_100px_100px_60px_32px] items-center px-2 text-xs font-medium text-gray-500">
-          <Typography.Text />
-          <Typography.Text>Name</Typography.Text>
-          <Typography.Text>Min Value</Typography.Text>
-          <Typography.Text>Max Value</Typography.Text>
-          <Typography.Text>Color</Typography.Text>
-          <Typography.Text />
+
+        {/* Header Row */}
+        <div className={`grid ${GRID_COLS} gap-2 px-2 text-xs font-medium text-gray-500`}>
+          <span />
+          <Typography.Text className="text-xs text-gray-500">Name</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">Min Value</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">Max Value</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">Color</Typography.Text>
+          <span />
         </div>
 
         {/* Legend Items */}
@@ -171,7 +177,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
               onDragStart={handleDragStartLegendRange}
               onDragOver={handleDragOverLegendRange}
               onDragEnd={handleDragEndLegendRange}
-              className={`gap-sm grid grid-cols-[24px_1fr_100px_100px_60px_32px] items-center rounded-md border border-gray-200 bg-gray-50 p-2 transition-opacity ${
+              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none p-2 transition-opacity ${
                 draggedIndex === index ? 'opacity-50' : ''
               }`}
             >
@@ -181,6 +187,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
                 onChange={(e) => handleUpdateLegendRange(item.id, { name: e.target.value })}
                 placeholder="Name"
                 size="middle"
+                className="min-w-0"
               />
               <InputNumber
                 value={item.min}
