@@ -7,7 +7,7 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from '@ant-design/icons';
-import { Button, ColorPicker, Flex, InputNumber, Spin, Tooltip, Typography } from 'antd';
+import { Button, ColorPicker, Flex, InputNumber, Tooltip, Typography } from 'antd';
 import {
   selectAddItem,
   selectLegendItems,
@@ -204,16 +204,14 @@ const LegendConfigPanel: FC = () => {
       </Flex>
 
       {/* Edit Modal */}
-      {isModalOpen && (
-        <Suspense fallback={<Spin />}>
-          <EditLegendModal
-            open={isModalOpen}
-            items={legendItems}
-            onSave={handleSaveFromModal}
-            onCancel={handleCloseModal}
-          />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <EditLegendModal
+          open={isModalOpen}
+          items={legendItems}
+          onSave={handleSaveFromModal}
+          onCancel={handleCloseModal}
+        />
+      </Suspense>
     </Flex>
   );
 };
