@@ -10,6 +10,7 @@ import {
 } from 'react';
 import {
   CloudUploadOutlined,
+  DownloadOutlined,
   EditOutlined,
   FileExcelOutlined,
   InfoCircleOutlined,
@@ -18,6 +19,7 @@ import type { UploadProps } from 'antd';
 import { Button, Flex, message, Modal, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import {
+  selectData,
   selectImportDataType,
   selectSelectedRegionId,
   selectSetVisualizerState,
@@ -177,6 +179,55 @@ export const ImportDataPanel: FC = () => {
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
+  const data = useVisualizerStore(selectData);
+
+  const handleDownloadData = useCallback(() => {
+    if (data.allIds.length === 0) {
+      message.warning('No data available to download');
+      return;
+    }
+
+    const rows = data.allIds.map((id) => ({
+      id: data.byId[id].id,
+      label: data.byId[id].label,
+      value: data.byId[id].value,
+    }));
+
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+
+    switch (importDataType) {
+      case 'json':
+        content = JSON.stringify(rows, null, 2);
+        filename = 'data.json';
+        mimeType = 'application/json';
+        break;
+      case 'excel': {
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+        XLSX.writeFile(workbook, 'data.xlsx');
+        return;
+      }
+      case 'csv':
+      default:
+        content = 'id,label,value\n' + rows.map((r) => `${r.id},${r.label},${r.value}`).join('\n');
+        filename = 'data.csv';
+        mimeType = 'text/csv';
+        break;
+    }
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [data, importDataType]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -417,15 +468,33 @@ Moscow,2500`}
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
         <SectionTitle IconComponent={FileExcelOutlined}>Import Data</SectionTitle>
-        <Tooltip title="Enter Data Manually">
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => setIsManualModalOpen(true)}
-            className="text-gray-500"
-          />
-        </Tooltip>
+        <Flex gap={4}>
+          <Tooltip
+            title={
+              data.allIds.length === 0
+                ? 'Select country to download some sample data'
+                : 'Download data in selected format'
+            }
+          >
+            <Button
+              type="text"
+              icon={<DownloadOutlined />}
+              size="small"
+              onClick={handleDownloadData}
+              className="text-gray-500"
+              disabled={data.allIds.length === 0}
+            />
+          </Tooltip>
+          <Tooltip title="Enter Data Manually">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => setIsManualModalOpen(true)}
+              className="text-gray-500"
+            />
+          </Tooltip>
+        </Flex>
       </Flex>
 
       <Segmented

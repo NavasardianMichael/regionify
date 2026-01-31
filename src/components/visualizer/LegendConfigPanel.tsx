@@ -1,4 +1,4 @@
-import { type FC, lazy, Suspense, useCallback, useMemo, useState } from 'react';
+import { type FC, lazy, memo, Suspense, useCallback, useMemo, useState } from 'react';
 import {
   BarChartOutlined,
   DeleteOutlined,
@@ -26,6 +26,108 @@ const EditLegendModal = lazy(() => import('./EditLegendModal'));
 
 // Grid column template for consistent sizing
 const GRID_COLS = 'grid-cols-[24px_minmax(80px,1fr)_60px_60px_36px_32px]';
+
+type LegendItemRowProps = {
+  item: LegendItem;
+  index: number;
+  isDragged: boolean;
+  isRemoveDisabled: boolean;
+  onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDragEnd: () => void;
+  onUpdate: (id: string, data: Partial<Omit<LegendItem, 'id'>>) => void;
+  onRemove: (e: React.MouseEvent<HTMLElement>) => void;
+};
+
+const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
+  item,
+  index,
+  isDragged,
+  isRemoveDisabled,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  onUpdate,
+  onRemove,
+}) {
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onUpdate(item.id, { name: e.target.value });
+    },
+    [item.id, onUpdate],
+  );
+
+  const handleMinChange = useCallback(
+    (value: number | null) => {
+      onUpdate(item.id, { min: value ?? 0 });
+    },
+    [item.id, onUpdate],
+  );
+
+  const handleMaxChange = useCallback(
+    (value: number | null) => {
+      onUpdate(item.id, { max: value ?? 0 });
+    },
+    [item.id, onUpdate],
+  );
+
+  const handleColorChange = useCallback(
+    (color: { toHexString: () => string }) => {
+      onUpdate(item.id, { color: color.toHexString() });
+    },
+    [item.id, onUpdate],
+  );
+
+  return (
+    <div
+      data-index={index}
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+      className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none py-0.5 transition-opacity ${
+        isDragged ? 'opacity-10' : ''
+      }`}
+    >
+      <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
+      <Input
+        value={item.name}
+        onChange={handleNameChange}
+        placeholder="Name"
+        size="small"
+        className="min-w-0"
+      />
+      <InputNumber
+        value={item.min}
+        onChange={handleMinChange}
+        size="small"
+        min={0}
+        controls={false}
+        className="box-border w-full!"
+      />
+      <InputNumber
+        value={item.max}
+        onChange={handleMaxChange}
+        size="small"
+        min={0}
+        controls={false}
+        className="box-border w-full!"
+      />
+      <ColorPicker value={item.color} onChangeComplete={handleColorChange} size="small" />
+      <Tooltip title="Remove">
+        <Button
+          type="text"
+          icon={<DeleteOutlined />}
+          size="small"
+          danger
+          data-id={item.id}
+          onClick={onRemove}
+          disabled={isRemoveDisabled}
+        />
+      </Tooltip>
+    </div>
+  );
+});
 
 const LegendConfigPanel: FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -106,16 +208,6 @@ const LegendConfigPanel: FC = () => {
     setDraggedIndex(null);
   }, []);
 
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const id = e.currentTarget.dataset.id;
-      if (id) {
-        updateItem(id, { name: e.target.value });
-      }
-    },
-    [updateItem],
-  );
-
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
@@ -157,59 +249,18 @@ const LegendConfigPanel: FC = () => {
         </div>
         <Flex vertical>
           {legendItems.map((item, index) => (
-            <div
+            <LegendItemRow
               key={item.id}
-              data-index={index}
-              draggable
+              item={item}
+              index={index}
+              isDragged={draggedIndex === index}
+              isRemoveDisabled={legendItems.length <= 1}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
-              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none py-0.5 transition-opacity ${
-                draggedIndex === index ? 'opacity-10' : ''
-              }`}
-            >
-              <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
-              <Input
-                value={item.name}
-                data-id={item.id}
-                onChange={handleNameChange}
-                placeholder="Name"
-                size="small"
-                className="min-w-0"
-              />
-              <InputNumber
-                value={item.min}
-                onChange={(val) => updateItem(item.id, { min: val ?? 0 })}
-                size="small"
-                min={0}
-                controls={false}
-                className="box-border w-full!"
-              />
-              <InputNumber
-                value={item.max}
-                onChange={(val) => updateItem(item.id, { max: val ?? 0 })}
-                size="small"
-                min={0}
-                controls={false}
-                className="box-border w-full!"
-              />
-              <ColorPicker
-                value={item.color}
-                onChangeComplete={(color) => updateItem(item.id, { color: color.toHexString() })}
-                size="small"
-              />
-              <Tooltip title="Remove">
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                  danger
-                  data-id={item.id}
-                  onClick={handleRemoveLegendRange}
-                  disabled={legendItems.length <= 1}
-                />
-              </Tooltip>
-            </div>
+              onUpdate={updateItem}
+              onRemove={handleRemoveLegendRange}
+            />
           ))}
         </Flex>
       </Flex>

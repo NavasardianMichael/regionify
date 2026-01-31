@@ -1,6 +1,15 @@
-import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type FC,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
+import DOMPurify from 'dompurify';
 import { selectLegendItems } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import {
@@ -74,6 +83,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     () => legendItemsData.allIds.map((id) => legendItemsData.byId[id]),
     [legendItemsData.allIds, legendItemsData.byId],
   );
+
+  // Defer legend items for expensive SVG processing to keep inputs responsive
+  const deferredLegendItems = useDeferredValue(legendItems);
 
   const applyStylesToSvg = useCallback(
     (svg: string) => {
@@ -250,6 +262,22 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           } else {
             path.style.stroke = 'none';
           }
+
+          // Apply fill color based on region data and legend
+          const pathTitle = path.getAttribute('title');
+          if (pathTitle) {
+            const regionData = data.byId[pathTitle];
+            if (regionData) {
+              // Find matching legend item based on value range
+              const matchingLegendItem = deferredLegendItems.find(
+                (item) => regionData.value >= item.min && regionData.value <= item.max,
+              );
+              path.style.fill = matchingLegendItem ? matchingLegendItem.color : noDataColor;
+            } else {
+              // No data for this region
+              path.style.fill = noDataColor;
+            }
+          }
         });
 
         // Apply shadow if enabled
@@ -401,13 +429,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
       return svg;
     },
-    [border, shadow, picture, regionLabels, data],
+    [border, shadow, picture, regionLabels, data, deferredLegendItems, noDataColor],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)
   const svgContent = useMemo(() => {
     if (!rawSvgContent) return '';
-    return applyStylesToSvg(rawSvgContent);
+    const styledSvg = applyStylesToSvg(rawSvgContent);
+    return DOMPurify.sanitize(styledSvg, {
+      USE_PROFILES: { svg: true, svgFilters: true },
+      ADD_TAGS: ['use'],
+    });
   }, [rawSvgContent, applyStylesToSvg]);
 
   // Load raw SVG content only when region changes
