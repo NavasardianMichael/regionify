@@ -1,7 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
-import { BgColorsOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
+import { BgColorsOutlined } from '@ant-design/icons';
 import {
-  Button,
   Collapse,
   ColorPicker,
   type ColorPickerProps,
@@ -23,33 +22,6 @@ import {
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
-
-const DEFAULT_BORDER = {
-  show: true,
-  color: '#18294D',
-  width: 1,
-};
-
-const DEFAULT_SHADOW = {
-  show: false,
-  color: 'rgba(0, 0, 0, 0.3)',
-  blur: 10,
-  offsetX: 0,
-  offsetY: 4,
-};
-
-const DEFAULT_ZOOM_CONTROLS = {
-  show: true,
-};
-
-// Random color palettes for Apply Random Styles
-const RANDOM_BORDER_COLORS = ['#18294D', '#1890ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1'];
-const RANDOM_SHADOW_COLORS = [
-  'rgba(0, 0, 0, 0.3)',
-  'rgba(24, 144, 255, 0.3)',
-  'rgba(82, 196, 26, 0.3)',
-  'rgba(250, 140, 22, 0.3)',
-];
 
 const DEBOUNCE_MS = 150;
 
@@ -74,33 +46,6 @@ const MapStylesPanel: FC = () => {
     (value: number) => setShadow({ offsetY: value }),
     DEBOUNCE_MS,
   );
-  const handleResetStyles = useCallback(() => {
-    setBorder(DEFAULT_BORDER);
-    setShadow(DEFAULT_SHADOW);
-    setZoomControls(DEFAULT_ZOOM_CONTROLS);
-  }, [setBorder, setShadow, setZoomControls]);
-
-  const handleApplyRandomStyles = useCallback(() => {
-    const randomBorderColor =
-      RANDOM_BORDER_COLORS[Math.floor(Math.random() * RANDOM_BORDER_COLORS.length)];
-    const randomShadowColor =
-      RANDOM_SHADOW_COLORS[Math.floor(Math.random() * RANDOM_SHADOW_COLORS.length)];
-    const randomBorderWidth = Math.floor(Math.random() * 4) + 1;
-    const randomShadowBlur = Math.floor(Math.random() * 20) + 5;
-
-    setBorder({
-      show: true,
-      color: randomBorderColor,
-      width: randomBorderWidth,
-    });
-    setShadow({
-      show: Math.random() > 0.5,
-      color: randomShadowColor,
-      blur: randomShadowBlur,
-      offsetX: Math.floor(Math.random() * 6) - 3,
-      offsetY: Math.floor(Math.random() * 6),
-    });
-  }, [setBorder, setShadow]);
 
   // Border handlers
   const handleBorderShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(

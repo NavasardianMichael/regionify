@@ -614,6 +614,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
         {/* Floating Legend (inside map container) */}
         {position === LEGEND_POSITIONS.floating && labels.show && legendItems.length > 0 && (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
           <div
             ref={legendRef}
             className={`absolute ${legendPositionClasses} p-sm cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]`}
