@@ -122,17 +122,7 @@ import { useAuth } from '@/hooks/useAuth';
   }));
   ```
 
-- Create selectors separately in the store file and export them:
-
-  ```tsx
-  // Selectors
-  export const selectUser = (state: AuthState) => state.user;
-  export const selectIsLoggedIn = (state: AuthState) => !!state.user;
-
-  // Usage in components
-  const user = useAuthStore(selectUser);
-  ```
-
+- Use selectors to avoid unnecessary re-renders (in selectors.ts in the corresponding slice):
 - Keep stores simple; derive computed values in components or custom hooks.
 - Use `persist` middleware for localStorage persistence when needed.
 - Do not couple store logic with API calls directly; use hooks or helpers.
