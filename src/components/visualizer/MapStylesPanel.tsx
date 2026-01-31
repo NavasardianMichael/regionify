@@ -13,7 +13,9 @@ import {
 } from 'antd';
 import {
   selectBorder,
+  selectRegionLabels,
   selectSetBorder,
+  selectSetRegionLabels,
   selectSetShadow,
   selectSetZoomControls,
   selectShadow,
@@ -29,9 +31,11 @@ const MapStylesPanel: FC = () => {
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const zoomControls = useMapStylesStore(selectZoomControls);
+  const regionLabels = useMapStylesStore(selectRegionLabels);
   const setBorder = useMapStylesStore(selectSetBorder);
   const setShadow = useMapStylesStore(selectSetShadow);
   const setZoomControls = useMapStylesStore(selectSetZoomControls);
+  const setRegionLabels = useMapStylesStore(selectSetRegionLabels);
 
   // Local state for debounced number inputs
   const [localOffsetX, setLocalOffsetX] = useState(shadow.offsetX);
@@ -101,6 +105,21 @@ const MapStylesPanel: FC = () => {
   const handleZoomControlsShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
     (checked) => setZoomControls({ show: checked }),
     [setZoomControls],
+  );
+
+  // Region labels handlers
+  const handleRegionLabelsShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
+    (checked) => setRegionLabels({ show: checked }),
+    [setRegionLabels],
+  );
+
+  const handleRegionLabelsColorChange = useCallback<
+    NonNullable<ColorPickerProps['onChangeComplete']>
+  >((color) => setRegionLabels({ color: color.toHexString() }), [setRegionLabels]);
+
+  const handleRegionLabelsFontSizeChange = useCallback(
+    (value: number) => setRegionLabels({ fontSize: value }),
+    [setRegionLabels],
   );
 
   const items = useMemo(
@@ -228,6 +247,52 @@ const MapStylesPanel: FC = () => {
           </Flex>
         ),
       },
+      {
+        key: 'labels',
+        label: (
+          <Flex align="center" gap="small">
+            <Typography.Text className="font-semibold">Region Labels</Typography.Text>
+          </Flex>
+        ),
+        children: (
+          <Flex vertical gap="small">
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">Show Labels</Typography.Text>
+              <Switch
+                checked={regionLabels.show}
+                size="small"
+                onChange={handleRegionLabelsShowChange}
+              />
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
+              <ColorPicker
+                value={regionLabels.color}
+                onChangeComplete={handleRegionLabelsColorChange}
+                size="small"
+                disabled={!regionLabels.show}
+              />
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">Font Size</Typography.Text>
+              <Flex align="center" gap="small" className="w-1/2">
+                <Slider
+                  min={6}
+                  max={24}
+                  step={1}
+                  value={regionLabels.fontSize}
+                  onChange={handleRegionLabelsFontSizeChange}
+                  className="flex-1"
+                  disabled={!regionLabels.show}
+                />
+                <Typography.Text className="w-8 text-right text-sm text-gray-500">
+                  {regionLabels.fontSize}px
+                </Typography.Text>
+              </Flex>
+            </Flex>
+          </Flex>
+        ),
+      },
     ],
     [
       border,
@@ -237,6 +302,7 @@ const MapStylesPanel: FC = () => {
       localOffsetX,
       localOffsetY,
       zoomControls.show,
+      regionLabels,
       handleBorderShowChange,
       handleBorderColorChange,
       handleBorderWidthChange,
@@ -246,6 +312,9 @@ const MapStylesPanel: FC = () => {
       handleShadowOffsetXChange,
       handleShadowOffsetYChange,
       handleZoomControlsShowChange,
+      handleRegionLabelsShowChange,
+      handleRegionLabelsColorChange,
+      handleRegionLabelsFontSizeChange,
     ],
   );
 

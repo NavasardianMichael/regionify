@@ -14,11 +14,12 @@ import {
   selectTitle,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { selectSelectedRegionId } from '@/store/mapData/selectors';
+import { selectData, selectSelectedRegionId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
   selectPicture,
+  selectRegionLabels,
   selectShadow,
   selectZoomControls,
 } from '@/store/mapStyles/selectors';
@@ -52,11 +53,13 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const currentWidthRef = useRef(0);
 
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const data = useVisualizerStore(selectData);
   const legendItemsData = useLegendDataStore(selectLegendItems);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const zoomControls = useMapStylesStore(selectZoomControls);
   const picture = useMapStylesStore(selectPicture);
+  const regionLabels = useMapStylesStore(selectRegionLabels);
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
@@ -286,12 +289,118 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           svgElement.appendChild(g);
         }
 
+        // Add region labels if enabled
+        if (regionLabels.show && data.allIds.length > 0) {
+          // Remove existing labels group if any
+          const existingLabelsGroup = svgElement.querySelector('#regionLabelsGroup');
+          if (existingLabelsGroup) {
+            existingLabelsGroup.remove();
+          }
+
+          const labelsGroup = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+          labelsGroup.setAttribute('id', 'regionLabelsGroup');
+
+          paths.forEach((path) => {
+            const pathTitle = path.getAttribute('title');
+            if (!pathTitle) return;
+
+            // Check if we have data for this region
+            const regionData = data.byId[pathTitle];
+            if (!regionData) return;
+
+            // Calculate centroid using bounding box approximation
+            const d = path.getAttribute('d');
+            if (!d) return;
+
+            let minX = Infinity,
+              minY = Infinity,
+              maxX = -Infinity,
+              maxY = -Infinity;
+            const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
+            let match;
+            let currentX = 0,
+              currentY = 0;
+
+            while ((match = coordRegex.exec(d)) !== null) {
+              const command = match[1];
+              const params = match[2].trim();
+              const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
+              const isRelative = command === command.toLowerCase();
+              const cmd = command.toUpperCase();
+
+              if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
+                for (let i = 0; i < numbers.length; i += 2) {
+                  const x = isRelative ? currentX + numbers[i] : numbers[i];
+                  const y = isRelative ? currentY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
+                  currentX = x;
+                  currentY = y;
+                  minX = Math.min(minX, x);
+                  minY = Math.min(minY, y);
+                  maxX = Math.max(maxX, x);
+                  maxY = Math.max(maxY, y);
+                }
+              } else if (cmd === 'H') {
+                for (const num of numbers) {
+                  const x = isRelative ? currentX + num : num;
+                  currentX = x;
+                  minX = Math.min(minX, x);
+                  maxX = Math.max(maxX, x);
+                }
+              } else if (cmd === 'V') {
+                for (const num of numbers) {
+                  const y = isRelative ? currentY + num : num;
+                  currentY = y;
+                  minY = Math.min(minY, y);
+                  maxY = Math.max(maxY, y);
+                }
+              } else if (cmd === 'C') {
+                for (let i = 0; i < numbers.length; i += 6) {
+                  for (let j = 0; j < 6; j += 2) {
+                    const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
+                    const y = isRelative
+                      ? currentY + (numbers[i + j + 1] ?? 0)
+                      : (numbers[i + j + 1] ?? 0);
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                  }
+                  currentX = isRelative ? currentX + numbers[i + 4] : numbers[i + 4];
+                  currentY = isRelative ? currentY + (numbers[i + 5] ?? 0) : (numbers[i + 5] ?? 0);
+                }
+              }
+            }
+
+            if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) return;
+
+            // Calculate center of bounding box
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+
+            // Create text element
+            const text = doc.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', String(centerX));
+            text.setAttribute('y', String(centerY));
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('dominant-baseline', 'middle');
+            text.setAttribute('fill', regionLabels.color);
+            text.setAttribute('font-size', String(regionLabels.fontSize));
+            text.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+            text.setAttribute('pointer-events', 'none');
+            text.textContent = regionData.label;
+
+            labelsGroup.appendChild(text);
+          });
+
+          svgElement.appendChild(labelsGroup);
+        }
+
         return new XMLSerializer().serializeToString(doc);
       }
 
       return svg;
     },
-    [border, shadow, picture],
+    [border, shadow, picture, regionLabels, data],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)

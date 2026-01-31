@@ -151,6 +151,7 @@ export const extractSvgTitles = (svgContent: string): string[] => {
 };
 
 type ParsedRow = {
+  id?: string; // Optional - if provided, use directly; if not, match via similarity
   label: string;
   value: number;
 };
@@ -162,9 +163,11 @@ type MappedRegionData = {
 };
 
 /**
- * Map parsed data rows to SVG region IDs using similarity matching
+ * Map parsed data rows to SVG region IDs
+ * - If id is provided, use it directly
+ * - If id is missing, use similarity matching on label
  *
- * @param rows - Parsed data rows with label and value
+ * @param rows - Parsed data rows with optional id, label and value
  * @param svgTitles - Array of titles from SVG paths
  * @returns Mapped region data with id (SVG title), label (user's original), and value
  */
@@ -172,6 +175,17 @@ export const mapDataToSvgRegions = (rows: ParsedRow[], svgTitles: string[]): Map
   const result: MappedRegionData[] = [];
 
   for (const row of rows) {
+    // If id is provided, use it directly
+    if (row.id) {
+      result.push({
+        id: row.id,
+        label: row.label,
+        value: row.value,
+      });
+      continue;
+    }
+
+    // No id provided - use similarity matching on label
     const match = findBestMatch(row.label, svgTitles);
 
     if (match) {

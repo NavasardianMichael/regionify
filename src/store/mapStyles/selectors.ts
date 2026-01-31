@@ -20,9 +20,16 @@ export const selectShadowBlur = (state: MapStylesState) => state.shadow.blur;
 export const selectZoomControlsShow = (state: MapStylesState) => state.zoomControls.show;
 export const selectZoomControlsPosition = (state: MapStylesState) => state.zoomControls.position;
 
+// Region labels selectors
+export const selectRegionLabels = (state: MapStylesState) => state.regionLabels;
+export const selectRegionLabelsShow = (state: MapStylesState) => state.regionLabels.show;
+export const selectRegionLabelsColor = (state: MapStylesState) => state.regionLabels.color;
+export const selectRegionLabelsFontSize = (state: MapStylesState) => state.regionLabels.fontSize;
+
 // Action selectors
 export const selectSetMapStylesState = (state: MapStylesState) => state.setMapStylesState;
 export const selectSetBorder = (state: MapStylesState) => state.setBorder;
 export const selectSetShadow = (state: MapStylesState) => state.setShadow;
 export const selectSetZoomControls = (state: MapStylesState) => state.setZoomControls;
 export const selectSetPicture = (state: MapStylesState) => state.setPicture;
+export const selectSetRegionLabels = (state: MapStylesState) => state.setRegionLabels;

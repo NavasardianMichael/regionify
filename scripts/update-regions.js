@@ -16,10 +16,10 @@ const REGIONS_FILE = path.resolve(__dirname, '../src/constants/regions.ts');
 
 function updateRegionsFile() {
   let content = fs.readFileSync(REGIONS_FILE, 'utf-8');
-  
+
   // Replace all mapFile references that have "High.svg" with just ".svg"
   content = content.replace(/mapFile: '([^']+)High\.svg'/g, "mapFile: '$1.svg'");
-  
+
   fs.writeFileSync(REGIONS_FILE, content, 'utf-8');
   console.log('Successfully updated regions.ts');
 }

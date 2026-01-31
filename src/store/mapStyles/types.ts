@@ -22,12 +22,19 @@ export type PictureConfig = {
   backgroundColor: string;
 };
 
+export type RegionLabelsConfig = {
+  show: boolean;
+  color: string;
+  fontSize: number;
+};
+
 export type MapStylesState = {
   // State
   border: BorderConfig;
   shadow: ShadowConfig;
   zoomControls: ZoomControlsConfig;
   picture: PictureConfig;
+  regionLabels: RegionLabelsConfig;
 
   // Actions
   setMapStylesState: (data: Partial<MapStylesState>) => void;
@@ -35,4 +42,5 @@ export type MapStylesState = {
   setShadow: (data: Partial<ShadowConfig>) => void;
   setZoomControls: (data: Partial<ZoomControlsConfig>) => void;
   setPicture: (data: Partial<PictureConfig>) => void;
+  setRegionLabels: (data: Partial<RegionLabelsConfig>) => void;
 };

@@ -30,7 +30,13 @@ import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 
-type ParsedRow = { label: string; value: number };
+/**
+ * Parsed row from user data
+ * id - optional region identifier (SVG path title)
+ * label - display label for the region
+ * value - numeric value for visualization
+ */
+type ParsedRow = { id?: string; label: string; value: number };
 
 const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
   { label: 'CSV', value: 'csv' },
@@ -40,31 +46,49 @@ const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
   { label: 'Manual', value: 'manual' },
 ];
 
+/**
+ * Detect if header row contains an 'id' column
+ */
+const hasIdColumn = (header: string): boolean => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim().toLowerCase());
+  return parts.some((p) => p === 'id');
+};
+
 const parseCSV = (content: string): ParsedRow[] => {
   const lines = content.trim().split('\n');
   const data: ParsedRow[] = [];
 
-  // Skip header row if it looks like a header
-  const startIndex = /^label|^region|^name/i.test(lines[0]) ? 1 : 0;
+  // Detect header format
+  const headerLine = lines[0] || '';
+  const hasId = hasIdColumn(headerLine);
+  const isHeader = /^(id|label|region|name)/i.test(headerLine);
+  const startIndex = isHeader ? 1 : 0;
 
   for (let i = startIndex; i < lines.length; i++) {
-    // Handle quoted values and different separators
     const line = lines[i];
     let parts: string[];
 
     if (line.includes('"')) {
-      // Handle CSV with quoted values
       parts = line.match(/(?:[^,"]|"(?:\\.|[^"])*")+/g) || [];
       parts = parts.map((s) => s.replace(/^"|"$/g, '').trim());
     } else {
       parts = line.split(/[,;\t]/).map((s) => s.trim());
     }
 
-    const [label, valueStr] = parts;
-    const value = parseFloat(valueStr);
-
-    if (label && !isNaN(value)) {
-      data.push({ label, value });
+    if (hasId) {
+      // Format: id, label, value
+      const [id, label, valueStr] = parts;
+      const value = parseFloat(valueStr);
+      if (label && !isNaN(value)) {
+        data.push({ id: id || undefined, label, value });
+      }
+    } else {
+      // Format: label, value (id will be matched via similarity)
+      const [label, valueStr] = parts;
+      const value = parseFloat(valueStr);
+      if (label && !isNaN(value)) {
+        data.push({ label, value });
+      }
     }
   }
 
@@ -79,21 +103,24 @@ const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
   const data: ParsedRow[] = [];
 
   for (const row of jsonData) {
-    // Try to find label and value columns with flexible naming
-    const labelKey = Object.keys(row).find((key) =>
+    const keys = Object.keys(row);
+
+    // Check for id column
+    const idKey = keys.find((key) => key.toLowerCase() === 'id');
+    const labelKey = keys.find((key) =>
       /^(label|region|name|area|province|state|country)/i.test(String(key)),
     );
-    const valueKey = Object.keys(row).find((key) =>
+    const valueKey = keys.find((key) =>
       /^(value|count|amount|number|data|total|population)/i.test(String(key)),
     );
 
-    // Fallback to first two columns if no matching headers
-    const keys = Object.keys(row);
-    const label = String(row[labelKey ?? keys[0]] ?? '');
-    const value = parseFloat(String(row[valueKey ?? keys[1]] ?? ''));
+    // Determine column order based on available keys
+    const id = idKey ? String(row[idKey] ?? '') : undefined;
+    const label = String(row[labelKey ?? keys[idKey ? 1 : 0]] ?? '');
+    const value = parseFloat(String(row[valueKey ?? keys[idKey ? 2 : 1]] ?? ''));
 
     if (label && !isNaN(value)) {
-      data.push({ label, value });
+      data.push({ id: id || undefined, label, value });
     }
   }
 
@@ -111,6 +138,7 @@ const parseJSON = (content: string): ParsedRow[] => {
           return hasLabel && hasValue;
         })
         .map((item) => ({
+          id: item.id ? String(item.id) : undefined,
           label: String(item.label ?? item.region ?? item.name ?? ''),
           value: Number(item.value ?? item.count ?? 0),
         }));
@@ -149,13 +177,14 @@ export const ImportDataPanel: FC = () => {
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
 
-  // Load SVG titles when region changes
+  // Load SVG titles and generate sample data when region changes
   useEffect(() => {
     let cancelled = false;
 
-    const loadSvgTitles = async () => {
+    const loadSvgTitlesAndGenerateSampleData = async () => {
       if (!selectedRegionId) {
         setSvgTitles([]);
+        setVisualizerState({ data: { allIds: [], byId: {} } });
         return;
       }
 
@@ -166,6 +195,20 @@ export const ImportDataPanel: FC = () => {
           const svgContent = await response.text();
           const titles = extractSvgTitles(svgContent);
           setSvgTitles(titles);
+
+          // Generate sample data for visualization preview
+          if (titles.length > 0) {
+            const sampleData = titles.map((title) => ({
+              id: title,
+              label: title,
+              value: Math.floor(Math.random() * 900) + 100, // Random value 100-999
+            }));
+
+            const allIds = sampleData.map((item) => item.id);
+            const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
+
+            setVisualizerState({ data: { allIds, byId } });
+          }
         }
       } catch (error) {
         console.error('Failed to load SVG titles:', error);
@@ -175,12 +218,12 @@ export const ImportDataPanel: FC = () => {
       }
     };
 
-    loadSvgTitles();
+    loadSvgTitlesAndGenerateSampleData();
 
     return () => {
       cancelled = true;
     };
-  }, [selectedRegionId]);
+  }, [selectedRegionId, setVisualizerState]);
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options: Parameters<NonNullable<UploadProps['customRequest']>>[0]) => {
@@ -303,9 +346,13 @@ export const ImportDataPanel: FC = () => {
     () => ({
       csv: (
         <pre className="font-mono text-xs text-gray-600">
-          {`label,value
-Moscow,2500
-Saint Petersburg,1800`}
+          {`id,label,value
+Moscow,Moscow Oblast,2500
+Saint Petersburg,St. Petersburg,1800
+
+# or without id (auto-match):
+label,value
+Moscow,2500`}
         </pre>
       ),
       excel: (
@@ -314,16 +361,17 @@ Saint Petersburg,1800`}
             Excel file with columns:
           </Typography.Text>
           <pre className="font-mono text-xs text-gray-600">
-            {`| label            | value |
-| Moscow           | 2500  |
-| Saint Petersburg | 1800  |`}
+            {`| id     | label       | value |
+| Moscow | Moscow City | 2500  |
+
+# id column is optional`}
           </pre>
         </Flex>
       ),
       json: (
         <pre className="font-mono text-xs text-gray-600">
           {`[
-  { "label": "Moscow", "value": 2500 },
+  { "id": "Moscow", "label": "Moscow City", "value": 2500 },
   { "label": "Saint Petersburg", "value": 1800 }
 ]`}
         </pre>
@@ -334,15 +382,16 @@ Saint Petersburg,1800`}
             Google Sheet with columns:
           </Typography.Text>
           <pre className="font-mono text-xs text-gray-600">
-            {`| label            | value |
-| Moscow           | 2500  |
-| Saint Petersburg | 1800  |`}
+            {`| id     | label       | value |
+| Moscow | Moscow City | 2500  |
+
+# id column is optional`}
           </pre>
         </Flex>
       ),
       manual: (
         <Typography.Text className="text-xs text-gray-600">
-          Enter region labels and their corresponding values using the form.
+          Enter region IDs, labels and their corresponding values using the form.
         </Typography.Text>
       ),
     }),
@@ -352,14 +401,16 @@ Saint Petersburg,1800`}
   const formatInfoContent = (
     <ul className="m-0 list-disc space-y-2 pl-4 text-sm text-gray-600">
       <li>
-        <strong>label</strong> — Region name (e.g., &quot;Moscow&quot;, &quot;California&quot;)
+        <strong>id</strong> — (Optional) Region ID matching SVG path title
+      </li>
+      <li>
+        <strong>label</strong> — Display label for the region
       </li>
       <li>
         <strong>value</strong> — Numeric value for the region
       </li>
-      <li>Labels should match region names in English</li>
-      <li>We will attempt to match labels with SVG region IDs</li>
-      <li>Use similar naming conventions for best results</li>
+      <li>If id is missing, we match labels to SVG regions automatically</li>
+      <li>Labels are displayed on the map when &quot;Show Labels&quot; is enabled</li>
     </ul>
   );
 

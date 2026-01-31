@@ -171,6 +171,7 @@ import { useAuth } from '@/hooks/useAuth';
 - Clear, descriptive commit messages.
 - Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 - Keep commits atomic and focused.
+- When user says "commit", run git commands in terminal (not GitKraken MCP tools).
 
 ## Forbidden
 

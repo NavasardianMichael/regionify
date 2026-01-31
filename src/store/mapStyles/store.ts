@@ -22,6 +22,11 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
     transparentBackground: true,
     backgroundColor: '#F5F5F5',
   },
+  regionLabels: {
+    show: false,
+    color: '#333333',
+    fontSize: 10,
+  },
 
   setMapStylesState: (data) => set((state) => ({ ...state, ...data })),
   setBorder: (data) => set((state) => ({ ...state, border: { ...state.border, ...data } })),
@@ -29,4 +34,6 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
   setZoomControls: (data) =>
     set((state) => ({ ...state, zoomControls: { ...state.zoomControls, ...data } })),
   setPicture: (data) => set((state) => ({ ...state, picture: { ...state.picture, ...data } })),
+  setRegionLabels: (data) =>
+    set((state) => ({ ...state, regionLabels: { ...state.regionLabels, ...data } })),
 }));
