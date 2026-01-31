@@ -61,7 +61,7 @@ jobs:
       # STEP 5: Build Application
       # =========================================================================
       # Build the React application for production
-      # Creates optimized static files in the build/ directory
+      # Creates optimized static files in the dist/ directory
       # CI=false disables treating warnings (including ESLint) as errors
       - name: Build Application
         run: CI=false pnpm run build
@@ -69,10 +69,10 @@ jobs:
       # =========================================================================
       # STEP 6: Create Deployment Archive
       # =========================================================================
-      # Compress the build folder into a tar.gz archive for efficient transfer
+      # Compress the dist folder into a tar.gz archive for efficient transfer
       - name: Create compressed build archive
         run: |
-          tar -czf build.tar.gz -C build .
+          tar -czf build.tar.gz -C dist .
 
       # =========================================================================
       # STEP 7: Configure SSH Known Hosts
