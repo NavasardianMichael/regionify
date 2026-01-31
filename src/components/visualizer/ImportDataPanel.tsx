@@ -1,18 +1,14 @@
 import { type FC, type JSX, lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import {
   CloudUploadOutlined,
-  DatabaseOutlined,
   EditOutlined,
   FileExcelOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, Flex, Modal, Segmented, Spin, Typography, Upload } from 'antd';
-import {
-  selectImportDataType,
-  selectSetVisualizerState,
-  useVisualizerStore,
-} from '@/store/mapData/store';
+import { selectImportDataType, selectSetVisualizerState } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
@@ -234,14 +230,14 @@ Saint Petersburg,1800`}
         block
       />
 
-      <Flex align="center" gap="small">
+      <Flex gap="small">
+        <Typography.Text className="text-sm text-gray-500">
+          Upload your dataset to visualize regional metrics
+        </Typography.Text>
         <InfoCircleOutlined
           className="hover:text-primary cursor-pointer text-gray-400"
           onClick={() => setIsFormatInfoModalOpen(true)}
         />
-        <Typography.Text className="text-sm text-gray-500">
-          Upload your dataset to visualize regional metrics.
-        </Typography.Text>
       </Flex>
 
       <Modal

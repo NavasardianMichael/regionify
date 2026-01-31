@@ -1,12 +1,11 @@
 import { create } from 'zustand';
+import { generateRandomId } from '@/helpers/common';
 import type { LegendDataState, LegendItem } from './types';
 
-const generateId = () => Math.random().toString(36).substring(2, 9);
-
 const DEFAULT_ITEMS: LegendItem[] = [
-  { id: generateId(), name: 'Low', min: 0, max: 100, color: '#93C5FD' },
-  { id: generateId(), name: 'Medium', min: 101, max: 500, color: '#3B82F6' },
-  { id: generateId(), name: 'High', min: 501, max: 1000, color: '#1E3A5F' },
+  { id: generateRandomId(), name: 'Low', min: 0, max: 100, color: '#93C5FD' },
+  { id: generateRandomId(), name: 'Medium', min: 101, max: 500, color: '#3B82F6' },
+  { id: generateRandomId(), name: 'High', min: 501, max: 1000, color: '#1E3A5F' },
 ];
 
 const createItemsState = (items: LegendItem[]) => ({
@@ -23,7 +22,7 @@ export const useLegendDataStore = create<LegendDataState>((set) => ({
 
   addItem: (item) =>
     set((state) => {
-      const id = generateId();
+      const id = generateRandomId();
       const newItem: LegendItem = { ...item, id };
       return {
         items: {
@@ -73,13 +72,3 @@ export const useLegendDataStore = create<LegendDataState>((set) => ({
       return { items: { ...state.items, allIds: sorted } };
     }),
 }));
-
-// Selectors
-export const selectLegendItems = (state: LegendDataState) => state.items;
-export const selectAddItem = (state: LegendDataState) => state.addItem;
-export const selectUpdateItem = (state: LegendDataState) => state.updateItem;
-export const selectRemoveItem = (state: LegendDataState) => state.removeItem;
-export const selectReorderItems = (state: LegendDataState) => state.reorderItems;
-export const selectSortItems = (state: LegendDataState) => state.sortItems;
-export const selectSetItems = (state: LegendDataState) => state.setItems;
-export const selectSetLegendDataState = (state: LegendDataState) => state.setLegendDataState;

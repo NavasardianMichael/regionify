@@ -44,8 +44,8 @@ const VisualizerPage: FC = () => {
 
         {/* Center Content */}
         <Splitter.Panel>
-          <CardLayout className="h-full min-h-0">
-            <Flex align="center" justify="space-between" className="mb-sm shrink-0">
+          <CardLayout className="min-h-md gap-md h-full">
+            <Flex align="center" justify="space-between" className="mb-sm shrink-0" gap="middle">
               <Typography.Title level={3} className="text-primary mb-0! text-base font-semibold">
                 Map Visualization
               </Typography.Title>

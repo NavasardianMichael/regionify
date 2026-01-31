@@ -1,14 +1,27 @@
 #root {
   :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
     > .ant-splitter-bar
-    .ant-splitter-bar-collapse-bar:hover:not(.ant-splitter-bar-collapse-bar-customize) {
+    .ant-splitter-bar-collapse-bar {
     background-color: var(--color-primary) !important;
     color: #fff !important;
     transition: 0.3s;
+
+    &:hover:not(.ant-splitter-bar-collapse-bar-customize) {
+      opacity: 0.8;
+    }
   }
 
-  /* :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter-horizontal
-    > .ant-splitter-bar
-    .ant-splitter-bar-collapse-bar-start {
-  } */
+  /* First splitter bar (between left sidebar and center) */
+  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
+    > .ant-splitter-bar:nth-of-type(2)
+    .ant-splitter-bar-collapse-bar {
+    margin-left: 8px !important;
+  }
+
+  /* Second splitter bar (between center and right sidebar) */
+  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
+    > .ant-splitter-bar:nth-of-type(4)
+    .ant-splitter-bar-collapse-bar {
+    margin-left: -8px;
+  }
 }

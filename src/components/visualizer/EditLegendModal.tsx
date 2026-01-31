@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { Button, ColorPicker, Flex, Input, InputNumber, Modal, Tooltip, Typography } from 'antd';
 import type { LegendItem } from '@/store/legendData/types';
+import { generateRandomId } from '@/helpers/common';
 
 type Props = {
   open: boolean;
@@ -15,8 +16,6 @@ type Props = {
   onSave: (items: LegendItem[]) => void;
   onCancel: () => void;
 };
-
-const generateId = () => `legend-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 // Grid column template for consistent sizing
 const GRID_COLS = 'grid-cols-[24px_minmax(120px,1fr)_100px_100px_36px_32px]';
@@ -63,7 +62,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
 
   const handleAddLegendRange = useCallback(() => {
     const newItem: LegendItem = {
-      id: generateId(),
+      id: generateRandomId(),
       name: 'New Range',
       min: 0,
       max: 100,
@@ -104,7 +103,9 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
           onMinChange: (value: number | null) => handleUpdateItem(id, { min: value! }),
           onMaxChange: (value: number | null) => handleUpdateItem(id, { max: value! }),
           onColorChange: (
-            color: Parameters<Exclude<Parameters<typeof ColorPicker>[0]['onChange'], undefined>>[0],
+            color: Parameters<
+              Exclude<Parameters<typeof ColorPicker>[0]['onChangeComplete'], undefined>
+            >[0],
           ) => handleUpdateItem(id, { color: color.toHexString() }),
         };
         return acc;
@@ -115,7 +116,9 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
           onMinChange: (value: number | null) => void;
           onMaxChange: (value: number | null) => void;
           onColorChange: (
-            color: Parameters<Exclude<Parameters<typeof ColorPicker>[0]['onChange'], undefined>>[0],
+            color: Parameters<
+              Exclude<Parameters<typeof ColorPicker>[0]['onChangeComplete'], undefined>
+            >[0],
           ) => void;
         }
       >,
@@ -281,7 +284,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
               />
               <ColorPicker
                 value={item.color}
-                onChange={itemHandlers[item.id]?.onColorChange}
+                onChangeComplete={itemHandlers[item.id]?.onColorChange}
                 size="small"
               />
               <Tooltip title="Remove">

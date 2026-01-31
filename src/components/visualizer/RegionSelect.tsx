@@ -1,11 +1,8 @@
 import { type FC, useCallback, useMemo, useRef } from 'react';
 import { GlobalOutlined } from '@ant-design/icons';
 import { Flex, type RefSelectProps, Select, type SelectProps } from 'antd';
-import {
-  selectSelectedRegionId,
-  selectSetVisualizerState,
-  useVisualizerStore,
-} from '@/store/mapData/store';
+import { selectSelectedRegionId, selectSetVisualizerState } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 

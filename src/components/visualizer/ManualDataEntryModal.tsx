@@ -5,14 +5,14 @@ import {
   Flex,
   Input,
   InputNumber,
-  type InputNumberProps,
   type InputProps,
   Modal,
   type ModalProps,
   Tooltip,
   Typography,
 } from 'antd';
-import { selectData, selectSetVisualizerState, useVisualizerStore } from '@/store/mapData/store';
+import { selectData, selectSetVisualizerState } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData, VisualizerState } from '@/store/mapData/types';
 import { generateRandomId } from '@/helpers/common';
 

@@ -17,8 +17,8 @@ import {
   selectSetItems,
   selectSortItems,
   selectUpdateItem,
-  useLegendDataStore,
-} from '@/store/legendData/store';
+} from '@/store/legendData/selectors';
+import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -164,8 +164,8 @@ const LegendConfigPanel: FC = () => {
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
-              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none py-2 transition-opacity ${
-                draggedIndex === index ? 'opacity-50' : ''
+              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none py-0.5 transition-opacity ${
+                draggedIndex === index ? 'opacity-10' : ''
               }`}
             >
               <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
@@ -195,7 +195,7 @@ const LegendConfigPanel: FC = () => {
               />
               <ColorPicker
                 value={item.color}
-                onChange={(color) => updateItem(item.id, { color: color.toHexString() })}
+                onChangeComplete={(color) => updateItem(item.id, { color: color.toHexString() })}
                 size="small"
               />
               <Tooltip title="Remove">

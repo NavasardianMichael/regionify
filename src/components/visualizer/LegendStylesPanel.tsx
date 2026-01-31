@@ -1,6 +1,19 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useCallback, useMemo, useState } from 'react';
 import { AimOutlined, EditOutlined, FontSizeOutlined } from '@ant-design/icons';
-import { Collapse, ColorPicker, Flex, Input, Segmented, Slider, Switch, Typography } from 'antd';
+import {
+  Collapse,
+  ColorPicker,
+  type ColorPickerProps,
+  Flex,
+  Input,
+  type InputProps,
+  Segmented,
+  type SegmentedProps,
+  Slider,
+  Switch,
+  type SwitchProps,
+  Typography,
+} from 'antd';
 import {
   selectLabels,
   selectNoDataColor,
@@ -9,8 +22,9 @@ import {
   selectSetLegendStylesState,
   selectSetTitle,
   selectTitle,
-  useLegendStylesStore,
-} from '@/store/legendStyles/store';
+} from '@/store/legendStyles/selectors';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { useDebouncedCallback } from '@/hooks/useDebounce';
 import type { LegendPosition } from '@/types/legendStyles';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
@@ -30,6 +44,62 @@ const LegendStylesPanel: FC = () => {
   const setTitle = useLegendStylesStore(selectSetTitle);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
+  // Local state for debounced inputs
+  const [localTitleText, setLocalTitleText] = useState(title.text);
+  const [localFontSize, setLocalFontSize] = useState(labels.fontSize);
+
+  // Debounced store updates
+  const debouncedSetTitleText = useDebouncedCallback((text: string) => setTitle({ text }));
+  const debouncedSetFontSize = useDebouncedCallback(
+    (fontSize: number) => setLabels({ fontSize }),
+    100,
+  );
+
+  // Title handlers
+  const handleTitleShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
+    (checked) => setTitle({ show: checked }),
+    [setTitle],
+  );
+
+  const handleTitleTextChange = useCallback<NonNullable<InputProps['onChange']>>(
+    (e) => {
+      const text = e.target.value;
+      setLocalTitleText(text);
+      debouncedSetTitleText(text);
+    },
+    [debouncedSetTitleText],
+  );
+
+  // Labels handlers
+  const handleLabelsShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
+    (checked) => setLabels({ show: checked }),
+    [setLabels],
+  );
+
+  const handleLabelsColorChange = useCallback<NonNullable<ColorPickerProps['onChangeComplete']>>(
+    (color) => setLabels({ color: color.toHexString() }),
+    [setLabels],
+  );
+
+  const handleLabelsFontSizeChange = useCallback(
+    (value: number) => {
+      setLocalFontSize(value);
+      debouncedSetFontSize(value);
+    },
+    [debouncedSetFontSize],
+  );
+
+  const handleNoDataColorChange = useCallback<NonNullable<ColorPickerProps['onChangeComplete']>>(
+    (color) => setLegendStylesState({ noDataColor: color.toHexString() }),
+    [setLegendStylesState],
+  );
+
+  // Position handler
+  const handlePositionChange = useCallback<NonNullable<SegmentedProps['onChange']>>(
+    (value) => setLegendStylesState({ position: value as LegendPosition }),
+    [setLegendStylesState],
+  );
+
   const items = useMemo(
     () => [
       {
@@ -44,17 +114,13 @@ const LegendStylesPanel: FC = () => {
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">Show Title</Typography.Text>
-              <Switch
-                checked={title.show}
-                size="small"
-                onChange={(checked) => setTitle({ show: checked })}
-              />
+              <Switch checked={title.show} size="small" onChange={handleTitleShowChange} />
             </Flex>
             <Flex align="center" justify="space-between" gap="small">
               <Typography.Text className="shrink-0 text-sm text-gray-600">Title</Typography.Text>
               <Input
-                value={title.text}
-                onChange={(e) => setTitle({ text: e.target.value })}
+                value={localTitleText}
+                onChange={handleTitleTextChange}
                 placeholder="Enter title"
                 disabled={!title.show}
                 size="small"
@@ -74,19 +140,15 @@ const LegendStylesPanel: FC = () => {
         ),
         children: (
           <Flex vertical gap="small">
-            <Flex align="center" justify="space-between">
+            <Flex align="center" justify="space-between" className="mb-2!">
               <Typography.Text className="text-sm text-gray-600">Show Labels</Typography.Text>
-              <Switch
-                checked={labels.show}
-                size="small"
-                onChange={(checked) => setLabels({ show: checked })}
-              />
+              <Switch checked={labels.show} size="small" onChange={handleLabelsShowChange} />
             </Flex>
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">Text Color</Typography.Text>
               <ColorPicker
                 value={labels.color}
-                onChange={(color) => setLabels({ color: color.toHexString() })}
+                onChangeComplete={handleLabelsColorChange}
                 size="small"
                 disabled={!labels.show}
               />
@@ -97,13 +159,13 @@ const LegendStylesPanel: FC = () => {
                 <Slider
                   min={8}
                   max={24}
-                  value={labels.fontSize}
-                  onChange={(value) => setLabels({ fontSize: value })}
+                  value={localFontSize}
+                  onChange={handleLabelsFontSizeChange}
                   className="flex-1"
                   disabled={!labels.show}
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
-                  {labels.fontSize}pt
+                  {localFontSize}pt
                 </Typography.Text>
               </Flex>
             </Flex>
@@ -111,7 +173,7 @@ const LegendStylesPanel: FC = () => {
               <Typography.Text className="text-sm text-gray-600">No Data Color</Typography.Text>
               <ColorPicker
                 value={noDataColor}
-                onChange={(color) => setLegendStylesState({ noDataColor: color.toHexString() })}
+                onChangeComplete={handleNoDataColorChange}
                 size="small"
               />
             </Flex>
@@ -130,7 +192,7 @@ const LegendStylesPanel: FC = () => {
           <Flex vertical gap="small">
             <Segmented
               value={position}
-              onChange={(value) => setLegendStylesState({ position: value as LegendPosition })}
+              onChange={handlePositionChange}
               options={POSITION_OPTIONS}
               size="small"
               block
@@ -144,7 +206,22 @@ const LegendStylesPanel: FC = () => {
         ),
       },
     ],
-    [labels, title, position, noDataColor, setLabels, setTitle, setLegendStylesState],
+    [
+      labels.show,
+      labels.color,
+      localFontSize,
+      title.show,
+      localTitleText,
+      position,
+      noDataColor,
+      handleTitleShowChange,
+      handleTitleTextChange,
+      handleLabelsShowChange,
+      handleLabelsColorChange,
+      handleLabelsFontSizeChange,
+      handleNoDataColorChange,
+      handlePositionChange,
+    ],
   );
 
   return (

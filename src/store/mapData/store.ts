@@ -11,9 +11,3 @@ export const useVisualizerStore = create<VisualizerState>((set) => ({
   selectedRegionId: null,
   setVisualizerState: (data) => set((state) => ({ ...state, ...data })),
 }));
-
-// Selectors
-export const selectImportDataType = (state: VisualizerState) => state.importDataType;
-export const selectData = (state: VisualizerState) => state.data;
-export const selectSelectedRegionId = (state: VisualizerState) => state.selectedRegionId;
-export const selectSetVisualizerState = (state: VisualizerState) => state.setVisualizerState;

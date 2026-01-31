@@ -1,7 +1,8 @@
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
-import { selectLegendItems, useLegendDataStore } from '@/store/legendData/store';
+import { selectLegendItems } from '@/store/legendData/selectors';
+import { useLegendDataStore } from '@/store/legendData/store';
 import {
   selectBackgroundColor,
   selectFloatingPosition,
@@ -11,15 +12,17 @@ import {
   selectPosition,
   selectSetLegendStylesState,
   selectTitle,
-  useLegendStylesStore,
-} from '@/store/legendStyles/store';
-import { selectSelectedRegionId, useVisualizerStore } from '@/store/mapData/store';
+} from '@/store/legendStyles/selectors';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { selectSelectedRegionId } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
+  selectPicture,
   selectShadow,
   selectZoomControls,
-  useMapStylesStore,
-} from '@/store/mapStyles/store';
+} from '@/store/mapStyles/selectors';
+import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 
 type MapViewerProps = {
@@ -52,6 +55,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const zoomControls = useMapStylesStore(selectZoomControls);
+  const picture = useMapStylesStore(selectPicture);
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
@@ -167,14 +171,39 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         });
 
         // Always set viewBox based on calculated bounds
+        let viewBoxX = 0,
+          viewBoxY = 0,
+          viewBoxWidth = 0,
+          viewBoxHeight = 0;
         if (isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
           const padding = 10;
-          const width = maxX - minX + padding * 2;
-          const height = maxY - minY + padding * 2;
+          viewBoxWidth = maxX - minX + padding * 2;
+          viewBoxHeight = maxY - minY + padding * 2;
+          viewBoxX = minX - padding;
+          viewBoxY = minY - padding;
           svgElement.setAttribute(
             'viewBox',
-            `${minX - padding} ${minY - padding} ${width} ${height}`,
+            `${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`,
           );
+        }
+
+        // Add background rectangle if not transparent
+        if (!picture.transparentBackground && viewBoxWidth > 0 && viewBoxHeight > 0) {
+          // Remove existing background rect if any
+          const existingBg = svgElement.querySelector('#mapBackground');
+          if (existingBg) {
+            existingBg.remove();
+          }
+
+          const bgRect = doc.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          bgRect.setAttribute('id', 'mapBackground');
+          bgRect.setAttribute('x', String(viewBoxX));
+          bgRect.setAttribute('y', String(viewBoxY));
+          bgRect.setAttribute('width', String(viewBoxWidth));
+          bgRect.setAttribute('height', String(viewBoxHeight));
+          bgRect.setAttribute('fill', picture.backgroundColor);
+          // Insert as first child so it's behind everything
+          svgElement.insertBefore(bgRect, svgElement.firstChild);
         }
 
         // Set SVG to be responsive - remove fixed dimensions
@@ -257,7 +286,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
       return svg;
     },
-    [border, shadow],
+    [border, shadow, picture],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)
@@ -542,7 +571,12 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   return (
     <Flex vertical className={`h-full ${className}`}>
       {/* Map Container */}
-      <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg">
+      <div
+        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg"
+        style={{
+          backgroundColor: picture.transparentBackground ? 'transparent' : picture.backgroundColor,
+        }}
+      >
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
           ref={containerRef}

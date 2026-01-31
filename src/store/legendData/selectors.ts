@@ -1,6 +1,7 @@
 import type { LegendDataState } from './types';
 
 // State selectors
+export const selectLegendItems = (state: LegendDataState) => state.items;
 export const selectItems = (state: LegendDataState) => state.items;
 export const selectItemsAllIds = (state: LegendDataState) => state.items.allIds;
 export const selectItemsById = (state: LegendDataState) => state.items.byId;
@@ -12,9 +13,10 @@ export const selectItemById = (id: string) => (state: LegendDataState) => state.
 export const selectItemsCount = (state: LegendDataState) => state.items.allIds.length;
 
 // Action selectors
+export const selectSetLegendDataState = (state: LegendDataState) => state.setLegendDataState;
+export const selectSetItems = (state: LegendDataState) => state.setItems;
 export const selectAddItem = (state: LegendDataState) => state.addItem;
 export const selectUpdateItem = (state: LegendDataState) => state.updateItem;
 export const selectRemoveItem = (state: LegendDataState) => state.removeItem;
 export const selectReorderItems = (state: LegendDataState) => state.reorderItems;
 export const selectSortItems = (state: LegendDataState) => state.sortItems;
-export const selectSetLegendDataState = (state: LegendDataState) => state.setLegendDataState;

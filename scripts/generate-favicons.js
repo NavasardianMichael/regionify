@@ -17,6 +17,20 @@ const LOGO_WITH_TEXT = path.join(LOGO_DIR, 'logo-high-resolution-with-text.png')
 async function generateFavicons() {
   console.log('Generating favicons and app icons...\n');
 
+  // Generate favicon-16x16.png from icon logo
+  await sharp(LOGO_ICON)
+    .resize(16, 16, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+    .png({ quality: 90, compressionLevel: 9 })
+    .toFile(path.join(PUBLIC_DIR, 'favicon-16x16.png'));
+  console.log('✓ favicon-16x16.png');
+
+  // Generate favicon-32x32.png from icon logo
+  await sharp(LOGO_ICON)
+    .resize(32, 32, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+    .png({ quality: 90, compressionLevel: 9 })
+    .toFile(path.join(PUBLIC_DIR, 'favicon-32x32.png'));
+  console.log('✓ favicon-32x32.png');
+
   // Generate favicon-96x96.png from icon logo
   await sharp(LOGO_ICON)
     .resize(96, 96, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
