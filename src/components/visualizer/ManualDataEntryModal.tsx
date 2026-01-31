@@ -64,7 +64,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
 
   // Reset local data when modal opens with fresh store data
   const handleAfterOpenChange: ModalProps['afterOpenChange'] = useCallback(
-    (visible) => {
+    (visible: boolean) => {
       if (visible) {
         setLocalData(initializeLocalData(storeData));
       }
@@ -93,31 +93,37 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     }
   }, []);
 
-  const handleIdChange: InputProps['onChange'] = useCallback((e) => {
-    const rowId = e.currentTarget.dataset.id;
-    if (rowId) {
-      setLocalData((prev) => ({
-        ...prev,
-        byId: {
-          ...prev.byId,
-          [rowId]: { ...prev.byId[rowId], label: e.target.value },
-        },
-      }));
-    }
-  }, []);
+  const handleIdChange: InputProps['onChange'] = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const rowId = e.currentTarget.dataset.id;
+      if (rowId) {
+        setLocalData((prev) => ({
+          ...prev,
+          byId: {
+            ...prev.byId,
+            [rowId]: { ...prev.byId[rowId], label: e.target.value },
+          },
+        }));
+      }
+    },
+    [],
+  );
 
-  const handleLabelChange: InputProps['onChange'] = useCallback((e) => {
-    const rowId = e.currentTarget.dataset.id;
-    if (rowId) {
-      setLocalData((prev) => ({
-        ...prev,
-        byId: {
-          ...prev.byId,
-          [rowId]: { ...prev.byId[rowId], label: e.target.value },
-        },
-      }));
-    }
-  }, []);
+  const handleLabelChange: InputProps['onChange'] = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const rowId = e.currentTarget.dataset.id;
+      if (rowId) {
+        setLocalData((prev) => ({
+          ...prev,
+          byId: {
+            ...prev.byId,
+            [rowId]: { ...prev.byId[rowId], label: e.target.value },
+          },
+        }));
+      }
+    },
+    [],
+  );
 
   const handleValueChange = useCallback((rowId: string, value: number | null) => {
     setLocalData((prev) => ({

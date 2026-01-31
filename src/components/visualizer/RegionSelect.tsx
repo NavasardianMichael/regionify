@@ -3,6 +3,7 @@ import { GlobalOutlined } from '@ant-design/icons';
 import { Flex, type RefSelectProps, Select, type SelectProps } from 'antd';
 import { selectSelectedRegionId, selectSetVisualizerState } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
+import type { RegionId } from '@/types/mapData';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -13,7 +14,7 @@ export const RegionSelect: FC = () => {
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
 
   const handleRegionChange: SelectProps['onChange'] = useCallback(
-    (selectedRegionId) => {
+    (selectedRegionId: RegionId) => {
       setVisualizerState({ selectedRegionId });
       selectRef.current?.blur();
     },
