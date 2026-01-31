@@ -25,6 +25,7 @@ import {
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { loadMapSvg } from '@/helpers/mapLoader';
 import styles from './MapViewer.module.css';
 
 type MapViewerProps = {
@@ -421,10 +422,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     const loadMap = async () => {
       setIsLoading(true);
       try {
-        const mapFile = `${selectedRegionId}.svg`;
-        const response = await fetch(`/src/assets/images/maps/${mapFile}`);
-        if (response.ok) {
-          const svg = await response.text();
+        const svg = await loadMapSvg(selectedRegionId);
+        if (svg) {
           setRawSvgContent(svg);
         }
       } catch (error) {

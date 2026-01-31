@@ -25,6 +25,7 @@ import {
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
+import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -189,10 +190,8 @@ export const ImportDataPanel: FC = () => {
       }
 
       try {
-        const mapFile = `${selectedRegionId}.svg`;
-        const response = await fetch(`/src/assets/images/maps/${mapFile}`);
-        if (response.ok && !cancelled) {
-          const svgContent = await response.text();
+        const svgContent = await loadMapSvg(selectedRegionId);
+        if (svgContent && !cancelled) {
           const titles = extractSvgTitles(svgContent);
           setSvgTitles(titles);
 
