@@ -1,0 +1,153 @@
+# # ==============================================================================
+# # Build and Deploy to Production Server
+# # ==============================================================================
+# # REQUIRED GITHUB SECRETS:
+# # - SSH_HOST: Server IP or domain
+# # - SSH_USER: SSH username
+# # - SSH_KEY: Private SSH key for authentication
+# # - SSH_PORT: (optional) SSH port, defaults to 22
+# # - APP_DIR: Deployment directory (e.g., /home/user_name/apps/app_name)])
+# #
+# # Web server should serve from: $APP_DIR/current
+# # ==============================================================================
+
+# name: Build and Deploy to Production Server
+
+# # Trigger: Run this workflow when code is pushed to the master branch
+# on:
+#   push:
+#     branches: [master]
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # =========================================================================
+#       # STEP 1: Checkout Repository
+#       # =========================================================================
+#       # Download the repository code at the specific commit that triggered this workflow
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       # =========================================================================
+#       # STEP 2: Setup Node.js Environment
+#       # =========================================================================
+#       # Install Node.js LTS version for building the React application
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '24.11.1'
+#           cache: 'npm'
+
+#       # =========================================================================
+#       # STEP 3: Install Dependencies
+#       # =========================================================================
+#       # Install all project dependencies specified in package.json
+#       # Uses npm ci for clean, reproducible installs based on package-lock.json
+#       - name: Install dependencies
+#         run: npm ci
+
+#       # =========================================================================
+#       # STEP 4: Build Application
+#       # =========================================================================
+#       # Build the React application for production
+#       # Creates optimized static files in the build/ directory
+#       # CI=false disables treating warnings (including ESLint) as errors
+#       - name: Build Application
+#         run: CI=false npm run build
+
+#       # =========================================================================
+#       # STEP 5: Create Deployment Archive
+#       # =========================================================================
+#       # Compress the build folder into a tar.gz archive for efficient transfer
+#       - name: Create compressed build archive
+#         run: |
+#           tar -czf build.tar.gz -C build .
+
+#       # =========================================================================
+#       # STEP 6: Configure SSH Known Hosts
+#       # =========================================================================
+#       # Add your server's SSH fingerprint to known_hosts to prevent
+#       # "unknown host" prompts during SSH/SCP operations
+#       - name: Add server to SSH known hosts
+#         run: |
+#           mkdir -p ~/.ssh
+#           ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+#           chmod 600 ~/.ssh/known_hosts
+
+#       # =========================================================================
+#       # STEP 7: Setup SSH Authentication
+#       # =========================================================================
+#       # Load SSH private key from GitHub Secrets to authenticate with your server
+#       - name: Setup SSH key for server access
+#         uses: webfactory/ssh-agent@v0.9.0
+#         with:
+#           ssh-private-key: ${{ secrets.SSH_KEY }}
+
+#       # =========================================================================
+#       # STEP 8: Transfer Build to Server
+#       # =========================================================================
+#       # Copy the compressed build archive to the server
+#       - name: Copy build archive to server
+#         run: |
+#           scp -P "${{ secrets.SSH_PORT || 22 }}" build.tar.gz \
+#             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/build-${{ github.sha }}.tar.gz"
+
+#       # =========================================================================
+#       # STEP 9: Deploy with Release Versioning
+#       # =========================================================================
+#       # Deploy using the releases pattern:
+#       # - Store each deployment in releases/TIMESTAMP directory
+#       # - Update 'current' symlink to point to latest release
+#       # - Keep last 5 releases for easy rollback
+#       # - Web server serves files from 'current' symlink
+#       - name: Deploy to server with versioning
+#         run: |
+#           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
+#             set -e
+
+#             # Configuration
+#             APP_DIR="${{ secrets.APP_DIR }}"
+#             RELEASES_DIR="$APP_DIR/releases"
+#             CURRENT_LINK="$APP_DIR/current"
+#             RELEASE_NAME="${{ github.sha }}"
+#             NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
+#             TAR_FILE="/tmp/build-${{ github.sha }}.tar.gz"
+#             KEEP_RELEASES=5
+
+#             echo "🚀 Starting deployment: $RELEASE_NAME"
+
+#             # Create directory structure if it doesn't exist
+#             mkdir -p "$RELEASES_DIR"
+
+#             # Create new release directory
+#             echo "📂 Creating release directory..."
+#             mkdir -p "$NEW_RELEASE"
+
+#             # Extract build files to new release
+#             echo "📦 Extracting build files..."
+#             tar -xzf "$TAR_FILE" -C "$NEW_RELEASE"
+
+#             # Set proper permissions
+#             echo "🔐 Setting permissions..."
+#             chmod -R 755 "$NEW_RELEASE"
+
+#             # Update symlink to point to new release
+#             echo "🔗 Updating current symlink..."
+#             ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
+
+#             # Clean up old releases (keep last KEEP_RELEASES)
+#             echo "🧹 Cleaning up old releases..."
+#             cd "$RELEASES_DIR"
+#             ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+
+#             # Clean up tar file
+#             rm "$TAR_FILE"
+
+#             echo "✅ Deployment successful!"
+#             echo "📊 Active release: $RELEASE_NAME"
+#             echo "📁 Release path: $NEW_RELEASE"
+#             echo "🔗 Current link: $CURRENT_LINK -> $NEW_RELEASE"
+#             echo "💾 Keeping last $KEEP_RELEASES releases"
+#           EOF
