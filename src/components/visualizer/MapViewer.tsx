@@ -476,11 +476,22 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     setIsDragging(false);
   }, []);
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     setZoom((prev) => Math.min(Math.max(prev * delta, 0.5), 5));
   }, []);
+
+  // Attach wheel event listener with passive: false to allow preventDefault
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   // Legend drag handlers - optimized with CSS transforms and requestAnimationFrame
   const handleLegendMouseDown = useCallback(
@@ -699,7 +710,6 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
         >
           {isLoading ? (
             <Spin size="large" />
