@@ -17,15 +17,22 @@ export type ZoomControlsConfig = {
   position: { x: number; y: number };
 };
 
+export type PictureConfig = {
+  transparentBackground: boolean;
+  backgroundColor: string;
+};
+
 export type MapStylesState = {
   // State
   border: BorderConfig;
   shadow: ShadowConfig;
   zoomControls: ZoomControlsConfig;
+  picture: PictureConfig;
 
   // Actions
   setMapStylesState: (data: Partial<MapStylesState>) => void;
   setBorder: (data: Partial<BorderConfig>) => void;
   setShadow: (data: Partial<ShadowConfig>) => void;
   setZoomControls: (data: Partial<ZoomControlsConfig>) => void;
+  setPicture: (data: Partial<PictureConfig>) => void;
 };

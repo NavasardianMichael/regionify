@@ -16,6 +16,7 @@ export const useLegendStylesStore = create<LegendStylesState>((set) => ({
   floatingPosition: { x: 20, y: 20 },
   floatingSize: { width: 160, height: 'auto' },
   backgroundColor: 'rgba(255, 255, 255, 0.95)',
+  noDataColor: '#E5E7EB',
 
   setLegendStylesState: (data) => set((state) => ({ ...state, ...data })),
   setLabels: (data) => set((state) => ({ ...state, labels: { ...state.labels, ...data } })),
@@ -29,6 +30,7 @@ export const selectPosition = (state: LegendStylesState) => state.position;
 export const selectFloatingPosition = (state: LegendStylesState) => state.floatingPosition;
 export const selectFloatingSize = (state: LegendStylesState) => state.floatingSize;
 export const selectBackgroundColor = (state: LegendStylesState) => state.backgroundColor;
+export const selectNoDataColor = (state: LegendStylesState) => state.noDataColor;
 export const selectSetLegendStylesState = (state: LegendStylesState) => state.setLegendStylesState;
 export const selectSetLabels = (state: LegendStylesState) => state.setLabels;
 export const selectSetTitle = (state: LegendStylesState) => state.setTitle;

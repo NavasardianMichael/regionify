@@ -10,7 +10,7 @@ const DEFAULT_MAP_STYLES = {
   border: {
     show: true,
     color: '#FFFFFF',
-    width: 1.5,
+    width: 1,
   },
   shadow: {
     show: false,

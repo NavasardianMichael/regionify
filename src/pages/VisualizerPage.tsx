@@ -9,6 +9,7 @@ import LegendConfigPanel from '@/components/visualizer/LegendConfigPanel';
 import LegendStylesPanel from '@/components/visualizer/LegendStylesPanel';
 import MapStylesPanel from '@/components/visualizer/MapStylesPanel';
 import MapViewer from '@/components/visualizer/MapViewer';
+import PictureStylesPanel from '@/components/visualizer/PictureStylesPanel';
 import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
 const VisualizerPage: FC = () => {
@@ -69,6 +70,8 @@ const VisualizerPage: FC = () => {
             <MapStylesPanel />
             <Divider />
             <LegendStylesPanel />
+            <Divider />
+            <PictureStylesPanel />
             <Divider />
             <GeneralStylesPack />
           </CardLayout>

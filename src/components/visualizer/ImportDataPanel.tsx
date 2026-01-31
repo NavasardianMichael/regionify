@@ -4,9 +4,10 @@ import {
   DatabaseOutlined,
   EditOutlined,
   FileExcelOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { Button, Flex, Segmented, Spin, Typography, Upload } from 'antd';
+import { Button, Flex, Modal, Segmented, Spin, Typography, Upload } from 'antd';
 import {
   selectImportDataType,
   selectSetVisualizerState,
@@ -34,10 +35,10 @@ const parseCSV = (content: string): ParsedData[] => {
 
   // Skip header row
   for (let i = 1; i < lines.length; i++) {
-    const [regionId, valueStr] = lines[i].split(',').map((s) => s.trim());
+    const [label, valueStr] = lines[i].split(',').map((s) => s.trim());
     const value = parseFloat(valueStr);
-    if (regionId && !isNaN(value)) {
-      data.push({ regionId, value });
+    if (label && !isNaN(value)) {
+      data.push({ regionId: label, value });
     }
   }
 
@@ -49,8 +50,8 @@ const parseJSON = (content: string): ParsedData[] => {
     const parsed = JSON.parse(content);
     if (Array.isArray(parsed)) {
       return parsed
-        .filter((item) => item.regionId && typeof item.value === 'number')
-        .map((item) => ({ regionId: item.regionId, value: item.value }));
+        .filter((item) => item.label && typeof item.value === 'number')
+        .map((item) => ({ regionId: item.label, value: item.value }));
     }
     return [];
   } catch {
@@ -73,6 +74,7 @@ const convertToRegionData = (
 
 export const ImportDataPanel: FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
@@ -161,9 +163,9 @@ export const ImportDataPanel: FC = () => {
     () => ({
       csv: (
         <pre className="font-mono text-xs text-gray-600">
-          {`region_id,value
-RU-MOW,2500
-RU-SPE,1800`}
+          {`label,value
+Moscow,2500
+Saint Petersburg,1800`}
         </pre>
       ),
       excel: (
@@ -172,17 +174,17 @@ RU-SPE,1800`}
             Excel file with columns:
           </Typography.Text>
           <pre className="font-mono text-xs text-gray-600">
-            {`| region_id | value |
-| RU-MOW    | 2500  |
-| RU-SPE    | 1800  |`}
+            {`| label            | value |
+| Moscow           | 2500  |
+| Saint Petersburg | 1800  |`}
           </pre>
         </Flex>
       ),
       json: (
         <pre className="font-mono text-xs text-gray-600">
           {`[
-  { "regionId": "RU-MOW", "value": 2500 },
-  { "regionId": "RU-SPE", "value": 1800 }
+  { "label": "Moscow", "value": 2500 },
+  { "label": "Saint Petersburg", "value": 1800 }
 ]`}
         </pre>
       ),
@@ -192,19 +194,33 @@ RU-SPE,1800`}
             Google Sheet with columns:
           </Typography.Text>
           <pre className="font-mono text-xs text-gray-600">
-            {`| region_id | value |
-| RU-MOW    | 2500  |
-| RU-SPE    | 1800  |`}
+            {`| label            | value |
+| Moscow           | 2500  |
+| Saint Petersburg | 1800  |`}
           </pre>
         </Flex>
       ),
       manual: (
         <Typography.Text className="text-xs text-gray-600">
-          Enter region IDs and their corresponding values using the form.
+          Enter region labels and their corresponding values using the form.
         </Typography.Text>
       ),
     }),
     [],
+  );
+
+  const formatInfoContent = (
+    <ul className="m-0 list-disc space-y-2 pl-4 text-sm text-gray-600">
+      <li>
+        <strong>label</strong> — Region name (e.g., &quot;Moscow&quot;, &quot;California&quot;)
+      </li>
+      <li>
+        <strong>value</strong> — Numeric value for the region
+      </li>
+      <li>Labels should match region names in English</li>
+      <li>We will attempt to match labels with SVG region IDs</li>
+      <li>Use similar naming conventions for best results</li>
+    </ul>
   );
 
   return (
@@ -218,9 +234,25 @@ RU-SPE,1800`}
         block
       />
 
-      <Typography.Paragraph className="text-sm text-gray-500">
-        Upload your dataset to visualize regional metrics.
-      </Typography.Paragraph>
+      <Flex align="center" gap="small">
+        <InfoCircleOutlined
+          className="hover:text-primary cursor-pointer text-gray-400"
+          onClick={() => setIsFormatInfoModalOpen(true)}
+        />
+        <Typography.Text className="text-sm text-gray-500">
+          Upload your dataset to visualize regional metrics.
+        </Typography.Text>
+      </Flex>
+
+      <Modal
+        title="Expected Data Format"
+        open={isFormatInfoModalOpen}
+        onCancel={() => setIsFormatInfoModalOpen(false)}
+        footer={null}
+        width={400}
+      >
+        {formatInfoContent}
+      </Modal>
 
       {importActionComponents[importDataType]}
 

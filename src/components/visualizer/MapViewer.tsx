@@ -7,6 +7,7 @@ import {
   selectFloatingPosition,
   selectFloatingSize,
   selectLabels,
+  selectNoDataColor,
   selectPosition,
   selectSetLegendStylesState,
   selectTitle,
@@ -28,7 +29,7 @@ type MapViewerProps = {
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
-  const [svgContent, setSvgContent] = useState<string>('');
+  const [rawSvgContent, setRawSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -57,6 +58,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const floatingSize = useLegendStylesStore(selectFloatingSize);
   const backgroundColor = useLegendStylesStore(selectBackgroundColor);
+  const noDataColor = useLegendStylesStore(selectNoDataColor);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
   const legendItems = useMemo(
@@ -258,10 +260,18 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     [border, shadow],
   );
 
-  // Load SVG content when region changes
+  // Derive styled SVG from raw content + styles (no useEffect, computed value)
+  const svgContent = useMemo(() => {
+    if (!rawSvgContent) return '';
+    return applyStylesToSvg(rawSvgContent);
+  }, [rawSvgContent, applyStylesToSvg]);
+
+  // Load raw SVG content only when region changes
   useEffect(() => {
     if (!selectedRegionId) {
-      setSvgContent('');
+      setRawSvgContent('');
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
       return;
     }
 
@@ -271,10 +281,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         const mapFile = `${selectedRegionId}High.svg`;
         const response = await fetch(`/src/assets/images/maps/${mapFile}`);
         if (response.ok) {
-          let svg = await response.text();
-          // Apply styles to SVG
-          svg = applyStylesToSvg(svg);
-          setSvgContent(svg);
+          const svg = await response.text();
+          setRawSvgContent(svg);
         }
       } catch (error) {
         console.error('Failed to load map:', error);
@@ -283,30 +291,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       }
     };
 
+    // Reset view when loading new region
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
     loadMap();
-  }, [selectedRegionId, applyStylesToSvg]);
-
-  // Re-apply styles when map styles change - we only want this to trigger on mapStyles change
-  useEffect(() => {
-    if (!selectedRegionId) return;
-
-    // Reload the SVG with new styles
-    const loadMap = async () => {
-      try {
-        const mapFile = `${selectedRegionId}High.svg`;
-        const response = await fetch(`/src/assets/images/maps/${mapFile}`);
-        if (response.ok) {
-          let svg = await response.text();
-          svg = applyStylesToSvg(svg);
-          setSvgContent(svg);
-        }
-      } catch (error) {
-        console.error('Failed to reload map:', error);
-      }
-    };
-    loadMap();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [border, shadow]);
+  }, [selectedRegionId]);
 
   const handleZoomIn = useCallback(() => {
     setZoom((prev) => Math.min(prev * 1.2, 5));
@@ -533,7 +522,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           </Flex>
         ))}
         <Flex align="center" gap="small">
-          <div className="h-3 w-3 shrink-0 rounded-sm border border-gray-300 bg-gray-100" />
+          <div
+            className="h-3 w-3 shrink-0 rounded-sm border border-gray-300"
+            style={{ backgroundColor: noDataColor }}
+          />
           <Typography.Text
             style={{
               color: labels.color,

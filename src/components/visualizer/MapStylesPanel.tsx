@@ -80,37 +80,44 @@ const MapStylesPanel: FC = () => {
       key: 'border',
       label: (
         <Flex align="center" gap="small">
-          <Typography.Text>Border</Typography.Text>
+          <Typography.Text className="font-semibold">Border</Typography.Text>
         </Flex>
       ),
       children: (
-        <Flex vertical gap="middle">
+        <Flex vertical gap="small">
           <Flex align="center" justify="space-between">
             <Typography.Text className="text-sm text-gray-600">Show Border</Typography.Text>
-            <Switch checked={border.show} onChange={(checked) => setBorder({ show: checked })} />
-          </Flex>
-          <Flex vertical gap="small">
-            <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
-            <Flex align="center" gap="small">
-              <ColorPicker
-                value={border.color}
-                onChange={(color) => setBorder({ color: color.toHexString() })}
-                showText
-              />
-            </Flex>
-          </Flex>
-          <Flex vertical gap="small">
-            <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Width</Typography.Text>
-              <Typography.Text className="text-sm text-gray-500">{border.width}px</Typography.Text>
-            </Flex>
-            <Slider
-              min={0.5}
-              max={5}
-              step={0.5}
-              value={border.width}
-              onChange={(value) => setBorder({ width: value })}
+            <Switch
+              checked={border.show}
+              size="small"
+              onChange={(checked) => setBorder({ show: checked })}
             />
+          </Flex>
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
+            <ColorPicker
+              value={border.color}
+              onChange={(color) => setBorder({ color: color.toHexString() })}
+              size="small"
+              disabled={!border.show}
+            />
+          </Flex>
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">Width</Typography.Text>
+            <Flex align="center" gap="small" className="w-1/2">
+              <Slider
+                min={1}
+                max={5}
+                step={1}
+                value={border.width}
+                onChange={(value) => setBorder({ width: value })}
+                className="flex-1"
+                disabled={!border.show}
+              />
+              <Typography.Text className="w-8 text-right text-sm text-gray-500">
+                {border.width}px
+              </Typography.Text>
+            </Flex>
           </Flex>
         </Flex>
       ),
@@ -119,53 +126,64 @@ const MapStylesPanel: FC = () => {
       key: 'shadow',
       label: (
         <Flex align="center" gap="small">
-          <Typography.Text>Shadow</Typography.Text>
+          <Typography.Text className="font-semibold">Shadow</Typography.Text>
         </Flex>
       ),
       children: (
-        <Flex vertical gap="middle">
+        <Flex vertical gap="small">
           <Flex align="center" justify="space-between">
             <Typography.Text className="text-sm text-gray-600">Show Shadow</Typography.Text>
-            <Switch checked={shadow.show} onChange={(checked) => setShadow({ show: checked })} />
+            <Switch
+              checked={shadow.show}
+              size="small"
+              onChange={(checked) => setShadow({ show: checked })}
+            />
           </Flex>
-          <Flex vertical gap="small">
+          <Flex align="center" justify="space-between">
             <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
             <ColorPicker
               value={shadow.color}
               onChange={(color) => setShadow({ color: color.toHexString() })}
-              showText
+              size="small"
+              disabled={!shadow.show}
             />
           </Flex>
-          <Flex vertical gap="small">
-            <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Blur</Typography.Text>
-              <Typography.Text className="text-sm text-gray-500">{shadow.blur}px</Typography.Text>
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">Blur</Typography.Text>
+            <Flex align="center" gap="small" className="w-1/2">
+              <Slider
+                min={0}
+                max={30}
+                value={shadow.blur}
+                onChange={(value) => setShadow({ blur: value })}
+                className="flex-1"
+                disabled={!shadow.show}
+              />
+              <Typography.Text className="w-8 text-right text-sm text-gray-500">
+                {shadow.blur}px
+              </Typography.Text>
             </Flex>
-            <Slider
-              min={0}
-              max={30}
-              value={shadow.blur}
-              onChange={(value) => setShadow({ blur: value })}
+          </Flex>
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">Offset X</Typography.Text>
+            <InputNumber
+              value={shadow.offsetX}
+              onChange={(value) => setShadow({ offsetX: value ?? 0 })}
+              size="small"
+              className="w-20"
+              disabled={!shadow.show}
             />
           </Flex>
-          <div className="gap-sm grid grid-cols-2">
-            <Flex vertical>
-              <Typography.Text className="text-sm text-gray-600">Offset X</Typography.Text>
-              <InputNumber
-                value={shadow.offsetX}
-                onChange={(value) => setShadow({ offsetX: value ?? 0 })}
-                className="w-full"
-              />
-            </Flex>
-            <Flex vertical>
-              <Typography.Text className="text-sm text-gray-600">Offset Y</Typography.Text>
-              <InputNumber
-                value={shadow.offsetY}
-                onChange={(value) => setShadow({ offsetY: value ?? 0 })}
-                className="w-full"
-              />
-            </Flex>
-          </div>
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">Offset Y</Typography.Text>
+            <InputNumber
+              value={shadow.offsetY}
+              onChange={(value) => setShadow({ offsetY: value ?? 0 })}
+              size="small"
+              className="w-20"
+              disabled={!shadow.show}
+            />
+          </Flex>
         </Flex>
       ),
     },
@@ -173,15 +191,16 @@ const MapStylesPanel: FC = () => {
       key: 'zoom',
       label: (
         <Flex align="center" gap="small">
-          <Typography.Text>Zoom Controls</Typography.Text>
+          <Typography.Text className="font-semibold">Zoom Controls</Typography.Text>
         </Flex>
       ),
       children: (
-        <Flex vertical gap="middle">
+        <Flex vertical gap="small">
           <Flex align="center" justify="space-between">
             <Typography.Text className="text-sm text-gray-600">Show Controls</Typography.Text>
             <Switch
               checked={zoomControls.show}
+              size="small"
               onChange={(checked) => setZoomControls({ show: checked })}
             />
           </Flex>

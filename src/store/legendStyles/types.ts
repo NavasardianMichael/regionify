@@ -19,6 +19,7 @@ export type LegendStylesState = {
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };
   backgroundColor: string;
+  noDataColor: string;
 
   // Actions
   setLegendStylesState: (data: Partial<LegendStylesState>) => void;
