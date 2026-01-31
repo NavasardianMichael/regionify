@@ -123,9 +123,6 @@ import { useAuth } from '@/hooks/useAuth';
   ```
 
 - Use selectors to avoid unnecessary re-renders (in selectors.ts in the corresponding slice):
-  ```tsx
-  const user = useAuthStore((state) => state.user);
-  ```
 - Keep stores simple; derive computed values in components or custom hooks.
 - Use `persist` middleware for localStorage persistence when needed.
 - Do not couple store logic with API calls directly; use hooks or helpers.
