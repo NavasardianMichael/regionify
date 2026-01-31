@@ -24,6 +24,7 @@ import {
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import styles from './MapViewer.module.css';
 
 type MapViewerProps = {
   className?: string;
@@ -235,6 +236,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
         // Also apply inline styles to ensure they take precedence
         paths.forEach((path) => {
+          // Apply static styles from CSS module
+          path.classList.add(styles.mapPath);
+
+          // Apply dynamic border styles
           if (border.show) {
             path.style.stroke = border.color;
             path.style.strokeWidth = String(border.width);
@@ -307,7 +312,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     const loadMap = async () => {
       setIsLoading(true);
       try {
-        const mapFile = `${selectedRegionId}High.svg`;
+        const mapFile = `${selectedRegionId}.svg`;
         const response = await fetch(`/src/assets/images/maps/${mapFile}`);
         if (response.ok) {
           const svg = await response.text();

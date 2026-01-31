@@ -61,10 +61,10 @@ const VisualizerPage: FC = () => {
 
         {/* Right Sidebar */}
         <Splitter.Panel
-          defaultSize="20%"
+          defaultSize="25%"
           min="15%"
           max="35%"
-          collapsible={{ start: true, end: true, showCollapsibleIcon: true }}
+          collapsible={{ start: true, end: false, showCollapsibleIcon: true }}
         >
           <CardLayout component="aside" vertical className="h-full">
             <MapStylesPanel />

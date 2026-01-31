@@ -1,4 +1,13 @@
-import { type FC, type JSX, lazy, Suspense, useCallback, useMemo, useState } from 'react';
+import {
+  type FC,
+  type JSX,
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   CloudUploadOutlined,
   EditOutlined,
@@ -6,16 +15,22 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { Button, Flex, Modal, Segmented, Spin, Typography, Upload } from 'antd';
-import { selectImportDataType, selectSetVisualizerState } from '@/store/mapData/selectors';
+import { Button, Flex, message, Modal, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
+import * as XLSX from 'xlsx';
+import {
+  selectImportDataType,
+  selectSelectedRegionId,
+  selectSetVisualizerState,
+} from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
+import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 
-type ParsedData = { regionId: string; value: number };
+type ParsedRow = { label: string; value: number };
 
 const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
   { label: 'CSV', value: 'csv' },
@@ -25,29 +40,80 @@ const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
   { label: 'Manual', value: 'manual' },
 ];
 
-const parseCSV = (content: string): ParsedData[] => {
+const parseCSV = (content: string): ParsedRow[] => {
   const lines = content.trim().split('\n');
-  const data: ParsedData[] = [];
+  const data: ParsedRow[] = [];
 
-  // Skip header row
-  for (let i = 1; i < lines.length; i++) {
-    const [label, valueStr] = lines[i].split(',').map((s) => s.trim());
+  // Skip header row if it looks like a header
+  const startIndex = /^label|^region|^name/i.test(lines[0]) ? 1 : 0;
+
+  for (let i = startIndex; i < lines.length; i++) {
+    // Handle quoted values and different separators
+    const line = lines[i];
+    let parts: string[];
+
+    if (line.includes('"')) {
+      // Handle CSV with quoted values
+      parts = line.match(/(?:[^,"]|"(?:\\.|[^"])*")+/g) || [];
+      parts = parts.map((s) => s.replace(/^"|"$/g, '').trim());
+    } else {
+      parts = line.split(/[,;\t]/).map((s) => s.trim());
+    }
+
+    const [label, valueStr] = parts;
     const value = parseFloat(valueStr);
+
     if (label && !isNaN(value)) {
-      data.push({ regionId: label, value });
+      data.push({ label, value });
     }
   }
 
   return data;
 };
 
-const parseJSON = (content: string): ParsedData[] => {
+const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet);
+
+  const data: ParsedRow[] = [];
+
+  for (const row of jsonData) {
+    // Try to find label and value columns with flexible naming
+    const labelKey = Object.keys(row).find((key) =>
+      /^(label|region|name|area|province|state|country)/i.test(String(key)),
+    );
+    const valueKey = Object.keys(row).find((key) =>
+      /^(value|count|amount|number|data|total|population)/i.test(String(key)),
+    );
+
+    // Fallback to first two columns if no matching headers
+    const keys = Object.keys(row);
+    const label = String(row[labelKey ?? keys[0]] ?? '');
+    const value = parseFloat(String(row[valueKey ?? keys[1]] ?? ''));
+
+    if (label && !isNaN(value)) {
+      data.push({ label, value });
+    }
+  }
+
+  return data;
+};
+
+const parseJSON = (content: string): ParsedRow[] => {
   try {
     const parsed = JSON.parse(content);
     if (Array.isArray(parsed)) {
       return parsed
-        .filter((item) => item.label && typeof item.value === 'number')
-        .map((item) => ({ regionId: item.label, value: item.value }));
+        .filter((item) => {
+          const hasLabel = item.label || item.region || item.name;
+          const hasValue = typeof item.value === 'number' || typeof item.count === 'number';
+          return hasLabel && hasValue;
+        })
+        .map((item) => ({
+          label: String(item.label ?? item.region ?? item.name ?? ''),
+          value: Number(item.value ?? item.count ?? 0),
+        }));
     }
     return [];
   } catch {
@@ -55,35 +121,105 @@ const parseJSON = (content: string): ParsedData[] => {
   }
 };
 
+/**
+ * Convert parsed data to RegionData format with similarity matching
+ * Uses SVG titles to match user labels to region IDs
+ */
 const convertToRegionData = (
-  parsed: ParsedData[],
+  parsed: ParsedRow[],
+  svgTitles: string[],
 ): { allIds: string[]; byId: Record<string, RegionData> } => {
-  const allIds = parsed.map((item) => item.regionId);
+  // Map data using similarity matching
+  const mappedData = mapDataToSvgRegions(parsed, svgTitles);
+
+  const allIds = mappedData.map((item) => item.id);
   const byId = Object.fromEntries(
-    parsed.map((item) => [
-      item.regionId,
-      { id: item.regionId, label: item.regionId, value: item.value },
-    ]),
+    mappedData.map((item) => [item.id, { id: item.id, label: item.label, value: item.value }]),
   );
+
   return { allIds, byId };
 };
 
 export const ImportDataPanel: FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
+  const [svgTitles, setSvgTitles] = useState<string[]>([]);
 
   const importDataType = useVisualizerStore(selectImportDataType);
+  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
 
-  const handleFileUpload: UploadProps['customRequest'] = useCallback(
-    (options) => {
-      const { file, onSuccess, onError } = options;
-      const reader = new FileReader();
+  // Load SVG titles when region changes
+  useEffect(() => {
+    let cancelled = false;
 
+    const loadSvgTitles = async () => {
+      if (!selectedRegionId) {
+        setSvgTitles([]);
+        return;
+      }
+
+      try {
+        const mapFile = `${selectedRegionId}.svg`;
+        const response = await fetch(`/src/assets/images/maps/${mapFile}`);
+        if (response.ok && !cancelled) {
+          const svgContent = await response.text();
+          const titles = extractSvgTitles(svgContent);
+          setSvgTitles(titles);
+        }
+      } catch (error) {
+        console.error('Failed to load SVG titles:', error);
+        if (!cancelled) {
+          setSvgTitles([]);
+        }
+      }
+    };
+
+    loadSvgTitles();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedRegionId]);
+
+  const handleFileUpload: UploadProps['customRequest'] = useCallback(
+    (options: Parameters<NonNullable<UploadProps['customRequest']>>[0]) => {
+      const { file, onSuccess, onError } = options;
+
+      // Handle Excel files differently (binary)
+      if (importDataType === 'excel') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const buffer = e.target?.result as ArrayBuffer;
+            const parsed = parseExcel(buffer);
+
+            if (parsed.length === 0) {
+              message.warning('No valid data found in Excel file');
+              onError?.(new Error('No valid data found'));
+              return;
+            }
+
+            const data = convertToRegionData(parsed, svgTitles);
+            setVisualizerState({ data });
+            message.success(`Imported ${parsed.length} regions`);
+            onSuccess?.(data);
+          } catch (error) {
+            message.error('Failed to parse Excel file');
+            onError?.(error as Error);
+          }
+        };
+        reader.onerror = () => onError?.(new Error('Failed to read file'));
+        reader.readAsArrayBuffer(file as File);
+        return;
+      }
+
+      // Handle text-based files (CSV, JSON)
+      const reader = new FileReader();
       reader.onload = (e) => {
         try {
           const content = e.target?.result as string;
-          let parsed: ParsedData[] = [];
+          let parsed: ParsedRow[] = [];
 
           if (importDataType === 'csv') {
             parsed = parseCSV(content);
@@ -91,10 +227,18 @@ export const ImportDataPanel: FC = () => {
             parsed = parseJSON(content);
           }
 
-          const data = convertToRegionData(parsed);
+          if (parsed.length === 0) {
+            message.warning('No valid data found in file');
+            onError?.(new Error('No valid data found'));
+            return;
+          }
+
+          const data = convertToRegionData(parsed, svgTitles);
           setVisualizerState({ data });
+          message.success(`Imported ${parsed.length} regions`);
           onSuccess?.(data);
         } catch (error) {
+          message.error('Failed to parse file');
           onError?.(error as Error);
         }
       };
@@ -105,7 +249,7 @@ export const ImportDataPanel: FC = () => {
 
       reader.readAsText(file as File);
     },
-    [importDataType, setVisualizerState],
+    [importDataType, setVisualizerState, svgTitles],
   );
 
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
@@ -221,7 +365,18 @@ Saint Petersburg,1800`}
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={FileExcelOutlined}>Import Data</SectionTitle>
+      <Flex align="center" justify="space-between">
+        <SectionTitle IconComponent={FileExcelOutlined}>Import Data</SectionTitle>
+        <Tooltip title="Enter Data Manually">
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => setIsManualModalOpen(true)}
+            className="text-gray-500"
+          />
+        </Tooltip>
+      </Flex>
 
       <Segmented
         options={IMPORT_OPTIONS}

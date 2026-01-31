@@ -155,7 +155,7 @@ const LegendConfigPanel: FC = () => {
           <Typography.Text className="text-xs text-gray-500">Color</Typography.Text>
           <span />
         </div>
-        <Flex vertical gap="small">
+        <Flex vertical>
           {legendItems.map((item, index) => (
             <div
               key={item.id}

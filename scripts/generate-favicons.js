@@ -45,7 +45,7 @@ async function generateFavicons() {
     .resize(16, 16, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
     .png()
     .toBuffer();
-  
+
   const ico32 = await sharp(LOGO_ICON)
     .resize(32, 32, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
     .png()
@@ -61,12 +61,9 @@ async function generateFavicons() {
     .resize(32, 32, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
     .toFormat('png')
     .toFile(path.join(PUBLIC_DIR, 'favicon.png'));
-  
+
   // For proper .ico support, copy the 32x32 as ico (browsers accept PNG as ico)
-  await fs.copyFile(
-    path.join(PUBLIC_DIR, 'favicon.png'),
-    path.join(PUBLIC_DIR, 'favicon.ico')
-  );
+  await fs.copyFile(path.join(PUBLIC_DIR, 'favicon.png'), path.join(PUBLIC_DIR, 'favicon.ico'));
   await fs.unlink(path.join(PUBLIC_DIR, 'favicon.png'));
   console.log('✓ favicon.ico (32x32)');
 

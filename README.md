@@ -71,3 +71,5 @@ export default defineConfig([
   },
 ]);
 ```
+
+<!-- now lets examine text similarity algorithms. Document which user uploads, in region label (first) column there are country names in different representations, e.g. russia or russian federation, turkey or turkiye. I want to assisiate them with its corresponding id from its svg map path, e.g. for armenia, there is a region Geġark'unik in svg path, but in data user imported in one of the rows region label there is written "Gegharkunik" (which is the accepted variant of that region in armenian government statistic pages). I want that algorythm to assisiate them together, and putting in map data slice for that region id, Geġark'unik (id of path)  -->
