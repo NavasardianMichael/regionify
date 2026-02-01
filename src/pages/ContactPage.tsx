@@ -1,7 +1,8 @@
 import { type FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Form, Input, message, Typography } from 'antd';
+import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
+import { processContactFormData, sendContactMessage } from '@/api/contact';
 
 type ContactFormValues = {
   name: string;
@@ -12,16 +13,18 @@ type ContactFormValues = {
 const ContactPage: FC = () => {
   const [form] = Form.useForm<ContactFormValues>();
   const [loading, setLoading] = useState(false);
+  const { message } = App.useApp();
 
-  const handleSubmit = async (_values: ContactFormValues) => {
+  const handleSubmit = async (values: ContactFormValues) => {
     setLoading(true);
     try {
-      // TODO: Implement actual form submission
-      // console.log('Form submitted:', values);
+      const payload = processContactFormData(values);
+      await sendContactMessage(payload);
       message.success('Message sent successfully!');
       form.resetFields();
-    } catch {
-      message.error('Failed to send message. Please try again.');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }

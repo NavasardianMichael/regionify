@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { CreditCardOutlined, HomeOutlined, MailOutlined, TableOutlined } from '@ant-design/icons';
-import { ConfigProvider, Flex, Spin } from 'antd';
+import { App as AntApp, ConfigProvider, Flex, Spin } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text.png';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -64,21 +64,23 @@ const Navigation = () => {
 function App() {
   return (
     <ConfigProvider theme={theme}>
-      <BrowserRouter>
-        <Flex vertical className="h-screen overflow-hidden bg-gray-100">
-          <Navigation />
-          <main className={`min-h-0 flex-1 ${APP_LAYOUT_CLASSNAMES.padding}`}>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/visualizer" element={<VisualizerPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/about" element={<AboutPage />} />
-              </Routes>
-            </Suspense>
-          </main>
-        </Flex>
-      </BrowserRouter>
+      <AntApp>
+        <BrowserRouter>
+          <Flex vertical className="h-screen overflow-hidden bg-gray-100">
+            <Navigation />
+            <main className={`min-h-0 flex-1 ${APP_LAYOUT_CLASSNAMES.padding}`}>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/visualizer" element={<VisualizerPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                </Routes>
+              </Suspense>
+            </main>
+          </Flex>
+        </BrowserRouter>
+      </AntApp>
     </ConfigProvider>
   );
 }
