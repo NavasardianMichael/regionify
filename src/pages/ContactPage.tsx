@@ -75,6 +75,14 @@ const ContactPage: FC = () => {
             <Input.TextArea placeholder="How can we assist you?" rows={4} size="large" />
           </Form.Item>
 
+          <input
+            type="text"
+            name="website"
+            style={{ display: 'none' }}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+
           <Form.Item className="mb-0">
             <Button type="primary" htmlType="submit" block size="large" loading={loading}>
               Submit

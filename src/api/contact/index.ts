@@ -10,7 +10,10 @@ export const sendContactMessage = async (payload: ContactPayload): Promise<Conta
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      website: '',
+      ...payload,
+    }),
   });
 
   const data = (await response.json()) as ContactResponse;
