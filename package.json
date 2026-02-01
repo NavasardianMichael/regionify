@@ -11,7 +11,8 @@
     "format:check": "prettier --check .",
     "preview": "vite preview",
     "prepare": "husky",
-    "sync-ai-rules": "node scripts/sync-ai-rules.js"
+    "sync-ai-rules": "node scripts/sync-ai-rules.js",
+    "env-to-base64": "powershell -Command \"[Convert]::ToBase64String([System.IO.File]::ReadAllBytes('.env'))\""
   },
   "lint-staged": {
     "*.{ts,tsx}": [

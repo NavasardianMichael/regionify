@@ -7,6 +7,7 @@
 # - SSH_KEY: Private SSH key for authentication
 # - SSH_PORT: (optional) SSH port, defaults to 22
 # - APP_DIR: Deployment directory (e.g., /home/user_name/apps/app_name)])
+# - ENV_FILE_BASE64: Base64-encoded .env file content
 #
 # Web server should serve from: $APP_DIR/current
 # ==============================================================================
@@ -58,7 +59,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # =========================================================================
-      # STEP 5: Build Application
+      # STEP 5: Create .env File
+      # =========================================================================
+      # Decode the base64-encoded .env file from GitHub secrets
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d > .env
+
+      # =========================================================================
+      # STEP 6: Build Application
       # =========================================================================
       # Build the React application for production
       # Creates optimized static files in the dist/ directory
@@ -67,7 +75,7 @@ jobs:
         run: CI=false pnpm run build
 
       # =========================================================================
-      # STEP 6: Create Deployment Archive
+      # STEP 7: Create Deployment Archive
       # =========================================================================
       # Compress the dist folder into a tar.gz archive for efficient transfer
       - name: Create compressed build archive
@@ -75,7 +83,7 @@ jobs:
           tar -czf build.tar.gz -C dist .
 
       # =========================================================================
-      # STEP 7: Configure SSH Known Hosts
+      # STEP 8: Configure SSH Known Hosts
       # =========================================================================
       # Add your server's SSH fingerprint to known_hosts to prevent
       # "unknown host" prompts during SSH/SCP operations
@@ -86,7 +94,7 @@ jobs:
           chmod 600 ~/.ssh/known_hosts
 
       # =========================================================================
-      # STEP 8: Setup SSH Authentication
+      # STEP 9: Setup SSH Authentication
       # =========================================================================
       # Load SSH private key from GitHub Secrets to authenticate with your server
       - name: Setup SSH key for server access
@@ -95,7 +103,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
       # =========================================================================
-      # STEP 9: Transfer Build to Server
+      # STEP 10: Transfer Build to Server
       # =========================================================================
       # Copy the compressed build archive to the server
       - name: Copy build archive to server
@@ -104,7 +112,7 @@ jobs:
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/build-${{ github.sha }}.tar.gz"
 
       # =========================================================================
-      # STEP 10: Deploy with Release Versioning
+      # STEP 11: Deploy with Release Versioning
       # =========================================================================
       # Deploy using the releases pattern:
       # - Store each deployment in releases/TIMESTAMP directory
