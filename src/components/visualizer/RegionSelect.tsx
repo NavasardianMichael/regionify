@@ -40,6 +40,7 @@ export const RegionSelect: FC = () => {
         placeholder="Select a region..."
         className="max-w-64!"
         showSearch={showSearchConfig}
+        aria-label="Select a region"
       />
     </Flex>
   );

@@ -24,4 +24,14 @@
     .ant-splitter-bar-collapse-bar {
     margin-left: -8px;
   }
+
+  /* Fix placeholder color contrast for accessibility (WCAG 4.5:1 ratio) */
+  .ant-select-placeholder {
+    color: #767676 !important;
+  }
+
+  .ant-input::placeholder,
+  .ant-input-number-input::placeholder {
+    color: #767676 !important;
+  }
 }

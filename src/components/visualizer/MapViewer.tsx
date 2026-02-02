@@ -42,7 +42,7 @@ type MapViewerProps = {
 };
 
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLButtonElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
   const [rawSvgContent, setRawSvgContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -733,10 +733,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           backgroundColor: picture.transparentBackground ? 'transparent' : picture.backgroundColor,
         }}
       >
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-        <div
+        <button
+          type="button"
           ref={containerRef}
-          className="absolute inset-0 flex cursor-grab items-center justify-center active:cursor-grabbing"
+          aria-label={selectedRegionId ? `Map of ${selectedRegionId}` : 'No region selected'}
+          className="absolute inset-0 flex cursor-grab items-center justify-center border-none bg-transparent p-0 active:cursor-grabbing"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -765,13 +766,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               </Typography.Text>
             </Flex>
           )}
-        </div>
+        </button>
 
         {/* Floating Legend (inside map container) */}
         {position === LEGEND_POSITIONS.floating && labels.show && legendItems.length > 0 && (
-          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
           <div
             ref={legendRef}
+            role="region"
+            aria-label="Map legend"
             className={`absolute ${legendPositionClasses} p-sm cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]`}
             style={{
               left: floatingPosition.x,
@@ -779,28 +781,31 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               width: floatingSize.width,
               backgroundColor,
             }}
-            onMouseDown={handleLegendMouseDown}
           >
-            {legendContent}
+            {/* Invisible drag handle overlay */}
+            <button
+              type="button"
+              aria-label="Drag to reposition legend"
+              className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
+              onMouseDown={handleLegendMouseDown}
+            />
+            <div className="relative z-20">{legendContent}</div>
             {/* Resize handle for floating legend */}
-            <div
-              role="slider"
-              tabIndex={0}
-              aria-label="Resize legend"
-              aria-valuemin={120}
-              aria-valuemax={400}
-              aria-valuenow={floatingSize.width}
-              className="absolute -right-1 -bottom-1 h-6 w-6 cursor-se-resize rounded-bl-lg transition-colors hover:bg-gray-100"
+            <button
+              type="button"
+              aria-label="Resize legend width"
+              className="absolute -right-1 -bottom-1 z-20 h-6 w-6 cursor-se-resize rounded-bl-lg border-none bg-transparent p-0 transition-colors hover:bg-gray-100"
               onMouseDown={handleResizeMouseDown}
             >
               <svg
                 className="h-full w-full p-1 text-gray-400"
                 viewBox="0 0 24 24"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22Z" />
               </svg>
-            </div>
+            </button>
           </div>
         )}
 
@@ -817,18 +822,21 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               icon={<PlusOutlined />}
               onClick={handleZoomIn}
               className="shadow-md"
+              aria-label="Zoom in"
             />
             <Button
               type="default"
               icon={<MinusOutlined />}
               onClick={handleZoomOut}
               className="shadow-md"
+              aria-label="Zoom out"
             />
             <Button
               type="default"
               icon={<FullscreenOutlined />}
               onClick={handleResetView}
               className="shadow-md"
+              aria-label="Reset view"
             />
           </Flex>
         )}

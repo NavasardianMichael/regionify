@@ -483,6 +483,7 @@ Moscow,2500`}
               onClick={handleDownloadData}
               className="text-gray-500"
               disabled={data.allIds.length === 0}
+              aria-label="Download data"
             />
           </Tooltip>
           <Tooltip title="Enter Data Manually">
@@ -492,6 +493,7 @@ Moscow,2500`}
               size="small"
               onClick={() => setIsManualModalOpen(true)}
               className="text-gray-500"
+              aria-label="Enter data manually"
             />
           </Tooltip>
         </Flex>
@@ -502,16 +504,21 @@ Moscow,2500`}
         value={importDataType}
         onChange={(value) => setVisualizerState({ importDataType: value as ImportDataType })}
         block
+        aria-label="Import data format"
       />
 
-      <Flex gap="small">
+      <Flex gap="small" align="center">
         <Typography.Text className="text-sm text-gray-500">
           Upload your dataset to visualize regional metrics
         </Typography.Text>
-        <InfoCircleOutlined
-          className="hover:text-primary cursor-pointer text-gray-400"
+        <button
+          type="button"
+          className="hover:text-primary cursor-pointer border-none bg-transparent p-0 text-gray-400"
           onClick={() => setIsFormatInfoModalOpen(true)}
-        />
+          aria-label="View expected data format"
+        >
+          <InfoCircleOutlined />
+        </button>
       </Flex>
 
       <Modal

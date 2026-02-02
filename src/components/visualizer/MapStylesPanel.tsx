@@ -134,8 +134,15 @@ const MapStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Show Border</Typography.Text>
-              <Switch checked={border.show} size="small" onChange={handleBorderShowChange} />
+              <Typography.Text className="text-sm text-gray-600" id="show-border-label">
+                Show Border
+              </Typography.Text>
+              <Switch
+                checked={border.show}
+                size="small"
+                onChange={handleBorderShowChange}
+                aria-labelledby="show-border-label"
+              />
             </Flex>
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
@@ -176,8 +183,15 @@ const MapStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Show Shadow</Typography.Text>
-              <Switch checked={shadow.show} size="small" onChange={handleShadowShowChange} />
+              <Typography.Text className="text-sm text-gray-600" id="show-shadow-label">
+                Show Shadow
+              </Typography.Text>
+              <Switch
+                checked={shadow.show}
+                size="small"
+                onChange={handleShadowShowChange}
+                aria-labelledby="show-shadow-label"
+              />
             </Flex>
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
@@ -237,11 +251,14 @@ const MapStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Show Controls</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="show-controls-label">
+                Show Controls
+              </Typography.Text>
               <Switch
                 checked={zoomControls.show}
                 size="small"
                 onChange={handleZoomControlsShowChange}
+                aria-labelledby="show-controls-label"
               />
             </Flex>
           </Flex>
@@ -257,11 +274,14 @@ const MapStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Show Labels</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="show-region-labels-label">
+                Show Labels
+              </Typography.Text>
               <Switch
                 checked={regionLabels.show}
                 size="small"
                 onChange={handleRegionLabelsShowChange}
+                aria-labelledby="show-region-labels-label"
               />
             </Flex>
             <Flex align="center" justify="space-between">

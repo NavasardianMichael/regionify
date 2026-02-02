@@ -113,8 +113,15 @@ const LegendStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Show Title</Typography.Text>
-              <Switch checked={title.show} size="small" onChange={handleTitleShowChange} />
+              <Typography.Text className="text-sm text-gray-600" id="show-title-label">
+                Show Title
+              </Typography.Text>
+              <Switch
+                checked={title.show}
+                size="small"
+                onChange={handleTitleShowChange}
+                aria-labelledby="show-title-label"
+              />
             </Flex>
             <Flex align="center" justify="space-between" gap="small">
               <Typography.Text className="shrink-0 text-sm text-gray-600">Title</Typography.Text>
@@ -141,8 +148,15 @@ const LegendStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between" className="mb-2!">
-              <Typography.Text className="text-sm text-gray-600">Show Labels</Typography.Text>
-              <Switch checked={labels.show} size="small" onChange={handleLabelsShowChange} />
+              <Typography.Text className="text-sm text-gray-600" id="show-labels-label">
+                Show Labels
+              </Typography.Text>
+              <Switch
+                checked={labels.show}
+                size="small"
+                onChange={handleLabelsShowChange}
+                aria-labelledby="show-labels-label"
+              />
             </Flex>
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">Text Color</Typography.Text>

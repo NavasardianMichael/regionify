@@ -38,11 +38,14 @@ const PictureStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Transparent</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="transparent-bg-label">
+                Transparent
+              </Typography.Text>
               <Switch
                 checked={picture.transparentBackground}
                 size="small"
                 onChange={handleTransparentChange}
+                aria-labelledby="transparent-bg-label"
               />
             </Flex>
             <Flex align="center" justify="space-between">

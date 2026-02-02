@@ -89,13 +89,17 @@ const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
         isDragged ? 'opacity-10' : ''
       }`}
     >
-      <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
+      <HolderOutlined
+        className="cursor-grab text-gray-400 active:cursor-grabbing"
+        aria-hidden="true"
+      />
       <Input
         value={item.name}
         onChange={handleNameChange}
         placeholder="Name"
         size="small"
         className="min-w-0"
+        aria-label="Legend item name"
       />
       <InputNumber
         value={item.min}
@@ -104,6 +108,7 @@ const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
         min={0}
         controls={false}
         className="box-border w-full!"
+        aria-label="Minimum value"
       />
       <InputNumber
         value={item.max}
@@ -112,8 +117,14 @@ const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
         min={0}
         controls={false}
         className="box-border w-full!"
+        aria-label="Maximum value"
       />
-      <ColorPicker value={item.color} onChangeComplete={handleColorChange} size="small" />
+      <ColorPicker
+        value={item.color}
+        onChangeComplete={handleColorChange}
+        size="small"
+        aria-label="Legend color"
+      />
       <Tooltip title="Remove">
         <Button
           type="text"
@@ -123,6 +134,7 @@ const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
           data-id={item.id}
           onClick={onRemove}
           disabled={isRemoveDisabled}
+          aria-label="Remove legend item"
         />
       </Tooltip>
     </div>
@@ -222,6 +234,7 @@ const LegendConfigPanel: FC = () => {
               size="small"
               onClick={handleSort}
               className="text-gray-500"
+              aria-label={sortDirection === 'asc' ? 'Sort ascending' : 'Sort descending'}
             />
           </Tooltip>
           <Tooltip title="Expand to Edit">
@@ -231,6 +244,7 @@ const LegendConfigPanel: FC = () => {
               size="small"
               onClick={handleOpenModal}
               className="text-gray-500"
+              aria-label="Expand to edit"
             />
           </Tooltip>
         </Flex>
@@ -272,6 +286,7 @@ const LegendConfigPanel: FC = () => {
           size="small"
           onClick={handleAddLegendRange}
           className="w-full text-gray-500"
+          aria-label="Add legend range"
         />
       </Tooltip>
 
