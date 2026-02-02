@@ -154,7 +154,9 @@ const MapStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Width</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="border-width-label">
+                Width
+              </Typography.Text>
               <Flex align="center" gap="small" className="w-1/2">
                 <Slider
                   min={1}
@@ -164,7 +166,7 @@ const MapStylesPanel: FC = () => {
                   onChange={handleBorderWidthChange}
                   className="flex-1"
                   disabled={!border.show}
-                  aria-label="Border width"
+                  aria-labelledby="border-width-label"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {border.width}px
@@ -204,7 +206,9 @@ const MapStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Blur</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="shadow-blur-label">
+                Blur
+              </Typography.Text>
               <Flex align="center" gap="small" className="w-1/2">
                 <Slider
                   min={0}
@@ -213,7 +217,7 @@ const MapStylesPanel: FC = () => {
                   onChange={handleShadowBlurChange}
                   className="flex-1"
                   disabled={!shadow.show}
-                  aria-label="Shadow blur"
+                  aria-labelledby="shadow-blur-label"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {shadow.blur}px
@@ -296,7 +300,9 @@ const MapStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Font Size</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="region-labels-font-size-label">
+                Font Size
+              </Typography.Text>
               <Flex align="center" gap="small" className="w-1/2">
                 <Slider
                   min={6}
@@ -306,7 +312,7 @@ const MapStylesPanel: FC = () => {
                   onChange={handleRegionLabelsFontSizeChange}
                   className="flex-1"
                   disabled={!regionLabels.show}
-                  aria-label="Region labels font size"
+                  aria-labelledby="region-labels-font-size-label"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {regionLabels.fontSize}px

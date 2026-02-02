@@ -168,7 +168,9 @@ const LegendStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">Font Size</Typography.Text>
+              <Typography.Text className="text-sm text-gray-600" id="legend-font-size-label">
+                Font Size
+              </Typography.Text>
               <Flex align="center" gap="small" className="w-1/2">
                 <Slider
                   min={8}
@@ -177,7 +179,7 @@ const LegendStylesPanel: FC = () => {
                   onChange={handleLabelsFontSizeChange}
                   className="flex-1"
                   disabled={!labels.show}
-                  aria-label="Legend font size"
+                  aria-labelledby="legend-font-size-label"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {localFontSize}pt
