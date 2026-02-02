@@ -1,7 +1,5 @@
 import { type FC, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
+import { App, Button, Card, Form, Input, Typography } from 'antd';
 import { processContactFormData, sendContactMessage } from '@/api/contact';
 
 type ContactFormValues = {

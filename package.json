@@ -21,9 +21,6 @@
     ],
     "*.{json,css,md}": [
       "prettier --write"
-    ],
-    ".github/copilot-instructions.md": [
-      "node scripts/sync-ai-rules.js"
     ]
   },
   "dependencies": {

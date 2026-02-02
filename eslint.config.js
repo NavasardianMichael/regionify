@@ -41,7 +41,7 @@ export default defineConfig([
     rules: {
       // Import sorting
       'simple-import-sort/imports': [
-        'warn',
+        'error',
         {
           groups: [
             // All imports in a single group (no empty lines between)
@@ -74,7 +74,7 @@ export default defineConfig([
           ],
         },
       ],
-      'simple-import-sort/exports': 'warn',
+      'simple-import-sort/exports': 'error',
 
       // React rules
       'react/prop-types': 'off', // Using TypeScript
@@ -85,14 +85,14 @@ export default defineConfig([
 
       // React Hooks - exhaustive deps warning
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'error',
 
       // TypeScript
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
@@ -102,8 +102,8 @@ export default defineConfig([
       'jsx-a11y/alt-text': 'error',
       'jsx-a11y/anchor-has-content': 'error',
       'jsx-a11y/anchor-is-valid': 'error',
-      'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/no-static-element-interactions': 'warn',
+      'jsx-a11y/click-events-have-key-events': 'error',
+      'jsx-a11y/no-static-element-interactions': 'error',
 
       // General best practices
       'prefer-const': 'error',
