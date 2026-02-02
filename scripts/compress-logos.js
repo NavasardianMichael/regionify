@@ -15,8 +15,9 @@ async function compressLogos() {
     const outputPath = join(LOGO_DIR, `${name}_small.png`);
 
     await sharp(inputPath)
+      .trim()
       .resize(TARGET_WIDTH, null, { withoutEnlargement: true })
-      .png({ quality: 80, compressionLevel: 9 })
+      .png({ quality: 100, compressionLevel: 6 })
       .toFile(outputPath);
 
     console.log(`✓ Created: ${outputPath}`);
