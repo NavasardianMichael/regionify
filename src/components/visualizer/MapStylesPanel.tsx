@@ -164,6 +164,7 @@ const MapStylesPanel: FC = () => {
                   onChange={handleBorderWidthChange}
                   className="flex-1"
                   disabled={!border.show}
+                  aria-label="Border width"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {border.width}px
@@ -212,6 +213,7 @@ const MapStylesPanel: FC = () => {
                   onChange={handleShadowBlurChange}
                   className="flex-1"
                   disabled={!shadow.show}
+                  aria-label="Shadow blur"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {shadow.blur}px
@@ -304,6 +306,7 @@ const MapStylesPanel: FC = () => {
                   onChange={handleRegionLabelsFontSizeChange}
                   className="flex-1"
                   disabled={!regionLabels.show}
+                  aria-label="Region labels font size"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {regionLabels.fontSize}px

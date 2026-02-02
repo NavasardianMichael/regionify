@@ -177,6 +177,7 @@ const LegendStylesPanel: FC = () => {
                   onChange={handleLabelsFontSizeChange}
                   className="flex-1"
                   disabled={!labels.show}
+                  aria-label="Legend font size"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
                   {localFontSize}pt

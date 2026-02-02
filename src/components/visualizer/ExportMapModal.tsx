@@ -99,7 +99,13 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
                 className="w-20"
               />
             </Flex>
-            <Slider min={1} max={100} value={quality} onChange={setQuality} />
+            <Slider
+              min={1}
+              max={100}
+              value={quality}
+              onChange={setQuality}
+              aria-label="Export quality"
+            />
           </Flex>
         )}
 

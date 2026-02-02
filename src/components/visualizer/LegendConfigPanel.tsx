@@ -119,12 +119,7 @@ const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
         className="box-border w-full!"
         aria-label="Maximum value"
       />
-      <ColorPicker
-        value={item.color}
-        onChangeComplete={handleColorChange}
-        size="small"
-        aria-label="Legend color"
-      />
+      <ColorPicker value={item.color} onChangeComplete={handleColorChange} size="small" />
       <Tooltip title="Remove">
         <Button
           type="text"
