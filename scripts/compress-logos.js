@@ -7,7 +7,7 @@ const TARGET_WIDTH = 200; // Suitable for header logo
 
 async function compressLogos() {
   const files = await readdir(LOGO_DIR);
-  const pngFiles = files.filter(f => f.endsWith('.png') && !f.includes('_small'));
+  const pngFiles = files.filter((f) => f.endsWith('.png') && !f.includes('_small'));
 
   for (const file of pngFiles) {
     const inputPath = join(LOGO_DIR, file);

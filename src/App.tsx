@@ -33,7 +33,14 @@ const Navigation = () => {
     <nav className="border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
         <Link to="/">
-          <img src={logoImage} alt="Region Map" className="h-12 w-auto" width={120} height={32} />
+          <img
+            src={logoImage}
+            alt="Region Map"
+            className="h-12 w-auto"
+            width={120}
+            height={32}
+            fetchPriority="high"
+          />
         </Link>
         <Flex component="ul" gap={4}>
           {NAV_ITEMS.map((item) => {
