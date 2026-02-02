@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { CreditCardOutlined, HomeOutlined, MailOutlined, TableOutlined } from '@ant-design/icons';
 import { App as AntApp, ConfigProvider, Flex, Spin } from 'antd';
-import logoImage from '@/assets/images/logo/logo-high-resolution-with-text.png';
+import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { theme } from '@/styles/antd-theme';
