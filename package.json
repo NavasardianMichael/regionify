@@ -1,61 +1,35 @@
 {
-  "name": "region-map",
+  "name": "regionify",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "dev": "pnpm run --parallel --filter @regionify/client --filter @regionify/server dev",
+    "dev:client": "pnpm --filter @regionify/client dev",
+    "dev:server": "pnpm --filter @regionify/server dev",
+    "build": "pnpm run --filter @regionify/shared typecheck && pnpm run --parallel --filter @regionify/client --filter @regionify/server build",
+    "build:client": "pnpm --filter @regionify/client build",
+    "build:server": "pnpm --filter @regionify/server build",
+    "lint": "pnpm run --parallel -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "preview": "vite preview",
+    "typecheck": "pnpm run --parallel -r typecheck",
     "prepare": "husky",
-    "sync-ai-rules": "node scripts/sync-ai-rules.js",
-    "env-to-base64": "powershell -Command \"[Convert]::ToBase64String([System.IO.File]::ReadAllBytes('.env'))\""
+    "db:generate": "pnpm --filter @regionify/server db:generate",
+    "db:migrate": "pnpm --filter @regionify/server db:migrate",
+    "db:push": "pnpm --filter @regionify/server db:push",
+    "db:studio": "pnpm --filter @regionify/server db:studio"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,css,md}": [
+    "*.{ts,tsx,json,css,md}": [
       "prettier --write"
     ]
   },
-  "dependencies": {
-    "@ant-design/icons": "^6.1.0",
-    "antd": "^6.2.1",
-    "dompurify": "^3.3.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.0",
-    "xlsx": "^0.18.5",
-    "zustand": "^5.0.10"
-  },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@tailwindcss/vite": "^4.1.18",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
-    "eslint": "^9.39.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "globals": "^16.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "sharp": "^0.34.5",
-    "tailwindcss": "^4.1.18",
-    "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "typescript": "~5.9.3"
   }
 }

@@ -9,8 +9,22 @@ Interactive map visualization tool for creating customizable choropleth maps wit
 - **Legend Configuration** — Customize legend styles, colors, and positioning
 - **Export Options** — Export maps as images for presentations and reports
 - **Text Similarity Matching** — Automatic association of imported data with map regions using fuzzy matching
+- **User Authentication** — Session-based auth with Google OAuth support
+
+## Monorepo Structure
+
+```
+regionify/
+├── client/           # React frontend (@regionify/client)
+├── server/           # Express backend (@regionify/server)
+├── shared/           # Shared types & schemas (@regionify/shared)
+├── package.json      # Root workspace config
+└── pnpm-workspace.yaml
+```
 
 ## Tech Stack
+
+### Frontend (client/)
 
 - **React 19** + **TypeScript**
 - **Vite** — Build tool
@@ -19,31 +33,107 @@ Interactive map visualization tool for creating customizable choropleth maps wit
 - **Tailwind CSS 4** — Styling
 - **Zustand** — State management
 
+### Backend (server/)
+
+- **Express 5** + **TypeScript**
+- **Prisma ORM** — PostgreSQL database
+- **Redis** — Session store
+- **Passport** — Google OAuth
+- **Zod** — Validation
+
+### Shared (shared/)
+
+- Common TypeScript types
+- Zod validation schemas
+
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 22+
+- pnpm 9+
+- Docker & Docker Compose (for PostgreSQL & Redis)
+
+### Installation
+
 ```bash
-# Install dependencies
+# Install all dependencies
 pnpm install
 
-# Start development server
+# Set up environment variables
+cp server/.env.example server/.env
+# Edit server/.env with your configuration
+```
+
+### Docker Services
+
+Start PostgreSQL and Redis with Docker:
+
+```bash
+# Start services in background
+docker compose up -d
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+```
+
+### Database Setup
+
+```bash
+# Push schema to database (development)
+pnpm db:push
+
+# Or create a migration (production)
+pnpm db:migrate
+```
+
+### Development
+
+```bash
+# Start both client and server
 pnpm dev
 
-# Build for production
+# Start only client
+pnpm dev:client
+
+# Start only server
+pnpm dev:server
+```
+
+- Client: http://localhost:5183
+- Server: http://localhost:3000
+
+### Production Build
+
+```bash
+# Build all packages
 pnpm build
 
-# Preview production build
-pnpm preview
+# Build individual packages
+pnpm build:client
+pnpm build:server
 ```
 
 ## Scripts
 
-| Command        | Description               |
-| -------------- | ------------------------- |
-| `pnpm dev`     | Start development server  |
-| `pnpm build`   | Build for production      |
-| `pnpm lint`    | Run ESLint                |
-| `pnpm format`  | Format code with Prettier |
-| `pnpm preview` | Preview production build  |
+| Command           | Description                    |
+| ----------------- | ------------------------------ |
+| `pnpm dev`        | Start client and server        |
+| `pnpm dev:client` | Start client only              |
+| `pnpm dev:server` | Start server only              |
+| `pnpm build`      | Build all packages             |
+| `pnpm lint`       | Run ESLint across all packages |
+| `pnpm format`     | Format code with Prettier      |
+| `pnpm typecheck`  | Type-check all packages        |
+| `pnpm db:push`    | Push schema to database        |
+| `pnpm db:migrate` | Run database migrations        |
+| `pnpm db:studio`  | Open Drizzle Studio            |
 
 ## CI/CD Pipeline
 

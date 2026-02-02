@@ -1,3 +1,9 @@
+packages:
+  - client
+  - server
+  - shared
+
 ignoredBuiltDependencies:
+  - argon2
   - esbuild
   - sharp

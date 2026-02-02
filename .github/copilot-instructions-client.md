@@ -1,0 +1,154 @@
+# Client Development Rules for AI Agents
+
+**See `.github/copilot-instructions.md` for shared rules.**
+
+## Stack
+
+- React 19 + TypeScript
+- Vite (build tool)
+- React Router (client-side routing)
+- Ant Design UI (with ConfigProvider theming)
+- Tailwind CSS v4 (utility-first styling)
+- Zustand (global state management)
+- pnpm (package manager)
+
+## Project Structure
+
+```
+client/src/
+├── api/           # API modules and endpoints
+├── assets/        # Static assets (images, fonts, etc.)
+├── components/    # Reusable UI components
+├── constants/     # Application constants
+├── helpers/       # Shared utility functions
+├── hooks/         # Custom React hooks
+├── pages/         # Route page components
+├── store/         # State management (if needed)
+├── styles/        # Global styles and theme config
+└── types/         # Shared TypeScript interfaces / Domain-specific types
+```
+
+## Path Aliases
+
+Use `@/` prefix for absolute imports:
+
+```tsx
+import { Button } from '@/components/Button';
+import { useAuth } from '@/hooks/useAuth';
+```
+
+## Canonical References
+
+- API pattern: `client/src/api/`
+- Components: `client/src/components/`
+- Hooks: `client/src/hooks/`
+- Store: `client/src/store/`
+- Error handling: `client/src/helpers/error.ts`
+- Types: `src/types/`
+- Theme: `src/styles/antd-theme.ts`, `src/styles/tailwind.css`
+
+## React Rules
+
+- Functional components only.
+- Use React 19 features when applicable.
+- Prefer composition over inheritance.
+- Extract reusable logic into custom hooks in `src/hooks/`.
+- Avoid prop drilling; use context or state management for deep data passing.
+
+## Components
+
+- Strongly typed Props type required.
+- Reuse existing components before creating new ones.
+- Prefer Ant Design components over custom UI.
+- Style with Tailwind utilities; avoid inline styles and minimal custom CSS.
+- Performance optimizations:
+  - `useMemo` for expensive calculations.
+  - `useCallback` for functions passed as props.
+  - `React.memo` for pure presentational components when needed.
+- Avoid inline object/array creation in JSX (causes re-renders).
+
+## Styling
+
+- Tailwind CSS v4 for utility classes.
+- Custom theme values defined in `src/styles/tailwind.css` via `@theme`.
+- Ant Design theme in `src/styles/antd-theme.ts`.
+- Primary color: `#18294D` (use `bg-primary`, `text-primary` in Tailwind).
+- Spacing tokens: `xs`, `sm`, `md`, `lg`, `xl`.
+
+## API Rules
+
+- Endpoints defined only in `src/api/`.
+- No hardcoded URLs outside API layer.
+- Keep API logic isolated from UI components.
+- Handle loading, error, and success states.
+
+## State Management (Zustand)
+
+- Store files go in `src/store/` (e.g., `useAuthStore.ts`, `useAppStore.ts`).
+- One store per domain/feature; avoid monolithic stores.
+- Use the hook pattern:
+
+  ```tsx
+  import { create } from 'zustand';
+
+  type AuthState = {
+    user: User | null;
+    setUser: (user: User | null) => void;
+  };
+
+  export const useAuthStore = create<AuthState>((set) => ({
+    user: null,
+    setUser: (user) => set({ user }),
+  }));
+  ```
+
+- Use selectors to avoid unnecessary re-renders (in selectors.ts in the corresponding slice).
+- Keep stores simple; derive computed values in components or custom hooks.
+- Use `persist` middleware for localStorage persistence when needed.
+- Do not couple store logic with API calls directly; use hooks or helpers.
+
+## Hooks Best Practices
+
+- Always include all dependencies in `useEffect`, `useMemo`, `useCallback`.
+- Clean up side effects (subscriptions, timers) in useEffect return.
+- Avoid async functions directly in useEffect; define inside and call.
+- Custom hooks should start with `use` prefix.
+
+## Accessibility
+
+- All images must have `alt` text.
+- Interactive elements need keyboard support.
+- Use semantic HTML elements.
+- Leverage Ant Design's built-in accessibility features.
+- Test with keyboard navigation.
+
+## Performance
+
+- Lazy load routes and heavy components with `React.lazy`.
+- Avoid unnecessary re-renders.
+- Use React DevTools Profiler to identify bottlenecks.
+- Prefer CSS over JavaScript for animations.
+
+## Forbidden (Client-Specific)
+
+- Hardcoding API URLs outside `src/api/`
+- Mixing UI, API, and state concerns in one file
+- Inline styles (use Tailwind or CSS modules)
+- Direct DOM manipulation (use React refs if needed)
+- Using `useEffect` for derived state or synchronous logic (prefer `useMemo`, event handlers, or computed values)
+- Avoid `overflow-hidden` unless required for layout specificity (e.g., rounded corners clipping, text truncation, viewport containment)
+
+## Custom Best Practices
+
+- Avoid deprecated Ant Design props; always use the latest recommended prop names.
+- Prefer flexbox over CSS grid for simple layouts.
+- Use flex grow (`flex-1`, `min-h-0`) instead of calculated heights (`h-[calc(...)]`) for container-fitting content.
+- Prefer library types for handlers passed as props (e.g., `SelectProps['onChange']` instead of manual typing).
+- Avoid inline object/array creation in JSX (causes re-renders); memoize with `useMemo` or define outside component.
+- Prefer Ant Design components over native HTML elements (e.g., `Typography.Text` over `<span>`, `Typography.Title` over `<h1>`–`<h6>`).
+- Use Ant Design `Flex` component instead of `<div>` with flex classes for flexbox layouts.
+- Avoid nested ternaries for conditional rendering; use one of these patterns instead:
+  1. Early return with `if` statements
+  2. Mapped variable with `{ [key]: Component or tsx) }` structure
+  3. Memoized variable (`useMemo`) with internal `if`/`return` logic
+- In loops (e.g., `.map()`), avoid inline event handler functions; instead use `data-*` attributes (or `name`/`id`) on elements and a single memoized (`useCallback`) handler that extracts the identifier from `event.currentTarget.dataset`.

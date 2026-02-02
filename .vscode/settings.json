@@ -15,5 +15,5 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["cursorrules"]
+  "cSpell.words": ["cursorrules", "regionify"]
 }
