@@ -1,7 +1,7 @@
 import { contactSchema } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
-import { validate } from '../middleware/index.js';
+import { validate } from '../middleware/validate.js';
 import { contactService } from '../services/contactService.js';
 
 const router: ExpressRouter = Router();

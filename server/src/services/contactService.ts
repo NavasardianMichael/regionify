@@ -1,7 +1,7 @@
 import { type ContactInput } from '@regionify/shared';
 
 import { env } from '../config/env.js';
-import { logger } from '../lib/index.js';
+import { logger } from '../lib/logger.js';
 
 const MAIL_API_URL = 'https://api-mail-engine.mnavasardian.com/mail/send';
 const APP_ID = 'regionify';

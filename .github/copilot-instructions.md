@@ -85,6 +85,7 @@ import { HttpStatus, ErrorCode } from '@regionify/shared';
 - Introducing new patterns without precedent in the codebase
 - Duplicating existing functionality
 - Ignoring ESLint/TypeScript warnings
+- Creating barrel files (`index.ts` that only re-export from other files in the same directory). Import directly from the source file instead.
 
 ## AI Agent Behavior
 

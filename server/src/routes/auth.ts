@@ -3,7 +3,9 @@ import { type Router as ExpressRouter, Router } from 'express';
 import passport from 'passport';
 
 import { env } from '../config/env.js';
-import { authLimiter, requireAuth, validate } from '../middleware/index.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
+import { requireAuth } from '../middleware/requireAuth.js';
+import { validate } from '../middleware/validate.js';
 import { authService } from '../services/authService.js';
 
 const router: ExpressRouter = Router();

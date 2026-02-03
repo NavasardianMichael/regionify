@@ -9,8 +9,10 @@ import { pinoHttp } from 'pino-http';
 
 import { configurePassport } from './auth/passport.js';
 import { env, isProd } from './config/env.js';
-import { logger, redis } from './lib/index.js';
-import { errorHandler, generalLimiter } from './middleware/index.js';
+import { logger } from './lib/logger.js';
+import { redis } from './lib/redis.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
 import { apiRoutes } from './routes/index.js';
 
 export function createApp(): express.Application {
