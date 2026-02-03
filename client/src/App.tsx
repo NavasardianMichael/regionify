@@ -12,7 +12,7 @@ const HomePage = lazy(() => import('@/pages/HomePage'));
 const VisualizerPage = lazy(() => import('@/pages/VisualizerPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
-
+console.log('App loaded');
 const PageLoader = () => (
   <Flex align="center" justify="center" className="h-full">
     <Spin size="large" />
