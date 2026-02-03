@@ -137,22 +137,70 @@ pnpm build:server
 
 ## CI/CD Pipeline
 
-Automated deployment via GitHub Actions (`.github/workflows/deploy.yml`):
+### Continuous Integration (`.github/workflows/ci.yml`)
 
-1. **Trigger** — Push to `master` branch
-2. **Build** — Install dependencies with pnpm, build production assets
-3. **Deploy** — SSH to production server with release versioning
-4. **Rollback** — Keeps last 5 releases for easy rollback
+Runs on pull requests to `master`:
 
-### Required Secrets
+- **Lint** — ESLint and Prettier checks
+- **Type Check** — TypeScript validation
+- **Build** — Verify production build succeeds
 
-| Secret     | Description                      |
-| ---------- | -------------------------------- |
-| `SSH_HOST` | Server IP or domain              |
-| `SSH_USER` | SSH username                     |
-| `SSH_KEY`  | Private SSH key                  |
-| `SSH_PORT` | SSH port (optional, default: 22) |
-| `APP_DIR`  | Deployment directory             |
+### Continuous Deployment (`.github/workflows/deploy.yml`)
+
+Automated deployment on push to `master`:
+
+1. **Build** — Install dependencies, build client and server
+2. **Deploy Client** — Static files to `$APP_DIR/client/releases/`
+3. **Deploy Server** — Node.js app to `$APP_DIR/server/releases/`
+4. **Migrate** — Run Prisma database migrations
+5. **Restart** — Reload PM2 application
+
+### Server Directory Structure
+
+```
+$APP_DIR/
+├── client/
+│   ├── releases/           # Versioned client builds
+│   └── current -> releases/abc123
+├── server/
+│   ├── releases/           # Versioned server builds
+│   └── current -> releases/abc123
+├── shared/
+│   ├── .env                # Environment variables
+│   └── ecosystem.config.cjs # PM2 configuration
+└── logs/
+    ├── error.log
+    └── out.log
+```
+
+### Required GitHub Secrets
+
+| Secret            | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `SSH_HOST`        | Server IP or domain                                      |
+| `SSH_USER`        | SSH username                                             |
+| `SSH_KEY`         | Private SSH key                                          |
+| `SSH_PORT`        | SSH port (optional, default: 22)                         |
+| `APP_DIR`         | Deployment directory (e.g., `/home/user/apps/regionify`) |
+| `ENV_FILE_BASE64` | Base64-encoded server .env file                          |
+
+### Server Setup
+
+1. Install Node.js 24+, PM2, and Nginx
+2. Create app directory: `mkdir -p $APP_DIR/{client,server,shared,logs}`
+3. Copy `server/ecosystem.config.cjs` to `$APP_DIR/shared/` and update paths
+4. Configure Nginx to serve from `$APP_DIR/client/current` and proxy `/api` to `localhost:3000`
+5. Set up GitHub secrets and push to master
+
+### Rollback
+
+Keep last 5 releases. To rollback manually:
+
+```bash
+cd $APP_DIR/server
+ln -sfn releases/<previous-sha> current
+pm2 reload regionify
+```
 
 ## Project Structure
 

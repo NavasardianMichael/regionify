@@ -1,170 +1,309 @@
 # ==============================================================================
-# Build and Deploy to Production Server
+# Build and Deploy to Production Server (Full Stack)
 # ==============================================================================
 # REQUIRED GITHUB SECRETS:
 # - SSH_HOST: Server IP or domain
 # - SSH_USER: SSH username
 # - SSH_KEY: Private SSH key for authentication
 # - SSH_PORT: (optional) SSH port, defaults to 22
-# - APP_DIR: Deployment directory (e.g., /home/user_name/apps/app_name)])
-# - ENV_FILE_BASE64: Base64-encoded .env file content
+# - APP_DIR: Deployment directory (e.g., /home/user_name/apps/regionify)
+# - ENV_FILE_BASE64: Base64-encoded server .env file content
 #
-# Web server should serve from: $APP_DIR/current
+# DEPLOYMENT STRUCTURE:
+# $APP_DIR/
+# ├── client/
+# │   ├── releases/          # Versioned client builds
+# │   │   ├── abc123/
+# │   │   └── def456/
+# │   └── current -> releases/abc123  # Symlink to active release
+# ├── server/
+# │   ├── releases/          # Versioned server builds
+# │   │   ├── abc123/
+# │   │   └── def456/
+# │   └── current -> releases/abc123  # Symlink to active release
+# └── shared/                # Shared configuration (ecosystem.config.cjs)
+#
+# WEB SERVER CONFIGURATION:
+# - Nginx should serve static files from: $APP_DIR/client/current
+# - Nginx should proxy API requests to: http://localhost:3000
 # ==============================================================================
 
-name: Build and Deploy to Production Server
+name: Deploy to Production
 
-# Trigger: Run this workflow when code is pushed to the master branch
 on:
   push:
     branches: [master]
 
+env:
+  NODE_VERSION: '24'
+  PNPM_VERSION: '10'
+  KEEP_RELEASES: 5
+
 jobs:
-  build-and-deploy:
+  build:
+    name: Build
     runs-on: ubuntu-latest
+    outputs:
+      release_name: ${{ steps.vars.outputs.release_name }}
 
     steps:
       # =========================================================================
-      # STEP 1: Checkout Repository
+      # Setup
       # =========================================================================
-      # Download the repository code at the specific commit that triggered this workflow
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # =========================================================================
-      # STEP 2: Setup pnpm
-      # =========================================================================
-      # Install pnpm package manager
+      - name: Set release name
+        id: vars
+        run: echo "release_name=${{ github.sha }}" >> $GITHUB_OUTPUT
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: ${{ env.PNPM_VERSION }}
 
-      # =========================================================================
-      # STEP 3: Setup Node.js Environment
-      # =========================================================================
-      # Install Node.js LTS version for building the React application
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.11.1'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
-      # =========================================================================
-      # STEP 4: Install Dependencies
-      # =========================================================================
-      # Install all project dependencies specified in package.json
-      # Uses pnpm install --frozen-lockfile for clean, reproducible installs based on pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       # =========================================================================
-      # STEP 5: Create .env File
+      # Build
       # =========================================================================
-      # Decode the base64-encoded .env file from GitHub secrets
-      - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d > .env
+      - name: Build all packages
+        run: pnpm build
 
       # =========================================================================
-      # STEP 6: Build Application
+      # Create Archives
       # =========================================================================
-      # Build the React application for production
-      # Creates optimized static files in the dist/ directory
-      # CI=false disables treating warnings (including ESLint) as errors
-      - name: Build Application
-        run: CI=false pnpm run build
+      - name: Create client archive
+        run: tar -czf client-build.tar.gz -C client/dist .
 
-      # =========================================================================
-      # STEP 7: Create Deployment Archive
-      # =========================================================================
-      # Compress the client dist folder into a tar.gz archive for efficient transfer
-      - name: Create compressed build archive
+      - name: Create server archive
         run: |
-          tar -czf build.tar.gz -C client/dist .
+          # Include server dist, prisma, and package files
+          tar -czf server-build.tar.gz \
+            -C server dist prisma package.json
 
       # =========================================================================
-      # STEP 8: Configure SSH Known Hosts
+      # Upload Artifacts
       # =========================================================================
-      # Add your server's SSH fingerprint to known_hosts to prevent
-      # "unknown host" prompts during SSH/SCP operations
+      - name: Upload client build
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: client-build.tar.gz
+          retention-days: 1
+
+      - name: Upload server build
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-build
+          path: server-build.tar.gz
+          retention-days: 1
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+
+    steps:
+      # =========================================================================
+      # Download Artifacts
+      # =========================================================================
+      - name: Download client build
+        uses: actions/download-artifact@v4
+        with:
+          name: client-build
+
+      - name: Download server build
+        uses: actions/download-artifact@v4
+        with:
+          name: server-build
+
+      # =========================================================================
+      # SSH Setup
+      # =========================================================================
       - name: Add server to SSH known hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      # =========================================================================
-      # STEP 9: Setup SSH Authentication
-      # =========================================================================
-      # Load SSH private key from GitHub Secrets to authenticate with your server
-      - name: Setup SSH key for server access
+      - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
       # =========================================================================
-      # STEP 10: Transfer Build to Server
+      # Transfer Files
       # =========================================================================
-      # Copy the compressed build archive to the server
-      - name: Copy build archive to server
+      - name: Copy build archives to server
         run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" build.tar.gz \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/build-${{ github.sha }}.tar.gz"
+          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+            client-build.tar.gz server-build.tar.gz \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
 
       # =========================================================================
-      # STEP 11: Deploy with Release Versioning
+      # Deploy Client
       # =========================================================================
-      # Deploy using the releases pattern:
-      # - Store each deployment in releases/TIMESTAMP directory
-      # - Update 'current' symlink to point to latest release
-      # - Keep last 5 releases for easy rollback
-      # - Web server serves files from 'current' symlink
-      - name: Deploy to server with versioning
+      - name: Deploy client
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
             set -e
 
-            # Configuration
             APP_DIR="${{ secrets.APP_DIR }}"
-            RELEASES_DIR="$APP_DIR/releases"
-            CURRENT_LINK="$APP_DIR/current"
-            RELEASE_NAME="${{ github.sha }}"
+            CLIENT_DIR="$APP_DIR/client"
+            RELEASES_DIR="$CLIENT_DIR/releases"
+            CURRENT_LINK="$CLIENT_DIR/current"
+            RELEASE_NAME="${{ needs.build.outputs.release_name }}"
             NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
-            TAR_FILE="/tmp/build-${{ github.sha }}.tar.gz"
-            KEEP_RELEASES=5
+            KEEP_RELEASES=${{ env.KEEP_RELEASES }}
 
-            echo "🚀 Starting deployment: $RELEASE_NAME"
+            echo "🎨 Deploying client: $RELEASE_NAME"
 
-            # Create directory structure if it doesn't exist
             mkdir -p "$RELEASES_DIR"
-
-            # Create new release directory
-            echo "📂 Creating release directory..."
             mkdir -p "$NEW_RELEASE"
 
-            # Extract build files to new release
-            echo "📦 Extracting build files..."
-            tar -xzf "$TAR_FILE" -C "$NEW_RELEASE"
-
-            # Set proper permissions
-            echo "🔐 Setting permissions..."
+            tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
             chmod -R 755 "$NEW_RELEASE"
 
-            # Update symlink to point to new release
-            echo "🔗 Updating current symlink..."
             ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
 
-            # Clean up old releases (keep last KEEP_RELEASES)
-            echo "🧹 Cleaning up old releases..."
             cd "$RELEASES_DIR"
             ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
 
-            # Clean up tar file
-            rm "$TAR_FILE"
-
-            echo "✅ Deployment successful!"
-            echo "📊 Active release: $RELEASE_NAME"
-            echo "📁 Release path: $NEW_RELEASE"
-            echo "🔗 Current link: $CURRENT_LINK -> $NEW_RELEASE"
-            echo "💾 Keeping last $KEEP_RELEASES releases"
+            echo "✅ Client deployed to: $NEW_RELEASE"
           EOF
+
+      # =========================================================================
+      # Deploy Server
+      # =========================================================================
+      - name: Deploy server
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
+            set -e
+
+            APP_DIR="${{ secrets.APP_DIR }}"
+            SERVER_DIR="$APP_DIR/server"
+            SHARED_DIR="$APP_DIR/shared"
+            RELEASES_DIR="$SERVER_DIR/releases"
+            CURRENT_LINK="$SERVER_DIR/current"
+            RELEASE_NAME="${{ needs.build.outputs.release_name }}"
+            NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
+            KEEP_RELEASES=${{ env.KEEP_RELEASES }}
+
+            echo "🖥️ Deploying server: $RELEASE_NAME"
+
+            mkdir -p "$RELEASES_DIR"
+            mkdir -p "$SHARED_DIR"
+            mkdir -p "$NEW_RELEASE"
+
+            tar -xzf /tmp/server-build.tar.gz -C "$NEW_RELEASE"
+
+            # Create symlink to shared .env file
+            if [ -f "$SHARED_DIR/.env" ]; then
+              ln -sf "$SHARED_DIR/.env" "$NEW_RELEASE/.env"
+            fi
+
+            # Install production dependencies
+            cd "$NEW_RELEASE"
+            npm install --omit=dev --ignore-scripts
+
+            # Generate Prisma client
+            npx prisma generate
+
+            # Run database migrations
+            npx prisma migrate deploy
+
+            chmod -R 755 "$NEW_RELEASE"
+
+            ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
+
+            cd "$RELEASES_DIR"
+            ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+
+            echo "✅ Server deployed to: $NEW_RELEASE"
+          EOF
+
+      # =========================================================================
+      # Create/Update Environment File
+      # =========================================================================
+      - name: Update environment file
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
+            set -e
+
+            APP_DIR="${{ secrets.APP_DIR }}"
+            SHARED_DIR="$APP_DIR/shared"
+
+            echo "🔧 Updating environment file..."
+            echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d > "$SHARED_DIR/.env"
+            chmod 600 "$SHARED_DIR/.env"
+
+            echo "✅ Environment file updated"
+          EOF
+
+      # =========================================================================
+      # Restart Application
+      # =========================================================================
+      - name: Restart PM2 application
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
+            set -e
+
+            APP_DIR="${{ secrets.APP_DIR }}"
+            SERVER_DIR="$APP_DIR/server/current"
+            SHARED_DIR="$APP_DIR/shared"
+
+            echo "🔄 Restarting application..."
+
+            cd "$SHARED_DIR"
+
+            # Check if ecosystem file exists
+            if [ ! -f "ecosystem.config.cjs" ]; then
+              echo "❌ ecosystem.config.cjs not found in $SHARED_DIR"
+              echo "Please create the PM2 ecosystem config file manually."
+              exit 1
+            fi
+
+            # Reload or start the application
+            if pm2 describe regionify > /dev/null 2>&1; then
+              pm2 reload ecosystem.config.cjs --update-env
+            else
+              pm2 start ecosystem.config.cjs
+            fi
+
+            pm2 save
+
+            echo "✅ Application restarted successfully"
+          EOF
+
+      # =========================================================================
+      # Cleanup
+      # =========================================================================
+      - name: Cleanup temporary files
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
+            rm -f /tmp/client-build.tar.gz /tmp/server-build.tar.gz
+            echo "🧹 Cleaned up temporary files"
+          EOF
+
+      # =========================================================================
+      # Summary
+      # =========================================================================
+      - name: Deployment summary
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release:** \`${{ needs.build.outputs.release_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Deployed Components" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Client (static files)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Server (Node.js/PM2)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Database migrations" >> $GITHUB_STEP_SUMMARY
