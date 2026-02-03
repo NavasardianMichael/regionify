@@ -101,17 +101,6 @@ async function generateFavicons() {
     .toFile(path.join(PUBLIC_DIR, 'web-app-manifest-512x512.png'));
   console.log('✓ web-app-manifest-512x512.png');
 
-  // Trim the logo with text for OG image
-  const trimmedLogoWithText = sharp(LOGO_WITH_TEXT).trim();
-
-  // Generate OG image from logo with text (1200x630 for social sharing)
-  await trimmedLogoWithText
-    .clone()
-    .resize(1200, 630, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
-    .png({ quality: 85, compressionLevel: 9 })
-    .toFile(path.join(PUBLIC_DIR, 'og-image.png'));
-  console.log('✓ og-image.png (1200x630)');
-
   // Clean up old unused image
   try {
     await fs.unlink(path.join(PUBLIC_DIR, 'Gemini_Generated_Image_34t2f534t2f534t2.png'));
