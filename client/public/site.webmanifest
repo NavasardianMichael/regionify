@@ -1,8 +1,8 @@
 {
-  "name": "Region Map - Interactive Map Visualization",
-  "short_name": "Region Map",
+  "name": "Regionify - Interactive Map Visualization",
+  "short_name": "Regionify",
   "description": "Create beautiful interactive regional map visualizations with customizable legends and data import",
-  "start_url": "/",
+  "start_url": "/visualizer",
   "display": "standalone",
   "theme_color": "#18294D",
   "background_color": "#ffffff",

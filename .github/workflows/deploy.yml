@@ -77,10 +77,10 @@ jobs:
       # =========================================================================
       # STEP 7: Create Deployment Archive
       # =========================================================================
-      # Compress the dist folder into a tar.gz archive for efficient transfer
+      # Compress the client dist folder into a tar.gz archive for efficient transfer
       - name: Create compressed build archive
         run: |
-          tar -czf build.tar.gz -C dist .
+          tar -czf build.tar.gz -C client/dist .
 
       # =========================================================================
       # STEP 8: Configure SSH Known Hosts
