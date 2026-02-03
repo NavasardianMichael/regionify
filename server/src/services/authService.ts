@@ -126,4 +126,22 @@ export const authService = {
     const user = await userRepository.findById(id);
     return user ? toPublicUser(user) : null;
   },
+
+  async deleteAccount(userId: string): Promise<void> {
+    const user = await userRepository.findById(userId);
+
+    if (!user) {
+      throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'User not found');
+    }
+
+    const deleted = await userRepository.delete(userId);
+
+    if (!deleted) {
+      throw new AppError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ErrorCode.INTERNAL_ERROR,
+        'Failed to delete account',
+      );
+    }
+  },
 };
