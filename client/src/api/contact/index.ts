@@ -24,6 +24,3 @@ export const sendContactMessage = async (payload: ContactPayload): Promise<Conta
 
   return data;
 };
-
-export * from './processors';
-export * from './types';
