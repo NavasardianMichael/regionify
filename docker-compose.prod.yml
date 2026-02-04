@@ -43,7 +43,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 9002
-      LOG_LEVEL: info
       DATABASE_URL: postgresql://${POSTGRES_USER:-regionify}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-regionify}
       REDIS_URL: redis://redis:6379
     env_file:
@@ -55,12 +54,6 @@ services:
         condition: service_healthy
     networks:
       - regionify-network
-    healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:9002/api/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
 volumes:
   postgres_data:

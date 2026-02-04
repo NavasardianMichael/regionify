@@ -1,32 +1,12 @@
 # ==============================================================================
-# Build and Deploy to Production Server (Full Stack)
+# Build and Deploy to Production Server
 # ==============================================================================
 # REQUIRED GITHUB SECRETS:
-# - SSH_HOST: Server IP or domain
-# - SSH_USER: SSH username
-# - SSH_KEY: Private SSH key for authentication
-# - SSH_PORT: (optional) SSH port, defaults to 22
-# - APP_DIR: Deployment directory (e.g., /home/user_name/apps/regionify)
-# - ENV_FILE_BASE64: Base64-encoded server .env.production file content
-# - VITE_API_BASE_URL: Client API base URL (https://api.regionify.mnavasardian.com)
-# - POSTGRES_PASSWORD: PostgreSQL password for Docker
-#
-# DEPLOYMENT STRUCTURE:
-# $APP_DIR/
-# ├── client/
-# │   ├── releases/          # Versioned client builds
-# │   │   ├── abc123/
-# │   │   └── def456/
-# │   └── current -> releases/abc123  # Symlink to active release
-# ├── docker/                # Docker deployment files
-# │   ├── docker-compose.prod.yml
-# │   ├── .env               # Docker compose env (POSTGRES_PASSWORD)
-# │   └── .env.production    # Server app env
-# └── repo/                  # Git repository clone (for Docker build context)
-#
-# WEB SERVER CONFIGURATION:
-# - Nginx should serve static files from: $APP_DIR/client/current
-# - Nginx should proxy API requests to: http://localhost:9002
+# - SSH_HOST, SSH_USER, SSH_KEY, SSH_PORT (optional, default 22)
+# - APP_DIR: Deployment directory (e.g., /home/user/apps/regionify)
+# - ENV_FILE_BASE64: Base64-encoded server .env.production
+# - VITE_API_BASE_URL: Client API base URL
+# - POSTGRES_PASSWORD: PostgreSQL password
 # ==============================================================================
 
 name: Deploy to Production
@@ -45,18 +25,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     outputs:
-      release_name: ${{ steps.vars.outputs.release_name }}
+      release_name: ${{ github.sha }}
 
     steps:
-      # =========================================================================
-      # Setup
-      # =========================================================================
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set release name
-        id: vars
-        run: echo "release_name=${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -72,46 +45,29 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # =========================================================================
-      # Build
-      # =========================================================================
       - name: Build all packages
         run: pnpm build
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
-      # =========================================================================
-      # Create Archives
-      # =========================================================================
       - name: Create client archive
         run: tar -czf client-build.tar.gz -C client/dist .
 
       - name: Create server archive
         run: |
-          # Include full repo context for Docker build
           tar -czf server-build.tar.gz \
             --exclude='node_modules' \
-            --exclude='client/node_modules' \
-            --exclude='client/dist' \
+            --exclude='client' \
             --exclude='.git' \
-            --exclude='*.log' \
             server shared docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
 
-      # =========================================================================
-      # Upload Artifacts
-      # =========================================================================
-      - name: Upload client build
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: client-build
-          path: client-build.tar.gz
-          retention-days: 1
-
-      - name: Upload server build
-        uses: actions/upload-artifact@v4
-        with:
-          name: server-build
-          path: server-build.tar.gz
+          name: build-artifacts
+          path: |
+            client-build.tar.gz
+            server-build.tar.gz
           retention-days: 1
 
   deploy:
@@ -120,45 +76,27 @@ jobs:
     needs: build
 
     steps:
-      # =========================================================================
-      # Download Artifacts
-      # =========================================================================
-      - name: Download client build
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: client-build
+          name: build-artifacts
 
-      - name: Download server build
-        uses: actions/download-artifact@v4
-        with:
-          name: server-build
-
-      # =========================================================================
-      # SSH Setup
-      # =========================================================================
-      - name: Add server to SSH known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
-      - name: Setup SSH key
+      - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      # =========================================================================
-      # Transfer Files
-      # =========================================================================
-      - name: Copy build archives to server
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Copy archives to server
         run: |
           scp -P "${{ secrets.SSH_PORT || 22 }}" \
             client-build.tar.gz server-build.tar.gz \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
 
-      # =========================================================================
-      # Deploy Client
-      # =========================================================================
       - name: Deploy client
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
@@ -166,103 +104,64 @@ jobs:
             "${{ needs.build.outputs.release_name }}" \
             "${{ env.KEEP_RELEASES }}" << 'EOF'
           set -e
-
-          APP_DIR="$1"
-          RELEASE_NAME="$2"
-          KEEP_RELEASES="$3"
-          CLIENT_DIR="$APP_DIR/client"
-          RELEASES_DIR="$CLIENT_DIR/releases"
-          CURRENT_LINK="$CLIENT_DIR/current"
+          APP_DIR="$1"; RELEASE_NAME="$2"; KEEP_RELEASES="$3"
+          RELEASES_DIR="$APP_DIR/client/releases"
           NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
 
           echo "🎨 Deploying client: $RELEASE_NAME"
-
-          mkdir -p "$RELEASES_DIR"
           mkdir -p "$NEW_RELEASE"
-
           tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
           chmod -R 755 "$NEW_RELEASE"
-
-          ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
-
-          cd "$RELEASES_DIR"
-          ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
-
-          echo "✅ Client deployed to: $NEW_RELEASE"
+          ln -sfn "$NEW_RELEASE" "$APP_DIR/client/current"
+          
+          # Cleanup old releases
+          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          echo "✅ Client deployed"
           EOF
 
-      # =========================================================================
-      # Deploy Server (Docker)
-      # =========================================================================
       - name: Deploy server
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
             "${{ secrets.APP_DIR }}" \
-            "${{ needs.build.outputs.release_name }}" \
             "${{ secrets.POSTGRES_PASSWORD }}" \
             "${{ secrets.ENV_FILE_BASE64 }}" << 'EOF'
           set -e
-
-          APP_DIR="$1"
-          RELEASE_NAME="$2"
-          POSTGRES_PASSWORD="$3"
-          ENV_FILE_BASE64="$4"
+          APP_DIR="$1"; POSTGRES_PASSWORD="$2"; ENV_FILE_BASE64="$3"
           DOCKER_DIR="$APP_DIR/docker"
 
-          echo "🖥️ Deploying server (Docker): $RELEASE_NAME"
-
+          echo "🖥️ Deploying server..."
           mkdir -p "$DOCKER_DIR"
-
-          # Extract server build (contains docker-compose.prod.yml and Dockerfile context)
           tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
-
           cd "$DOCKER_DIR"
 
-          # Create environment files BEFORE running docker compose
-          echo "🔧 Creating environment files..."
-
-          # Create Docker compose .env (for POSTGRES_PASSWORD)
-          cat > "$DOCKER_DIR/.env" << ENVFILE
+          # Create env files
+          cat > .env << ENVFILE
           POSTGRES_USER=regionify
           POSTGRES_PASSWORD=$POSTGRES_PASSWORD
           POSTGRES_DB=regionify
           ENVFILE
 
-          # Create server .env.production
-          echo "$ENV_FILE_BASE64" | base64 -d > "$DOCKER_DIR/server/.env.production"
-          chmod 600 "$DOCKER_DIR/server/.env.production"
+          echo "$ENV_FILE_BASE64" | base64 -d > server/.env.production
+          chmod 600 server/.env.production
 
-          # Build and restart containers
+          # Deploy with Docker
           docker compose -f docker-compose.prod.yml build --no-cache server
           docker compose -f docker-compose.prod.yml up -d
 
-          # Run database migrations inside the container
-          echo "🗄️ Running database migrations..."
+          # Run migrations
+          echo "🗄️ Running migrations..."
           docker compose -f docker-compose.prod.yml exec -T server npx prisma migrate deploy
 
-          # Cleanup old images
+          # Cleanup
           docker image prune -f
-
-          echo "✅ Server deployed with Docker"
+          rm -f /tmp/client-build.tar.gz /tmp/server-build.tar.gz
+          echo "✅ Server deployed"
           EOF
 
-      # =========================================================================
-      # Cleanup
-      # =========================================================================
-      - name: Cleanup temporary files
-        run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" 'rm -f /tmp/client-build.tar.gz /tmp/server-build.tar.gz && echo "🧹 Cleaned up temporary files"'
-
-      # =========================================================================
-      # Summary
-      # =========================================================================
       - name: Deployment summary
         run: |
           echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Release:** \`${{ needs.build.outputs.release_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Deployed Components" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Client (static files via nginx)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Server (Docker container)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Client (static files)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Server (Docker)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Database migrations" >> $GITHUB_STEP_SUMMARY
