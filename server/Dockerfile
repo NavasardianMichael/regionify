@@ -45,8 +45,13 @@ COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY --from=builder /app/server/prisma ./server/prisma
 
-# Install production dependencies only (prisma generate runs via postinstall)
-RUN pnpm install --prod --frozen-lockfile
+# Install production dependencies (ignore scripts to skip husky)
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
+
+# Generate Prisma client
+WORKDIR /app/server
+RUN pnpm exec prisma generate
+WORKDIR /app
 
 # Copy shared source and built server
 COPY --from=builder /app/shared/src ./shared/src
