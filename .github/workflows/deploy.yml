@@ -148,9 +148,13 @@ jobs:
           docker compose -f docker-compose.prod.yml build --no-cache server
           docker compose -f docker-compose.prod.yml up -d
 
-          # Run migrations
+          # Wait for postgres to be ready
+          echo "⏳ Waiting for database..."
+          sleep 10
+
+          # Run migrations using a one-off container (less memory than exec)
           echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml exec -T server npx prisma migrate deploy
+          docker compose -f docker-compose.prod.yml run --rm -T server npx prisma migrate deploy
 
           # Cleanup
           docker image prune -f
