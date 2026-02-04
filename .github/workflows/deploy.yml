@@ -7,8 +7,9 @@
 # - SSH_KEY: Private SSH key for authentication
 # - SSH_PORT: (optional) SSH port, defaults to 22
 # - APP_DIR: Deployment directory (e.g., /home/user_name/apps/regionify)
-# - ENV_FILE_BASE64: Base64-encoded server .env file content
-# - VITE_API_BASE_URL: Client API base URL (e.g., https://regionify.mnavasardian.com/api)
+# - ENV_FILE_BASE64: Base64-encoded server .env.production file content
+# - VITE_API_BASE_URL: Client API base URL (https://api.regionify.mnavasardian.com)
+# - POSTGRES_PASSWORD: PostgreSQL password for Docker
 #
 # DEPLOYMENT STRUCTURE:
 # $APP_DIR/
@@ -17,16 +18,15 @@
 # │   │   ├── abc123/
 # │   │   └── def456/
 # │   └── current -> releases/abc123  # Symlink to active release
-# ├── server/
-# │   ├── releases/          # Versioned server builds
-# │   │   ├── abc123/
-# │   │   └── def456/
-# │   └── current -> releases/abc123  # Symlink to active release
-# └── shared/                # Shared configuration (ecosystem.config.cjs)
+# ├── docker/                # Docker deployment files
+# │   ├── docker-compose.prod.yml
+# │   ├── .env               # Docker compose env (POSTGRES_PASSWORD)
+# │   └── .env.production    # Server app env
+# └── repo/                  # Git repository clone (for Docker build context)
 #
 # WEB SERVER CONFIGURATION:
 # - Nginx should serve static files from: $APP_DIR/client/current
-# - Nginx should proxy API requests to: http://localhost:3000
+# - Nginx should proxy API requests to: http://localhost:9002
 # ==============================================================================
 
 name: Deploy to Production
@@ -88,9 +88,14 @@ jobs:
 
       - name: Create server archive
         run: |
-          # Include server dist, prisma, and package files
+          # Include full repo context for Docker build
           tar -czf server-build.tar.gz \
-            -C server dist prisma package.json
+            --exclude='node_modules' \
+            --exclude='client/node_modules' \
+            --exclude='client/dist' \
+            --exclude='.git' \
+            --exclude='*.log' \
+            server shared docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
 
       # =========================================================================
       # Upload Artifacts
@@ -184,7 +189,7 @@ jobs:
           EOF
 
       # =========================================================================
-      # Deploy Server
+      # Deploy Server (Docker)
       # =========================================================================
       - name: Deploy server
         run: |
@@ -192,98 +197,61 @@ jobs:
             set -e
 
             APP_DIR="${{ secrets.APP_DIR }}"
-            SERVER_DIR="$APP_DIR/server"
-            SHARED_DIR="$APP_DIR/shared"
-            RELEASES_DIR="$SERVER_DIR/releases"
-            CURRENT_LINK="$SERVER_DIR/current"
+            DOCKER_DIR="$APP_DIR/docker"
             RELEASE_NAME="${{ needs.build.outputs.release_name }}"
-            NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
-            KEEP_RELEASES=${{ env.KEEP_RELEASES }}
 
-            echo "🖥️ Deploying server: $RELEASE_NAME"
+            echo "🖥️ Deploying server (Docker): $RELEASE_NAME"
 
-            mkdir -p "$RELEASES_DIR"
-            mkdir -p "$SHARED_DIR"
-            mkdir -p "$NEW_RELEASE"
+            mkdir -p "$DOCKER_DIR"
 
-            tar -xzf /tmp/server-build.tar.gz -C "$NEW_RELEASE"
+            # Extract server build (contains docker-compose.prod.yml and Dockerfile context)
+            tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
 
-            # Create symlink to shared .env file
-            if [ -f "$SHARED_DIR/.env" ]; then
-              ln -sf "$SHARED_DIR/.env" "$NEW_RELEASE/.env"
-            fi
+            cd "$DOCKER_DIR"
 
-            # Install production dependencies
-            cd "$NEW_RELEASE"
-            npm install --omit=dev --ignore-scripts
+            # Build and restart containers
+            docker compose -f docker-compose.prod.yml build --no-cache server
+            docker compose -f docker-compose.prod.yml up -d
 
-            # Generate Prisma client
-            npx prisma generate
+            # Run database migrations inside the container
+            echo "🗄️ Running database migrations..."
+            docker compose -f docker-compose.prod.yml exec -T server npx prisma migrate deploy
 
-            # Run database migrations
-            npx prisma migrate deploy
+            # Cleanup old images
+            docker image prune -f
 
-            chmod -R 755 "$NEW_RELEASE"
-
-            ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
-
-            cd "$RELEASES_DIR"
-            ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
-
-            echo "✅ Server deployed to: $NEW_RELEASE"
+            echo "✅ Server deployed with Docker"
           EOF
 
       # =========================================================================
-      # Create/Update Environment File
+      # Create/Update Environment Files
       # =========================================================================
-      - name: Update environment file
+      - name: Update environment files
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
             set -e
 
             APP_DIR="${{ secrets.APP_DIR }}"
-            SHARED_DIR="$APP_DIR/shared"
+            DOCKER_DIR="$APP_DIR/docker"
 
-            echo "🔧 Updating environment file..."
-            echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d > "$SHARED_DIR/.env"
-            chmod 600 "$SHARED_DIR/.env"
+            echo "🔧 Updating environment files..."
 
-            echo "✅ Environment file updated"
-          EOF
+            # Create Docker compose .env (for POSTGRES_PASSWORD)
+            cat > "$DOCKER_DIR/.env" << 'ENVFILE'
+            POSTGRES_USER=regionify
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=regionify
+            ENVFILE
 
-      # =========================================================================
-      # Restart Application
-      # =========================================================================
-      - name: Restart PM2 application
-        run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
-            set -e
+            # Create server .env.production
+            echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d > "$DOCKER_DIR/server/.env.production"
+            chmod 600 "$DOCKER_DIR/server/.env.production"
 
-            APP_DIR="${{ secrets.APP_DIR }}"
-            SERVER_DIR="$APP_DIR/server/current"
-            SHARED_DIR="$APP_DIR/shared"
+            # Restart to pick up new env
+            cd "$DOCKER_DIR"
+            docker compose -f docker-compose.prod.yml up -d
 
-            echo "🔄 Restarting application..."
-
-            cd "$SHARED_DIR"
-
-            # Check if ecosystem file exists
-            if [ ! -f "ecosystem.config.cjs" ]; then
-              echo "❌ ecosystem.config.cjs not found in $SHARED_DIR"
-              echo "Please create the PM2 ecosystem config file manually."
-              exit 1
-            fi
-
-            # Reload or start the application
-            if pm2 describe regionify > /dev/null 2>&1; then
-              pm2 reload ecosystem.config.cjs --update-env
-            else
-              pm2 start ecosystem.config.cjs
-            fi
-
-            pm2 save
-
-            echo "✅ Application restarted successfully"
+            echo "✅ Environment files updated"
           EOF
 
       # =========================================================================
@@ -306,6 +274,6 @@ jobs:
           echo "**Release:** \`${{ needs.build.outputs.release_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Deployed Components" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Client (static files)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Server (Node.js/PM2)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Client (static files via nginx)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Server (Docker container)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Database migrations" >> $GITHUB_STEP_SUMMARY

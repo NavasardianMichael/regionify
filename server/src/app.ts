@@ -39,8 +39,8 @@ export function createApp(): express.Application {
     }),
   );
 
-  // Rate limiting
-  app.use('/api', generalLimiter);
+  // Rate limiting (apply to all routes)
+  app.use(generalLimiter);
 
   // Body parsing
   app.use(express.json({ limit: '10kb' }));
@@ -52,7 +52,7 @@ export function createApp(): express.Application {
     pinoHttp({
       logger,
       autoLogging: {
-        ignore: (req: Request) => req.url === '/api/health',
+        ignore: (req: Request) => req.url === '/health',
       },
     }),
   );
@@ -86,8 +86,8 @@ export function createApp(): express.Application {
   configurePassport();
   app.use(passport.initialize());
 
-  // API routes
-  app.use('/api', apiRoutes);
+  // API routes (mounted at root since we use api. subdomain)
+  app.use(apiRoutes);
 
   // 404 handler
   app.use((_req, res) => {
