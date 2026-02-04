@@ -161,31 +161,34 @@ jobs:
       # =========================================================================
       - name: Deploy client
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
-            set -e
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+            "${{ secrets.APP_DIR }}" \
+            "${{ needs.build.outputs.release_name }}" \
+            "${{ env.KEEP_RELEASES }}" << 'EOF'
+          set -e
 
-            APP_DIR="${{ secrets.APP_DIR }}"
-            CLIENT_DIR="$APP_DIR/client"
-            RELEASES_DIR="$CLIENT_DIR/releases"
-            CURRENT_LINK="$CLIENT_DIR/current"
-            RELEASE_NAME="${{ needs.build.outputs.release_name }}"
-            NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
-            KEEP_RELEASES=${{ env.KEEP_RELEASES }}
+          APP_DIR="$1"
+          RELEASE_NAME="$2"
+          KEEP_RELEASES="$3"
+          CLIENT_DIR="$APP_DIR/client"
+          RELEASES_DIR="$CLIENT_DIR/releases"
+          CURRENT_LINK="$CLIENT_DIR/current"
+          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
 
-            echo "🎨 Deploying client: $RELEASE_NAME"
+          echo "🎨 Deploying client: $RELEASE_NAME"
 
-            mkdir -p "$RELEASES_DIR"
-            mkdir -p "$NEW_RELEASE"
+          mkdir -p "$RELEASES_DIR"
+          mkdir -p "$NEW_RELEASE"
 
-            tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
-            chmod -R 755 "$NEW_RELEASE"
+          tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
+          chmod -R 755 "$NEW_RELEASE"
 
-            ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
+          ln -sfn "$NEW_RELEASE" "$CURRENT_LINK"
 
-            cd "$RELEASES_DIR"
-            ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          cd "$RELEASES_DIR"
+          ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
 
-            echo "✅ Client deployed to: $NEW_RELEASE"
+          echo "✅ Client deployed to: $NEW_RELEASE"
           EOF
 
       # =========================================================================
@@ -193,34 +196,36 @@ jobs:
       # =========================================================================
       - name: Deploy server
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
-            set -e
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+            "${{ secrets.APP_DIR }}" \
+            "${{ needs.build.outputs.release_name }}" << 'EOF'
+          set -e
 
-            APP_DIR="${{ secrets.APP_DIR }}"
-            DOCKER_DIR="$APP_DIR/docker"
-            RELEASE_NAME="${{ needs.build.outputs.release_name }}"
+          APP_DIR="$1"
+          RELEASE_NAME="$2"
+          DOCKER_DIR="$APP_DIR/docker"
 
-            echo "🖥️ Deploying server (Docker): $RELEASE_NAME"
+          echo "🖥️ Deploying server (Docker): $RELEASE_NAME"
 
-            mkdir -p "$DOCKER_DIR"
+          mkdir -p "$DOCKER_DIR"
 
-            # Extract server build (contains docker-compose.prod.yml and Dockerfile context)
-            tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
+          # Extract server build (contains docker-compose.prod.yml and Dockerfile context)
+          tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
 
-            cd "$DOCKER_DIR"
+          cd "$DOCKER_DIR"
 
-            # Build and restart containers
-            docker compose -f docker-compose.prod.yml build --no-cache server
-            docker compose -f docker-compose.prod.yml up -d
+          # Build and restart containers
+          docker compose -f docker-compose.prod.yml build --no-cache server
+          docker compose -f docker-compose.prod.yml up -d
 
-            # Run database migrations inside the container
-            echo "🗄️ Running database migrations..."
-            docker compose -f docker-compose.prod.yml exec -T server npx prisma migrate deploy
+          # Run database migrations inside the container
+          echo "🗄️ Running database migrations..."
+          docker compose -f docker-compose.prod.yml exec -T server npx prisma migrate deploy
 
-            # Cleanup old images
-            docker image prune -f
+          # Cleanup old images
+          docker image prune -f
 
-            echo "✅ Server deployed with Docker"
+          echo "✅ Server deployed with Docker"
           EOF
 
       # =========================================================================
@@ -228,30 +233,35 @@ jobs:
       # =========================================================================
       - name: Update environment files
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
-            set -e
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+            "${{ secrets.APP_DIR }}" \
+            "${{ secrets.POSTGRES_PASSWORD }}" \
+            "${{ secrets.ENV_FILE_BASE64 }}" << 'EOF'
+          set -e
 
-            APP_DIR="${{ secrets.APP_DIR }}"
-            DOCKER_DIR="$APP_DIR/docker"
+          APP_DIR="$1"
+          POSTGRES_PASSWORD="$2"
+          ENV_FILE_BASE64="$3"
+          DOCKER_DIR="$APP_DIR/docker"
 
-            echo "🔧 Updating environment files..."
+          echo "🔧 Updating environment files..."
 
-            # Create Docker compose .env (for POSTGRES_PASSWORD)
-            cat > "$DOCKER_DIR/.env" << 'ENVFILE'
-            POSTGRES_USER=regionify
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            POSTGRES_DB=regionify
-            ENVFILE
+          # Create Docker compose .env (for POSTGRES_PASSWORD)
+          cat > "$DOCKER_DIR/.env" << ENVFILE
+          POSTGRES_USER=regionify
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_DB=regionify
+          ENVFILE
 
-            # Create server .env.production
-            echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d > "$DOCKER_DIR/server/.env.production"
-            chmod 600 "$DOCKER_DIR/server/.env.production"
+          # Create server .env.production
+          echo "$ENV_FILE_BASE64" | base64 -d > "$DOCKER_DIR/server/.env.production"
+          chmod 600 "$DOCKER_DIR/server/.env.production"
 
-            # Restart to pick up new env
-            cd "$DOCKER_DIR"
-            docker compose -f docker-compose.prod.yml up -d
+          # Restart to pick up new env
+          cd "$DOCKER_DIR"
+          docker compose -f docker-compose.prod.yml up -d
 
-            echo "✅ Environment files updated"
+          echo "✅ Environment files updated"
           EOF
 
       # =========================================================================
@@ -259,10 +269,7 @@ jobs:
       # =========================================================================
       - name: Cleanup temporary files
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" << 'EOF'
-            rm -f /tmp/client-build.tar.gz /tmp/server-build.tar.gz
-            echo "🧹 Cleaned up temporary files"
-          EOF
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" 'rm -f /tmp/client-build.tar.gz /tmp/server-build.tar.gz && echo "🧹 Cleaned up temporary files"'
 
       # =========================================================================
       # Summary
