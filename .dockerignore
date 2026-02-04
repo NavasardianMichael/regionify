@@ -1,0 +1,18 @@
+**/node_modules
+**/dist
+**/*.log
+.git
+.gitignore
+*.md
+.vscode
+.idea
+.husky
+coverage
+.nyc_output
+
+# Client (not needed for server build)
+client/
+
+# Env files (passed separately)
+**/.env*
+!**/.env.example

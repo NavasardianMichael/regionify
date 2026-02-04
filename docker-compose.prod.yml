@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: regionify-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-regionify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-regionify}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-regionify}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - regionify-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: regionify-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - regionify-network
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: regionify-server
+    restart: unless-stopped
+    ports:
+      - '9002:9002'
+    environment:
+      NODE_ENV: production
+      PORT: 9002
+      LOG_LEVEL: info
+      DATABASE_URL: postgresql://${POSTGRES_USER:-regionify}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-regionify}
+      REDIS_URL: redis://redis:6379
+    env_file:
+      - ./server/.env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - regionify-network
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:9002/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  regionify-network:
+    driver: bridge
