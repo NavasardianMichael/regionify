@@ -198,11 +198,15 @@ jobs:
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
             "${{ secrets.APP_DIR }}" \
-            "${{ needs.build.outputs.release_name }}" << 'EOF'
+            "${{ needs.build.outputs.release_name }}" \
+            "${{ secrets.POSTGRES_PASSWORD }}" \
+            "${{ secrets.ENV_FILE_BASE64 }}" << 'EOF'
           set -e
 
           APP_DIR="$1"
           RELEASE_NAME="$2"
+          POSTGRES_PASSWORD="$3"
+          ENV_FILE_BASE64="$4"
           DOCKER_DIR="$APP_DIR/docker"
 
           echo "🖥️ Deploying server (Docker): $RELEASE_NAME"
@@ -213,6 +217,20 @@ jobs:
           tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
 
           cd "$DOCKER_DIR"
+
+          # Create environment files BEFORE running docker compose
+          echo "🔧 Creating environment files..."
+
+          # Create Docker compose .env (for POSTGRES_PASSWORD)
+          cat > "$DOCKER_DIR/.env" << ENVFILE
+          POSTGRES_USER=regionify
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_DB=regionify
+          ENVFILE
+
+          # Create server .env.production
+          echo "$ENV_FILE_BASE64" | base64 -d > "$DOCKER_DIR/server/.env.production"
+          chmod 600 "$DOCKER_DIR/server/.env.production"
 
           # Build and restart containers
           docker compose -f docker-compose.prod.yml build --no-cache server
@@ -226,42 +244,6 @@ jobs:
           docker image prune -f
 
           echo "✅ Server deployed with Docker"
-          EOF
-
-      # =========================================================================
-      # Create/Update Environment Files
-      # =========================================================================
-      - name: Update environment files
-        run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
-            "${{ secrets.APP_DIR }}" \
-            "${{ secrets.POSTGRES_PASSWORD }}" \
-            "${{ secrets.ENV_FILE_BASE64 }}" << 'EOF'
-          set -e
-
-          APP_DIR="$1"
-          POSTGRES_PASSWORD="$2"
-          ENV_FILE_BASE64="$3"
-          DOCKER_DIR="$APP_DIR/docker"
-
-          echo "🔧 Updating environment files..."
-
-          # Create Docker compose .env (for POSTGRES_PASSWORD)
-          cat > "$DOCKER_DIR/.env" << ENVFILE
-          POSTGRES_USER=regionify
-          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          POSTGRES_DB=regionify
-          ENVFILE
-
-          # Create server .env.production
-          echo "$ENV_FILE_BASE64" | base64 -d > "$DOCKER_DIR/server/.env.production"
-          chmod 600 "$DOCKER_DIR/server/.env.production"
-
-          # Restart to pick up new env
-          cd "$DOCKER_DIR"
-          docker compose -f docker-compose.prod.yml up -d
-
-          echo "✅ Environment files updated"
           EOF
 
       # =========================================================================
