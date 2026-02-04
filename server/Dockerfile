@@ -49,8 +49,8 @@ COPY --from=builder /app/server/prisma ./server/prisma
 RUN corepack enable && corepack prepare pnpm@latest --activate
 RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
-# Copy generated Prisma client from builder (after pnpm install creates node_modules structure)
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+# Copy generated Prisma client from builder (generated to server/node_modules/.prisma/client)
+COPY --from=builder /app/server/node_modules/.prisma ./server/node_modules/.prisma
 
 WORKDIR /app/server
 
