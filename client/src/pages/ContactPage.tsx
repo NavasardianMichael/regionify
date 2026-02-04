@@ -4,7 +4,8 @@ import { sendContactMessage } from '@/api/contact';
 import { processContactFormData } from '@/api/contact/processors';
 
 type ContactFormValues = {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   message: string;
 };
@@ -41,13 +42,29 @@ const ContactPage: FC = () => {
       </div>
 
       <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
-        <Form.Item
-          name="name"
-          label={<Typography.Text className="font-medium text-gray-700">Name</Typography.Text>}
-          rules={[{ required: true, message: 'Please enter your name' }]}
-        >
-          <Input placeholder="Enter your full name" size="large" />
-        </Form.Item>
+        <div className="flex gap-4">
+          <Form.Item
+            name="firstName"
+            label={
+              <Typography.Text className="font-medium text-gray-700">First Name</Typography.Text>
+            }
+            rules={[{ required: true, message: 'Please enter your first name' }]}
+            className="flex-1"
+          >
+            <Input placeholder="First name" size="large" />
+          </Form.Item>
+
+          <Form.Item
+            name="lastName"
+            label={
+              <Typography.Text className="font-medium text-gray-700">Last Name</Typography.Text>
+            }
+            rules={[{ required: true, message: 'Please enter your last name' }]}
+            className="flex-1"
+          >
+            <Input placeholder="Last name" size="large" />
+          </Form.Item>
+        </div>
 
         <Form.Item
           name="email"

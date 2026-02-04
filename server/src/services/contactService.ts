@@ -3,7 +3,6 @@ import { type ContactInput } from '@regionify/shared';
 import { env } from '../config/env.js';
 import { logger } from '../lib/logger.js';
 
-const MAIL_API_URL = 'https://api-mail-engine.mnavasardian.com/mail/send';
 const APP_ID = 'regionify';
 
 interface MailApiResponse {
@@ -22,7 +21,7 @@ export const contactService = {
     const { firstName, lastName, email, body, subject, phoneNumber, details } = input;
 
     const payload = {
-      website: '', // Honeypot field - must be empty
+      website: '',
       appId: APP_ID,
       subject: subject ?? 'Contact Form Submission',
       body,
@@ -34,7 +33,7 @@ export const contactService = {
     };
 
     try {
-      const response = await fetch(MAIL_API_URL, {
+      const response = await fetch(env.MAIL_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

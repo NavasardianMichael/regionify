@@ -3,7 +3,8 @@ import type { ContactPayload, ContactResponse } from './types';
 const APP_ID = 'regionify';
 
 type ContactFormData = {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   message: string;
 };
@@ -12,17 +13,13 @@ type ContactFormData = {
  * Transforms contact form data into API payload format
  */
 export const processContactFormData = (formData: ContactFormData): ContactPayload => {
-  const nameParts = formData.name.trim().split(/\s+/);
-  const firstName = nameParts[0] || 'Anonymous';
-  const lastName = nameParts.slice(1).join(' ') || '';
-
   return {
     appId: APP_ID,
     subject: 'Contact Form Submission',
     body: formData.message,
     senderEmail: formData.email,
-    firstName,
-    lastName,
+    firstName: formData.firstName.trim(),
+    lastName: formData.lastName.trim(),
   };
 };
 
