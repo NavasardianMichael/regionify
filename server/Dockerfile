@@ -47,7 +47,7 @@ COPY --from=builder /app/server/prisma ./server/prisma
 
 # Install pnpm and production dependencies
 RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 # Generate Prisma client in production
 WORKDIR /app/server
