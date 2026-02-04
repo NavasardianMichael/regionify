@@ -44,13 +44,11 @@ COPY --from=builder /app/shared/src ./shared/src
 COPY --from=builder /app/server/package.json ./server/
 COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/server/prisma ./server/prisma
+COPY --from=builder /app/server/prisma.config.ts ./server/prisma.config.ts
 
-# Install pnpm and production dependencies
+# Install pnpm and production dependencies (includes prisma for generate)
 RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm install --frozen-lockfile --prod --ignore-scripts
-
-# Copy generated Prisma client from builder (generated to server/node_modules/.prisma/client)
-COPY --from=builder /app/server/node_modules/.prisma ./server/node_modules/.prisma
+RUN pnpm install --frozen-lockfile --prod
 
 WORKDIR /app/server
 
