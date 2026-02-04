@@ -8,6 +8,7 @@
 # - SSH_PORT: (optional) SSH port, defaults to 22
 # - APP_DIR: Deployment directory (e.g., /home/user_name/apps/regionify)
 # - ENV_FILE_BASE64: Base64-encoded server .env file content
+# - VITE_API_BASE_URL: Client API base URL (e.g., https://regionify.mnavasardian.com/api)
 #
 # DEPLOYMENT STRUCTURE:
 # $APP_DIR/
@@ -76,6 +77,8 @@ jobs:
       # =========================================================================
       - name: Build all packages
         run: pnpm build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
       # =========================================================================
       # Create Archives

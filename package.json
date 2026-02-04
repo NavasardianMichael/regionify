@@ -18,7 +18,8 @@
     "db:generate": "pnpm --filter @regionify/server db:generate",
     "db:migrate": "pnpm --filter @regionify/server db:migrate",
     "db:push": "pnpm --filter @regionify/server db:push",
-    "db:studio": "pnpm --filter @regionify/server db:studio"
+    "db:studio": "pnpm --filter @regionify/server db:studio",
+    "envtobase64": "pnpm --filter @regionify/server envtobase64"
   },
   "lint-staged": {
     "*.{ts,tsx,json,css,md}": [
