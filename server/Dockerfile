@@ -46,11 +46,13 @@ COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/server/prisma ./server/prisma
 COPY --from=builder /app/server/prisma.config.ts ./server/prisma.config.ts
 
-# Install pnpm and production dependencies (includes prisma for generate)
+# Install pnpm and production dependencies
 RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
+# Generate Prisma client
 WORKDIR /app/server
+RUN pnpm exec prisma generate
 
 # Set ownership
 RUN chown -R regionify:nodejs /app
