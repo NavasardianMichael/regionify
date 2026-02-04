@@ -37,6 +37,14 @@
     "overrides": {
       "@types/react": "^19.2.5",
       "@types/react-dom": "^19.2.3"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "argon2",
+      "esbuild",
+      "prisma",
+      "sharp"
+    ]
   }
 }

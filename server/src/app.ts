@@ -1,4 +1,4 @@
-import connectRedis from 'connect-redis';
+import { RedisStore } from 'connect-redis';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { type Request } from 'express';
@@ -58,10 +58,9 @@ export function createApp(): express.Application {
   );
 
   // Session store with Redis
-  const RedisStore = connectRedis(session);
   const store = new RedisStore({
     client: redis,
-    prefix: 'regionify:sess:',
+    prefix: 'regionify:session:',
   });
 
   app.use(

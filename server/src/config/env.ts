@@ -1,6 +1,15 @@
-import 'dotenv/config';
-
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { z } from 'zod';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load the appropriate .env file based on NODE_ENV
+const envFile =
+  process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development.local';
+
+dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
 const envSchema = z.object({
   // Application

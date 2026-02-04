@@ -1,12 +1,11 @@
 export type ContactPayload = {
-  appId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  body: string;
   subject?: string;
-  body?: string;
-  senderEmail?: string;
-  firstName?: string;
-  lastName?: string;
   phoneNumber?: string;
-  details?: Record<string, unknown>;
+  details?: Record<string, string>;
 };
 
 export type ContactResponse = {

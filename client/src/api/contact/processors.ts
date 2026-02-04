@@ -1,7 +1,5 @@
 import type { ContactPayload, ContactResponse } from './types';
 
-const APP_ID = 'regionify';
-
 type ContactFormData = {
   firstName: string;
   lastName: string;
@@ -14,10 +12,9 @@ type ContactFormData = {
  */
 export const processContactFormData = (formData: ContactFormData): ContactPayload => {
   return {
-    appId: APP_ID,
-    subject: 'Contact Form Submission',
+    subject: 'Regionify / Contact',
     body: formData.message,
-    senderEmail: formData.email,
+    email: formData.email,
     firstName: formData.firstName.trim(),
     lastName: formData.lastName.trim(),
   };

@@ -23,7 +23,7 @@ export const contactService = {
     const payload = {
       website: '',
       appId: APP_ID,
-      subject: subject ?? 'Contact Form Submission',
+      subject: subject?.trim() || 'No Subject Provided',
       body,
       senderEmail: email,
       firstName,
