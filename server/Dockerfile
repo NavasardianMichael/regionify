@@ -58,17 +58,19 @@ RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 # Copy shared source (needed at runtime for types/schemas)
 COPY --from=builder /app/shared/src ./shared/src
 
-# Copy Prisma schema and config
+# Copy Prisma schema
 COPY --from=builder /app/server/prisma ./server/prisma
-COPY --from=builder /app/server/prisma.config.ts ./server/prisma.config.ts
 
-# Generate Prisma Client in production environment
-ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db"
-WORKDIR /app/server
-RUN pnpm exec prisma generate
+# Copy the generated Prisma client from builder (pnpm stores it in the virtual store)
+# We copy the entire .pnpm folder structure to preserve symlinks
+COPY --from=builder /app/node_modules/.pnpm/@prisma+client* ./node_modules/.pnpm/
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy built application from builder stage
 COPY --from=builder /app/server/dist ./dist
+
+WORKDIR /app/server
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
