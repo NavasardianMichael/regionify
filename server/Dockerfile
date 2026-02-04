@@ -1,58 +1,75 @@
-# syntax=docker/dockerfile:1
+# =============================================================================
+# Multi-stage Dockerfile for Regionify Server (pnpm monorepo)
+# =============================================================================
 
-# Base stage with pnpm
-FROM node:22-alpine AS base
+# -----------------------------------------------------------------------------
+# Stage 1: Builder
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS builder
+
+RUN apk add --no-cache libc6-compat
 RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app
 
-# Dependencies stage
-FROM base AS deps
+# Copy package files for all workspace packages
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
-COPY server/prisma ./server/prisma
 
+# Install all dependencies (including devDependencies for build)
 RUN pnpm install --frozen-lockfile
 
-# Builder stage
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/shared/node_modules ./shared/node_modules
-COPY --from=deps /app/server/node_modules ./server/node_modules
-
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.json ./
+# Copy source code
+COPY tsconfig.json ./
 COPY shared ./shared
 COPY server ./server
 
-# Generate Prisma client and build
+# Generate Prisma Client (with dummy DATABASE_URL for build)
+ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db"
+WORKDIR /app/server
+RUN pnpm exec prisma generate
+
+# Build TypeScript
+WORKDIR /app
 RUN pnpm --filter @regionify/server build
 
-# Production stage
-FROM node:22-alpine AS runner
+# -----------------------------------------------------------------------------
+# Stage 2: Production Runtime
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS runtime
+
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Copy package files
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY shared/package.json ./shared/
+COPY server/package.json ./server/
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 regionify
+# Install only production dependencies
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
-# Copy package files for production install
-COPY --from=builder /app/pnpm-lock.yaml /app/pnpm-workspace.yaml /app/package.json ./
-COPY --from=builder /app/shared/package.json ./shared/
+# Copy shared source (needed at runtime for types/schemas)
 COPY --from=builder /app/shared/src ./shared/src
-COPY --from=builder /app/server/package.json ./server/
-COPY --from=builder /app/server/dist ./server/dist
+
+# Copy Prisma schema and config
 COPY --from=builder /app/server/prisma ./server/prisma
 COPY --from=builder /app/server/prisma.config.ts ./server/prisma.config.ts
 
-# Install pnpm and production dependencies
-RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm install --frozen-lockfile --prod --ignore-scripts
-
-# Generate Prisma client
+# Generate Prisma Client in production environment
+ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 WORKDIR /app/server
 RUN pnpm exec prisma generate
+
+# Copy built application from builder stage
+COPY --from=builder /app/server/dist ./dist
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S regionify -u 1001
 
 # Set ownership
 RUN chown -R regionify:nodejs /app
@@ -60,5 +77,9 @@ RUN chown -R regionify:nodejs /app
 USER regionify
 
 EXPOSE 9002
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:9002/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 CMD ["node", "dist/index.js"]
