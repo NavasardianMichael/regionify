@@ -31,7 +31,7 @@ COPY server ./server
 RUN pnpm --filter @regionify/server build
 
 # Prune dev dependencies, keep only production deps
-RUN pnpm prune --prod
+RUN CI=true pnpm prune --prod
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
