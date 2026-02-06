@@ -5,11 +5,11 @@ import { z } from 'zod';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load the appropriate .env file based on NODE_ENV
-const envFile =
-  process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development.local';
-
-dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
+// Load .env file only in development (production uses env_file in docker-compose)
+if (process.env.NODE_ENV !== 'production') {
+  const envFile = '.env.development.local';
+  dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
+}
 
 const envSchema = z.object({
   // Application

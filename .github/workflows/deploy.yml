@@ -139,7 +139,7 @@ jobs:
           tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
           chmod -R 755 "$NEW_RELEASE"
           ln -sfn "$NEW_RELEASE" "$APP_DIR/client/current"
-          
+
           # Cleanup old releases
           cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
           echo "✅ Client deployed"
@@ -177,6 +177,8 @@ jobs:
             exit 1
           fi
           echo "✅ .env.production exists ($(wc -l < server/.env.production) lines)"
+          echo "📄 Env file keys:"
+          grep -oP '^[A-Z_]+(?==)' server/.env.production || echo "(could not parse keys)"
 
           # Deploy with Docker (use BuildKit for layer caching)
           export DOCKER_BUILDKIT=1
