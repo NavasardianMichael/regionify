@@ -30,31 +30,32 @@ COPY server ./server
 # Build TypeScript (includes prisma generate via build script)
 RUN pnpm --filter @regionify/server build
 
-# Prune dev dependencies, keep only production deps (ignore-scripts to skip husky)
-RUN CI=true pnpm prune --prod --ignore-scripts
-
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
 # -----------------------------------------------------------------------------
 FROM node:22-alpine AS runtime
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat && \
+    corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
-# Copy pruned node_modules from builder (already has Prisma client generated)
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/shared/node_modules ./shared/node_modules
-COPY --from=builder /app/server/node_modules ./server/node_modules
+# Copy package files
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY shared/package.json ./shared/
+COPY server/package.json ./server/
 
-# Copy package files (for Node resolution)
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/shared/package.json ./shared/
-COPY --from=builder /app/server/package.json ./server/
-
-# Copy Prisma schema and generated client
+# Copy Prisma schema (needed for generate)
 COPY --from=builder /app/server/prisma ./server/prisma
+
+# Install production dependencies only (ignore scripts to skip husky)
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install --prod --frozen-lockfile --ignore-scripts
+
+# Generate Prisma client for runtime
+WORKDIR /app/server
+RUN pnpm exec prisma generate
+WORKDIR /app
 
 # Copy shared source and built server
 COPY --from=builder /app/shared/src ./shared/src
