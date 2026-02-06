@@ -3,17 +3,28 @@ const path = require('path');
 
 const env = process.argv[2];
 
-if (!env) {
-  console.error('Usage: pnpm envtobase64 <environment>');
-  console.error('Example: pnpm envtobase64 production');
-  process.exit(1);
+// Determine which env file to use
+let envFile;
+let envPath;
+
+if (env) {
+  // Try environment-specific file first
+  envFile = `.env.${env}.local`;
+  envPath = path.join(__dirname, '..', envFile);
+
+  if (!fs.existsSync(envPath)) {
+    console.warn(`⚠️  File not found: ${envFile}, falling back to .env`);
+    envFile = '.env';
+    envPath = path.join(__dirname, '..', envFile);
+  }
+} else {
+  // No environment specified, use default .env
+  envFile = '.env';
+  envPath = path.join(__dirname, '..', envFile);
 }
 
-const envFile = `.env.${env}.local`;
-const envPath = path.join(__dirname, '..', envFile);
-
 if (!fs.existsSync(envPath)) {
-  console.error(`File not found: ${envPath}`);
+  console.error(`❌ File not found: ${envPath}`);
   process.exit(1);
 }
 
