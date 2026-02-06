@@ -30,8 +30,8 @@ COPY server ./server
 # Build TypeScript (includes prisma generate via build script)
 RUN pnpm --filter @regionify/server build
 
-# Prune dev dependencies, keep only production deps
-RUN CI=true pnpm prune --prod
+# Prune dev dependencies, keep only production deps (ignore-scripts to skip husky)
+RUN CI=true pnpm prune --prod --ignore-scripts
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
