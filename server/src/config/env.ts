@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { z } from 'zod';
@@ -10,7 +11,18 @@ const envFile =
   process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development.local';
 
 const envPath = path.resolve(__dirname, '../../', envFile);
-dotenv.config({ path: envPath });
+
+// Debug: Log env file path and existence
+console.log('📁 Env loading debug:');
+console.log('  __dirname:', __dirname);
+console.log('  envFile:', envFile);
+console.log('  envPath:', envPath);
+console.log('  File exists:', fs.existsSync(envPath));
+
+const result = dotenv.config({ path: envPath });
+if (result.error) {
+  console.error('  dotenv error:', result.error.message);
+}
 
 const envSchema = z.object({
   // Application
