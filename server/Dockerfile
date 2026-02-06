@@ -26,8 +26,8 @@ COPY tsconfig.json ./
 COPY shared ./shared
 COPY server ./server
 
-# Build TypeScript (includes prisma generate via build script)
-RUN pnpm --filter @regionify/server build
+# Build shared first, then server
+RUN pnpm --filter @regionify/shared build && pnpm --filter @regionify/server build
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
@@ -53,8 +53,7 @@ WORKDIR /app/server
 RUN pnpm exec prisma generate
 WORKDIR /app
 
-# Copy shared source and built server
-COPY --from=builder /app/shared/src ./shared/src
+COPY --from=builder /app/shared/dist ./shared/dist
 COPY --from=builder /app/server/dist ./server/dist
 
 # Create non-root user and set ownership
