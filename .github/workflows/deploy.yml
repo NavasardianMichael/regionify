@@ -141,8 +141,28 @@ jobs:
           POSTGRES_DB=regionify
           ENVFILE
 
-          echo "$ENV_FILE_BASE64" | base64 -d > server/.env.production
+          echo "$ENV_FILE_BASE64" | base64 -d | tr -d '\r' > server/.env.production
           chmod 600 server/.env.production
+
+          # Verify env file was created correctly
+          echo "📋 Verifying env file..."
+          if [ ! -f server/.env.production ]; then
+            echo "❌ server/.env.production does not exist!"
+            exit 1
+          fi
+          
+          ENV_LINES=$(wc -l < server/.env.production)
+          ENV_SIZE=$(wc -c < server/.env.production)
+          echo "  Lines: $ENV_LINES, Size: $ENV_SIZE bytes"
+          
+          if [ "$ENV_SIZE" -lt 10 ]; then
+            echo "❌ server/.env.production is too small ($ENV_SIZE bytes) — base64 decode likely failed"
+            exit 1
+          fi
+          
+          # Show variable names (not values) for debugging
+          echo "  Variables found:"
+          sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
 
           # Deploy with Docker
           docker compose -f docker-compose.prod.yml build --no-cache server

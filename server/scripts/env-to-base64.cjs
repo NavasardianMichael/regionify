@@ -28,7 +28,7 @@ if (!fs.existsSync(envPath)) {
   process.exit(1);
 }
 
-const content = fs.readFileSync(envPath, 'utf-8');
+const content = fs.readFileSync(envPath, 'utf-8').replace(/\r\n/g, '\n');
 const base64 = Buffer.from(content).toString('base64');
 
 console.log(`\n📄 Encoded ${envFile} to base64:\n`);
