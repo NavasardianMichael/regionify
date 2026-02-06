@@ -167,7 +167,7 @@ jobs:
           POSTGRES_DB=regionify
           ENVFILE
 
-          echo "$ENV_FILE_BASE64" | base64 -d > server/.env.production
+          echo "$ENV_FILE_BASE64" | base64 -d | tr -d '\r' > server/.env.production
           chmod 600 server/.env.production
 
           # Verify env file was created
