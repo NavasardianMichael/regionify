@@ -1,6 +1,7 @@
 import { type FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Form, Input, Typography } from 'antd';
 import { forgotPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
@@ -80,8 +81,8 @@ const ForgotPasswordPage: FC = () => {
           name="email"
           label={<Typography.Text className="font-medium text-gray-700">Email</Typography.Text>}
           rules={[
-            { required: true, message: 'Please enter your email' },
-            { type: 'email', message: 'Please enter a valid email' },
+            { required: true, message: AUTH_VALIDATION.email.messages.required },
+            { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
           ]}
         >
           <Input placeholder="email@example.com" size="large" />

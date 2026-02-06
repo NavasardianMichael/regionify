@@ -44,7 +44,7 @@ const envSchema = z.object({
   AUTH_RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
   AUTH_RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(10),
 
-  // Mail API
+  // Mail API (base URL without trailing slash)
   MAIL_API_URL: z.string().url(),
   MAIL_API_KEY: z.string().optional(),
 });

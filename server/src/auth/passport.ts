@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 import { env } from '../config/env.js';
+import { logger } from '../lib/logger.js';
 import { authService } from '../services/authService.js';
 
 export function configurePassport(): void {
@@ -16,8 +17,11 @@ export function configurePassport(): void {
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
+          logger.debug({ profile }, 'Google profile received');
+
           const email = profile.emails?.[0]?.value;
           if (!email) {
+            logger.error('No email provided by Google');
             return done(new Error('No email provided by Google'));
           }
 
@@ -28,8 +32,10 @@ export function configurePassport(): void {
             avatarUrl: profile.photos?.[0]?.value,
           });
 
+          logger.debug({ userId: user.id }, 'Google user authenticated');
           return done(null, user);
         } catch (error) {
+          logger.error({ err: error }, 'Google auth error');
           return done(error as Error);
         }
       },

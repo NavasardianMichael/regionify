@@ -1,15 +1,25 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import {
   CreditCardOutlined,
   HomeOutlined,
   LoginOutlined,
+  LogoutOutlined,
   MailOutlined,
   TableOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
-import { App as AntApp, ConfigProvider, Flex, Spin } from 'antd';
+import { App as AntApp, Avatar, ConfigProvider, Dropdown, Flex, Spin } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
+import { getCurrentUser, logout as logoutApi } from '@/api/auth';
+import {
+  selectIsLoggedIn,
+  selectLogout,
+  selectSetUser,
+  selectUser,
+} from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { ROUTES } from '@/constants/routes';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -24,6 +34,7 @@ const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const SignUpPage = lazy(() => import('@/pages/SignUpPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
 const BillingPage = lazy(() => import('@/pages/BillingPage'));
+const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'));
 const PageLoader = () => (
   <Flex align="center" justify="center" className="h-full">
     <Spin size="large" />
@@ -45,10 +56,22 @@ const NAV_ITEMS: NavItem[] = [
   { path: ROUTES.BILLING, label: 'Billing', icon: CreditCardOutlined },
 ];
 
-const AUTH_NAV_ITEMS: NavItem[] = [{ path: ROUTES.LOGIN, label: 'Login', icon: LoginOutlined }];
-
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const isLoggedIn = useProfileStore(selectIsLoggedIn);
+  const user = useProfileStore(selectUser);
+  const logout = useProfileStore(selectLogout);
+
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+      logout();
+      navigate(ROUTES.HOME);
+    } catch {
+      // Ignore error
+    }
+  };
 
   const renderNavItems = (items: typeof NAV_ITEMS) =>
     items.map((item) => {
@@ -71,6 +94,15 @@ const Navigation = () => {
       );
     });
 
+  const userMenuItems = [
+    {
+      key: 'logout',
+      label: 'Logout',
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
+
   return (
     <nav className="border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
@@ -89,13 +121,53 @@ const Navigation = () => {
             {renderNavItems(NAV_ITEMS)}
           </Flex>
           <div className="h-6 w-px bg-gray-200" />
-          <Flex component="ul" gap={4}>
-            {renderNavItems(AUTH_NAV_ITEMS)}
-          </Flex>
+          {isLoggedIn ? (
+            <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
+              <button className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100">
+                <Avatar
+                  src={user?.avatarUrl}
+                  icon={!user?.avatarUrl && <UserOutlined />}
+                  size="small"
+                />
+                <span className="text-sm font-medium text-gray-700">{user?.name}</span>
+              </button>
+            </Dropdown>
+          ) : (
+            <Flex component="ul" gap={4}>
+              <li>
+                <AppNavLink
+                  to={ROUTES.LOGIN}
+                  className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                    location.pathname === ROUTES.LOGIN
+                      ? 'bg-primary-50 text-primary-600'
+                      : 'hover:text-primary-600 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <LoginOutlined />
+                  Login
+                </AppNavLink>
+              </li>
+            </Flex>
+          )}
         </Flex>
       </Flex>
     </nav>
   );
+};
+
+const AppInitializer = ({ children }: { children: React.ReactNode }) => {
+  const setUser = useProfileStore(selectSetUser);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const user = await getCurrentUser();
+      setUser(user);
+    };
+
+    initAuth();
+  }, [setUser]);
+
+  return <>{children}</>;
 };
 
 function App() {
@@ -103,25 +175,28 @@ function App() {
     <ConfigProvider theme={theme}>
       <AntApp>
         <BrowserRouter>
-          <Flex vertical className="h-screen overflow-hidden bg-gray-100">
-            <Navigation />
-            <main
-              className={`flex min-h-0 flex-1 items-center overflow-y-auto ${APP_LAYOUT_CLASSNAMES.padding}`}
-            >
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path={ROUTES.HOME} element={<HomePage />} />
-                  <Route path={ROUTES.VISUALIZER} element={<VisualizerPage />} />
-                  <Route path={ROUTES.CONTACT} element={<ContactPage />} />
-                  <Route path={ROUTES.ABOUT} element={<AboutPage />} />
-                  <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-                  <Route path={ROUTES.SIGN_UP} element={<SignUpPage />} />
-                  <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-                  <Route path={ROUTES.BILLING} element={<BillingPage />} />
-                </Routes>
-              </Suspense>
-            </main>
-          </Flex>
+          <AppInitializer>
+            <Flex vertical className="h-screen overflow-hidden bg-gray-100">
+              <Navigation />
+              <main
+                className={`flex min-h-0 flex-1 items-center overflow-y-auto ${APP_LAYOUT_CLASSNAMES.padding}`}
+              >
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path={ROUTES.HOME} element={<HomePage />} />
+                    <Route path={ROUTES.VISUALIZER} element={<VisualizerPage />} />
+                    <Route path={ROUTES.CONTACT} element={<ContactPage />} />
+                    <Route path={ROUTES.ABOUT} element={<AboutPage />} />
+                    <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+                    <Route path={ROUTES.SIGN_UP} element={<SignUpPage />} />
+                    <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+                    <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
+                    <Route path={ROUTES.BILLING} element={<BillingPage />} />
+                  </Routes>
+                </Suspense>
+              </main>
+            </Flex>
+          </AppInitializer>
         </BrowserRouter>
       </AntApp>
     </ConfigProvider>

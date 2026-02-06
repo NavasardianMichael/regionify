@@ -6,3 +6,6 @@ export * from './types/api.js';
 // Schemas
 export * from './schemas/auth.js';
 export * from './schemas/contact.js';
+
+// Constants
+export * from './constants/validation.js';

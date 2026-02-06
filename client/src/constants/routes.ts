@@ -10,6 +10,7 @@ export const ROUTES = {
   SIGN_UP: '/sign-up',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
+  AUTH_CALLBACK: '/auth/callback',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

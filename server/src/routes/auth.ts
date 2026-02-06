@@ -1,4 +1,9 @@
-import { loginSchema, registerSchema } from '@regionify/shared';
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 import passport from 'passport';
 
@@ -66,20 +71,26 @@ router.post('/logout', (req, res, next) => {
   });
 });
 
-// GET /api/auth/me
-router.get('/me', requireAuth, async (req, res, next) => {
+// GET /api/auth/me - Returns current user or null if not authenticated
+router.get('/me', async (req, res, next) => {
   try {
-    const user = await authService.getUserById(req.session.userId!);
+    // Return null if no session
+    if (!req.session.userId) {
+      res.json({
+        success: true,
+        data: { user: null },
+      });
+      return;
+    }
+
+    const user = await authService.getUserById(req.session.userId);
 
     if (!user) {
       req.session.destroy(() => {});
       res.clearCookie('regionify.sid');
-      res.status(401).json({
-        success: false,
-        error: {
-          code: 'UNAUTHORIZED',
-          message: 'User not found',
-        },
+      res.json({
+        success: true,
+        data: { user: null },
       });
       return;
     }
@@ -94,33 +105,41 @@ router.get('/me', requireAuth, async (req, res, next) => {
 });
 
 // GET /api/auth/google
-router.get('/google', authLimiter, passport.authenticate('google'));
+router.get(
+  '/google',
+  authLimiter,
+  passport.authenticate('google', { scope: ['profile', 'email'] }),
+);
 
 // GET /api/auth/google/callback
-router.get(
-  '/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: `${env.CLIENT_URL}/login?error=google_auth_failed`,
-    session: false,
-  }),
-  (req, res) => {
-    // User is attached by passport
-    const user = req.user as { id: string };
+router.get('/google/callback', (req, res, next) => {
+  passport.authenticate('google', { session: false }, (err, user) => {
+    if (err) {
+      console.error('Google auth error:', err);
+      return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+    }
+
+    if (!user) {
+      console.error('Google auth: no user returned');
+      return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+    }
+
+    const typedUser = user as { id: string };
 
     // Regenerate session and set user ID
-    req.session.regenerate((err) => {
-      if (err) {
-        res.redirect(`${env.CLIENT_URL}/login?error=session_error`);
-        return;
+    req.session.regenerate((sessionErr) => {
+      if (sessionErr) {
+        console.error('Session regenerate error:', sessionErr);
+        return res.redirect(`${env.CLIENT_URL}/login?error=session_error`);
       }
 
-      req.session.userId = user.id;
+      req.session.userId = typedUser.id;
 
       // Redirect to client app
       res.redirect(`${env.CLIENT_URL}/auth/callback`);
     });
-  },
-);
+  })(req, res, next);
+});
 
 // GET /api/auth/status
 router.get('/status', (req, res) => {
@@ -131,6 +150,44 @@ router.get('/status', (req, res) => {
     },
   });
 });
+
+// POST /api/auth/forgot-password
+router.post(
+  '/forgot-password',
+  authLimiter,
+  validate(forgotPasswordSchema),
+  async (req, res, next) => {
+    try {
+      const result = await authService.forgotPassword(req.body);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// POST /api/auth/reset-password
+router.post(
+  '/reset-password',
+  authLimiter,
+  validate(resetPasswordSchema),
+  async (req, res, next) => {
+    try {
+      const result = await authService.resetPassword(req.body);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 // DELETE /api/auth/account
 router.delete('/account', requireAuth, async (req, res, next) => {

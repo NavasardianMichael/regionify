@@ -33,7 +33,7 @@ export const contactService = {
     };
 
     try {
-      const response = await fetch(env.MAIL_API_URL, {
+      const response = await fetch(`${env.MAIL_API_URL}/mail/internal/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
