@@ -19,7 +19,7 @@
     "envtobase64": "node scripts/env-to-base64.cjs"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "~6.19.0",
     "@regionify/shared": "workspace:*",
     "argon2": "^0.41.1",
     "connect-redis": "^8.0.1",
@@ -35,7 +35,7 @@
     "passport-google-oauth20": "^2.0.0",
     "pino": "^9.6.0",
     "pino-http": "^10.4.0",
-    "prisma": "^6.2.1",
+    "prisma": "~6.19.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
