@@ -183,6 +183,16 @@ jobs:
           # Deploy with Docker (use BuildKit for layer caching)
           export DOCKER_BUILDKIT=1
           docker compose -f docker-compose.prod.yml build server
+          docker compose -f docker-compose.prod.yml up -d
+
+          # Debug: Check if env file is accessible inside container
+          echo "🔍 Checking env file inside container..."
+          sleep 5
+          docker exec regionify-server sh -c "ls -la /app/server/.env.production 2>&1 || echo 'File not found'"
+          docker exec regionify-server sh -c "head -5 /app/server/.env.production 2>&1 | cut -d'=' -f1 || echo 'Cannot read file'"
+
+          # Wait for health check
+          echo "⏳ Waiting for server to be healthy..."
           docker compose -f docker-compose.prod.yml up -d --wait --wait-timeout 60 || {
             echo "❌ Docker compose failed. Server logs:"
             docker logs regionify-server --tail 150
