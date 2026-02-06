@@ -47,6 +47,8 @@ services:
       REDIS_URL: redis://redis:6379
     env_file:
       - ./server/.env.production
+    volumes:
+      - ./server/.env.production:/app/server/.env.production:ro
     depends_on:
       postgres:
         condition: service_healthy
