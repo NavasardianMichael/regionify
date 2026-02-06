@@ -145,20 +145,13 @@ jobs:
           mv /tmp/env.production server/.env.production
           chmod 600 server/.env.production
 
-          # Extract postgres vars from server env to create Docker Compose .env
-          grep -E '^(POSTGRES_USER|POSTGRES_PASSWORD|POSTGRES_DB)=' server/.env.production > .env
-          chmod 600 .env
-
-          # Verify env files
+          # Verify env file
           echo "📋 Verifying server env file..."
           ENV_LINES=$(wc -l < server/.env.production)
           ENV_SIZE=$(wc -c < server/.env.production)
           echo "  Lines: $ENV_LINES, Size: $ENV_SIZE bytes"
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
-
-          echo "📋 Docker Compose .env variables:"
-          sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' .env
 
           # Deploy with Docker
           docker compose -f docker-compose.prod.yml build --no-cache server

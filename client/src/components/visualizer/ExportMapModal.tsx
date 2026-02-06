@@ -1,6 +1,9 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
-import { Button, Flex, InputNumber, Modal, Select, Slider, Typography } from 'antd';
+import { Button, Flex, InputNumber, message, Modal, Select, Slider, Typography } from 'antd';
+import { selectSelectedRegionId } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
+import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
 
 const EXPORT_TYPES = {
   png: 'png',
@@ -27,8 +30,10 @@ type Props = {
 };
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
+  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const [exportType, setExportType] = useState<ExportType>(EXPORT_TYPES.png);
   const [quality, setQuality] = useState(60);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleAfterOpenChange = useCallback((visible: boolean) => {
     if (visible) {
@@ -45,11 +50,29 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     setQuality(value ?? 60);
   }, []);
 
-  const handleDownload = useCallback(() => {
-    // TODO: Implement export functionality
-    console.log('Exporting as', exportType, 'with quality', quality);
-    onClose();
-  }, [exportType, quality, onClose]);
+  const exportHandlers = useMemo(
+    () => ({
+      [EXPORT_TYPES.svg]: (fileName: string) => exportMapAsSvg(fileName),
+      [EXPORT_TYPES.png]: (fileName: string) => exportMapAsPng(quality, fileName),
+      [EXPORT_TYPES.jpeg]: (fileName: string) => exportMapAsJpeg(quality, fileName),
+    }),
+    [quality],
+  );
+
+  const handleDownload = useCallback(async () => {
+    const fileName = selectedRegionId ? `regionify-${selectedRegionId}` : 'regionify-map';
+
+    setIsExporting(true);
+    try {
+      await exportHandlers[exportType](fileName);
+      message.success(`Map exported as ${exportType.toUpperCase()}`);
+      onClose();
+    } catch {
+      message.error('Failed to export map. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  }, [exportType, exportHandlers, selectedRegionId, onClose]);
 
   const showQualityControl = useMemo(() => {
     return exportType === EXPORT_TYPES.png || exportType === EXPORT_TYPES.jpeg;
@@ -62,9 +85,11 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   return (
     <Modal
       title={
-        <Flex align="center" gap="small">
+        <Flex align="center" gap="small" className="mb-6!">
           <DownloadOutlined className="text-primary" />
-          <Typography.Text className="text-lg font-semibold">Export Map Visualizer</Typography.Text>
+          <Typography.Title level={4} className="mb-0!">
+            Export Map Visualizer
+          </Typography.Title>
         </Flex>
       }
       open={open}
@@ -110,7 +135,14 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
         )}
 
         {/* Download Button */}
-        <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownload} size="large">
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleDownload}
+          loading={isExporting}
+          disabled={!selectedRegionId}
+          size="large"
+        >
           {downloadButtonLabel}
         </Button>
       </Flex>
