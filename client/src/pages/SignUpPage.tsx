@@ -115,7 +115,7 @@ const SignUpPage: FC = () => {
               { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
             ]}
           >
-            <Input placeholder="email@example.com" size="large" />
+            <Input placeholder="email@example.com" size="large" autoComplete="username" />
           </Form.Item>
 
           <Form.Item
@@ -144,7 +144,11 @@ const SignUpPage: FC = () => {
               },
             ]}
           >
-            <Input.Password placeholder="Create a password" size="large" />
+            <Input.Password
+              placeholder="Create a password"
+              size="large"
+              autoComplete="new-password"
+            />
           </Form.Item>
 
           <Form.Item
@@ -170,9 +174,14 @@ const SignUpPage: FC = () => {
               }),
             ]}
           >
-            <Input.Password placeholder="Confirm your password" size="large" />
+            <Input.Password
+              placeholder="Confirm your password"
+              size="large"
+              autoComplete="new-password"
+            />
           </Form.Item>
-
+        </Flex>
+        <Flex gap={8} className="mt-8!" vertical>
           <Form.Item className="mb-0!">
             <Button type="primary" htmlType="submit" block size="large" loading={loading}>
               Create Account

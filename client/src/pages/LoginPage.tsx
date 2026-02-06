@@ -95,7 +95,7 @@ const LoginPage: FC = () => {
             { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
           ]}
         >
-          <Input placeholder="email@example.com" size="large" />
+          <Input placeholder="email@example.com" size="large" autoComplete="username" />
         </Form.Item>
 
         <Form.Item
@@ -103,7 +103,11 @@ const LoginPage: FC = () => {
           label={<Typography.Text className="font-medium text-gray-700">Password</Typography.Text>}
           rules={[{ required: true, message: AUTH_VALIDATION.password.messages.required }]}
         >
-          <Input.Password placeholder="Enter your password" size="large" />
+          <Input.Password
+            placeholder="Enter your password"
+            size="large"
+            autoComplete="current-password"
+          />
         </Form.Item>
 
         {loginError && (
