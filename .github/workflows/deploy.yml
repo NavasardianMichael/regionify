@@ -179,9 +179,9 @@ jobs:
           echo "⏳ Waiting for database..."
           sleep 10
 
-          # Run migrations using a one-off container (less memory than exec)
+          # Run migrations using the installed prisma (not npx which downloads latest)
           echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml run --rm -T server npx prisma migrate deploy
+          docker compose -f docker-compose.prod.yml run --rm -T server node_modules/.bin/prisma migrate deploy
 
           # Cleanup
           docker image prune -f
