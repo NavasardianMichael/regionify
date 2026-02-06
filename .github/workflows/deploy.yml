@@ -4,9 +4,8 @@
 # REQUIRED GITHUB SECRETS:
 # - SSH_HOST, SSH_USER, SSH_KEY, SSH_PORT (optional, default 22)
 # - APP_DIR: Deployment directory (e.g., /home/user/apps/regionify)
-# - ENV_FILE_BASE64: Base64-encoded server .env.production
+# - ENV_FILE_BASE64: Base64-encoded server .env.production (must include POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
 # - VITE_API_BASE_URL: Client API base URL
-# - POSTGRES_PASSWORD: PostgreSQL password
 # ==============================================================================
 
 name: Deploy to Production
@@ -133,10 +132,9 @@ jobs:
       - name: Deploy server
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
-            "${{ secrets.APP_DIR }}" \
-            "${{ secrets.POSTGRES_PASSWORD }}" << 'EOF'
+            "${{ secrets.APP_DIR }}" << 'EOF'
           set -e
-          APP_DIR="$1"; POSTGRES_PASSWORD="$2"
+          APP_DIR="$1"
           DOCKER_DIR="$APP_DIR/docker"
 
           echo "🖥️ Deploying server..."
@@ -144,23 +142,23 @@ jobs:
           tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
           cd "$DOCKER_DIR"
 
-          # Create env files
-          cat > .env << ENVFILE
-          POSTGRES_USER=regionify
-          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          POSTGRES_DB=regionify
-          ENVFILE
-
           mv /tmp/env.production server/.env.production
           chmod 600 server/.env.production
 
-          # Verify env file
-          echo "📋 Verifying env file on server..."
+          # Extract postgres vars from server env to create Docker Compose .env
+          grep -E '^(POSTGRES_USER|POSTGRES_PASSWORD|POSTGRES_DB)=' server/.env.production > .env
+          chmod 600 .env
+
+          # Verify env files
+          echo "📋 Verifying server env file..."
           ENV_LINES=$(wc -l < server/.env.production)
           ENV_SIZE=$(wc -c < server/.env.production)
           echo "  Lines: $ENV_LINES, Size: $ENV_SIZE bytes"
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
+
+          echo "📋 Docker Compose .env variables:"
+          sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' .env
 
           # Deploy with Docker
           docker compose -f docker-compose.prod.yml build --no-cache server
