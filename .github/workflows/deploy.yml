@@ -148,13 +148,24 @@ jobs:
           docker compose -f docker-compose.prod.yml build --no-cache server
           docker compose -f docker-compose.prod.yml up -d
 
-          # Wait for postgres to be ready
-          echo "⏳ Waiting for database..."
-          sleep 10
+          # Wait for services to be healthy
+          echo "⏳ Waiting for services..."
+          sleep 5
+          
+          # Wait for postgres specifically
+          echo "⏳ Waiting for postgres to accept connections..."
+          for i in $(seq 1 15); do
+            if docker compose -f docker-compose.prod.yml exec -T postgres pg_isready -U regionify -d regionify > /dev/null 2>&1; then
+              echo "✅ Postgres is ready"
+              break
+            fi
+            echo "  Attempt $i/15..."
+            sleep 2
+          done
 
-          # Run migrations using a one-off container (less memory than exec)
+          # Run migrations using exec (uses env vars from running container)
           echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml run --rm -T server npx prisma migrate deploy
+          docker compose -f docker-compose.prod.yml exec -T server pnpm exec prisma migrate deploy
 
           # Cleanup
           docker image prune -f
