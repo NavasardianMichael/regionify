@@ -45,8 +45,8 @@ services:
       PORT: 9002
       DATABASE_URL: postgresql://${POSTGRES_USER:-regionify}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-regionify}
       REDIS_URL: redis://redis:6379
-    volumes:
-      - ./server/.env.production:/app/server/.env.production:ro
+    env_file:
+      - ./server/.env.production
     depends_on:
       postgres:
         condition: service_healthy

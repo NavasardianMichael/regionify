@@ -14,32 +14,6 @@ name: Deploy to Production
 on:
   push:
     branches: [master]
-    paths:
-      # Client
-      - 'client/src/**'
-      - 'client/public/**'
-      - 'client/index.html'
-      - 'client/package.json'
-      - 'client/vite.config.ts'
-      - 'client/tsconfig*.json'
-      # Server
-      - 'server/src/**'
-      - 'server/prisma/**'
-      - 'server/package.json'
-      - 'server/tsconfig.json'
-      - 'server/Dockerfile'
-      # Shared
-      - 'shared/src/**'
-      - 'shared/package.json'
-      - 'shared/tsconfig.json'
-      # Root config
-      - 'docker-compose.prod.yml'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - 'package.json'
-      - 'tsconfig.json'
-      # Workflow itself
-      - '.github/workflows/deploy.yml'
 
 env:
   NODE_VERSION: '24'
@@ -167,49 +141,20 @@ jobs:
           POSTGRES_DB=regionify
           ENVFILE
 
-          echo "$ENV_FILE_BASE64" | base64 -d | tr -d '\r' > server/.env.production
+          echo "$ENV_FILE_BASE64" | base64 -d > server/.env.production
           chmod 600 server/.env.production
 
-          # Verify env file was created
-          echo "📄 Checking .env.production..."
-          if [ ! -f server/.env.production ]; then
-            echo "❌ .env.production was not created!"
-            exit 1
-          fi
-          echo "✅ .env.production exists ($(wc -l < server/.env.production) lines)"
-          echo "📄 Env file keys:"
-          grep -oP '^[A-Z_]+(?==)' server/.env.production || echo "(could not parse keys)"
-
-          # Deploy with Docker (use BuildKit for layer caching)
-          export DOCKER_BUILDKIT=1
-          docker compose -f docker-compose.prod.yml build server
+          # Deploy with Docker
+          docker compose -f docker-compose.prod.yml build --no-cache server
           docker compose -f docker-compose.prod.yml up -d
 
-          # Debug: Check if env file is accessible inside container
-          echo "🔍 Checking env file inside container..."
-          sleep 5
-          docker exec regionify-server sh -c "ls -la /app/server/.env.production 2>&1 || echo 'File not found'"
-          docker exec regionify-server sh -c "head -5 /app/server/.env.production 2>&1 | cut -d'=' -f1 || echo 'Cannot read file'"
+          # Wait for postgres to be ready
+          echo "⏳ Waiting for database..."
+          sleep 10
 
-          # Wait for health check
-          echo "⏳ Waiting for server to be healthy..."
-          docker compose -f docker-compose.prod.yml up -d --wait --wait-timeout 60 || {
-            echo "❌ Docker compose failed. Server logs:"
-            docker logs regionify-server --tail 150
-            exit 1
-          }
-
-          # Check if server is healthy
-          if ! docker inspect --format='{{.State.Health.Status}}' regionify-server 2>/dev/null | grep -q "healthy"; then
-            echo "❌ Server not healthy. Logs:"
-            docker logs regionify-server --tail 100
-            exit 1
-          fi
-          echo "✅ Server is healthy"
-
-          # Run migrations (prisma is in server's dependencies)
+          # Run migrations using a one-off container (less memory than exec)
           echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml exec -T server sh -c "cd /app/server && ./node_modules/.bin/prisma migrate deploy"
+          docker compose -f docker-compose.prod.yml run --rm -T server npx prisma migrate deploy
 
           # Cleanup
           docker image prune -f

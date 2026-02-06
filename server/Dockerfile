@@ -3,19 +3,14 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Base: Common setup for all stages
+# Stage 1: Builder - Install deps, generate Prisma, compile TypeScript
 # -----------------------------------------------------------------------------
-FROM node:lts-alpine AS base
+FROM node:22-alpine AS builder
 
 RUN apk add --no-cache libc6-compat && \
     corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
-
-# -----------------------------------------------------------------------------
-# Stage 1: Builder - Install deps, generate Prisma, compile TypeScript
-# -----------------------------------------------------------------------------
-FROM base AS builder
 
 # Copy package files and prisma schema (needed for postinstall)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
@@ -23,42 +18,43 @@ COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY server/prisma ./server/prisma
 
-# Install all dependencies with cache mount
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY tsconfig.json ./
 COPY shared ./shared
 COPY server ./server
 
-# Build shared package first, then server
-RUN pnpm --filter @regionify/shared build && pnpm --filter @regionify/server build
+# Build TypeScript (includes prisma generate via build script)
+RUN pnpm --filter @regionify/server build
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
 # -----------------------------------------------------------------------------
-FROM base AS runtime
+FROM node:22-alpine AS runtime
 
-# Copy package files
+RUN apk add --no-cache libc6-compat && \
+    corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy package files and prisma schema
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
-
-# Copy Prisma schema (needed for generate)
 COPY --from=builder /app/server/prisma ./server/prisma
 
-# Install production dependencies only (ignore scripts to skip husky)
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --frozen-lockfile --ignore-scripts
+# Install production dependencies (ignore scripts to skip husky)
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
-# Generate Prisma client for runtime
+# Generate Prisma client
 WORKDIR /app/server
 RUN pnpm exec prisma generate
 WORKDIR /app
 
-# Copy shared dist and built server
-COPY --from=builder /app/shared/dist ./shared/dist
+# Copy shared source and built server
+COPY --from=builder /app/shared/src ./shared/src
 COPY --from=builder /app/server/dist ./server/dist
 
 # Create non-root user and set ownership
