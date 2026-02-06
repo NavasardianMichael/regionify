@@ -3,14 +3,19 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Stage 1: Builder - Install deps, generate Prisma, compile TypeScript
+# Base: Common setup for all stages
 # -----------------------------------------------------------------------------
-FROM node:22-alpine AS builder
+FROM node:lts-alpine AS base
 
 RUN apk add --no-cache libc6-compat && \
     corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
+
+# -----------------------------------------------------------------------------
+# Stage 1: Builder - Install deps, generate Prisma, compile TypeScript
+# -----------------------------------------------------------------------------
+FROM base AS builder
 
 # Copy package files and prisma schema (needed for postinstall)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
@@ -33,12 +38,7 @@ RUN pnpm --filter @regionify/shared build && pnpm --filter @regionify/server bui
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
 # -----------------------------------------------------------------------------
-FROM node:22-alpine AS runtime
-
-RUN apk add --no-cache libc6-compat && \
-    corepack enable && corepack prepare pnpm@latest --activate
-
-WORKDIR /app
+FROM base AS runtime
 
 # Copy package files
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./

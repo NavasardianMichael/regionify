@@ -170,14 +170,30 @@ jobs:
           echo "$ENV_FILE_BASE64" | base64 -d > server/.env.production
           chmod 600 server/.env.production
 
+          # Verify env file was created
+          echo "📄 Checking .env.production..."
+          if [ ! -f server/.env.production ]; then
+            echo "❌ .env.production was not created!"
+            exit 1
+          fi
+          echo "✅ .env.production exists ($(wc -l < server/.env.production) lines)"
+
           # Deploy with Docker (use BuildKit for layer caching)
           export DOCKER_BUILDKIT=1
           docker compose -f docker-compose.prod.yml build server
-          docker compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d --wait --wait-timeout 60 || {
+            echo "❌ Docker compose failed. Server logs:"
+            docker logs regionify-server --tail 150
+            exit 1
+          }
 
-          # Wait for services to be ready
-          echo "⏳ Waiting for services..."
-          sleep 10
+          # Check if server is healthy
+          if ! docker inspect --format='{{.State.Health.Status}}' regionify-server 2>/dev/null | grep -q "healthy"; then
+            echo "❌ Server not healthy. Logs:"
+            docker logs regionify-server --tail 100
+            exit 1
+          fi
+          echo "✅ Server is healthy"
 
           # Run migrations (prisma is in server's dependencies)
           echo "🗄️ Running migrations..."
