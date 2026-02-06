@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 
-const source = resolve(root, '.github/copilot-instructions.md');
+const source = resolve(root, '../.github/copilot-instructions.md');
 const sourceContent = readFileSync(source, 'utf-8');
 const targets = [resolve(root, '.cursorrules'), resolve(root, 'CLAUDE.md')];
 
