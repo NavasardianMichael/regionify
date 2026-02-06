@@ -40,14 +40,6 @@ on:
       - 'tsconfig.json'
       # Workflow itself
       - '.github/workflows/deploy.yml'
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.txt'
-      - '.github/copilot-instructions*.md'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.editorconfig'
-      - '.vscode/**'
 
 env:
   NODE_VERSION: '24'
