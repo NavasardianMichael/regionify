@@ -119,14 +119,24 @@ jobs:
           echo "✅ Client deployed"
           EOF
 
+      - name: Prepare server env file
+        run: |
+          echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d | tr -d '\r' > /tmp/env.production
+          echo "📋 Env file: $(wc -c < /tmp/env.production) bytes, $(wc -l < /tmp/env.production) lines"
+
+      - name: Copy env file to server
+        run: |
+          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+            /tmp/env.production \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/env.production"
+
       - name: Deploy server
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
             "${{ secrets.APP_DIR }}" \
-            "${{ secrets.POSTGRES_PASSWORD }}" \
-            "${{ secrets.ENV_FILE_BASE64 }}" << 'EOF'
+            "${{ secrets.POSTGRES_PASSWORD }}" << 'EOF'
           set -e
-          APP_DIR="$1"; POSTGRES_PASSWORD="$2"; ENV_FILE_BASE64="$3"
+          APP_DIR="$1"; POSTGRES_PASSWORD="$2"
           DOCKER_DIR="$APP_DIR/docker"
 
           echo "🖥️ Deploying server..."
@@ -141,26 +151,14 @@ jobs:
           POSTGRES_DB=regionify
           ENVFILE
 
-          echo "$ENV_FILE_BASE64" | base64 -d | tr -d '\r' > server/.env.production
+          mv /tmp/env.production server/.env.production
           chmod 600 server/.env.production
 
-          # Verify env file was created correctly
-          echo "📋 Verifying env file..."
-          if [ ! -f server/.env.production ]; then
-            echo "❌ server/.env.production does not exist!"
-            exit 1
-          fi
-          
+          # Verify env file
+          echo "📋 Verifying env file on server..."
           ENV_LINES=$(wc -l < server/.env.production)
           ENV_SIZE=$(wc -c < server/.env.production)
           echo "  Lines: $ENV_LINES, Size: $ENV_SIZE bytes"
-          
-          if [ "$ENV_SIZE" -lt 10 ]; then
-            echo "❌ server/.env.production is too small ($ENV_SIZE bytes) — base64 decode likely failed"
-            exit 1
-          fi
-          
-          # Show variable names (not values) for debugging
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
 
