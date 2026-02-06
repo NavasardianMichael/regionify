@@ -175,31 +175,9 @@ jobs:
           docker compose -f docker-compose.prod.yml build server
           docker compose -f docker-compose.prod.yml up -d
 
-          # Wait for postgres to be ready
-          echo "⏳ Waiting for database..."
+          # Wait for services to be ready
+          echo "⏳ Waiting for services..."
           sleep 10
-
-          # Wait for server container to be running (not restarting)
-          echo "⏳ Waiting for server to be ready..."
-          for i in {1..30}; do
-            STATUS=$(docker inspect --format='{{.State.Status}}' regionify-server 2>/dev/null || echo "not found")
-            if [ "$STATUS" = "running" ]; then
-              # Check if it's been running for at least 5 seconds (not just started)
-              sleep 5
-              STATUS=$(docker inspect --format='{{.State.Status}}' regionify-server 2>/dev/null || echo "not found")
-              if [ "$STATUS" = "running" ]; then
-                echo "✅ Server container is running"
-                break
-              fi
-            fi
-            if [ $i -eq 30 ]; then
-              echo "❌ Server container failed to start. Logs:"
-              docker logs regionify-server --tail 100
-              exit 1
-            fi
-            echo "  Waiting... (attempt $i/30, status: $STATUS)"
-            sleep 2
-          done
 
           # Run migrations (prisma is in server's dependencies)
           echo "🗄️ Running migrations..."
