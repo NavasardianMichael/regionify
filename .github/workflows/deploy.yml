@@ -179,9 +179,9 @@ jobs:
           echo "⏳ Waiting for database..."
           sleep 10
 
-          # Run migrations using the installed prisma
+          # Run migrations (prisma is in server's dependencies)
           echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml run --rm -T -w /app server node_modules/.bin/prisma migrate deploy --schema=server/prisma/schema.prisma
+          docker compose -f docker-compose.prod.yml exec -T server sh -c "cd /app/server && ./node_modules/.bin/prisma migrate deploy"
 
           # Cleanup
           docker image prune -f
