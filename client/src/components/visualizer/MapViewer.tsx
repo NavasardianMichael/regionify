@@ -62,6 +62,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const resizeStartRef = useRef({ x: 0, width: 0 });
   const currentWidthRef = useRef(0);
 
+  // Region label drag state
+  const labelPositionsRef = useRef<Record<string, { x: number; y: number }>>({});
+  const draggingLabelRef = useRef<{
+    element: SVGTextElement;
+    svgElement: SVGSVGElement;
+    regionId: string;
+  } | null>(null);
+
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const data = useVisualizerStore(selectData);
   const legendItemsData = useLegendDataStore(selectLegendItems);
@@ -337,85 +345,96 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             const regionData = data.byId[pathTitle];
             if (!regionData) return;
 
-            // Calculate centroid using bounding box approximation
-            const d = path.getAttribute('d');
-            if (!d) return;
+            // Use stored position if available, otherwise calculate centroid
+            const storedPos = labelPositionsRef.current[pathTitle];
+            let labelX: number;
+            let labelY: number;
 
-            let minX = Infinity,
-              minY = Infinity,
-              maxX = -Infinity,
-              maxY = -Infinity;
-            const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
-            let match;
-            let currentX = 0,
-              currentY = 0;
+            if (storedPos) {
+              labelX = storedPos.x;
+              labelY = storedPos.y;
+            } else {
+              // Calculate centroid using bounding box approximation
+              const d = path.getAttribute('d');
+              if (!d) return;
 
-            while ((match = coordRegex.exec(d)) !== null) {
-              const command = match[1];
-              const params = match[2].trim();
-              const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
-              const isRelative = command === command.toLowerCase();
-              const cmd = command.toUpperCase();
+              let rMinX = Infinity,
+                rMinY = Infinity,
+                rMaxX = -Infinity,
+                rMaxY = -Infinity;
+              const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
+              let match;
+              let cX = 0,
+                cY = 0;
 
-              if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
-                for (let i = 0; i < numbers.length; i += 2) {
-                  const x = isRelative ? currentX + numbers[i] : numbers[i];
-                  const y = isRelative ? currentY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
-                  currentX = x;
-                  currentY = y;
-                  minX = Math.min(minX, x);
-                  minY = Math.min(minY, y);
-                  maxX = Math.max(maxX, x);
-                  maxY = Math.max(maxY, y);
-                }
-              } else if (cmd === 'H') {
-                for (const num of numbers) {
-                  const x = isRelative ? currentX + num : num;
-                  currentX = x;
-                  minX = Math.min(minX, x);
-                  maxX = Math.max(maxX, x);
-                }
-              } else if (cmd === 'V') {
-                for (const num of numbers) {
-                  const y = isRelative ? currentY + num : num;
-                  currentY = y;
-                  minY = Math.min(minY, y);
-                  maxY = Math.max(maxY, y);
-                }
-              } else if (cmd === 'C') {
-                for (let i = 0; i < numbers.length; i += 6) {
-                  for (let j = 0; j < 6; j += 2) {
-                    const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
-                    const y = isRelative
-                      ? currentY + (numbers[i + j + 1] ?? 0)
-                      : (numbers[i + j + 1] ?? 0);
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
+              while ((match = coordRegex.exec(d)) !== null) {
+                const command = match[1];
+                const params = match[2].trim();
+                const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
+                const isRelative = command === command.toLowerCase();
+                const cmd = command.toUpperCase();
+
+                if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
+                  for (let i = 0; i < numbers.length; i += 2) {
+                    const x = isRelative ? cX + numbers[i] : numbers[i];
+                    const y = isRelative ? cY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
+                    cX = x;
+                    cY = y;
+                    rMinX = Math.min(rMinX, x);
+                    rMinY = Math.min(rMinY, y);
+                    rMaxX = Math.max(rMaxX, x);
+                    rMaxY = Math.max(rMaxY, y);
                   }
-                  currentX = isRelative ? currentX + numbers[i + 4] : numbers[i + 4];
-                  currentY = isRelative ? currentY + (numbers[i + 5] ?? 0) : (numbers[i + 5] ?? 0);
+                } else if (cmd === 'H') {
+                  for (const num of numbers) {
+                    const x = isRelative ? cX + num : num;
+                    cX = x;
+                    rMinX = Math.min(rMinX, x);
+                    rMaxX = Math.max(rMaxX, x);
+                  }
+                } else if (cmd === 'V') {
+                  for (const num of numbers) {
+                    const y = isRelative ? cY + num : num;
+                    cY = y;
+                    rMinY = Math.min(rMinY, y);
+                    rMaxY = Math.max(rMaxY, y);
+                  }
+                } else if (cmd === 'C') {
+                  for (let i = 0; i < numbers.length; i += 6) {
+                    for (let j = 0; j < 6; j += 2) {
+                      const x = isRelative ? cX + numbers[i + j] : numbers[i + j];
+                      const y = isRelative
+                        ? cY + (numbers[i + j + 1] ?? 0)
+                        : (numbers[i + j + 1] ?? 0);
+                      rMinX = Math.min(rMinX, x);
+                      rMinY = Math.min(rMinY, y);
+                      rMaxX = Math.max(rMaxX, x);
+                      rMaxY = Math.max(rMaxY, y);
+                    }
+                    cX = isRelative ? cX + numbers[i + 4] : numbers[i + 4];
+                    cY = isRelative ? cY + (numbers[i + 5] ?? 0) : (numbers[i + 5] ?? 0);
+                  }
                 }
               }
+
+              if (!isFinite(rMinX) || !isFinite(rMinY) || !isFinite(rMaxX) || !isFinite(rMaxY))
+                return;
+
+              labelX = (rMinX + rMaxX) / 2;
+              labelY = (rMinY + rMaxY) / 2;
             }
 
-            if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) return;
-
-            // Calculate center of bounding box
-            const centerX = (minX + maxX) / 2;
-            const centerY = (minY + maxY) / 2;
-
-            // Create text element
+            // Create draggable text element
             const text = doc.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', String(centerX));
-            text.setAttribute('y', String(centerY));
+            text.setAttribute('x', String(labelX));
+            text.setAttribute('y', String(labelY));
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('dominant-baseline', 'middle');
             text.setAttribute('fill', regionLabels.color);
             text.setAttribute('font-size', String(regionLabels.fontSize));
             text.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-            text.setAttribute('pointer-events', 'none');
+            text.setAttribute('data-region-id', pathTitle);
+            text.setAttribute('cursor', 'move');
             text.textContent = regionData.label;
 
             labelsGroup.appendChild(text);
@@ -439,6 +458,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     return DOMPurify.sanitize(styledSvg, {
       USE_PROFILES: { svg: true, svgFilters: true },
       ADD_TAGS: ['use'],
+      ADD_ATTR: ['data-region-id', 'cursor'],
     });
   }, [rawSvgContent, applyStylesToSvg]);
 
@@ -448,6 +468,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       setRawSvgContent('');
       setZoom(1);
       setPan({ x: 0, y: 0 });
+      labelPositionsRef.current = {};
       return;
     }
 
@@ -465,9 +486,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       }
     };
 
-    // Reset view when loading new region
+    // Reset view and label positions when loading new region
     setZoom(1);
     setPan({ x: 0, y: 0 });
+    labelPositionsRef.current = {};
     loadMap();
   }, [selectedRegionId]);
 
@@ -523,6 +545,89 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       container.removeEventListener('wheel', handleWheel);
     };
   }, [handleWheel]);
+
+  // Region label drag - convert screen coordinates to SVG coordinates
+  const screenToSvgCoords = useCallback(
+    (svgEl: SVGSVGElement, clientX: number, clientY: number) => {
+      const ctm = svgEl.getScreenCTM();
+      if (!ctm) return null;
+      const pt = svgEl.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      return pt.matrixTransform(ctm.inverse());
+    },
+    [],
+  );
+
+  const handleLabelDragMove = useCallback(
+    (e: MouseEvent) => {
+      const dragging = draggingLabelRef.current;
+      if (!dragging) return;
+
+      const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
+      if (!svgCoords) return;
+
+      dragging.element.setAttribute('x', String(svgCoords.x));
+      dragging.element.setAttribute('y', String(svgCoords.y));
+    },
+    [screenToSvgCoords],
+  );
+
+  const handleLabelDragEnd = useCallback(
+    (e: MouseEvent) => {
+      const dragging = draggingLabelRef.current;
+      if (!dragging) return;
+
+      const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
+      if (svgCoords) {
+        labelPositionsRef.current[dragging.regionId] = { x: svgCoords.x, y: svgCoords.y };
+      }
+
+      draggingLabelRef.current = null;
+      window.removeEventListener('mousemove', handleLabelDragMove);
+      window.removeEventListener('mouseup', handleLabelDragEnd);
+    },
+    [screenToSvgCoords, handleLabelDragMove],
+  );
+
+  // Attach drag handlers to SVG region label text elements after render
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !svgContent || !regionLabels.show) return;
+
+    const svgEl = container.querySelector('svg');
+    if (!svgEl) return;
+
+    const textElements = svgEl.querySelectorAll<SVGTextElement>('text[data-region-id]');
+
+    const handleMouseDown = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const target = e.currentTarget as SVGTextElement;
+      const regionId = target.getAttribute('data-region-id');
+      if (!regionId) return;
+
+      draggingLabelRef.current = {
+        element: target,
+        svgElement: svgEl,
+        regionId,
+      };
+
+      window.addEventListener('mousemove', handleLabelDragMove);
+      window.addEventListener('mouseup', handleLabelDragEnd);
+    };
+
+    textElements.forEach((el) => {
+      el.addEventListener('mousedown', handleMouseDown);
+    });
+
+    return () => {
+      textElements.forEach((el) => {
+        el.removeEventListener('mousedown', handleMouseDown);
+      });
+    };
+  }, [svgContent, regionLabels.show, handleLabelDragMove, handleLabelDragEnd]);
 
   // Legend drag handlers - optimized with CSS transforms and requestAnimationFrame
   const handleLegendMouseDown = useCallback(
@@ -769,7 +874,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         </button>
 
         {/* Floating Legend (inside map container) */}
-        {position === LEGEND_POSITIONS.floating && labels.show && legendItems.length > 0 && (
+        {position === LEGEND_POSITIONS.floating && legendItems.length > 0 && (
           <div
             ref={legendRef}
             role="region"
@@ -789,7 +894,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
               onMouseDown={handleLegendMouseDown}
             />
-            <div className="relative z-20">{legendContent}</div>
+            <div className="pointer-events-none relative z-20">{legendContent}</div>
             {/* Resize handle for floating legend */}
             <button
               type="button"
@@ -843,7 +948,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       </div>
 
       {/* Bottom Legend (outside map container, with border separator) */}
-      {isBottomLegend && labels.show && legendItems.length > 0 && (
+      {isBottomLegend && legendItems.length > 0 && (
         <div className="p-md pt-md shrink-0 border-t border-gray-200" style={{ backgroundColor }}>
           {legendContent}
         </div>

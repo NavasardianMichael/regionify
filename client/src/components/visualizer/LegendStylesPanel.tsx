@@ -1,4 +1,4 @@
-import { type FC, useCallback, useMemo, useState } from 'react';
+import { type ChangeEvent, type FC, useCallback, useMemo, useState } from 'react';
 import { AimOutlined, EditOutlined, FontSizeOutlined } from '@ant-design/icons';
 import {
   Collapse,
@@ -14,6 +14,7 @@ import {
   type SwitchProps,
   Typography,
 } from 'antd';
+
 import {
   selectLabels,
   selectNoDataColor,
@@ -62,7 +63,7 @@ const LegendStylesPanel: FC = () => {
   );
 
   const handleTitleTextChange = useCallback<NonNullable<InputProps['onChange']>>(
-    (e) => {
+    (e: ChangeEvent<HTMLInputElement>) => {
       const text = e.target.value;
       setLocalTitleText(text);
       debouncedSetTitleText(text);
@@ -71,11 +72,6 @@ const LegendStylesPanel: FC = () => {
   );
 
   // Labels handlers
-  const handleLabelsShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
-    (checked) => setLabels({ show: checked }),
-    [setLabels],
-  );
-
   const handleLabelsColorChange = useCallback<NonNullable<ColorPickerProps['onChangeComplete']>>(
     (color) => setLabels({ color: color.toHexString() }),
     [setLabels],
@@ -96,7 +92,7 @@ const LegendStylesPanel: FC = () => {
 
   // Position handler
   const handlePositionChange = useCallback<NonNullable<SegmentedProps['onChange']>>(
-    (value) => setLegendStylesState({ position: value as LegendPosition }),
+    (value: string | number) => setLegendStylesState({ position: value as LegendPosition }),
     [setLegendStylesState],
   );
 
@@ -147,24 +143,12 @@ const LegendStylesPanel: FC = () => {
         ),
         children: (
           <Flex vertical gap="small">
-            <Flex align="center" justify="space-between" className="mb-2!">
-              <Typography.Text className="text-sm text-gray-600" id="show-labels-label">
-                Show Labels
-              </Typography.Text>
-              <Switch
-                checked={labels.show}
-                size="small"
-                onChange={handleLabelsShowChange}
-                aria-labelledby="show-labels-label"
-              />
-            </Flex>
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">Text Color</Typography.Text>
               <ColorPicker
                 value={labels.color}
                 onChangeComplete={handleLabelsColorChange}
                 size="small"
-                disabled={!labels.show}
               />
             </Flex>
             <Flex align="center" justify="space-between">
@@ -178,7 +162,6 @@ const LegendStylesPanel: FC = () => {
                   value={localFontSize}
                   onChange={handleLabelsFontSizeChange}
                   className="flex-1"
-                  disabled={!labels.show}
                   aria-labelledby="legend-font-size-label"
                 />
                 <Typography.Text className="w-8 text-right text-sm text-gray-500">
@@ -224,7 +207,6 @@ const LegendStylesPanel: FC = () => {
       },
     ],
     [
-      labels.show,
       labels.color,
       localFontSize,
       title.show,
@@ -233,7 +215,6 @@ const LegendStylesPanel: FC = () => {
       noDataColor,
       handleTitleShowChange,
       handleTitleTextChange,
-      handleLabelsShowChange,
       handleLabelsColorChange,
       handleLabelsFontSizeChange,
       handleNoDataColorChange,

@@ -4,7 +4,6 @@ import type { LegendStylesState } from './types';
 
 export const useLegendStylesStore = create<LegendStylesState>((set) => ({
   labels: {
-    show: true,
     color: '#18294D',
     fontSize: 12,
   },

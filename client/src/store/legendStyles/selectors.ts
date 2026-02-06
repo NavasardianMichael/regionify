@@ -10,7 +10,6 @@ export const selectBackgroundColor = (state: LegendStylesState) => state.backgro
 export const selectNoDataColor = (state: LegendStylesState) => state.noDataColor;
 
 // Labels sub-selectors
-export const selectLabelsShow = (state: LegendStylesState) => state.labels.show;
 export const selectLabelsColor = (state: LegendStylesState) => state.labels.color;
 export const selectLabelsFontSize = (state: LegendStylesState) => state.labels.fontSize;
 

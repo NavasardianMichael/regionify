@@ -502,7 +502,9 @@ Moscow,2500`}
       <Segmented
         options={IMPORT_OPTIONS}
         value={importDataType}
-        onChange={(value) => setVisualizerState({ importDataType: value as ImportDataType })}
+        onChange={(value: string | number) =>
+          setVisualizerState({ importDataType: value as ImportDataType })
+        }
         block
         aria-label="Import data format"
       />

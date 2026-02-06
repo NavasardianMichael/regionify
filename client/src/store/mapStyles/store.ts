@@ -23,7 +23,7 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
     backgroundColor: '#F5F5F5',
   },
   regionLabels: {
-    show: false,
+    show: true,
     color: '#333333',
     fontSize: 10,
   },

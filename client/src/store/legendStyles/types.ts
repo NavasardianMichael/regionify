@@ -1,7 +1,6 @@
 import type { LegendPosition } from '@/types/legendStyles';
 
 export type LegendLabelsConfig = {
-  show: boolean;
   color: string;
   fontSize: number;
 };

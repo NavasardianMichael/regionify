@@ -1,24 +1,30 @@
 import { type FC, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Flex, Spin } from 'antd';
-import { getCurrentUser } from '@/api/auth';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import type { UserPublic } from '@/api/auth/types';
 
 const AuthCallbackPage: FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const setUser = useProfileStore(selectSetUser);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user = await getCurrentUser();
-      setUser(user);
-      navigate(ROUTES.HOME, { replace: true });
-    };
+    const userParam = searchParams.get('user');
 
-    fetchUser();
-  }, [navigate, setUser]);
+    if (userParam) {
+      try {
+        const user = JSON.parse(atob(userParam)) as UserPublic;
+        setUser(user);
+      } catch {
+        setUser(null);
+      }
+    }
+
+    navigate(ROUTES.HOME, { replace: true });
+  }, [navigate, searchParams, setUser]);
 
   return (
     <Flex align="center" justify="center" className="h-full w-full">

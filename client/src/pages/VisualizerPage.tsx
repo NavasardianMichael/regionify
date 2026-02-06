@@ -1,8 +1,9 @@
-import { type FC, Suspense, useCallback, useState } from 'react';
+import { type FC, lazy, Suspense, useCallback, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Spin, Splitter, Typography } from 'antd';
+import { selectSelectedRegionId } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import { CardLayout } from '@/components/visualizer/CardLayout';
-import ExportMapModal from '@/components/visualizer/ExportMapModal';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
 import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
 import LegendConfigPanel from '@/components/visualizer/LegendConfigPanel';
@@ -12,7 +13,10 @@ import MapViewer from '@/components/visualizer/MapViewer';
 import PictureStylesPanel from '@/components/visualizer/PictureStylesPanel';
 import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
+const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
+
 const VisualizerPage: FC = () => {
+  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const handleOpenExportModal = useCallback(() => {
@@ -49,7 +53,12 @@ const VisualizerPage: FC = () => {
               <Typography.Title level={3} className="text-primary mb-0! text-base font-semibold">
                 Map Visualization
               </Typography.Title>
-              <Button type="primary" icon={<DownloadOutlined />} onClick={handleOpenExportModal}>
+              <Button
+                type="primary"
+                icon={<DownloadOutlined />}
+                onClick={handleOpenExportModal}
+                disabled={!selectedRegionId}
+              >
                 Export
               </Button>
             </Flex>
@@ -79,7 +88,11 @@ const VisualizerPage: FC = () => {
       </Splitter>
 
       {/* Export Modal */}
-      <ExportMapModal open={isExportModalOpen} onClose={handleCloseExportModal} />
+      {isExportModalOpen && (
+        <Suspense>
+          <ExportMapModal open={isExportModalOpen} onClose={handleCloseExportModal} />
+        </Suspense>
+      )}
     </>
   );
 };

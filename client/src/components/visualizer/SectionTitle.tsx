@@ -1,12 +1,9 @@
-import { type FC, useMemo } from 'react';
-import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
+import { type ComponentType, type FC, useMemo } from 'react';
 import { Flex, Typography } from 'antd';
 import type { TitleProps } from 'antd/es/typography/Title';
 
 type Props = TitleProps & {
-  IconComponent?: React.ForwardRefExoticComponent<
-    Omit<AntdIconProps, 'ref'> & React.RefAttributes<HTMLSpanElement>
-  >;
+  IconComponent?: ComponentType<{ className?: string }>;
 };
 
 export const SectionTitle: FC<Props> = ({ className, children, IconComponent, ...props }) => {

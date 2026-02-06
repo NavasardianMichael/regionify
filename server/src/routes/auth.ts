@@ -71,39 +71,6 @@ router.post('/logout', (req, res, next) => {
   });
 });
 
-// GET /api/auth/me - Returns current user or null if not authenticated
-router.get('/me', async (req, res, next) => {
-  try {
-    // Return null if no session
-    if (!req.session.userId) {
-      res.json({
-        success: true,
-        data: { user: null },
-      });
-      return;
-    }
-
-    const user = await authService.getUserById(req.session.userId);
-
-    if (!user) {
-      req.session.destroy(() => {});
-      res.clearCookie('regionify.sid');
-      res.json({
-        success: true,
-        data: { user: null },
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: { user },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
 // GET /api/auth/google
 router.get(
   '/google',
@@ -113,7 +80,7 @@ router.get(
 
 // GET /api/auth/google/callback
 router.get('/google/callback', (req, res, next) => {
-  passport.authenticate('google', { session: false }, (err, user) => {
+  passport.authenticate('google', { session: false }, async (err, user) => {
     if (err) {
       console.error('Google auth error:', err);
       return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
@@ -127,7 +94,7 @@ router.get('/google/callback', (req, res, next) => {
     const typedUser = user as { id: string };
 
     // Regenerate session and set user ID
-    req.session.regenerate((sessionErr) => {
+    req.session.regenerate(async (sessionErr) => {
       if (sessionErr) {
         console.error('Session regenerate error:', sessionErr);
         return res.redirect(`${env.CLIENT_URL}/login?error=session_error`);
@@ -135,8 +102,12 @@ router.get('/google/callback', (req, res, next) => {
 
       req.session.userId = typedUser.id;
 
-      // Redirect to client app
-      res.redirect(`${env.CLIENT_URL}/auth/callback`);
+      // Fetch public user data to pass to client
+      const publicUser = await authService.getUserById(typedUser.id);
+      const userParam = Buffer.from(JSON.stringify(publicUser)).toString('base64');
+
+      // Redirect to client app with user data
+      res.redirect(`${env.CLIENT_URL}/auth/callback?user=${encodeURIComponent(userParam)}`);
     });
   })(req, res, next);
 });

@@ -1,8 +1,11 @@
-import { type FC, useMemo } from 'react';
+import { type FC, type ReactNode, useMemo } from 'react';
 import { Flex, type FlexProps } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 
-type Props = FlexProps;
+type Props = FlexProps & {
+  className?: string;
+  children?: ReactNode;
+};
 
 export const CardLayout: FC<Props> = ({ className, children, ...props }) => {
   const computedClassName = useMemo(() => {

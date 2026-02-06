@@ -6,7 +6,6 @@ import type {
   LoginPayload,
   RegisterPayload,
   ResetPasswordPayload,
-  UserPublic,
 } from './types';
 
 /**
@@ -113,26 +112,5 @@ export const resetPassword = async (payload: ResetPasswordPayload): Promise<void
   if (!response.ok) {
     const data = await response.json();
     throw new Error(getErrorMessage(data, 'Failed to reset password'));
-  }
-};
-
-/**
- * Get current authenticated user
- * Returns null if not authenticated (no error thrown)
- */
-export const getCurrentUser = async (): Promise<UserPublic | null> => {
-  try {
-    const response = await fetch(AUTH_ENDPOINTS.me, {
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = (await response.json()) as { success: boolean; data: { user: UserPublic | null } };
-    return data.data?.user ?? null;
-  } catch {
-    return null;
   }
 };

@@ -35,7 +35,7 @@ export function createApp(): express.Application {
       origin: env.CORS_ORIGINS,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      allowedHeaders: ['Content-Type', 'X-Requested-With'],
     }),
   );
 
@@ -57,10 +57,11 @@ export function createApp(): express.Application {
     }),
   );
 
-  // Session store with Redis
+  // Session store with Redis (sliding expiration: TTL resets on each request)
   const store = new RedisStore({
     client: redis,
     prefix: 'regionify:session:',
+    disableTouch: false,
   });
 
   app.use(
@@ -70,13 +71,13 @@ export function createApp(): express.Application {
       secret: env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      rolling: true, // Reset expiry on activity
+      // Sliding expiration: resend cookie + refresh Redis TTL on every request
+      rolling: true,
       cookie: {
         httpOnly: true,
         secure: isProd,
         sameSite: isProd ? 'strict' : 'lax',
         maxAge: env.SESSION_MAX_AGE,
-        domain: isProd ? undefined : undefined, // Set in production
       },
     }),
   );

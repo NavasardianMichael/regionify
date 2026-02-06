@@ -93,22 +93,6 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     }
   }, []);
 
-  const handleIdChange: InputProps['onChange'] = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const rowId = e.currentTarget.dataset.id;
-      if (rowId) {
-        setLocalData((prev) => ({
-          ...prev,
-          byId: {
-            ...prev.byId,
-            [rowId]: { ...prev.byId[rowId], label: e.target.value },
-          },
-        }));
-      }
-    },
-    [],
-  );
-
   const handleLabelChange: InputProps['onChange'] = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const rowId = e.currentTarget.dataset.id;
@@ -230,12 +214,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
                   <Typography.Text className="text-center text-sm text-gray-500">
                     {index + 1}
                   </Typography.Text>
-                  <Input
-                    value={row.label}
-                    data-id={rowId}
-                    onChange={handleIdChange}
-                    placeholder="Region ID"
-                  />
+                  <Input value={row.label} placeholder="Region ID" disabled />
                   <Input
                     value={row.label}
                     data-id={rowId}
@@ -244,7 +223,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
                   />
                   <InputNumber
                     value={row.value}
-                    onChange={(value) => handleValueChange(rowId, value)}
+                    onChange={(value: number | null) => handleValueChange(rowId, value)}
                     min={0}
                     className="w-full"
                   />
