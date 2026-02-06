@@ -18,8 +18,9 @@ COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY server/prisma ./server/prisma
 
-# Install all dependencies
-RUN pnpm install --frozen-lockfile
+# Install all dependencies with cache mount
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
 # Copy source code
 COPY tsconfig.json ./
@@ -29,29 +30,31 @@ COPY server ./server
 # Build TypeScript (includes prisma generate via build script)
 RUN pnpm --filter @regionify/server build
 
+# Prune dev dependencies, keep only production deps
+RUN pnpm prune --prod
+
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
 # -----------------------------------------------------------------------------
 FROM node:22-alpine AS runtime
 
-RUN apk add --no-cache libc6-compat && \
-    corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Copy package files and prisma schema
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY shared/package.json ./shared/
-COPY server/package.json ./server/
+# Copy pruned node_modules from builder (already has Prisma client generated)
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/shared/node_modules ./shared/node_modules
+COPY --from=builder /app/server/node_modules ./server/node_modules
+
+# Copy package files (for Node resolution)
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/shared/package.json ./shared/
+COPY --from=builder /app/server/package.json ./server/
+
+# Copy Prisma schema and generated client
 COPY --from=builder /app/server/prisma ./server/prisma
-
-# Install production dependencies (ignore scripts to skip husky)
-RUN pnpm install --prod --frozen-lockfile --ignore-scripts
-
-# Generate Prisma client
-WORKDIR /app/server
-RUN pnpm exec prisma generate
-WORKDIR /app
 
 # Copy shared source and built server
 COPY --from=builder /app/shared/src ./shared/src

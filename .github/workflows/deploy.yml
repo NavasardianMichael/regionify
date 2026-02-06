@@ -14,6 +14,40 @@ name: Deploy to Production
 on:
   push:
     branches: [master]
+    paths:
+      # Client
+      - 'client/src/**'
+      - 'client/public/**'
+      - 'client/index.html'
+      - 'client/package.json'
+      - 'client/vite.config.ts'
+      - 'client/tsconfig*.json'
+      # Server
+      - 'server/src/**'
+      - 'server/prisma/**'
+      - 'server/package.json'
+      - 'server/tsconfig.json'
+      - 'server/Dockerfile'
+      # Shared
+      - 'shared/src/**'
+      - 'shared/package.json'
+      - 'shared/tsconfig.json'
+      # Root config
+      - 'docker-compose.prod.yml'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'tsconfig.json'
+      # Workflow itself
+      - '.github/workflows/deploy.yml'
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '.github/copilot-instructions*.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.editorconfig'
+      - '.vscode/**'
 
 env:
   NODE_VERSION: '24'
@@ -144,8 +178,9 @@ jobs:
           echo "$ENV_FILE_BASE64" | base64 -d > server/.env.production
           chmod 600 server/.env.production
 
-          # Deploy with Docker
-          docker compose -f docker-compose.prod.yml build --no-cache server
+          # Deploy with Docker (use BuildKit for layer caching)
+          export DOCKER_BUILDKIT=1
+          docker compose -f docker-compose.prod.yml build server
           docker compose -f docker-compose.prod.yml up -d
 
           # Wait for postgres to be ready
