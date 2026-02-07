@@ -112,14 +112,36 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
-// GET /api/auth/status
-router.get('/status', (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      authenticated: !!req.session.userId,
-    },
-  });
+// GET /api/auth/status - Returns auth state and user data if authenticated
+router.get('/status', async (req, res, next) => {
+  try {
+    if (!req.session.userId) {
+      res.json({
+        success: true,
+        data: { authenticated: false, user: null },
+      });
+      return;
+    }
+
+    const user = await authService.getUserById(req.session.userId);
+
+    if (!user) {
+      // Session references a deleted user — clean up
+      req.session.destroy(() => {});
+      res.json({
+        success: true,
+        data: { authenticated: false, user: null },
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      data: { authenticated: true, user },
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // POST /api/auth/forgot-password

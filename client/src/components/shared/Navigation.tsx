@@ -2,11 +2,11 @@ import { type FC } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CreditCardOutlined,
+  FolderOutlined,
   HomeOutlined,
   LoginOutlined,
   LogoutOutlined,
   MailOutlined,
-  TableOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
@@ -26,11 +26,14 @@ type NavItem = {
   >;
 };
 
-const NAV_ITEMS: NavItem[] = [
+const PUBLIC_NAV_ITEMS: NavItem[] = [
   { path: ROUTES.HOME, label: 'Home', icon: HomeOutlined },
-  { path: ROUTES.VISUALIZER, label: 'Visualizer', icon: TableOutlined },
   { path: ROUTES.CONTACT, label: 'Contact', icon: MailOutlined },
   { path: ROUTES.BILLING, label: 'Billing', icon: CreditCardOutlined },
+];
+
+const AUTH_NAV_ITEMS: NavItem[] = [
+  { path: ROUTES.PROJECTS, label: 'Projects', icon: FolderOutlined },
 ];
 
 export const Navigation: FC = () => {
@@ -81,7 +84,7 @@ export const Navigation: FC = () => {
         </Link>
         <Flex align="center" gap={16}>
           <Flex component="ul" gap={4}>
-            {NAV_ITEMS.map((item) => (
+            {PUBLIC_NAV_ITEMS.map((item) => (
               <li key={item.path}>
                 <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
                   <item.icon />
@@ -89,6 +92,15 @@ export const Navigation: FC = () => {
                 </AppNavLink>
               </li>
             ))}
+            {isLoggedIn &&
+              AUTH_NAV_ITEMS.map((item) => (
+                <li key={item.path}>
+                  <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
+                    <item.icon />
+                    {item.label}
+                  </AppNavLink>
+                </li>
+              ))}
           </Flex>
           <div className="h-6 w-px bg-gray-200" />
           {isLoggedIn ? (

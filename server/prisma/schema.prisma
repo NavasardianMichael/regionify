@@ -38,8 +38,28 @@ model User {
   // Relations
   sessions            Session[]
   passwordResetTokens PasswordResetToken[]
+  projects            Project[]
 
   @@map("users")
+}
+
+model Project {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  name             String
+  selectedRegionId String?  @map("selected_region_id")
+  dataset          Json?
+  mapStyles        Json?    @map("map_styles")
+  legendStyles     Json?    @map("legend_styles")
+  legendData       Json?    @map("legend_data")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("projects")
 }
 
 model Session {

@@ -2,6 +2,7 @@ import { type Router as ExpressRouter, Router } from 'express';
 
 import { authRoutes } from './auth.js';
 import { contactRoutes } from './contact.js';
+import { projectRoutes } from './projects.js';
 
 const router: ExpressRouter = Router();
 
@@ -21,5 +22,8 @@ router.use('/auth', authRoutes);
 
 // Contact routes
 router.use('/contact', contactRoutes);
+
+// Project routes
+router.use('/projects', projectRoutes);
 
 export const apiRoutes: ExpressRouter = router;
