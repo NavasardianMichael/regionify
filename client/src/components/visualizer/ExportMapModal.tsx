@@ -1,9 +1,12 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
 import { Button, Flex, InputNumber, message, Modal, Select, Slider, Typography } from 'antd';
+import { PLAN_FEATURE_LIMITS } from '@/constants/plans';
+import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
 import { selectSelectedRegionId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
+import { selectUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 
 const EXPORT_TYPES = {
   png: 'png',
@@ -18,7 +21,7 @@ type ExportTypeOption = {
   label: string;
 };
 
-const EXPORT_TYPE_OPTIONS: ExportTypeOption[] = [
+const ALL_EXPORT_OPTIONS: ExportTypeOption[] = [
   { value: EXPORT_TYPES.png, label: 'PNG' },
   { value: EXPORT_TYPES.svg, label: 'SVG' },
   { value: EXPORT_TYPES.jpeg, label: 'JPEG' },
@@ -29,26 +32,47 @@ type Props = {
   onClose: () => void;
 };
 
+const DEFAULT_QUALITY = 60;
+
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
-  const [exportType, setExportType] = useState<ExportType>(EXPORT_TYPES.png);
-  const [quality, setQuality] = useState(60);
+  const user = useProfileStore(selectUser);
+  const plan = user?.plan ?? 'free';
+  const limits = PLAN_FEATURE_LIMITS[plan];
+  const maxQuality = limits.maxExportQuality;
+  const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
+  const allowedFormats = limits.allowedExportFormats;
+  const exportTypeOptions = useMemo(
+    () => ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value)),
+    [allowedFormats],
+  );
+  const defaultExportType = (allowedFormats[0] ?? 'png') as ExportType;
+
+  const [exportType, setExportType] = useState<ExportType>(defaultExportType);
+  const [quality, setQuality] = useState(initialQuality);
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleAfterOpenChange = useCallback((visible: boolean) => {
-    if (visible) {
-      setExportType(EXPORT_TYPES.png);
-      setQuality(60);
-    }
-  }, []);
+  const handleAfterOpenChange = useCallback(
+    (visible: boolean) => {
+      if (visible) {
+        setExportType(defaultExportType);
+        setQuality(Math.min(DEFAULT_QUALITY, maxQuality));
+      }
+    },
+    [defaultExportType, maxQuality],
+  );
 
   const handleExportTypeChange = useCallback((value: ExportType) => {
     setExportType(value);
   }, []);
 
-  const handleQualityChange = useCallback((value: number | null) => {
-    setQuality(value ?? 60);
-  }, []);
+  const handleQualityChange = useCallback(
+    (value: number | null) => {
+      const v = value ?? initialQuality;
+      setQuality(Math.min(v, maxQuality));
+    },
+    [initialQuality, maxQuality],
+  );
 
   const exportHandlers = useMemo(
     () => ({
@@ -100,15 +124,20 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       destroyOnHidden
     >
       <Flex vertical gap="middle" className="py-md">
-        {/* Export Type */}
+        {/* Export Type — Free: PNG only; Explorer/Atlas: PNG, SVG, JPEG */}
         <Flex vertical gap="small">
           <Typography.Text className="text-sm text-gray-600">Export type:</Typography.Text>
           <Select
             value={exportType}
             onChange={handleExportTypeChange}
-            options={EXPORT_TYPE_OPTIONS}
+            options={exportTypeOptions}
             className="w-full"
           />
+          {allowedFormats.length === 1 && (
+            <Typography.Text type="secondary" className="text-xs">
+              Free plan: PNG only. Upgrade for SVG and JPEG.
+            </Typography.Text>
+          )}
         </Flex>
 
         {/* Quality Control */}
@@ -118,7 +147,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
               <Typography.Text className="text-sm text-gray-600">Quality (%):</Typography.Text>
               <InputNumber
                 min={1}
-                max={100}
+                max={maxQuality}
                 value={quality}
                 onChange={handleQualityChange}
                 className="w-20"
@@ -126,11 +155,18 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
             </Flex>
             <Slider
               min={1}
-              max={100}
+              max={maxQuality}
               value={quality}
-              onChange={setQuality}
+              onChange={(v) =>
+                setQuality(typeof v === 'number' ? Math.min(v, maxQuality) : maxQuality)
+              }
               aria-label="Export quality"
             />
+            {limits.pictureQualityLimit && (
+              <Typography.Text type="secondary" className="text-xs">
+                Free plan: quality limited to {maxQuality}%. Upgrade for 100%.
+              </Typography.Text>
+            )}
           </Flex>
         )}
 

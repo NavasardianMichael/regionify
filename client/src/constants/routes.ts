@@ -12,6 +12,10 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
   AUTH_CALLBACK: '/auth/callback',
+
+  // Payment return/cancel (PayPal redirect)
+  PAYMENTS_RETURN: '/payments/return',
+  PAYMENTS_CANCEL: '/payments/cancel',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

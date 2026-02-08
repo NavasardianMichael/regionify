@@ -25,6 +25,7 @@ function toPublicUser(user: User): UserPublic {
     name: user.name,
     avatarUrl: user.avatarUrl,
     provider: user.provider as AuthProvider,
+    plan: user.plan as UserPublic['plan'],
     createdAt: user.createdAt.toISOString(),
   };
 }

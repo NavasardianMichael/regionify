@@ -47,6 +47,7 @@ export const ErrorCode = {
 
   // General errors
   NOT_FOUND: 'NOT_FOUND',
+  FORBIDDEN: 'FORBIDDEN',
   RATE_LIMITED: 'RATE_LIMITED',
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const;

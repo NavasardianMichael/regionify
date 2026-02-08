@@ -25,11 +25,14 @@ export type AuthResponse = {
   message: string;
 };
 
+import type { Plan } from './plan.js';
+
 export type UserPublic = {
   id: string;
   email: string;
   name: string;
   avatarUrl: string | null;
   provider: AuthProvider;
+  plan: Plan;
   createdAt: string;
 };

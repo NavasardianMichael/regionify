@@ -8,6 +8,7 @@ export type UserCreate = {
   passwordHash?: string | null;
   avatarUrl?: string | null;
   provider?: 'local' | 'google';
+  plan?: 'free' | 'explorer' | 'atlas';
   googleId?: string | null;
   emailVerified?: boolean;
 };
