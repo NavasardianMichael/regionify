@@ -1,4 +1,5 @@
-import type { Project } from '@prisma/client';
+import { Prisma, type Project } from '@prisma/client';
+import type { InputJsonValue } from '@prisma/client/runtime/library';
 
 import { prisma } from '../db/index.js';
 
@@ -13,6 +14,22 @@ export type ProjectCreate = {
 };
 
 export type ProjectUpdate = Partial<Omit<ProjectCreate, 'userId'>>;
+
+const JSON_FIELDS = ['dataset', 'mapStyles', 'legendStyles', 'legendData'] as const;
+
+/** Converts plain `null` to `Prisma.JsonNull` for nullable JSON columns */
+function normalizeJsonFields<T extends Record<string, unknown>>(data: T): T {
+  const result = { ...data };
+  for (const key of JSON_FIELDS) {
+    if (key in result) {
+      result[key as keyof T] =
+        result[key as keyof T] === null
+          ? (Prisma.JsonNull as unknown as T[keyof T])
+          : (result[key as keyof T] as InputJsonValue as unknown as T[keyof T]);
+    }
+  }
+  return result;
+}
 
 export const projectRepository = {
   async findById(id: string): Promise<Project | null> {
@@ -29,14 +46,16 @@ export const projectRepository = {
   },
 
   async create(data: ProjectCreate): Promise<Project> {
-    return prisma.project.create({ data });
+    return prisma.project.create({
+      data: normalizeJsonFields(data) as Prisma.ProjectUncheckedCreateInput,
+    });
   },
 
   async update(id: string, data: ProjectUpdate): Promise<Project | null> {
     try {
       return await prisma.project.update({
         where: { id },
-        data,
+        data: normalizeJsonFields(data) as Prisma.ProjectUncheckedUpdateInput,
       });
     } catch {
       return null;
