@@ -1,5 +1,5 @@
 import type { Plan } from '@regionify/shared';
-import { ErrorCode, HttpStatus } from '@regionify/shared';
+import { HttpStatus, ErrorCode } from '@regionify/shared';
 
 import { env } from '../config/env.js';
 import { AppError } from '../middleware/errorHandler.js';
