@@ -29,7 +29,7 @@ const BillingPage: FC = () => {
   );
 
   return (
-    <Flex vertical align="center" gap="large" className="mx-auto w-full max-w-5xl">
+    <Flex vertical align="center" gap="large" className="mx-auto! w-full max-w-5xl">
       <Flex vertical align="center" gap="small">
         <Typography.Title level={1} className="text-primary mb-0! text-3xl font-bold">
           Choose Your Plan
@@ -41,7 +41,7 @@ const BillingPage: FC = () => {
 
       <Flex gap="large" justify="center" wrap="wrap" className="w-full">
         {BILLING_PLANS.map((plan) => (
-          <Flex key={plan.id} style={{ flex: 1, minWidth: 320, minHeight: 420 }}>
+          <Flex key={plan.id} className="w-80 shrink-0" vertical>
             <PlanCard
               plan={plan}
               currentPlan={currentPlan}

@@ -24,7 +24,6 @@ export const BILLING_PLANS: BillingPlan[] = [
     period: 'month',
     description: 'For professionals and teams',
     buttonText: 'Upgrade to Explorer',
-    popular: true,
     features: [
       { text: 'Unlimited projects', included: true },
       { text: 'All map styles', included: true },
@@ -41,6 +40,7 @@ export const BILLING_PLANS: BillingPlan[] = [
     period: 'month',
     description: 'For power users',
     buttonText: 'Upgrade to Atlas',
+    popular: true,
     features: [
       { text: 'Everything in Explorer', included: true },
       { text: 'Priority support', included: true },

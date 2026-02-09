@@ -1,3 +1,5 @@
+import type { Plan } from '@regionify/shared';
+
 export { PLAN_FEATURE_LIMITS, type PlanFeatureLimits, type ExportFormat } from '@regionify/shared';
 export type { Plan } from '@regionify/shared';
 

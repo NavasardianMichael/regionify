@@ -44,7 +44,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
     <Card className={cardClassName} styles={{ body: cardBodyStyles }}>
       {plan.popular && (
         <div className="bg-primary absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-medium text-white">
-          Most Popular
+          Best Choice
         </div>
       )}
 

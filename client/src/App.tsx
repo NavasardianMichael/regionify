@@ -29,7 +29,9 @@ function AppContent() {
     <BrowserRouter>
       <Flex vertical className="h-screen overflow-hidden bg-gray-100">
         <Navigation />
-        <main className={`flex-1 overflow-y-auto ${APP_LAYOUT_CLASSNAMES.padding}`}>
+        <main
+          className={`flex flex-1 items-center overflow-y-auto ${APP_LAYOUT_CLASSNAMES.padding}`}
+        >
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path={ROUTES.HOME} element={<HomePage />} />
