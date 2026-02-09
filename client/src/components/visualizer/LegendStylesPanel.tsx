@@ -14,7 +14,6 @@ import {
   type SwitchProps,
   Typography,
 } from 'antd';
-
 import {
   selectLabels,
   selectNoDataColor,
@@ -28,6 +27,7 @@ import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
 import type { LegendPosition } from '@/types/legendStyles';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { randomHexColor, randomInt } from '@/helpers/randomUtils';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const POSITION_OPTIONS: { value: LegendPosition; label: string }[] = [
@@ -44,6 +44,20 @@ const LegendStylesPanel: FC = () => {
   const setLabels = useLegendStylesStore(selectSetLabels);
   const setTitle = useLegendStylesStore(selectSetTitle);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
+
+  // Utility: Apply random styles
+  const applyRandomStyles = useCallback(() => {
+    // Font size between 8 and 24
+    const fontSize = randomInt(8, 24);
+    // Label color random
+    const color = randomHexColor();
+    // Background color random
+    const backgroundColor = randomHexColor();
+    // No data color random
+    const noDataColor = randomHexColor();
+    setLabels({ color, fontSize });
+    setLegendStylesState({ backgroundColor, noDataColor });
+  }, [setLabels, setLegendStylesState]);
 
   // Local state for debounced inputs
   const [localTitleText, setLocalTitleText] = useState(title.text);
@@ -225,7 +239,14 @@ const LegendStylesPanel: FC = () => {
   return (
     <Flex vertical gap="middle">
       <SectionTitle IconComponent={AimOutlined}>Legend Styles</SectionTitle>
-      <Collapse items={items} defaultActiveKey={['labels']} ghost expandIconPlacement="end" />
+      <button
+        type="button"
+        onClick={applyRandomStyles}
+        style={{ marginBottom: 8, alignSelf: 'flex-end' }}
+      >
+        Apply Random Styles
+      </button>
+      <Collapse items={items} defaultActiveKey={[]} ghost expandIconPlacement="end" />
     </Flex>
   );
 };

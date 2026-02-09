@@ -1,5 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
-import { BgColorsOutlined } from '@ant-design/icons';
+import { BgColorsOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PLANS } from '@regionify/shared';
 import {
   Collapse,
   ColorPicker,
@@ -22,12 +23,27 @@ import {
   selectZoomControls,
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
+import { selectUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const DEBOUNCE_MS = 150;
 
 const MapStylesPanel: FC = () => {
+  const user = useProfileStore(selectUser);
+  const plan = user?.plan ?? PLANS.free;
+  const picture = useMapStylesStore((state) => state.picture);
+  const setPicture = useMapStylesStore((state) => state.setPicture);
+
+  const handleTransparentChange = useCallback<NonNullable<SwitchProps['onChange']>>(
+    (checked) => setPicture({ transparentBackground: checked }),
+    [setPicture],
+  );
+
+  const handleBackgroundColorChange = useCallback<
+    NonNullable<ColorPickerProps['onChangeComplete']>
+  >((color) => setPicture({ backgroundColor: color.toHexString() }), [setPicture]);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const zoomControls = useMapStylesStore(selectZoomControls);
@@ -124,6 +140,50 @@ const MapStylesPanel: FC = () => {
 
   const items = useMemo(
     () => [
+      {
+        key: 'background',
+        label: (
+          <Flex align="center" gap="small">
+            <Typography.Text className="font-semibold">Background</Typography.Text>
+            {plan === PLANS.free && <InfoCircleOutlined style={{ color: '#888', marginLeft: 4 }} />}
+          </Flex>
+        ),
+        children: (
+          <Flex vertical gap="small">
+            {plan === PLANS.free && (
+              <Typography.Text type="secondary" style={{ fontSize: 13, marginBottom: 8 }}>
+                Free plan: You can change the background color, but transparent background and
+                watermark removal require an upgrade.{' '}
+                <a href="/billing" style={{ color: '#1677ff' }}>
+                  Upgrade your plan
+                </a>
+                .
+              </Typography.Text>
+            )}
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600" id="transparent-bg-label">
+                Transparent
+              </Typography.Text>
+              <Switch
+                checked={picture.transparentBackground}
+                size="small"
+                onChange={handleTransparentChange}
+                aria-labelledby="transparent-bg-label"
+                disabled={plan === PLANS.free}
+              />
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">Color</Typography.Text>
+              <ColorPicker
+                value={picture.backgroundColor}
+                onChangeComplete={handleBackgroundColorChange}
+                size="small"
+                disabled={picture.transparentBackground}
+              />
+            </Flex>
+          </Flex>
+        ),
+      },
       {
         key: 'border',
         label: (
@@ -344,13 +404,18 @@ const MapStylesPanel: FC = () => {
       handleRegionLabelsShowChange,
       handleRegionLabelsColorChange,
       handleRegionLabelsFontSizeChange,
+      plan,
+      picture.transparentBackground,
+      picture.backgroundColor,
+      handleTransparentChange,
+      handleBackgroundColorChange,
     ],
   );
 
   return (
     <Flex vertical gap="middle">
       <SectionTitle IconComponent={BgColorsOutlined}>Map Styles</SectionTitle>
-      <Collapse items={items} defaultActiveKey={['border']} ghost expandIconPlacement="end" />
+      <Collapse items={items} defaultActiveKey={[]} ghost expandIconPlacement="end" />
     </Flex>
   );
 };

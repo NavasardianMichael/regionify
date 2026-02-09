@@ -4,7 +4,7 @@ import { App, Flex, Typography } from 'antd';
 import { createOrder } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import type { Plan } from '@/constants/plans';
+import { type Plan, PLANS } from '@regionify/shared';
 import { BILLING_PLANS } from '@/components/billing/constants';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';
@@ -14,7 +14,7 @@ const BillingPage: FC = () => {
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const navigate = useNavigate();
-  const currentPlan: Plan = useMemo(() => user?.plan ?? 'free', [user?.plan]);
+  const currentPlan: Plan = useMemo(() => user?.plan ?? PLANS.free, [user?.plan]);
   const [upgradingPlan, setUpgradingPlan] = useState<PayablePlan | null>(null);
 
   const onUpgrade = useCallback(

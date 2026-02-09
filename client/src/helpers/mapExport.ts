@@ -1,3 +1,6 @@
+import { EXPORT_TYPES } from '@/constants/exportTypes';
+import { type ExportType } from '@/types/exportTypes';
+
 const MAP_SVG_SELECTOR = '.map-svg-container svg';
 const DEFAULT_EXPORT_NAME = 'regionify-map';
 
@@ -102,30 +105,49 @@ const qualityToScale = (quality: number): number => Math.max(0.5, quality / 25);
 export const exportMapAsSvg = (fileName = DEFAULT_EXPORT_NAME): void => {
   const clone = prepareSvgForExport(getMapSvgElement());
   const svgString = new XMLSerializer().serializeToString(clone);
-  const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-  triggerDownload(blob, `${fileName}.svg`);
+  const blob = new Blob([svgString], { type: `image/${EXPORT_TYPES.svg}+xml;charset=utf-8` });
+  triggerDownload(blob, `${fileName}.${EXPORT_TYPES.svg}`);
 };
 
 export const exportMapAsPng = async (
   quality: number,
   fileName = DEFAULT_EXPORT_NAME,
+  opts?: { backgroundColor?: string; watermark?: string },
 ): Promise<void> => {
   const clone = prepareSvgForExport(getMapSvgElement());
   const svgString = new XMLSerializer().serializeToString(clone);
   const canvas = await svgToCanvas(svgString, qualityToScale(quality));
-  const blob = await canvasToBlob(canvas, 'image/png');
-  triggerDownload(blob, `${fileName}.png`);
+  const ctx = canvas.getContext('2d');
+  if (ctx && opts?.backgroundColor) {
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = opts.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  if (ctx && opts?.watermark) {
+    ctx.save();
+    ctx.font = 'bold 18px Montserrat, Arial, sans-serif';
+    ctx.fillStyle = '#888';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.globalAlpha = 0.7;
+    ctx.fillText(opts.watermark, canvas.width - 12, canvas.height - 12);
+    ctx.restore();
+  }
+  const blob = await canvasToBlob(canvas, `image/${EXPORT_TYPES.png}`);
+  triggerDownload(blob, `${fileName}.${EXPORT_TYPES.png}`);
 };
 
 export const exportMapAsJpeg = async (
   quality: number,
   fileName = DEFAULT_EXPORT_NAME,
+  opts?: { backgroundColor?: string; watermark?: string },
 ): Promise<void> => {
   const clone = prepareSvgForExport(getMapSvgElement());
   const svgString = new XMLSerializer().serializeToString(clone);
   const canvas = await svgToCanvas(svgString, qualityToScale(quality));
 
-  // JPEG doesn't support transparency — fill with white background
+  // JPEG doesn't support transparency — fill with background color
   const jpegCanvas = document.createElement('canvas');
   jpegCanvas.width = canvas.width;
   jpegCanvas.height = canvas.height;
@@ -133,10 +155,19 @@ export const exportMapAsJpeg = async (
   const ctx = jpegCanvas.getContext('2d');
   if (!ctx) throw new Error('Failed to create JPEG canvas context');
 
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = opts?.backgroundColor || '#ffffff';
   ctx.fillRect(0, 0, jpegCanvas.width, jpegCanvas.height);
   ctx.drawImage(canvas, 0, 0);
-
-  const blob = await canvasToBlob(jpegCanvas, 'image/jpeg', 0.92);
-  triggerDownload(blob, `${fileName}.jpeg`);
+  if (opts?.watermark) {
+    ctx.save();
+    ctx.font = 'bold 18px Montserrat, Arial, sans-serif';
+    ctx.fillStyle = '#888';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.globalAlpha = 0.7;
+    ctx.fillText(opts.watermark, jpegCanvas.width - 12, jpegCanvas.height - 12);
+    ctx.restore();
+  }
+  const blob = await canvasToBlob(jpegCanvas, `image/${EXPORT_TYPES.jpeg}`, 0.92);
+  triggerDownload(blob, `${fileName}.${EXPORT_TYPES.jpeg}`);
 };

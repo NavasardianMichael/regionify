@@ -1,20 +1,17 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
+import { PLANS } from '@regionify/shared';
 import { Button, Flex, InputNumber, message, Modal, Select, Slider, Typography } from 'antd';
-import { PLAN_FEATURE_LIMITS } from '@/constants/plans';
-import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
 import { selectSelectedRegionId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-
-const EXPORT_TYPES = {
-  png: 'png',
-  svg: 'svg',
-  jpeg: 'jpeg',
-} as const;
-
-type ExportType = (typeof EXPORT_TYPES)[keyof typeof EXPORT_TYPES];
+import { type ExportType } from '@/types/exportTypes';
+import { EXPORT_TYPES } from '@/constants/exportTypes';
+import { PLAN_FEATURE_LIMITS } from '@/constants/plans';
+import { ROUTES } from '@/constants/routes';
+import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type ExportTypeOption = {
   value: ExportType;
@@ -37,7 +34,7 @@ const DEFAULT_QUALITY = 60;
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? 'free';
+  const plan = user?.plan ?? PLANS.free;
   const limits = PLAN_FEATURE_LIMITS[plan];
   const maxQuality = limits.maxExportQuality;
   const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
@@ -46,7 +43,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     () => ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value)),
     [allowedFormats],
   );
-  const defaultExportType = (allowedFormats[0] ?? 'png') as ExportType;
+  const defaultExportType = (allowedFormats[0] ?? EXPORT_TYPES.png) as ExportType;
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   const [quality, setQuality] = useState(initialQuality);
@@ -77,10 +74,26 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const exportHandlers = useMemo(
     () => ({
       [EXPORT_TYPES.svg]: (fileName: string) => exportMapAsSvg(fileName),
-      [EXPORT_TYPES.png]: (fileName: string) => exportMapAsPng(quality, fileName),
-      [EXPORT_TYPES.jpeg]: (fileName: string) => exportMapAsJpeg(quality, fileName),
+      [EXPORT_TYPES.png]: (fileName: string) => {
+        if (plan === PLANS.free) {
+          return exportMapAsPng(quality, fileName, {
+            backgroundColor: '#f5f5f5',
+            watermark: 'Regionify',
+          });
+        }
+        return exportMapAsPng(quality, fileName);
+      },
+      [EXPORT_TYPES.jpeg]: (fileName: string) => {
+        if (plan === PLANS.free) {
+          return exportMapAsJpeg(quality, fileName, {
+            backgroundColor: '#f5f5f5',
+            watermark: 'Regionify',
+          });
+        }
+        return exportMapAsJpeg(quality, fileName);
+      },
     }),
-    [quality],
+    [quality, plan],
   );
 
   const handleDownload = useCallback(async () => {
@@ -135,7 +148,11 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           />
           {allowedFormats.length === 1 && (
             <Typography.Text type="secondary" className="text-xs">
-              Free plan: PNG only. Upgrade for SVG and JPEG.
+              Free plan: PNG only.{' '}
+              <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
+                Upgrade
+              </AppNavLink>{' '}
+              for SVG and JPEG.
             </Typography.Text>
           )}
         </Flex>
@@ -151,20 +168,26 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
                 value={quality}
                 onChange={handleQualityChange}
                 className="w-20"
+                disabled={plan === PLANS.free}
               />
             </Flex>
             <Slider
               min={1}
-              max={maxQuality}
+              max={100}
               value={quality}
               onChange={(v) =>
                 setQuality(typeof v === 'number' ? Math.min(v, maxQuality) : maxQuality)
               }
               aria-label="Export quality"
+              disabled={plan === PLANS.free}
             />
             {limits.pictureQualityLimit && (
               <Typography.Text type="secondary" className="text-xs">
-                Free plan: quality limited to {maxQuality}%. Upgrade for 100%.
+                Free plan: quality limited to {maxQuality}%.{' '}
+                <AppNavLink to="/billing" className="text-primary! font-semibold">
+                  Upgrade
+                </AppNavLink>{' '}
+                for 100%.
               </Typography.Text>
             )}
           </Flex>

@@ -1,7 +1,6 @@
-import type { Plan } from '../types/plan.js';
-
-/** Export format: free = PNG only; explorer/atlas = PNG, SVG, JPEG. */
-export type ExportFormat = 'png' | 'svg' | 'jpeg';
+import type { Plan } from '@regionify/shared/src/types/plan';
+import { EXPORT_TYPES } from './exportTypes.js';
+import { ExportType } from '../types/exportTypes.js';
 
 /**
  * Feature limits per plan. Each plan includes all features of the previous one.
@@ -11,7 +10,7 @@ export type PlanFeatureLimits = {
   /** Max export quality (1–100). Free = 50; explorer/atlas = 100. */
   maxExportQuality: number;
   /** Allowed export formats. Free = PNG only; explorer/atlas = PNG, SVG, JPEG. */
-  allowedExportFormats: readonly ExportFormat[];
+  allowedExportFormats: readonly ExportType[];
   /** Whether picture/export quality is limited (free only). */
   pictureQualityLimit: boolean;
   /** Max projects count (free = 5; explorer/atlas = unlimited). */
@@ -27,7 +26,7 @@ export type PlanFeatureLimits = {
 export const PLAN_FEATURE_LIMITS: Record<Plan, PlanFeatureLimits> = {
   free: {
     maxExportQuality: 50,
-    allowedExportFormats: ['png'],
+    allowedExportFormats: [EXPORT_TYPES.png],
     pictureQualityLimit: true,
     maxProjectsCount: 5,
     advancedStylesEnabled: false,
@@ -36,7 +35,7 @@ export const PLAN_FEATURE_LIMITS: Record<Plan, PlanFeatureLimits> = {
   },
   explorer: {
     maxExportQuality: 100,
-    allowedExportFormats: ['png', 'svg', 'jpeg'],
+    allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg],
     pictureQualityLimit: false,
     maxProjectsCount: null,
     advancedStylesEnabled: true,
@@ -45,7 +44,7 @@ export const PLAN_FEATURE_LIMITS: Record<Plan, PlanFeatureLimits> = {
   },
   atlas: {
     maxExportQuality: 100,
-    allowedExportFormats: ['png', 'svg', 'jpeg'],
+    allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg],
     pictureQualityLimit: false,
     maxProjectsCount: null,
     advancedStylesEnabled: true,

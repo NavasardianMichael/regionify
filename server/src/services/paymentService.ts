@@ -1,4 +1,4 @@
-import type { Plan } from '@regionify/shared';
+import { Plan, PLANS } from '@regionify/shared';
 import { HttpStatus, ErrorCode } from '@regionify/shared';
 
 import { env } from '../config/env.js';
@@ -6,9 +6,9 @@ import { AppError } from '../middleware/errorHandler.js';
 import { userRepository } from '../repositories/userRepository.js';
 
 /** Plan to USD amount (for PayPal purchase_units). Values can be changed. */
-const PLAN_AMOUNTS: Record<Exclude<Plan, 'free'>, string> = {
-  explorer: '9.99',
-  atlas: '19.99',
+const PLAN_AMOUNTS: Record<Exclude<Plan, typeof PLANS.free>, string> = {
+  [PLANS.explorer]: '9.99',
+  [PLANS.atlas]: '19.99',
 };
 
 const PAYPAL_SANDBOX_DEFAULT = 'https://api-m.sandbox.paypal.com';
@@ -63,7 +63,10 @@ export const paymentService = {
    * Create a PayPal order for a plan upgrade. Returns orderId and URL to redirect the user.
    * Server-only; no client tokens.
    */
-  async createOrder(userId: string, plan: Exclude<Plan, 'free'>): Promise<CreateOrderResult> {
+  async createOrder(
+    userId: string,
+    plan: Exclude<Plan, typeof PLANS.free>,
+  ): Promise<CreateOrderResult> {
     const amount = PLAN_AMOUNTS[plan];
     if (!amount) {
       throw new AppError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, 'Invalid plan');
@@ -159,7 +162,7 @@ export const paymentService = {
       const planFromAmount = (
         Object.entries(PLAN_AMOUNTS) as [Exclude<Plan, 'free'>, string][]
       ).find(([, v]) => v === order.purchase_units?.[0]?.amount?.value)?.[0];
-      const plan: Plan = planFromAmount ?? 'explorer';
+      const plan: Plan = planFromAmount ?? PLANS.explorer;
       const user = await userRepository.findById(userId);
       if (user && user.plan !== plan) {
         await userRepository.update(userId, { plan });
@@ -199,10 +202,10 @@ export const paymentService = {
     };
 
     const amountValue = captureData.purchase_units?.[0]?.amount?.value;
-    const planFromAmount = (Object.entries(PLAN_AMOUNTS) as [Exclude<Plan, 'free'>, string][]).find(
-      ([, v]) => v === amountValue,
-    )?.[0];
-    const plan: Plan = planFromAmount ?? 'explorer';
+    const planFromAmount = (
+      Object.entries(PLAN_AMOUNTS) as [Exclude<Plan, typeof PLANS.free>, string][]
+    ).find(([, v]) => v === amountValue)?.[0];
+    const plan: Plan = planFromAmount ?? PLANS.explorer;
 
     await userRepository.update(userId, { plan });
 

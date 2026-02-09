@@ -27,10 +27,10 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <Flex vertical className="h-screen overflow-hidden bg-gray-100">
+      <Flex vertical className="h-screen overflow-hidden">
         <Navigation />
         <main
-          className={`flex flex-1 items-center overflow-y-auto ${APP_LAYOUT_CLASSNAMES.padding}`}
+          className={`flex flex-1 items-center overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`}
         >
           <Suspense fallback={<PageLoader />}>
             <Routes>
