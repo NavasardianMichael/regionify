@@ -86,7 +86,7 @@ export const paymentService = {
           {
             amount: { currency_code: 'USD', value: amount },
             custom_id: userId,
-            description: `Regionify plan: ${plan}`,
+            description: `Regionify ${plan} plan (lifetime, one-time purchase)`,
           },
         ],
         application_context: {

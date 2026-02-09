@@ -21,7 +21,10 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
     }
   }, [plan.id, onUpgrade]);
 
-  const priceLabel = useMemo(() => (plan.price === 0 ? 'Free' : `$${plan.price}`), [plan.price]);
+  const priceLabel = useMemo(() => {
+    if (plan.price === 0) return 'Free';
+    return `$${plan.price} one-time`;
+  }, [plan.price]);
 
   const buttonType = useMemo(() => (plan.popular ? 'primary' : 'default'), [plan.popular]);
 
@@ -60,7 +63,6 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
             <Typography.Text className="text-primary text-4xl font-bold">
               {priceLabel}
             </Typography.Text>
-            {plan.price > 0 && <Typography.Text type="secondary">/{plan.period}</Typography.Text>}
           </Flex>
         </Flex>
 
