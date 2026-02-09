@@ -6,7 +6,7 @@ const APP_NAME = 'Regionify';
 
 // Brand colors - keep in sync with client theme
 const COLORS = {
-  primary: '#1890ff',
+  primary: '#18294d',
   primaryDark: '#096dd9',
   textDark: '#262626',
   textLight: '#595959',
@@ -212,7 +212,7 @@ The ${APP_NAME} Team
         ${emailHeading(`Welcome, ${name}!`)}
         ${emailParagraph(`Thank you for creating an account. We're excited to have you on board.`)}
         ${emailParagraph(`With <strong>${APP_NAME}</strong>, you can create stunning data visualizations for regions around the world.`)}
-        ${emailButton('Get Started', `${env.CLIENT_URL}/visualizer`)}
+        ${emailButton('Get Started', env.CLIENT_URL)}
         ${emailMuted(`If you have any questions, feel free to reach out to our support team.`)}
       `,
       `Welcome to ${APP_NAME}! Start creating beautiful visualizations today.`,

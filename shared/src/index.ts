@@ -11,3 +11,4 @@ export * from './schemas/contact.js';
 // Constants
 export * from './constants/plans.js';
 export * from './constants/validation.js';
+export * from './constants/httpStatus.js';

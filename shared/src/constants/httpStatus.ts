@@ -16,3 +16,5 @@ export const HttpStatus = {
   SERVICE_UNAVAILABLE: 503,
   BAD_GATEWAY: 502,
 } as const;
+
+export type HttpStatusType = typeof HttpStatus;

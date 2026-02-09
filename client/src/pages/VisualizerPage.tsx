@@ -1,13 +1,7 @@
 import { type FC, lazy, Suspense, useCallback, useState } from 'react';
 import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
 import { App, Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
-
 import { createProject, updateProject } from '@/api/projects';
-import {
-  captureStateSnapshot,
-  getProjectPayload,
-  useHasUnsavedChanges,
-} from '@/hooks/useProjectState';
 import { selectSelectedRegionId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { selectIsLoggedIn } from '@/store/profile/selectors';
@@ -20,6 +14,11 @@ import {
   selectUpdateProjectInList,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import {
+  captureStateSnapshot,
+  getProjectPayload,
+  useHasUnsavedChanges,
+} from '@/hooks/useProjectState';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
