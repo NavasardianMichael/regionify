@@ -1,7 +1,8 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { App, Flex, Typography } from 'antd';
 import { createOrder } from '@/api/payments';
-import { selectUser } from '@/store/profile/selectors';
+import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import type { Plan } from '@/constants/plans';
 import { BILLING_PLANS } from '@/components/billing/constants';
@@ -11,11 +12,17 @@ import type { PayablePlan } from '@/components/billing/types';
 const BillingPage: FC = () => {
   const { message } = App.useApp();
   const user = useProfileStore(selectUser);
+  const isLoggedIn = useProfileStore(selectIsLoggedIn);
+  const navigate = useNavigate();
   const currentPlan: Plan = useMemo(() => user?.plan ?? 'free', [user?.plan]);
   const [upgradingPlan, setUpgradingPlan] = useState<PayablePlan | null>(null);
 
   const onUpgrade = useCallback(
     async (plan: PayablePlan) => {
+      if (!isLoggedIn) {
+        navigate('/login', { replace: true });
+        return;
+      }
       setUpgradingPlan(plan);
       try {
         const { approvalUrl } = await createOrder({ plan });
@@ -25,7 +32,7 @@ const BillingPage: FC = () => {
         setUpgradingPlan(null);
       }
     },
-    [message],
+    [isLoggedIn, message, navigate],
   );
 
   return (
