@@ -1,9 +1,7 @@
-import { GIFEncoder, applyPalette, quantize } from 'gifenc';
-
+import { applyPalette, GIFEncoder, quantize } from 'gifenc';
 import type { LegendItem } from '@/store/legendData/types';
 import type { DataSet } from '@/store/mapData/types';
 import type { BorderConfig, PictureConfig, ShadowConfig } from '@/store/mapStyles/types';
-
 import { renderStyledSvg } from './svgRenderer';
 
 type AnimationExportOptions = {

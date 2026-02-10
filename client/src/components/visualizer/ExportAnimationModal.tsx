@@ -1,8 +1,8 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
-import { useShallow } from 'zustand/react/shallow';
 import { Button, Flex, InputNumber, Modal, Progress, Select, Slider, Typography } from 'antd';
+import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { selectNoDataColor } from '@/store/legendStyles/selectors';

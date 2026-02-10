@@ -1,7 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, type ExportType, PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
-import { useShallow } from 'zustand/react/shallow';
 import {
   Button,
   Flex,
@@ -13,6 +12,7 @@ import {
   Slider,
   Typography,
 } from 'antd';
+import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { selectNoDataColor } from '@/store/legendStyles/selectors';

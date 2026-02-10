@@ -6,7 +6,6 @@ import {
   StepForwardOutlined,
 } from '@ant-design/icons';
 import { Button, Flex, Select, Slider, Switch, Typography } from 'antd';
-
 import {
   selectIsPlaying,
   selectPause,
