@@ -106,8 +106,8 @@ pnpm dev:client
 pnpm dev:server
 ```
 
-- Client: http://localhost:5183
-- Server: http://localhost:3000
+- Client: http://localhost:7002
+- Server: http://localhost:9002
 
 ### Production Build
 

@@ -2,12 +2,11 @@ import { type FC, useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
-
-import { captureOrder } from '@/api/payments';
 import { getAuthStatus } from '@/api/auth/status';
-import { ROUTES } from '@/constants/routes';
-import { useProfileStore } from '@/store/profile/store';
+import { captureOrder } from '@/api/payments';
 import { selectSetUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
+import { ROUTES } from '@/constants/routes';
 
 const PaymentReturnPage: FC = () => {
   const navigate = useNavigate();

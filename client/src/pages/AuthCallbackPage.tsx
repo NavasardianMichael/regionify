@@ -1,10 +1,10 @@
 import { type FC, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Flex, Spin } from 'antd';
+import type { UserPublic } from '@/api/auth/types';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
-import type { UserPublic } from '@/api/auth/types';
 
 const AuthCallbackPage: FC = () => {
   const navigate = useNavigate();
