@@ -20,7 +20,7 @@ export const BILLING_PLANS: BillingPlan[] = [
   {
     id: 'explorer',
     name: 'Explorer',
-    price: 10,
+    price: 59,
     period: 'lifetime',
     description: 'For professionals and teams. One-time payment, lifetime access.',
     buttonText: 'Buy Explorer (Lifetime)',
@@ -36,7 +36,7 @@ export const BILLING_PLANS: BillingPlan[] = [
   {
     id: 'atlas',
     name: 'Atlas',
-    price: 20,
+    price: 159,
     period: 'lifetime',
     description: 'For power users. One-time payment, lifetime access.',
     buttonText: 'Buy Atlas (Lifetime)',

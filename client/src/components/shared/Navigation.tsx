@@ -28,13 +28,12 @@ type NavItem = {
 
 const PUBLIC_NAV_ITEMS: NavItem[] = [
   { path: ROUTES.HOME, label: 'Home', icon: HomeOutlined },
+  { path: ROUTES.PROJECTS, label: 'Projects', icon: FolderOutlined },
   { path: ROUTES.CONTACT, label: 'Contact', icon: MailOutlined },
   { path: ROUTES.BILLING, label: 'Billing', icon: CreditCardOutlined },
 ];
 
-const AUTH_NAV_ITEMS: NavItem[] = [
-  { path: ROUTES.PROJECTS, label: 'Projects', icon: FolderOutlined },
-];
+const AUTH_NAV_ITEMS: NavItem[] = [];
 
 export const Navigation: FC = () => {
   const location = useLocation();

@@ -17,7 +17,6 @@ const ProjectsPage: FC = () => {
     projects,
     filteredProjects,
     isLoading,
-    isLoggedIn,
     search,
     renamingProject,
     newName,
@@ -47,17 +46,6 @@ const ProjectsPage: FC = () => {
   const handleNewProject = useCallback(() => {
     navigate(ROUTES.PROJECT_EDITOR);
   }, [navigate]);
-
-  if (!isLoggedIn) {
-    return (
-      <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
-        <Empty description="Please log in to view your projects" />
-        <Button type="primary" onClick={() => navigate(ROUTES.LOGIN)}>
-          Log In
-        </Button>
-      </Flex>
-    );
-  }
 
   return (
     <>

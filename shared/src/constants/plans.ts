@@ -21,12 +21,15 @@ export type PlanFeatureLimits = {
   historicalDataImport: boolean;
   /** Atlas only: generate animated GIF/video from historical data. */
   animationExport: boolean;
+  /** Allowed animation export formats. Atlas only: GIF, MP4. */
+  allowedAnimationFormats: readonly ExportType[];
 };
 
 export const PLAN_FEATURE_LIMITS: Record<Plan, PlanFeatureLimits> = {
   free: {
     maxExportQuality: 50,
     allowedExportFormats: [EXPORT_TYPES.png],
+    allowedAnimationFormats: [],
     pictureQualityLimit: true,
     maxProjectsCount: 5,
     advancedStylesEnabled: false,
@@ -36,6 +39,7 @@ export const PLAN_FEATURE_LIMITS: Record<Plan, PlanFeatureLimits> = {
   explorer: {
     maxExportQuality: 100,
     allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg],
+    allowedAnimationFormats: [],
     pictureQualityLimit: false,
     maxProjectsCount: null,
     advancedStylesEnabled: true,
@@ -44,7 +48,14 @@ export const PLAN_FEATURE_LIMITS: Record<Plan, PlanFeatureLimits> = {
   },
   atlas: {
     maxExportQuality: 100,
-    allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg],
+    allowedExportFormats: [
+      EXPORT_TYPES.png,
+      EXPORT_TYPES.svg,
+      EXPORT_TYPES.jpeg,
+      EXPORT_TYPES.gif,
+      EXPORT_TYPES.mp4,
+    ],
+    allowedAnimationFormats: [EXPORT_TYPES.gif, EXPORT_TYPES.mp4],
     pictureQualityLimit: false,
     maxProjectsCount: null,
     advancedStylesEnabled: true,

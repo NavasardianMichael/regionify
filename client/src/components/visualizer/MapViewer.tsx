@@ -23,8 +23,15 @@ import {
   selectTitle,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { selectData, selectSelectedRegionId } from '@/store/mapData/selectors';
+import {
+  selectData,
+  selectActiveTimePeriod,
+  selectSelectedRegionId,
+  selectTimePeriods,
+} from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
+import { selectTransitionType } from '@/store/animation/selectors';
+import { useAnimationStore } from '@/store/animation/store';
 import {
   selectBorder,
   selectPicture,
@@ -72,6 +79,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const data = useVisualizerStore(selectData);
+  const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
+  const timePeriods = useVisualizerStore(selectTimePeriods);
+  const transitionType = useAnimationStore(selectTransitionType);
   const legendItemsData = useLegendDataStore(selectLegendItems);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
@@ -263,6 +273,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           // Apply static styles from CSS module
           path.classList.add(styles.mapPath);
 
+          // Disable CSS transition for instant mode
+          if (transitionType === 'instant') {
+            path.classList.add(styles.mapPathInstant);
+          }
+
           // Apply dynamic border styles
           if (border.show) {
             path.style.stroke = border.color;
@@ -448,7 +463,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
       return svg;
     },
-    [border, shadow, picture, regionLabels, data, deferredLegendItems, noDataColor],
+    [border, shadow, picture, regionLabels, data, deferredLegendItems, noDataColor, transitionType],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)
@@ -851,19 +866,28 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           {isLoading ? (
             <Spin size="large" />
           ) : svgContent ? (
-            <div
-              style={{
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-                transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                width: '80%',
-                height: '80%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              className="map-svg-container [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-            />
+            <>
+              <div
+                style={{
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                  width: '80%',
+                  height: '80%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                className="map-svg-container [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
+                dangerouslySetInnerHTML={{ __html: svgContent }}
+              />
+              {activeTimePeriod && timePeriods.length > 1 && (
+                <div className="pointer-events-none absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1.5 shadow-md">
+                  <Typography.Text className="text-sm font-semibold">
+                    {activeTimePeriod}
+                  </Typography.Text>
+                </div>
+              )}
+            </>
           ) : (
             <Flex vertical align="center" justify="center" className="text-white/60">
               <Typography.Text className="text-lg text-white/60">

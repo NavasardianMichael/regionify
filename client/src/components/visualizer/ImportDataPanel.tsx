@@ -15,17 +15,22 @@ import {
   FileExcelOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
+import { PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
 import { Button, Flex, message, Modal, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import {
+  selectClearTimelineData,
   selectData,
   selectImportDataType,
   selectSelectedRegionId,
+  selectSetTimelineData,
   selectSetVisualizerState,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import type { RegionData } from '@/store/mapData/types';
+import type { DataSet, RegionData } from '@/store/mapData/types';
+import { selectUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import type { ImportDataType } from '@/types/mapData';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
@@ -38,8 +43,21 @@ const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
  * id - optional region identifier (SVG path title)
  * label - display label for the region
  * value - numeric value for visualization
+ * timePeriod - optional time period for historical data animation
  */
-type ParsedRow = { id?: string; label: string; value: number };
+type ParsedRow = { id?: string; label: string; value: number; timePeriod?: string };
+
+const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
+
+const hasTimeColumn = (header: string): boolean => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim());
+  return parts.some((p) => TIME_COLUMN_PATTERN.test(p));
+};
+
+const getTimeColumnIndex = (header: string): number => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim());
+  return parts.findIndex((p) => TIME_COLUMN_PATTERN.test(p));
+};
 
 const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
   { label: 'CSV', value: 'csv' },
@@ -64,7 +82,9 @@ const parseCSV = (content: string): ParsedRow[] => {
   // Detect header format
   const headerLine = lines[0] || '';
   const hasId = hasIdColumn(headerLine);
-  const isHeader = /^(id|label|region|name)/i.test(headerLine);
+  const hasTime = hasTimeColumn(headerLine);
+  const timeIdx = hasTime ? getTimeColumnIndex(headerLine) : -1;
+  const isHeader = /^(id|label|region|name)/i.test(headerLine) || hasTime;
   const startIndex = isHeader ? 1 : 0;
 
   for (let i = startIndex; i < lines.length; i++) {
@@ -78,19 +98,22 @@ const parseCSV = (content: string): ParsedRow[] => {
       parts = line.split(/[,;\t]/).map((s) => s.trim());
     }
 
+    const timePeriod = hasTime && timeIdx >= 0 ? parts[timeIdx] : undefined;
+    // Remove time column from parts so id/label/value parsing stays unchanged
+    const filteredParts =
+      hasTime && timeIdx >= 0 ? parts.filter((_, idx) => idx !== timeIdx) : parts;
+
     if (hasId) {
-      // Format: id, label, value
-      const [id, label, valueStr] = parts;
+      const [id, label, valueStr] = filteredParts;
       const value = parseFloat(valueStr);
       if (label && !isNaN(value)) {
-        data.push({ id: id || undefined, label, value });
+        data.push({ id: id || undefined, label, value, timePeriod: timePeriod || undefined });
       }
     } else {
-      // Format: label, value (id will be matched via similarity)
-      const [label, valueStr] = parts;
+      const [label, valueStr] = filteredParts;
       const value = parseFloat(valueStr);
       if (label && !isNaN(value)) {
-        data.push({ label, value });
+        data.push({ label, value, timePeriod: timePeriod || undefined });
       }
     }
   }
@@ -116,14 +139,16 @@ const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
     const valueKey = keys.find((key) =>
       /^(value|count|amount|number|data|total|population)/i.test(String(key)),
     );
+    const timeKey = keys.find((key) => TIME_COLUMN_PATTERN.test(String(key)));
 
     // Determine column order based on available keys
     const id = idKey ? String(row[idKey] ?? '') : undefined;
     const label = String(row[labelKey ?? keys[idKey ? 1 : 0]] ?? '');
     const value = parseFloat(String(row[valueKey ?? keys[idKey ? 2 : 1]] ?? ''));
+    const timePeriod = timeKey ? String(row[timeKey] ?? '') : undefined;
 
     if (label && !isNaN(value)) {
-      data.push({ id: id || undefined, label, value });
+      data.push({ id: id || undefined, label, value, timePeriod: timePeriod || undefined });
     }
   }
 
@@ -140,11 +165,15 @@ const parseJSON = (content: string): ParsedRow[] => {
           const hasValue = typeof item.value === 'number' || typeof item.count === 'number';
           return hasLabel && hasValue;
         })
-        .map((item) => ({
-          id: item.id ? String(item.id) : undefined,
-          label: String(item.label ?? item.region ?? item.name ?? ''),
-          value: Number(item.value ?? item.count ?? 0),
-        }));
+        .map((item) => {
+          const rawTime = item.year ?? item.time ?? item.period ?? item.date ?? item.month;
+          return {
+            id: item.id ? String(item.id) : undefined,
+            label: String(item.label ?? item.region ?? item.name ?? ''),
+            value: Number(item.value ?? item.count ?? 0),
+            timePeriod: rawTime !== undefined && rawTime !== null ? String(rawTime) : undefined,
+          };
+        });
     }
     return [];
   } catch {
@@ -179,7 +208,13 @@ export const ImportDataPanel: FC = () => {
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
+  const setTimelineData = useVisualizerStore(selectSetTimelineData);
+  const clearTimelineData = useVisualizerStore(selectClearTimelineData);
   const data = useVisualizerStore(selectData);
+
+  const user = useProfileStore(selectUser);
+  const plan = user?.plan ?? PLANS.free;
+  const limits = PLAN_FEATURE_LIMITS[plan];
 
   const handleDownloadData = useCallback(() => {
     if (data.allIds.length === 0) {
@@ -237,6 +272,7 @@ export const ImportDataPanel: FC = () => {
       if (!selectedRegionId) {
         setSvgTitles([]);
         setVisualizerState({ data: { allIds: [], byId: {} } });
+        clearTimelineData();
         return;
       }
 
@@ -257,6 +293,7 @@ export const ImportDataPanel: FC = () => {
             const allIds = sampleData.map((item) => item.id);
             const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
 
+            clearTimelineData();
             setVisualizerState({ data: { allIds, byId } });
           }
         }
@@ -273,7 +310,56 @@ export const ImportDataPanel: FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedRegionId, setVisualizerState]);
+  }, [selectedRegionId, setVisualizerState, clearTimelineData]);
+
+  /** Process parsed rows — groups by time period for Atlas users or imports flat data. */
+  const processImportedData = useCallback(
+    (parsed: ParsedRow[], onSuccess?: (data: unknown) => void) => {
+      const hasTimePeriods = parsed.some((row) => row.timePeriod !== undefined);
+
+      if (hasTimePeriods && limits.historicalDataImport) {
+        // Group by time period (preserve order of first appearance)
+        const grouped: Record<string, ParsedRow[]> = {};
+        const periodOrder: string[] = [];
+
+        for (const row of parsed) {
+          const period = String(row.timePeriod ?? 'Unknown');
+          if (!grouped[period]) {
+            grouped[period] = [];
+            periodOrder.push(period);
+          }
+          grouped[period].push(row);
+        }
+
+        const timeline: Record<string, DataSet> = {};
+        for (const period of periodOrder) {
+          timeline[period] = convertToRegionData(grouped[period], svgTitles);
+        }
+
+        setTimelineData(timeline, periodOrder);
+        message.success(`Imported ${parsed.length} rows across ${periodOrder.length} time periods`);
+        onSuccess?.(timeline);
+      } else {
+        if (hasTimePeriods && !limits.historicalDataImport) {
+          message.info(
+            'Time series data detected. Upgrade to Atlas plan for animated visualizations.',
+          );
+        }
+        const regionData = convertToRegionData(parsed, svgTitles);
+        clearTimelineData();
+        setVisualizerState({ data: regionData });
+        message.success(`Imported ${parsed.length} regions`);
+        onSuccess?.(regionData);
+      }
+    },
+    [
+      limits.historicalDataImport,
+      svgTitles,
+      setVisualizerState,
+      setTimelineData,
+      clearTimelineData,
+    ],
+  );
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options: Parameters<NonNullable<UploadProps['customRequest']>>[0]) => {
@@ -293,10 +379,7 @@ export const ImportDataPanel: FC = () => {
               return;
             }
 
-            const data = convertToRegionData(parsed, svgTitles);
-            setVisualizerState({ data });
-            message.success(`Imported ${parsed.length} regions`);
-            onSuccess?.(data);
+            processImportedData(parsed, onSuccess);
           } catch (error) {
             message.error('Failed to parse Excel file');
             onError?.(error as Error);
@@ -326,10 +409,7 @@ export const ImportDataPanel: FC = () => {
             return;
           }
 
-          const data = convertToRegionData(parsed, svgTitles);
-          setVisualizerState({ data });
-          message.success(`Imported ${parsed.length} regions`);
-          onSuccess?.(data);
+          processImportedData(parsed, onSuccess);
         } catch (error) {
           message.error('Failed to parse file');
           onError?.(error as Error);
@@ -342,7 +422,7 @@ export const ImportDataPanel: FC = () => {
 
       reader.readAsText(file as File);
     },
-    [importDataType, setVisualizerState, svgTitles],
+    [importDataType, processImportedData],
   );
 
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(

@@ -1,13 +1,37 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, type ExportType, PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
-import { Button, Flex, InputNumber, message, Modal, Select, Slider, Typography } from 'antd';
-import { selectSelectedRegionId } from '@/store/mapData/selectors';
+import { useShallow } from 'zustand/react/shallow';
+import {
+  Button,
+  Flex,
+  InputNumber,
+  message,
+  Modal,
+  Progress,
+  Select,
+  Slider,
+  Typography,
+} from 'antd';
+import { selectItemsList } from '@/store/legendData/selectors';
+import { useLegendDataStore } from '@/store/legendData/store';
+import { selectNoDataColor } from '@/store/legendStyles/selectors';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
+import {
+  selectHasTimelineData,
+  selectSelectedRegionId,
+  selectTimelineData,
+  selectTimePeriods,
+} from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
+import { selectBorder, selectPicture, selectShadow } from '@/store/mapStyles/selectors';
+import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import { exportAnimationAsGif, exportAnimationAsVideo } from '@/helpers/animationExport';
 import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
+import { loadMapSvg } from '@/helpers/mapLoader';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type ExportTypeOption = {
@@ -19,6 +43,8 @@ const ALL_EXPORT_OPTIONS: ExportTypeOption[] = [
   { value: EXPORT_TYPES.png, label: 'PNG' },
   { value: EXPORT_TYPES.svg, label: 'SVG' },
   { value: EXPORT_TYPES.jpeg, label: 'JPEG' },
+  { value: EXPORT_TYPES.gif, label: 'GIF (Animation)' },
+  { value: EXPORT_TYPES.mp4, label: 'Video (MP4/WebM)' },
 ];
 
 type Props = {
@@ -30,9 +56,19 @@ const DEFAULT_QUALITY = 60;
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const hasTimelineData = useVisualizerStore(selectHasTimelineData);
+  const timePeriods = useVisualizerStore(selectTimePeriods);
+  const timelineData = useVisualizerStore(selectTimelineData);
+
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.free;
   const limits = PLAN_FEATURE_LIMITS[plan];
+
+  const legendItems = useLegendDataStore(useShallow(selectItemsList));
+  const noDataColor = useLegendStylesStore(selectNoDataColor);
+  const border = useMapStylesStore(selectBorder);
+  const shadow = useMapStylesStore(selectShadow);
+  const picture = useMapStylesStore(selectPicture);
   const maxQuality = limits.maxExportQuality;
   const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
   const allowedFormats = limits.allowedExportFormats;
@@ -44,7 +80,11 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   const [quality, setQuality] = useState(initialQuality);
+  const [fps, setFps] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const isAnimationFormat = exportType === EXPORT_TYPES.gif || exportType === EXPORT_TYPES.mp4;
 
   const handleAfterOpenChange = useCallback(
     (visible: boolean) => {
@@ -97,22 +137,73 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     const fileName = selectedRegionId ? `regionify-${selectedRegionId}` : 'regionify-map';
 
     setIsExporting(true);
+    setProgress(0);
     try {
-      await exportHandlers[exportType](fileName);
+      if (isAnimationFormat) {
+        if (!hasTimelineData) {
+          message.warning('Import historical data with a time column first to export animations.');
+          return;
+        }
+        const rawSvg = await loadMapSvg(selectedRegionId!);
+        if (!rawSvg) throw new Error('Failed to load map SVG');
+
+        const exportOptions = {
+          rawSvg,
+          timePeriods,
+          timelineData,
+          legendItems,
+          noDataColor,
+          border,
+          shadow,
+          picture,
+          quality,
+          fps,
+          onProgress: setProgress,
+        };
+
+        if (exportType === EXPORT_TYPES.gif) {
+          await exportAnimationAsGif(exportOptions);
+        } else {
+          await exportAnimationAsVideo(exportOptions);
+        }
+      } else {
+        const handler = exportHandlers[exportType as keyof typeof exportHandlers];
+        if (!handler) return;
+        await handler(fileName);
+      }
       message.success(`Map exported as ${exportType.toUpperCase()}`);
       onClose();
     } catch {
-      message.error('Failed to export map. Please try again.');
+      message.error('Failed to export. Please try again.');
     } finally {
       setIsExporting(false);
+      setProgress(0);
     }
-  }, [exportType, exportHandlers, selectedRegionId, onClose]);
+  }, [
+    exportType,
+    isAnimationFormat,
+    hasTimelineData,
+    selectedRegionId,
+    exportHandlers,
+    timePeriods,
+    timelineData,
+    legendItems,
+    noDataColor,
+    border,
+    shadow,
+    picture,
+    quality,
+    fps,
+    onClose,
+  ]);
 
   const showQualityControl = useMemo(() => {
-    return exportType === EXPORT_TYPES.png || exportType === EXPORT_TYPES.jpeg;
-  }, [exportType]);
+    return exportType === EXPORT_TYPES.png || exportType === EXPORT_TYPES.jpeg || isAnimationFormat;
+  }, [exportType, isAnimationFormat]);
 
   const downloadButtonLabel = useMemo(() => {
+    if (exportType === EXPORT_TYPES.gif) return 'Download GIF';
+    if (exportType === EXPORT_TYPES.mp4) return 'Download Video';
     return `Download ${exportType.toUpperCase()}`;
   }, [exportType]);
 
@@ -134,7 +225,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       destroyOnHidden
     >
       <Flex vertical gap="middle" className="py-md">
-        {/* Export Type — Free: PNG only; Explorer/Atlas: PNG, SVG, JPEG */}
+        {/* Export Type — varies by plan */}
         <Flex vertical gap="small">
           <Typography.Text className="text-sm text-gray-600">Export type:</Typography.Text>
           <Select
@@ -149,10 +240,17 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
               <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
                 Upgrade
               </AppNavLink>{' '}
-              for SVG and JPEG.
+              for SVG, JPEG, GIF and Video.
             </Typography.Text>
           )}
         </Flex>
+
+        {/* Animation: no timeline data warning */}
+        {isAnimationFormat && !hasTimelineData && (
+          <Typography.Text type="warning" className="text-xs">
+            Import a dataset with a time column (year, month, period…) to enable animation export.
+          </Typography.Text>
+        )}
 
         {/* Quality Control */}
         {showQualityControl && (
@@ -188,13 +286,40 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           </Flex>
         )}
 
+        {/* Animation: FPS control */}
+        {isAnimationFormat && hasTimelineData && (
+          <Flex vertical gap="small">
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">
+                Speed (frames/sec):
+              </Typography.Text>
+              <InputNumber
+                min={0.5}
+                max={10}
+                step={0.5}
+                value={fps}
+                onChange={(v: number | null) => setFps(Math.max(0.5, Math.min(v ?? 1, 10)))}
+                className="w-20"
+              />
+            </Flex>
+            <Typography.Text type="secondary" className="text-xs">
+              {timePeriods.length} frames · ~{Math.round(timePeriods.length / fps)}s duration
+            </Typography.Text>
+          </Flex>
+        )}
+
+        {/* Export progress */}
+        {isExporting && isAnimationFormat && (
+          <Progress percent={Math.round(progress * 100)} status="active" strokeColor="#18294D" />
+        )}
+
         {/* Download Button */}
         <Button
           type="primary"
           icon={<DownloadOutlined />}
           onClick={handleDownload}
           loading={isExporting}
-          disabled={!selectedRegionId}
+          disabled={!selectedRegionId || (isAnimationFormat && !hasTimelineData)}
           size="large"
         >
           {downloadButtonLabel}
