@@ -1,7 +1,6 @@
 import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Typography } from 'antd';
-
 import { ROUTES } from '@/constants/routes';
 
 const PaymentCancelPage: FC = () => {

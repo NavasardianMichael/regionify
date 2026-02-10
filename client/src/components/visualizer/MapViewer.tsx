@@ -10,6 +10,8 @@ import {
 import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
 import DOMPurify from 'dompurify';
+import { selectTransitionType } from '@/store/animation/selectors';
+import { useAnimationStore } from '@/store/animation/store';
 import { selectLegendItems } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import {
@@ -24,14 +26,12 @@ import {
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
-  selectData,
   selectActiveTimePeriod,
+  selectData,
   selectSelectedRegionId,
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { selectTransitionType } from '@/store/animation/selectors';
-import { useAnimationStore } from '@/store/animation/store';
 import {
   selectBorder,
   selectPicture,

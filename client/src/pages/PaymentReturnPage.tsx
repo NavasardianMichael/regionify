@@ -23,14 +23,12 @@ const PaymentReturnPage: FC = () => {
 
   useEffect(() => {
     if (!token) {
-      setStatus('error');
-      setMessageText('No order ID in URL.');
       return;
     }
 
     let cancelled = false;
 
-    const run = async () => {
+    const run = async (): Promise<void> => {
       try {
         const result = await captureOrder({ orderId: token });
         if (cancelled) return;
@@ -53,6 +51,17 @@ const PaymentReturnPage: FC = () => {
       cancelled = true;
     };
   }, [token, setUser]);
+
+  if (!token) {
+    return (
+      <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
+        <Typography.Text type="danger">No order ID in URL.</Typography.Text>
+        <Button type="primary" onClick={() => navigate(ROUTES.BILLING)}>
+          Back to Billing
+        </Button>
+      </Flex>
+    );
+  }
 
   if (status === 'loading') {
     return (

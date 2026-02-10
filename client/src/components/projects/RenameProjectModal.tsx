@@ -1,7 +1,5 @@
 import { type FC, useCallback } from 'react';
-
 import { Flex, Input, Modal, Typography } from 'antd';
-
 import type { Project } from '@/api/projects/types';
 
 type Props = {
