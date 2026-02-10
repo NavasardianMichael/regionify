@@ -172,9 +172,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
               min={1}
               max={100}
               value={quality}
-              onChange={(v) =>
-                setQuality(typeof v === 'number' ? Math.min(v, maxQuality) : maxQuality)
-              }
+              onChange={(v: number) => setQuality(Math.min(v, maxQuality))}
               aria-label="Export quality"
               disabled={plan === PLANS.free}
             />
