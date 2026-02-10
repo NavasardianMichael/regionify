@@ -1,14 +1,11 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
-import { PLANS } from '@regionify/shared';
+import { EXPORT_TYPES, type ExportType, PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
 import { Button, Flex, InputNumber, message, Modal, Select, Slider, Typography } from 'antd';
 import { selectSelectedRegionId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { type ExportType } from '@/types/exportTypes';
-import { EXPORT_TYPES } from '@/constants/exportTypes';
-import { PLAN_FEATURE_LIMITS } from '@/constants/plans';
 import { ROUTES } from '@/constants/routes';
 import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -43,7 +40,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     () => ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value)),
     [allowedFormats],
   );
-  const defaultExportType = (allowedFormats[0] ?? EXPORT_TYPES.png) as ExportType;
+  const defaultExportType = allowedFormats[0] ?? EXPORT_TYPES.png;
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   const [quality, setQuality] = useState(initialQuality);

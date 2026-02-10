@@ -1,4 +1,4 @@
-import { PLANS } from '@regionify/shared';
+import { Plan, PLANS } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
 import { requireAuth } from '../middleware/requireAuth.js';
@@ -10,7 +10,7 @@ const router: ExpressRouter = Router();
 router.post('/create-order', requireAuth, async (req, res, next) => {
   try {
     const userId = req.session.userId!;
-    const plan = req.body?.plan as string | undefined;
+    const plan = req.body?.plan as Plan;
     if (plan !== PLANS.explorer && plan !== PLANS.atlas) {
       res.status(400).json({
         success: false,

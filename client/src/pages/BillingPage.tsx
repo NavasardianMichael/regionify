@@ -1,10 +1,10 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { type Plan, PLANS } from '@regionify/shared';
 import { App, Flex, Typography } from 'antd';
 import { createOrder } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { type Plan, PLANS } from '@regionify/shared';
 import { BILLING_PLANS } from '@/components/billing/constants';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';

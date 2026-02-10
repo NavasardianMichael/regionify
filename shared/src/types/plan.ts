@@ -3,8 +3,8 @@
  */
 export type Plan = 'free' | 'explorer' | 'atlas';
 
-export const PLANS: Record<Plan, Plan> = {
+export const PLANS = {
   free: 'free',
   explorer: 'explorer',
   atlas: 'atlas',
-} as const;
+} as const satisfies Record<Plan, Plan>;

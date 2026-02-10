@@ -1,6 +1,6 @@
-import type { Plan } from '@regionify/shared/src/types/plan';
-import { EXPORT_TYPES } from './exportTypes.js';
 import { ExportType } from '../types/exportTypes.js';
+import { Plan } from '../types/plan.js';
+import { EXPORT_TYPES } from './exportTypes.js';
 
 /**
  * Feature limits per plan. Each plan includes all features of the previous one.

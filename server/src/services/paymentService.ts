@@ -63,10 +63,7 @@ export const paymentService = {
    * Create a PayPal order for a plan upgrade. Returns orderId and URL to redirect the user.
    * Server-only; no client tokens.
    */
-  async createOrder(
-    userId: string,
-    plan: Exclude<Plan, typeof PLANS.free>,
-  ): Promise<CreateOrderResult> {
+  async createOrder(userId: string, plan: Exclude<Plan, 'free'>): Promise<CreateOrderResult> {
     const amount = PLAN_AMOUNTS[plan];
     if (!amount) {
       throw new AppError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, 'Invalid plan');

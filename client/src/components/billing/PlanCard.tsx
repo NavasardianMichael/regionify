@@ -1,7 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Typography } from 'antd';
-import type { Plan } from '@/constants/plans';
+import { type Plan, PLANS } from '@/constants/plans';
 import type { BillingPlan, PayablePlan } from './types';
 
 export type PlanCardProps = {
@@ -16,8 +16,8 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   const isUpgrading = upgradingPlan === plan.id;
 
   const handleClick = useCallback(() => {
-    if (plan.id === 'explorer' || plan.id === 'atlas') {
-      onUpgrade(plan.id);
+    if (plan.id === PLANS.explorer || plan.id === PLANS.atlas) {
+      onUpgrade(plan.id as PayablePlan);
     }
   }, [plan.id, onUpgrade]);
 

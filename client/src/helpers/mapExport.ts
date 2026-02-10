@@ -1,5 +1,4 @@
-import { EXPORT_TYPES } from '@/constants/exportTypes';
-import { type ExportType } from '@/types/exportTypes';
+import { EXPORT_TYPES } from '@regionify/shared';
 
 const MAP_SVG_SELECTOR = '.map-svg-container svg';
 const DEFAULT_EXPORT_NAME = 'regionify-map';
