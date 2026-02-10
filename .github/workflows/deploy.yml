@@ -160,7 +160,7 @@ jobs:
           # Wait for services to be healthy
           echo "⏳ Waiting for services..."
           sleep 5
-          
+
           # Wait for postgres specifically
           echo "⏳ Waiting for postgres to accept connections..."
           for i in $(seq 1 15); do
