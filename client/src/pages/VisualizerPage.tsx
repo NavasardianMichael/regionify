@@ -1,6 +1,6 @@
 import { type FC, lazy, Suspense, useCallback, useState } from 'react';
-import { DownloadOutlined, SaveOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
+import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
+import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import { App, Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
 import { createProject, updateProject } from '@/api/projects';
 import { selectHasTimelineData, selectSelectedRegionId } from '@/store/mapData/selectors';
@@ -32,7 +32,6 @@ import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
 const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
-const ExportAnimationModal = lazy(() => import('@/components/visualizer/ExportAnimationModal'));
 
 const VisualizerPage: FC = () => {
   const { message } = App.useApp();
@@ -40,8 +39,8 @@ const VisualizerPage: FC = () => {
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.free;
-  const limits = PLAN_FEATURE_LIMITS[plan];
+  const plan = user?.plan ?? PLANS.observer;
+  const { limits } = PLAN_DETAILS[plan];
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
   const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
@@ -50,7 +49,6 @@ const VisualizerPage: FC = () => {
   const hasUnsavedChanges = useHasUnsavedChanges();
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [isAnimationExportOpen, setIsAnimationExportOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [projectName, setProjectName] = useState('');
@@ -61,14 +59,6 @@ const VisualizerPage: FC = () => {
 
   const handleCloseExportModal = useCallback(() => {
     setIsExportModalOpen(false);
-  }, []);
-
-  const handleOpenAnimationExport = useCallback(() => {
-    setIsAnimationExportOpen(true);
-  }, []);
-
-  const handleCloseAnimationExport = useCallback(() => {
-    setIsAnimationExportOpen(false);
   }, []);
 
   const handleSave = useCallback(async () => {
@@ -160,15 +150,6 @@ const VisualizerPage: FC = () => {
                 >
                   {currentProjectId ? 'Save' : 'Save As'}
                 </Button>
-                {hasTimelineData && limits.animationExport && (
-                  <Button
-                    icon={<VideoCameraOutlined />}
-                    onClick={handleOpenAnimationExport}
-                    disabled={!selectedRegionId}
-                  >
-                    Export Animation
-                  </Button>
-                )}
                 <Button
                   type="primary"
                   icon={<DownloadOutlined />}
@@ -211,13 +192,6 @@ const VisualizerPage: FC = () => {
       {isExportModalOpen && (
         <Suspense>
           <ExportMapModal open={isExportModalOpen} onClose={handleCloseExportModal} />
-        </Suspense>
-      )}
-
-      {/* Animation Export Modal */}
-      {isAnimationExportOpen && (
-        <Suspense>
-          <ExportAnimationModal open={isAnimationExportOpen} onClose={handleCloseAnimationExport} />
         </Suspense>
       )}
 

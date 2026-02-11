@@ -14,7 +14,7 @@ const BillingPage: FC = () => {
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const navigate = useNavigate();
-  const currentPlan: Plan = useMemo(() => user?.plan ?? PLANS.free, [user?.plan]);
+  const currentPlan: Plan = useMemo(() => user?.plan ?? PLANS.observer, [user?.plan]);
   const [upgradingPlan, setUpgradingPlan] = useState<PayablePlan | null>(null);
 
   const onUpgrade = useCallback(

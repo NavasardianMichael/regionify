@@ -4,6 +4,7 @@ import { Button, Flex } from 'antd';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { randomFloat, randomHexColor, randomInt } from '@/helpers/randomUtils';
 
 // Default styles for reset
 const DEFAULT_MAP_STYLES = {
@@ -51,73 +52,58 @@ const DEFAULT_LEGEND_STYLES = {
 };
 
 // Random style packs
-const RANDOM_STYLE_PACKS = [
-  {
+const generateRandomStylePack = () => {
+  const showBorder = Math.random() > 0.3;
+  const showShadow = Math.random() > 0.4;
+  const transparentBg = Math.random() > 0.6;
+
+  const borderColor = randomHexColor();
+  const bgColor = randomHexColor();
+  const labelColor = randomHexColor();
+  const shadowColor = randomHexColor();
+  const legendLabelColor = randomHexColor();
+  const noDataColor = randomHexColor();
+
+  // Derive a semi-transparent legend background from bgColor
+  const r = parseInt(bgColor.slice(1, 3), 16);
+  const g = parseInt(bgColor.slice(3, 5), 16);
+  const b = parseInt(bgColor.slice(5, 7), 16);
+  const legendBg = `rgba(${r}, ${g}, ${b}, ${randomFloat(0.85, 0.98).toFixed(2)})`;
+
+  return {
     map: {
-      border: { show: true, color: '#2563EB', width: 2 },
-      shadow: { show: true, color: '#1E40AF', blur: 15, offsetX: 2, offsetY: 6 },
-      picture: { transparentBackground: false, backgroundColor: '#EFF6FF' },
-      regionLabels: { show: true, color: '#1E3A8A', fontSize: 9 },
+      border: {
+        show: showBorder,
+        color: borderColor,
+        width: randomFloat(0.5, 4),
+      },
+      shadow: {
+        show: showShadow,
+        color: shadowColor,
+        blur: randomInt(5, 30),
+        offsetX: randomInt(-5, 5),
+        offsetY: randomInt(0, 10),
+      },
+      picture: {
+        transparentBackground: transparentBg,
+        backgroundColor: bgColor,
+      },
+      regionLabels: {
+        show: Math.random() > 0.3,
+        color: labelColor,
+        fontSize: randomInt(7, 14),
+      },
     },
     legend: {
-      labels: { color: '#1E3A8A', fontSize: 14 },
-      backgroundColor: 'rgba(239, 246, 255, 0.95)',
-      noDataColor: '#BFDBFE',
+      labels: {
+        color: legendLabelColor,
+        fontSize: randomInt(10, 16),
+      },
+      backgroundColor: legendBg,
+      noDataColor,
     },
-  },
-  {
-    map: {
-      border: { show: true, color: '#059669', width: 1 },
-      shadow: { show: false, color: '#000000', blur: 10, offsetX: 0, offsetY: 4 },
-      picture: { transparentBackground: false, backgroundColor: '#ECFDF5' },
-      regionLabels: { show: true, color: '#065F46', fontSize: 8 },
-    },
-    legend: {
-      labels: { color: '#065F46', fontSize: 11 },
-      backgroundColor: 'rgba(236, 253, 245, 0.95)',
-      noDataColor: '#A7F3D0',
-    },
-  },
-  {
-    map: {
-      border: { show: true, color: '#DC2626', width: 2.5 },
-      shadow: { show: true, color: '#7F1D1D', blur: 20, offsetX: 0, offsetY: 8 },
-      picture: { transparentBackground: false, backgroundColor: '#FEF2F2' },
-      regionLabels: { show: true, color: '#991B1B', fontSize: 10 },
-    },
-    legend: {
-      labels: { color: '#991B1B', fontSize: 13 },
-      backgroundColor: 'rgba(254, 242, 242, 0.95)',
-      noDataColor: '#FECACA',
-    },
-  },
-  {
-    map: {
-      border: { show: true, color: '#7C3AED', width: 1.5 },
-      shadow: { show: true, color: '#5B21B6', blur: 12, offsetX: 3, offsetY: 3 },
-      picture: { transparentBackground: false, backgroundColor: '#F5F3FF' },
-      regionLabels: { show: true, color: '#5B21B6', fontSize: 9 },
-    },
-    legend: {
-      labels: { color: '#6D28D9', fontSize: 12 },
-      backgroundColor: 'rgba(245, 243, 255, 0.95)',
-      noDataColor: '#DDD6FE',
-    },
-  },
-  {
-    map: {
-      border: { show: false, color: '#FFFFFF', width: 1 },
-      shadow: { show: true, color: '#374151', blur: 25, offsetX: 0, offsetY: 10 },
-      picture: { transparentBackground: true, backgroundColor: '#F5F5F5' },
-      regionLabels: { show: true, color: '#374151', fontSize: 10 },
-    },
-    legend: {
-      labels: { color: '#374151', fontSize: 10 },
-      backgroundColor: 'rgba(249, 250, 251, 0.98)',
-      noDataColor: '#D1D5DB',
-    },
-  },
-];
+  };
+};
 
 const GeneralStylesPack: FC = () => {
   const setMapStylesState = useMapStylesStore((state) => state.setMapStylesState);
@@ -129,7 +115,7 @@ const GeneralStylesPack: FC = () => {
   }, [setMapStylesState, setLegendStylesState]);
 
   const handleApplyRandomStyles = useCallback(() => {
-    const randomPack = RANDOM_STYLE_PACKS[Math.floor(Math.random() * RANDOM_STYLE_PACKS.length)];
+    const randomPack = generateRandomStylePack();
     setMapStylesState(randomPack.map);
     setLegendStylesState(randomPack.legend);
   }, [setMapStylesState, setLegendStylesState]);

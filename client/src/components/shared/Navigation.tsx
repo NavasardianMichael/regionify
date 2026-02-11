@@ -2,6 +2,8 @@ import { type FC } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CreditCardOutlined,
+  DeleteOutlined,
+  ExclamationCircleFilled,
   FolderOutlined,
   HomeOutlined,
   LoginOutlined,
@@ -10,9 +12,9 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
-import { Avatar, Dropdown, Flex } from 'antd';
+import { App, Avatar, Dropdown, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
-import { logout as logoutApi } from '@/api/auth';
+import { deleteAccount, logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
@@ -38,6 +40,7 @@ const AUTH_NAV_ITEMS: NavItem[] = [];
 export const Navigation: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { modal, message } = App.useApp();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
   const logout = useProfileStore(selectLogout);
@@ -52,12 +55,43 @@ export const Navigation: FC = () => {
     }
   };
 
+  const handleDeleteAccount = () => {
+    modal.confirm({
+      title: 'Delete Account',
+      icon: <ExclamationCircleFilled />,
+      content:
+        'Are you sure you want to delete your account? All your data, including projects, will be permanently removed. This action cannot be undone.',
+      okText: 'Delete Account',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await deleteAccount();
+          logout();
+          navigate(ROUTES.HOME);
+          message.success('Account deleted successfully');
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
+          message.error(errorMessage);
+        }
+      },
+    });
+  };
+
   const userMenuItems = [
     {
       key: 'logout',
       label: 'Logout',
       icon: <LogoutOutlined />,
       onClick: handleLogout,
+    },
+    { type: 'divider' as const },
+    {
+      key: 'delete-account',
+      label: 'Delete Account',
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: handleDeleteAccount,
     },
   ];
 

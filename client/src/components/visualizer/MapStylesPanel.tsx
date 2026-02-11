@@ -32,7 +32,7 @@ const DEBOUNCE_MS = 150;
 
 const MapStylesPanel: FC = () => {
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.free;
+  const plan = user?.plan ?? PLANS.observer;
   const picture = useMapStylesStore((state) => state.picture);
   const setPicture = useMapStylesStore((state) => state.setPicture);
 
@@ -145,12 +145,14 @@ const MapStylesPanel: FC = () => {
         label: (
           <Flex align="center" gap="small">
             <Typography.Text className="font-semibold">Background</Typography.Text>
-            {plan === PLANS.free && <InfoCircleOutlined style={{ color: '#888', marginLeft: 4 }} />}
+            {plan === PLANS.observer && (
+              <InfoCircleOutlined style={{ color: '#888', marginLeft: 4 }} />
+            )}
           </Flex>
         ),
         children: (
           <Flex vertical gap="small">
-            {plan === PLANS.free && (
+            {plan === PLANS.observer && (
               <Typography.Text type="secondary" style={{ fontSize: 13, marginBottom: 8 }}>
                 Free plan: You can change the background color, but transparent background and
                 watermark removal require an upgrade.{' '}
@@ -169,7 +171,7 @@ const MapStylesPanel: FC = () => {
                 size="small"
                 onChange={handleTransparentChange}
                 aria-labelledby="transparent-bg-label"
-                disabled={plan === PLANS.free}
+                disabled={plan === PLANS.observer}
               />
             </Flex>
             <Flex align="center" justify="space-between">

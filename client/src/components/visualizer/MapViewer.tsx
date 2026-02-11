@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { DragOutlined, FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
 import DOMPurify from 'dompurify';
 import { selectTransitionType } from '@/store/animation/selectors';
@@ -57,6 +57,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [labelDragMode, setLabelDragMode] = useState(false);
 
   // Legend drag state - use refs for smooth animation without re-renders
   const [isLegendDragging, setIsLegendDragging] = useState(false);
@@ -521,12 +522,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     setPan({ x: 0, y: 0 });
   }, []);
 
+  const handleToggleLabelDragMode = useCallback(() => {
+    setLabelDragMode((prev) => !prev);
+  }, []);
+
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      if (labelDragMode) return;
       setIsDragging(true);
       setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
     },
-    [pan],
+    [pan, labelDragMode],
   );
 
   const handleMouseMove = useCallback(
@@ -608,7 +614,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   // Attach drag handlers to SVG region label text elements after render
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !svgContent || !regionLabels.show) return;
+    if (!container || !svgContent || !regionLabels.show || !labelDragMode) return;
 
     const svgEl = container.querySelector('svg');
     if (!svgEl) return;
@@ -642,7 +648,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         el.removeEventListener('mousedown', handleMouseDown);
       });
     };
-  }, [svgContent, regionLabels.show, handleLabelDragMove, handleLabelDragEnd]);
+  }, [svgContent, regionLabels.show, labelDragMode, handleLabelDragMove, handleLabelDragEnd]);
 
   // Legend drag handlers - optimized with CSS transforms and requestAnimationFrame
   const handleLegendMouseDown = useCallback(
@@ -857,7 +863,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           type="button"
           ref={containerRef}
           aria-label={selectedRegionId ? `Map of ${selectedRegionId}` : 'No region selected'}
-          className="absolute inset-0 flex cursor-grab items-center justify-center border-none bg-transparent p-0 active:cursor-grabbing"
+          className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
+            labelDragMode ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
+          }`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -966,6 +974,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               onClick={handleResetView}
               className="shadow-md"
               aria-label="Reset view"
+            />
+            <Button
+              type={labelDragMode ? 'primary' : 'default'}
+              icon={<DragOutlined />}
+              onClick={handleToggleLabelDragMode}
+              className="shadow-md"
+              aria-label={labelDragMode ? 'Disable label dragging' : 'Enable label dragging'}
+              title={labelDragMode ? 'Disable label dragging' : 'Drag region labels'}
             />
           </Flex>
         )}

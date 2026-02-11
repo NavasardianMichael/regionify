@@ -82,7 +82,7 @@ Ensure `CLIENT_URL` in your server env is the real origin of the client (e.g. `h
 
 1. **Create order (server)**  
    User clicks “Upgrade to Explorer” or “Upgrade to Atlas” on Billing.  
-   Client calls `POST /api/payments/create-order` with `{ plan: 'explorer' | 'atlas' }` (with cookies).  
+   Client calls `POST /api/payments/create-order` with `{ plan: 'explorer' | 'chronographer' }` (with cookies).  
    Server creates a PayPal order (no SDK), returns `{ orderId, approvalUrl }`.
 
 2. **Redirect to PayPal**  

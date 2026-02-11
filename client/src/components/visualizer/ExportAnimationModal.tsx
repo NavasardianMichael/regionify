@@ -1,6 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import { EXPORT_TYPES, PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
+import { EXPORT_TYPES, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import { Button, Flex, InputNumber, Modal, Progress, Select, Slider, Typography } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
@@ -43,8 +43,8 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const timelineData = useVisualizerStore(selectTimelineData);
 
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.free;
-  const limits = PLAN_FEATURE_LIMITS[plan];
+  const plan = user?.plan ?? PLANS.observer;
+  const { limits } = PLAN_DETAILS[plan];
 
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const noDataColor = useLegendStylesStore(selectNoDataColor);
@@ -200,7 +200,6 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
           onClick={handleExport}
           loading={isExporting}
           disabled={timePeriods.length < 2}
-          size="large"
           block
         >
           {isExporting ? 'Exporting...' : `Export ${format === EXPORT_TYPES.gif ? 'GIF' : 'Video'}`}

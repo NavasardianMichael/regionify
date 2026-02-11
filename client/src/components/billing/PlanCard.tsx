@@ -16,7 +16,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   const isUpgrading = upgradingPlan === plan.id;
 
   const handleClick = useCallback(() => {
-    if (plan.id === PLANS.explorer || plan.id === PLANS.atlas) {
+    if (plan.id === PLANS.explorer || plan.id === PLANS.chronographer) {
       onUpgrade(plan.id as PayablePlan);
     }
   }, [plan.id, onUpgrade]);
@@ -83,7 +83,6 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
         <Button
           type={buttonType}
           block
-          size="large"
           disabled={isCurrentPlan}
           loading={isUpgrading}
           icon={isUpgrading ? <LoadingOutlined /> : undefined}

@@ -1,10 +1,12 @@
 /**
  * User subscription plan. Enum lives in backend (Prisma); this type is the public contract.
  */
-export type Plan = 'free' | 'explorer' | 'atlas';
 
 export const PLANS = {
-  free: 'free',
+  observer: 'observer',
   explorer: 'explorer',
-  atlas: 'atlas',
-} as const satisfies Record<Plan, Plan>;
+  chronographer: 'chronographer',
+} as const;
+
+export type Plan = (typeof PLANS)[keyof typeof PLANS];
+// Observer (free) → Explorer → Cartographer → Chronographer

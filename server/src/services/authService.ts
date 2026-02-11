@@ -6,6 +6,7 @@ import {
   type ForgotPasswordInput,
   HttpStatus,
   type LoginInput,
+  PLANS,
   type RegisterInput,
   type ResetPasswordInput,
   type UserPublic,
@@ -25,7 +26,9 @@ function toPublicUser(user: User): UserPublic {
     name: user.name,
     avatarUrl: user.avatarUrl,
     provider: user.provider as AuthProvider,
-    plan: 'atlas' as UserPublic['plan'],
+    // plan: user.plan as UserPublic['plan'],
+    // TODO - remove hardcoded plan after implementing real subscription management
+    plan: PLANS.chronographer as UserPublic['plan'],
     createdAt: user.createdAt.toISOString(),
   };
 }

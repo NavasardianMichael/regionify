@@ -88,7 +88,7 @@ const PaymentReturnPage: FC = () => {
       <CheckCircleOutlined className="text-6xl text-green-500" />
       <Typography.Title level={3}>Payment successful</Typography.Title>
       <Typography.Text type="secondary">{messageText}</Typography.Text>
-      <Button type="primary" size="large" icon={<CheckCircleOutlined />} onClick={handleContinue}>
+      <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleContinue}>
         Continue to My Projects
       </Button>
     </Flex>

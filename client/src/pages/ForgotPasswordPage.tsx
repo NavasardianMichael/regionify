@@ -56,7 +56,7 @@ const ForgotPasswordPage: FC = () => {
             follow the instructions.
           </Typography.Paragraph>
           <Link to={ROUTES.LOGIN}>
-            <Button type="primary" size="large" className="mt-4">
+            <Button type="primary" className="mt-4">
               Back to Login
             </Button>
           </Link>
@@ -85,11 +85,11 @@ const ForgotPasswordPage: FC = () => {
             { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
           ]}
         >
-          <Input placeholder="email@example.com" size="large" />
+          <Input placeholder="email@example.com" />
         </Form.Item>
 
         <Form.Item className="mb-4">
-          <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+          <Button type="primary" htmlType="submit" block loading={loading}>
             Send Reset Link
           </Button>
         </Form.Item>

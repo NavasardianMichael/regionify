@@ -1,5 +1,5 @@
 import { type FC, useState } from 'react';
-import { App, Button, Card, Form, Input, Typography } from 'antd';
+import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processContactFormData } from '@/api/contact/processors';
 
@@ -33,61 +33,52 @@ const ContactPage: FC = () => {
   return (
     <Card className="mx-auto! w-full max-w-144 shadow-sm">
       <div className="mb-6 text-center">
-        <Typography.Title level={1} className="text-primary text-2xl font-bold">
+        <Typography.Title level={1} className="text-primary mb-sm! text-2xl">
           Contact Us
         </Typography.Title>
-        <Typography.Paragraph className="mt-2 text-gray-500">
+        <Typography.Paragraph className="mt-2 font-medium text-gray-500">
           Have a question? We are here to help.
         </Typography.Paragraph>
       </div>
 
       <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
-        <div className="flex gap-4">
+        <Flex gap="middle">
           <Form.Item
             name="firstName"
-            label={
-              <Typography.Text className="font-medium text-gray-700">First Name</Typography.Text>
-            }
+            label={<Typography.Text className="font-medium">First Name</Typography.Text>}
             rules={[{ required: true, message: 'Please enter your first name' }]}
             className="flex-1"
           >
-            <Input placeholder="First name" size="large" />
+            <Input placeholder="First name" />
           </Form.Item>
 
           <Form.Item
             name="lastName"
-            label={
-              <Typography.Text className="font-medium text-gray-700">Last Name</Typography.Text>
-            }
+            label={<Typography.Text className="font-medium">Last Name</Typography.Text>}
             rules={[{ required: true, message: 'Please enter your last name' }]}
             className="flex-1"
           >
-            <Input placeholder="Last name" size="large" />
+            <Input placeholder="Last name" />
           </Form.Item>
-        </div>
+        </Flex>
 
         <Form.Item
           name="email"
-          label={<Typography.Text className="font-medium text-gray-700">Email</Typography.Text>}
+          label={<Typography.Text className="font-medium">Email</Typography.Text>}
           rules={[
             { required: true, message: 'Please enter your email' },
             { type: 'email', message: 'Please enter a valid email' },
           ]}
         >
-          <Input placeholder="email@example.com" size="large" />
+          <Input placeholder="email@example.com" />
         </Form.Item>
 
         <Form.Item
           name="message"
-          label={<Typography.Text className="font-medium text-gray-700">Message</Typography.Text>}
+          label={<Typography.Text className="font-medium">Message</Typography.Text>}
           rules={[{ required: true, message: 'Please enter your message' }]}
         >
-          <Input.TextArea
-            placeholder="How can we assist you?"
-            rows={4}
-            size="large"
-            className="resize-none!"
-          />
+          <Input.TextArea placeholder="How can we assist you?" rows={4} className="resize-none!" />
         </Form.Item>
 
         <input
@@ -99,7 +90,7 @@ const ContactPage: FC = () => {
         />
 
         <Form.Item className="mb-0">
-          <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+          <Button type="primary" htmlType="submit" block loading={loading}>
             Submit
           </Button>
         </Form.Item>

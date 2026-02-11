@@ -6,12 +6,12 @@ import { paymentService } from '../services/paymentService.js';
 
 const router: ExpressRouter = Router();
 
-/** POST /api/payments/create-order - Create PayPal order (auth required). Body: { plan: PLANS.explorer | PLANS.atlas } */
+/** POST /api/payments/create-order - Create PayPal order (auth required). Body: { plan: PLANS.explorer | PLANS.chronographer } */
 router.post('/create-order', requireAuth, async (req, res, next) => {
   try {
     const userId = req.session.userId!;
     const plan = req.body?.plan as Plan;
-    if (plan !== PLANS.explorer && plan !== PLANS.atlas) {
+    if (plan !== PLANS.explorer && plan !== PLANS.chronographer) {
       res.status(400).json({
         success: false,
         error: { code: 'VALIDATION_ERROR', message: 'plan must be explorer or atlas' },

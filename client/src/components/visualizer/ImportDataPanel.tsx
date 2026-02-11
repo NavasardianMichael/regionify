@@ -15,9 +15,20 @@ import {
   FileExcelOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import { PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
+import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
-import { Button, Flex, message, Modal, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Flex,
+  message,
+  Modal,
+  Segmented,
+  Spin,
+  Tooltip,
+  Typography,
+  Upload,
+} from 'antd';
 import * as XLSX from 'xlsx';
 import {
   selectClearTimelineData,
@@ -204,6 +215,7 @@ export const ImportDataPanel: FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
+  const [isHistoricalData, setIsHistoricalData] = useState(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
@@ -213,8 +225,8 @@ export const ImportDataPanel: FC = () => {
   const data = useVisualizerStore(selectData);
 
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.free;
-  const limits = PLAN_FEATURE_LIMITS[plan];
+  const plan = user?.plan ?? PLANS.observer;
+  const { limits } = PLAN_DETAILS[plan];
 
   const handleDownloadData = useCallback(() => {
     if (data.allIds.length === 0) {
@@ -294,6 +306,7 @@ export const ImportDataPanel: FC = () => {
             const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
 
             clearTimelineData();
+            setIsHistoricalData(false);
             setVisualizerState({ data: { allIds, byId } });
           }
         }
@@ -359,6 +372,52 @@ export const ImportDataPanel: FC = () => {
       setTimelineData,
       clearTimelineData,
     ],
+  );
+
+  const handleHistoricalToggle = useCallback(
+    (checked: boolean) => {
+      setIsHistoricalData(checked);
+
+      if (svgTitles.length === 0) return;
+
+      if (checked) {
+        // Generate sample historical data with ascending base values per period
+        const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+        const timeline: Record<string, DataSet> = {};
+
+        for (let p = 0; p < samplePeriods.length; p++) {
+          const baseMultiplier = 1 + p * 0.3;
+          const periodData = svgTitles.map((title, i) => ({
+            id: title,
+            label: title,
+            value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
+          }));
+
+          timeline[samplePeriods[p]] = {
+            allIds: periodData.map((item) => item.id),
+            byId: Object.fromEntries(periodData.map((item) => [item.id, item])),
+          };
+        }
+
+        setTimelineData(timeline, samplePeriods);
+      } else {
+        // Revert to flat sample data
+        const flatData = svgTitles.map((title) => ({
+          id: title,
+          label: title,
+          value: Math.floor(Math.random() * 900) + 100,
+        }));
+
+        const newData = {
+          allIds: flatData.map((item) => item.id),
+          byId: Object.fromEntries(flatData.map((item) => [item.id, item])),
+        };
+
+        clearTimelineData();
+        setVisualizerState({ data: newData });
+      }
+    },
+    [svgTitles, setTimelineData, clearTimelineData, setVisualizerState],
   );
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
@@ -528,6 +587,58 @@ Moscow,2500`}
     [],
   );
 
+  const historicalFormatExamples: Record<ImportDataType, JSX.Element> = useMemo(
+    () => ({
+      csv: (
+        <pre className="font-mono text-xs text-gray-600">
+          {`year,id,label,value
+2020,Moscow,Moscow Oblast,2500
+2020,Saint Petersburg,St. Petersburg,1800
+2021,Moscow,Moscow Oblast,2700
+2021,Saint Petersburg,St. Petersburg,1900`}
+        </pre>
+      ),
+      excel: (
+        <Flex vertical gap={4} className="text-xs text-gray-600">
+          <Typography.Text className="text-xs text-gray-600">
+            Excel file with columns including a time column:
+          </Typography.Text>
+          <pre className="font-mono text-xs text-gray-600">
+            {`| year | id     | label       | value |
+| 2020 | Moscow | Moscow City | 2500  |
+| 2021 | Moscow | Moscow City | 2700  |`}
+          </pre>
+        </Flex>
+      ),
+      json: (
+        <pre className="font-mono text-xs text-gray-600">
+          {`[
+  { "year": "2020", "label": "Moscow", "value": 2500 },
+  { "year": "2021", "label": "Moscow", "value": 2700 }
+]`}
+        </pre>
+      ),
+      sheets: (
+        <Flex vertical gap={4} className="text-xs text-gray-600">
+          <Typography.Text className="text-xs text-gray-600">
+            Google Sheet with a time column:
+          </Typography.Text>
+          <pre className="font-mono text-xs text-gray-600">
+            {`| year | id     | label       | value |
+| 2020 | Moscow | Moscow City | 2500  |
+| 2021 | Moscow | Moscow City | 2700  |`}
+          </pre>
+        </Flex>
+      ),
+      manual: (
+        <Typography.Text className="text-xs text-gray-600">
+          Enter region IDs, labels and their corresponding values with time periods using the form.
+        </Typography.Text>
+      ),
+    }),
+    [],
+  );
+
   const formatInfoContent = (
     <ul className="m-0 list-disc space-y-2 pl-4 text-sm text-gray-600">
       <li>
@@ -615,11 +726,24 @@ Moscow,2500`}
 
       {importActionComponents[importDataType]}
 
+      {limits.historicalDataImport && (
+        <Checkbox
+          checked={isHistoricalData}
+          onChange={(e) => handleHistoricalToggle(e.target.checked)}
+        >
+          <Typography.Text className="text-sm text-gray-600">
+            Historical data (includes time dimension)
+          </Typography.Text>
+        </Checkbox>
+      )}
+
       <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">
         <Typography.Text className="text-xs font-medium text-gray-500">
           EXPECTED FORMAT:
         </Typography.Text>
-        {expectedFormatExamples[importDataType]}
+        {isHistoricalData
+          ? historicalFormatExamples[importDataType]
+          : expectedFormatExamples[importDataType]}
       </Flex>
 
       {isManualModalOpen && (

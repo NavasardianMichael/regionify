@@ -1,6 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
-import { EXPORT_TYPES, type ExportType, PLAN_FEATURE_LIMITS, PLANS } from '@regionify/shared';
+import { EXPORT_TYPES, type ExportType, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import {
   Button,
   Flex,
@@ -61,8 +61,8 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const timelineData = useVisualizerStore(selectTimelineData);
 
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.free;
-  const limits = PLAN_FEATURE_LIMITS[plan];
+  const plan = user?.plan ?? PLANS.observer;
+  const { limits } = PLAN_DETAILS[plan];
 
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const noDataColor = useLegendStylesStore(selectNoDataColor);
@@ -112,7 +112,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     () => ({
       [EXPORT_TYPES.svg]: (fileName: string) => exportMapAsSvg(fileName),
       [EXPORT_TYPES.png]: (fileName: string) => {
-        if (plan === PLANS.free) {
+        if (plan === PLANS.observer) {
           return exportMapAsPng(quality, fileName, {
             backgroundColor: '#f5f5f5',
             watermark: 'Regionify',
@@ -121,7 +121,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
         return exportMapAsPng(quality, fileName);
       },
       [EXPORT_TYPES.jpeg]: (fileName: string) => {
-        if (plan === PLANS.free) {
+        if (plan === PLANS.observer) {
           return exportMapAsJpeg(quality, fileName, {
             backgroundColor: '#f5f5f5',
             watermark: 'Regionify',
@@ -263,7 +263,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
                 value={quality}
                 onChange={handleQualityChange}
                 className="w-20"
-                disabled={plan === PLANS.free}
+                disabled={plan === PLANS.observer}
               />
             </Flex>
             <Slider
@@ -272,7 +272,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
               value={quality}
               onChange={(v: number) => setQuality(Math.min(v, maxQuality))}
               aria-label="Export quality"
-              disabled={plan === PLANS.free}
+              disabled={plan === PLANS.observer}
             />
             {limits.pictureQualityLimit && (
               <Typography.Text type="secondary" className="text-xs">
@@ -320,7 +320,6 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           onClick={handleDownload}
           loading={isExporting}
           disabled={!selectedRegionId || (isAnimationFormat && !hasTimelineData)}
-          size="large"
         >
           {downloadButtonLabel}
         </Button>

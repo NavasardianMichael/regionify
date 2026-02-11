@@ -1,3 +1,4 @@
+import type { Plan } from '@regionify/shared';
 import type { PayablePlan } from '@/constants/plans';
 
 export type CreateOrderPayload = {
@@ -14,5 +15,5 @@ export type CapturePayload = {
 };
 
 export type CaptureResponse = {
-  plan: 'free' | 'explorer' | 'atlas';
+  plan: Plan;
 };

@@ -1,10 +1,11 @@
+import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { BillingPlan } from './types';
 
 export const BILLING_PLANS: BillingPlan[] = [
   {
-    id: 'free',
-    name: 'Free',
-    price: 0,
+    id: PLANS.observer,
+    name: 'Observer (free)',
+    price: PLAN_DETAILS.observer.price,
     period: 'lifetime',
     description: 'Perfect for getting started',
     buttonText: 'Current Plan',
@@ -18,9 +19,9 @@ export const BILLING_PLANS: BillingPlan[] = [
     ],
   },
   {
-    id: 'explorer',
+    id: PLANS.explorer,
     name: 'Explorer',
-    price: 59,
+    price: PLAN_DETAILS.explorer.price,
     period: 'lifetime',
     description: 'For professionals and teams. One-time payment, lifetime access.',
     buttonText: 'Buy Explorer (Lifetime)',
@@ -34,12 +35,12 @@ export const BILLING_PLANS: BillingPlan[] = [
     ],
   },
   {
-    id: 'atlas',
-    name: 'Atlas',
-    price: 159,
+    id: PLANS.chronographer,
+    name: 'Chronographer',
+    price: PLAN_DETAILS.chronographer.price,
     period: 'lifetime',
     description: 'For power users. One-time payment, lifetime access.',
-    buttonText: 'Buy Atlas (Lifetime)',
+    buttonText: 'Buy Chronographer (Lifetime)',
     popular: true,
     features: [
       { text: 'Everything in Explorer', included: true },

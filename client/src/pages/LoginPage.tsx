@@ -51,7 +51,6 @@ const LoginPage: FC = () => {
 
       <Button
         block
-        size="large"
         onClick={() => (window.location.href = AUTH_ENDPOINTS.google)}
         className="mb-4 flex! items-center justify-center gap-3 border-gray-300 bg-white! text-gray-700 hover:bg-gray-50!"
       >
@@ -95,7 +94,7 @@ const LoginPage: FC = () => {
             { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
           ]}
         >
-          <Input placeholder="email@example.com" size="large" autoComplete="username" />
+          <Input placeholder="email@example.com" autoComplete="username" />
         </Form.Item>
 
         <Form.Item
@@ -103,11 +102,7 @@ const LoginPage: FC = () => {
           label={<Typography.Text className="font-medium text-gray-700">Password</Typography.Text>}
           rules={[{ required: true, message: AUTH_VALIDATION.password.messages.required }]}
         >
-          <Input.Password
-            placeholder="Enter your password"
-            size="large"
-            autoComplete="current-password"
-          />
+          <Input.Password placeholder="Enter your password" autoComplete="current-password" />
         </Form.Item>
 
         {loginError && (
@@ -121,7 +116,7 @@ const LoginPage: FC = () => {
         </div>
 
         <Form.Item className="mb-4">
-          <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+          <Button type="primary" htmlType="submit" block loading={loading}>
             Sign In
           </Button>
         </Form.Item>

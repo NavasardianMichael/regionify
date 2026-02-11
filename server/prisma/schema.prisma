@@ -20,9 +20,9 @@ enum AuthProvider {
 }
 
 enum Plan {
-  free
+  observer
   explorer
-  atlas
+  chronographer
 }
 
 // =============================================================================
@@ -36,7 +36,7 @@ model User {
   passwordHash  String?      @map("password_hash")
   avatarUrl     String?      @map("avatar_url")
   provider      AuthProvider @default(local)
-  plan          Plan         @default(free)
+  plan          Plan         @default(observer)
   googleId      String?      @unique @map("google_id")
   emailVerified Boolean      @default(false) @map("email_verified")
   createdAt     DateTime     @default(now()) @map("created_at")

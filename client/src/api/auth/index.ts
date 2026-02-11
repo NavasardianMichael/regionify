@@ -80,6 +80,21 @@ export const logout = async (): Promise<void> => {
 };
 
 /**
+ * Delete the current user's account
+ */
+export const deleteAccount = async (): Promise<void> => {
+  const response = await fetch(AUTH_ENDPOINTS.deleteAccount, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(getErrorMessage(data, 'Failed to delete account'));
+  }
+};
+
+/**
  * Request password reset email
  */
 export const forgotPassword = async (payload: ForgotPasswordPayload): Promise<void> => {

@@ -18,12 +18,14 @@ type SignUpFormValues = {
 const SignUpPage: FC = () => {
   const [form] = Form.useForm<SignUpFormValues>();
   const [loading, setLoading] = useState(false);
+  const [signUpError, setSignUpError] = useState<string | null>(null);
   const { message } = App.useApp();
   const navigate = useNavigate();
   const setUser = useProfileStore(selectSetUser);
 
   const handleSubmit = async (values: SignUpFormValues) => {
     setLoading(true);
+    setSignUpError(null);
     try {
       const response = await register({
         name: values.name,
@@ -35,7 +37,7 @@ const SignUpPage: FC = () => {
       navigate(ROUTES.HOME);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create account';
-      message.error(errorMessage);
+      setSignUpError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,6 @@ const SignUpPage: FC = () => {
 
       <Button
         block
-        size="large"
         onClick={() => (window.location.href = AUTH_ENDPOINTS.google)}
         className="mb-4 flex! items-center justify-center gap-3 border-gray-300 bg-white! text-gray-700 hover:bg-gray-50!"
       >
@@ -83,7 +84,13 @@ const SignUpPage: FC = () => {
         or sign up with email
       </Divider>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        onValuesChange={() => setSignUpError(null)}
+        requiredMark={false}
+      >
         <Flex vertical gap={16}>
           <Form.Item
             name="name"
@@ -103,7 +110,7 @@ const SignUpPage: FC = () => {
               },
             ]}
           >
-            <Input placeholder="John Doe" size="large" />
+            <Input placeholder="John Doe" />
           </Form.Item>
 
           <Form.Item
@@ -115,7 +122,7 @@ const SignUpPage: FC = () => {
               { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
             ]}
           >
-            <Input placeholder="email@example.com" size="large" autoComplete="username" />
+            <Input placeholder="email@example.com" autoComplete="username" />
           </Form.Item>
 
           <Form.Item
@@ -144,11 +151,7 @@ const SignUpPage: FC = () => {
               },
             ]}
           >
-            <Input.Password
-              placeholder="Create a password"
-              size="large"
-              autoComplete="new-password"
-            />
+            <Input.Password placeholder="Create a password" autoComplete="new-password" />
           </Form.Item>
 
           <Form.Item
@@ -174,16 +177,19 @@ const SignUpPage: FC = () => {
               }),
             ]}
           >
-            <Input.Password
-              placeholder="Confirm your password"
-              size="large"
-              autoComplete="new-password"
-            />
+            <Input.Password placeholder="Confirm your password" autoComplete="new-password" />
           </Form.Item>
         </Flex>
+
+        {signUpError && (
+          <div className="mt-4 mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">
+            {signUpError}
+          </div>
+        )}
+
         <Flex gap={8} className="mt-8!" vertical>
           <Form.Item className="mb-0!">
-            <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+            <Button type="primary" htmlType="submit" block loading={loading}>
               Create Account
             </Button>
           </Form.Item>
