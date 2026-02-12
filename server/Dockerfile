@@ -14,10 +14,12 @@ WORKDIR /app
 
 # Copy package files and prisma schema (needed for postinstall)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY server/prisma ./server/prisma
+
+# Stub client/package.json so pnpm workspace resolution works
+RUN mkdir -p client && echo '{"name":"@regionify/client","private":true,"version":"0.0.0"}' > client/package.json
 
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
@@ -42,10 +44,12 @@ WORKDIR /app
 
 # Copy package files and prisma schema
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY --from=builder /app/server/prisma ./server/prisma
+
+# Stub client/package.json so pnpm workspace resolution works
+RUN mkdir -p client && echo '{"name":"@regionify/client","private":true,"version":"0.0.0"}' > client/package.json
 
 # Install production dependencies (ignore scripts to skip husky)
 RUN pnpm install --prod --frozen-lockfile --ignore-scripts
