@@ -14,6 +14,7 @@ WORKDIR /app
 
 # Copy package files and prisma schema (needed for postinstall)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY server/prisma ./server/prisma
@@ -41,6 +42,7 @@ WORKDIR /app
 
 # Copy package files and prisma schema
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY --from=builder /app/server/prisma ./server/prisma
