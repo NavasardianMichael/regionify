@@ -10,8 +10,9 @@
 coverage
 .nyc_output
 
-# Client (not needed for server build)
-client/
+# Client source not needed for server build (only package.json for workspace)
+client/**
+!client/package.json
 
 # Env files (passed separately)
 **/.env*

@@ -49,6 +49,14 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
+      - name: Check shared build output
+        run: |
+          if [ ! -s shared/dist/index.js ]; then
+            echo "❌ shared/dist/index.js is missing or empty! Build failed."
+            exit 1
+          fi
+          echo "✅ shared/dist/index.js exists and is non-empty."
+
       - name: Create client archive
         run: tar -czf client-build.tar.gz -C client/dist .
 
@@ -56,9 +64,8 @@ jobs:
         run: |
           tar -czf server-build.tar.gz \
             --exclude='node_modules' \
-            --exclude='client' \
             --exclude='.git' \
-            server shared docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
+            server shared client/package.json docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
