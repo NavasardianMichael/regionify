@@ -134,7 +134,13 @@ export function renderStyledSvg({
   let viewBoxHeight = 0;
 
   if (isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
-    const padding = 10;
+    // Account for shadow offset/blur and border width in padding
+    const shadowPadding = shadow.show
+      ? Math.max(shadow.blur, Math.abs(shadow.offsetX), Math.abs(shadow.offsetY)) + shadow.blur
+      : 0;
+    const borderPadding = border.show ? border.width : 0;
+    const padding = Math.max(10, shadowPadding + borderPadding + 5);
+
     viewBoxWidth = maxX - minX + padding * 2;
     viewBoxHeight = maxY - minY + padding * 2;
     viewBoxX = minX - padding;
@@ -157,8 +163,14 @@ export function renderStyledSvg({
     svgElement.insertBefore(bgRect, svgElement.firstChild);
   }
 
-  svgElement.removeAttribute('width');
-  svgElement.removeAttribute('height');
+  // Set explicit dimensions so the Image element sizes correctly for canvas export
+  if (viewBoxWidth > 0 && viewBoxHeight > 0) {
+    svgElement.setAttribute('width', String(viewBoxWidth));
+    svgElement.setAttribute('height', String(viewBoxHeight));
+  } else {
+    svgElement.removeAttribute('width');
+    svgElement.removeAttribute('height');
+  }
 
   if (!svgElement.getAttribute('preserveAspectRatio')) {
     svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
@@ -216,6 +228,11 @@ export function renderStyledSvg({
 
     const filter = doc.createElementNS('http://www.w3.org/2000/svg', 'filter');
     filter.setAttribute('id', 'mapShadow');
+    // Expand filter region to prevent shadow clipping
+    filter.setAttribute('x', '-20%');
+    filter.setAttribute('y', '-20%');
+    filter.setAttribute('width', '140%');
+    filter.setAttribute('height', '140%');
     filter.innerHTML = `
       <feDropShadow 
         dx="${shadow.offsetX}" 

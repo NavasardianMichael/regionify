@@ -16,5 +16,6 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["chronographer", "cursorrules", "regionify"]
+  "cSpell.words": ["chronographer", "cursorrules", "regionify"],
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

@@ -4,6 +4,7 @@ import { authRoutes } from './auth.js';
 import { contactRoutes } from './contact.js';
 import { paymentRoutes } from './payments.js';
 import { projectRoutes } from './projects.js';
+import { sheetsRoutes } from './sheets.js';
 
 const router: ExpressRouter = Router();
 
@@ -27,5 +28,8 @@ router.use('/contact', contactRoutes);
 // Project routes
 router.use('/payments', paymentRoutes);
 router.use('/projects', projectRoutes);
+
+// Google Sheets routes
+router.use('/sheets', sheetsRoutes);
 
 export const apiRoutes: ExpressRouter = router;

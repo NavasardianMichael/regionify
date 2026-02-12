@@ -1,11 +1,10 @@
 import { type FC, lazy, Suspense, useCallback, useState } from 'react';
 import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
-import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import { App, Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
 import { createProject, updateProject } from '@/api/projects';
 import { selectHasTimelineData, selectSelectedRegionId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
+import { selectIsLoggedIn } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import {
   selectAddProject,
@@ -38,9 +37,6 @@ const VisualizerPage: FC = () => {
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
-  const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.observer;
-  const { limits } = PLAN_DETAILS[plan];
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
   const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);

@@ -8,6 +8,7 @@ export * from './types/exportTypes.js';
 // Schemas
 export * from './schemas/auth.js';
 export * from './schemas/contact.js';
+export * from './schemas/sheets.js';
 
 // Constants
 export * from './constants/plans.js';

@@ -1,8 +1,15 @@
 import { applyPalette, GIFEncoder, quantize } from 'gifenc';
 import type { LegendItem } from '@/store/legendData/types';
+import type { LegendLabelsConfig, LegendTitleConfig } from '@/store/legendStyles/types';
 import type { DataSet } from '@/store/mapData/types';
 import type { BorderConfig, PictureConfig, ShadowConfig } from '@/store/mapStyles/types';
 import { renderStyledSvg } from './svgRenderer';
+
+type LegendConfig = {
+  title: LegendTitleConfig;
+  labels: LegendLabelsConfig;
+  backgroundColor: string;
+};
 
 type AnimationExportOptions = {
   rawSvg: string;
@@ -13,6 +20,7 @@ type AnimationExportOptions = {
   border: BorderConfig;
   shadow: ShadowConfig;
   picture: PictureConfig;
+  legend: LegendConfig;
   quality: number;
   fps: number;
   onProgress?: (progress: number) => void;
@@ -92,6 +100,97 @@ const addPeriodLabel = (canvas: HTMLCanvasElement, label: string): void => {
   ctx.restore();
 };
 
+/** Draws the legend box overlay in the bottom-left corner of the canvas. */
+const addLegend = (
+  canvas: HTMLCanvasElement,
+  legendItems: LegendItem[],
+  noDataColor: string,
+  legend: LegendConfig,
+): void => {
+  if (legendItems.length === 0) return;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  ctx.save();
+
+  const scale = Math.max(1, canvas.width / 800);
+  const fontSize = Math.max(11, Math.round(legend.labels.fontSize * scale));
+  const titleFontSize = Math.max(11, Math.round(legend.labels.fontSize * scale));
+  const swatchSize = Math.round(12 * scale);
+  const padding = Math.round(10 * scale);
+  const rowGap = Math.round(6 * scale);
+  const swatchGap = Math.round(8 * scale);
+  const titleGap = Math.round(8 * scale);
+  const margin = Math.round(16 * scale);
+
+  // Measure text widths
+  ctx.font = `${fontSize}px system-ui, -apple-system, sans-serif`;
+  const itemLabels = legendItems.map((item) => item.name);
+  const allLabels = [...itemLabels, 'No Data'];
+  const maxTextWidth = Math.max(...allLabels.map((l) => ctx.measureText(l).width));
+
+  // Calculate legend dimensions
+  const boxWidth = padding * 2 + swatchSize + swatchGap + maxTextWidth;
+  const totalRows = legendItems.length + 1; // +1 for No Data
+  let boxHeight = padding * 2 + totalRows * (swatchSize + rowGap) - rowGap;
+  if (legend.title.show) {
+    boxHeight += titleFontSize + titleGap;
+  }
+
+  // Position: bottom-left corner with margin
+  const boxX = margin;
+  const boxY = canvas.height - boxHeight - margin;
+
+  // Background with rounded corners
+  ctx.fillStyle = legend.backgroundColor;
+  ctx.beginPath();
+  ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 6 * scale);
+  ctx.fill();
+
+  let cursorY = boxY + padding;
+
+  // Title
+  if (legend.title.show) {
+    ctx.font = `600 ${titleFontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.fillStyle = legend.labels.color;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(legend.title.text, boxX + padding, cursorY + titleFontSize / 2);
+    cursorY += titleFontSize + titleGap;
+  }
+
+  // Legend items
+  ctx.font = `${fontSize}px system-ui, -apple-system, sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+
+  const drawRow = (color: string, label: string, hasBorder: boolean): void => {
+    // Color swatch
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(boxX + padding, cursorY, swatchSize, swatchSize, 2 * scale);
+    ctx.fill();
+    if (hasBorder) {
+      ctx.strokeStyle = '#D1D5DB';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Label text
+    ctx.fillStyle = legend.labels.color;
+    ctx.fillText(label, boxX + padding + swatchSize + swatchGap, cursorY + swatchSize / 2);
+    cursorY += swatchSize + rowGap;
+  };
+
+  for (const item of legendItems) {
+    drawRow(item.color, item.name, false);
+  }
+  drawRow(noDataColor, 'No Data', true);
+
+  ctx.restore();
+};
+
 const triggerDownload = (blob: Blob, fileName: string): void => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -111,7 +210,7 @@ const renderFrame = async (
   scale: number,
   options: Pick<
     AnimationExportOptions,
-    'legendItems' | 'noDataColor' | 'border' | 'shadow' | 'picture'
+    'legendItems' | 'noDataColor' | 'border' | 'shadow' | 'picture' | 'legend'
   >,
 ): Promise<HTMLCanvasElement> => {
   const svgString = renderStyledSvg({
@@ -124,6 +223,7 @@ const renderFrame = async (
     picture: options.picture,
   });
   const canvas = await svgToCanvas(svgString, scale);
+  addLegend(canvas, options.legendItems, options.noDataColor, options.legend);
   addPeriodLabel(canvas, period);
   return canvas;
 };
@@ -162,7 +262,6 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     const palette = quantize(imageData.data, 256);
     const index = applyPalette(imageData.data, palette);
     gif.writeFrame(index, width, height, { palette, delay });
-
     onProgress?.((i + 1) / totalFrames);
   }
 
@@ -225,6 +324,18 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
 
     recorder.start();
 
+    const drawAndCapture = (canvas: HTMLCanvasElement): Promise<void> => {
+      recordCtx.clearRect(0, 0, width, height);
+      recordCtx.drawImage(canvas, 0, 0);
+
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack && 'requestFrame' in videoTrack) {
+        (videoTrack as unknown as { requestFrame: () => void }).requestFrame();
+      }
+
+      return new Promise<void>((r) => setTimeout(r, frameDuration));
+    };
+
     const renderFrames = async (): Promise<void> => {
       for (let i = 0; i < totalFrames; i++) {
         const period = timePeriods[i];
@@ -233,17 +344,8 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
             ? firstCanvas
             : await renderFrame(rawSvg, timelineData[period], period, scale, options);
 
-        recordCtx.clearRect(0, 0, width, height);
-        recordCtx.drawImage(canvas, 0, 0);
-
-        // Request frame capture on the video track
-        const videoTrack = stream.getVideoTracks()[0];
-        if (videoTrack && 'requestFrame' in videoTrack) {
-          (videoTrack as unknown as { requestFrame: () => void }).requestFrame();
-        }
-
+        await drawAndCapture(canvas);
         onProgress?.((i + 1) / totalFrames);
-        await new Promise<void>((r) => setTimeout(r, frameDuration));
       }
 
       recorder.stop();

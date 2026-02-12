@@ -124,11 +124,7 @@ const AnimationControls: FC = () => {
   }
 
   return (
-    <Flex
-      vertical
-      gap="small"
-      className="shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-3"
-    >
+    <Flex vertical gap="small" className="p-md! rounded-lg border border-gray-200 bg-gray-50">
       <Flex align="center" justify="space-between" wrap="wrap" gap="small">
         <Flex align="center" gap="small">
           <Button

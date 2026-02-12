@@ -1,21 +1,16 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, type ExportType, PLAN_DETAILS, PLANS } from '@regionify/shared';
-import {
-  Button,
-  Flex,
-  InputNumber,
-  message,
-  Modal,
-  Progress,
-  Select,
-  Slider,
-  Typography,
-} from 'antd';
+import { App, Button, Flex, InputNumber, Modal, Progress, Select, Slider, Typography } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
-import { selectNoDataColor } from '@/store/legendStyles/selectors';
+import {
+  selectBackgroundColor,
+  selectLabels,
+  selectNoDataColor,
+  selectTitle,
+} from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
   selectHasTimelineData,
@@ -55,6 +50,7 @@ type Props = {
 const DEFAULT_QUALITY = 60;
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
+  const { message } = App.useApp();
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
@@ -66,6 +62,9 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
 
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const noDataColor = useLegendStylesStore(selectNoDataColor);
+  const legendLabels = useLegendStylesStore(selectLabels);
+  const legendTitle = useLegendStylesStore(selectTitle);
+  const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
@@ -156,6 +155,11 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           border,
           shadow,
           picture,
+          legend: {
+            title: legendTitle,
+            labels: legendLabels,
+            backgroundColor: legendBackgroundColor,
+          },
           quality,
           fps,
           onProgress: setProgress,
@@ -185,6 +189,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     hasTimelineData,
     selectedRegionId,
     exportHandlers,
+    message,
     timePeriods,
     timelineData,
     legendItems,
@@ -192,6 +197,9 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     border,
     shadow,
     picture,
+    legendLabels,
+    legendTitle,
+    legendBackgroundColor,
     quality,
     fps,
     onClose,

@@ -1,7 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
+import { type Plan, PLANS } from '@regionify/shared';
 import { Button, Card, Flex, Typography } from 'antd';
-import { type Plan, PLANS } from '@/constants/plans';
 import type { BillingPlan, PayablePlan } from './types';
 
 export type PlanCardProps = {

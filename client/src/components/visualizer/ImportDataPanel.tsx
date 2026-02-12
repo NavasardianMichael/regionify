@@ -16,7 +16,7 @@ import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
-import type { UploadProps } from 'antd';
+import type { CheckboxProps, UploadProps } from 'antd';
 import {
   Button,
   Checkbox,
@@ -48,6 +48,7 @@ import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity'
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
+const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
 
 /**
  * Parsed row from user data
@@ -213,6 +214,7 @@ const convertToRegionData = (
 
 export const ImportDataPanel: FC = () => {
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
   const [isHistoricalData, setIsHistoricalData] = useState(false);
@@ -374,50 +376,18 @@ export const ImportDataPanel: FC = () => {
     ],
   );
 
-  const handleHistoricalToggle = useCallback(
-    (checked: boolean) => {
-      setIsHistoricalData(checked);
+  const handleSheetCsvFetched = useCallback(
+    (csv: string) => {
+      const parsed = parseCSV(csv);
 
-      if (svgTitles.length === 0) return;
-
-      if (checked) {
-        // Generate sample historical data with ascending base values per period
-        const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
-        const timeline: Record<string, DataSet> = {};
-
-        for (let p = 0; p < samplePeriods.length; p++) {
-          const baseMultiplier = 1 + p * 0.3;
-          const periodData = svgTitles.map((title, i) => ({
-            id: title,
-            label: title,
-            value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
-          }));
-
-          timeline[samplePeriods[p]] = {
-            allIds: periodData.map((item) => item.id),
-            byId: Object.fromEntries(periodData.map((item) => [item.id, item])),
-          };
-        }
-
-        setTimelineData(timeline, samplePeriods);
-      } else {
-        // Revert to flat sample data
-        const flatData = svgTitles.map((title) => ({
-          id: title,
-          label: title,
-          value: Math.floor(Math.random() * 900) + 100,
-        }));
-
-        const newData = {
-          allIds: flatData.map((item) => item.id),
-          byId: Object.fromEntries(flatData.map((item) => [item.id, item])),
-        };
-
-        clearTimelineData();
-        setVisualizerState({ data: newData });
+      if (parsed.length === 0) {
+        message.warning('No valid data found in Google Sheet');
+        return;
       }
+
+      processImportedData(parsed);
     },
-    [svgTitles, setTimelineData, clearTimelineData, setVisualizerState],
+    [processImportedData],
   );
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
@@ -484,6 +454,50 @@ export const ImportDataPanel: FC = () => {
     [importDataType, processImportedData],
   );
 
+  const handleHistoricalDataStatus: CheckboxProps['onChange'] = (e) => {
+    const { checked } = e.target;
+    setIsHistoricalData(checked);
+
+    if (svgTitles.length === 0) return;
+
+    if (checked) {
+      // Generate sample historical data with ascending base values per period
+      const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+      const timeline: Record<string, DataSet> = {};
+
+      for (let p = 0; p < samplePeriods.length; p++) {
+        const baseMultiplier = 1 + p * 0.3;
+        const periodData = svgTitles.map((title, i) => ({
+          id: title,
+          label: title,
+          value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
+        }));
+
+        timeline[samplePeriods[p]] = {
+          allIds: periodData.map((item) => item.id),
+          byId: Object.fromEntries(periodData.map((item) => [item.id, item])),
+        };
+      }
+
+      setTimelineData(timeline, samplePeriods);
+    } else {
+      // Revert to flat sample data
+      const flatData = svgTitles.map((title) => ({
+        id: title,
+        label: title,
+        value: Math.floor(Math.random() * 900) + 100,
+      }));
+
+      const newData = {
+        allIds: flatData.map((item) => item.id),
+        byId: Object.fromEntries(flatData.map((item) => [item.id, item])),
+      };
+
+      clearTimelineData();
+      setVisualizerState({ data: newData });
+    }
+  };
+
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
       manual: (
@@ -497,7 +511,12 @@ export const ImportDataPanel: FC = () => {
         </Button>
       ),
       sheets: (
-        <Button type="primary" icon={<CloudUploadOutlined />} block>
+        <Button
+          type="primary"
+          icon={<CloudUploadOutlined />}
+          block
+          onClick={() => setIsSheetsModalOpen(true)}
+        >
           Connect Google Sheets
         </Button>
       ),
@@ -727,10 +746,7 @@ Moscow,2500`}
       {importActionComponents[importDataType]}
 
       {limits.historicalDataImport && (
-        <Checkbox
-          checked={isHistoricalData}
-          onChange={(e) => handleHistoricalToggle(e.target.checked)}
-        >
+        <Checkbox checked={isHistoricalData} onChange={handleHistoricalDataStatus}>
           <Typography.Text className="text-sm text-gray-600">
             Historical data (includes time dimension)
           </Typography.Text>
@@ -751,6 +767,16 @@ Moscow,2500`}
           <ManualDataEntryModal
             open={isManualModalOpen}
             onClose={() => setIsManualModalOpen(false)}
+          />
+        </Suspense>
+      )}
+
+      {isSheetsModalOpen && (
+        <Suspense fallback={<Spin />}>
+          <GoogleSheetsModal
+            open={isSheetsModalOpen}
+            onClose={() => setIsSheetsModalOpen(false)}
+            onCsvFetched={handleSheetCsvFetched}
           />
         </Suspense>
       )}

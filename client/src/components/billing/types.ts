@@ -1,4 +1,5 @@
-import type { PayablePlan, Plan } from '@/constants/plans';
+import type { Plan } from '@regionify/shared';
+import type { PayablePlan } from '@/constants/plans';
 
 export type { PayablePlan };
 

@@ -5,7 +5,12 @@ import { Button, Flex, InputNumber, Modal, Progress, Select, Slider, Typography 
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
-import { selectNoDataColor } from '@/store/legendStyles/selectors';
+import {
+  selectBackgroundColor,
+  selectLabels,
+  selectNoDataColor,
+  selectTitle,
+} from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
   selectSelectedRegionId,
@@ -48,6 +53,9 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
 
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const noDataColor = useLegendStylesStore(selectNoDataColor);
+  const legendLabels = useLegendStylesStore(selectLabels);
+  const legendTitle = useLegendStylesStore(selectTitle);
+  const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
@@ -94,6 +102,11 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         border,
         shadow,
         picture,
+        legend: {
+          title: legendTitle,
+          labels: legendLabels,
+          backgroundColor: legendBackgroundColor,
+        },
         quality,
         fps,
         onProgress: setProgress,
@@ -121,6 +134,9 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     border,
     shadow,
     picture,
+    legendLabels,
+    legendTitle,
+    legendBackgroundColor,
     quality,
     fps,
     format,
