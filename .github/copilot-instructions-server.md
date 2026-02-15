@@ -265,3 +265,7 @@ Examples:
 - Importing without `.js` extension
 - Using CommonJS syntax (`require`/`module.exports`)
 - Blocking the event loop with synchronous operations
+
+## Custom Best Practices
+
+- Run database migrations in CI/CD pipeline **before** starting the new server to avoid race conditions where requests hit new code against an old schema.

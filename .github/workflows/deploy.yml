@@ -160,28 +160,33 @@ jobs:
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
 
-          # Deploy with Docker
+          # Build new server image
           docker compose -f docker-compose.prod.yml build --no-cache server
-          docker compose -f docker-compose.prod.yml up -d
 
-          # Wait for services to be healthy
-          echo "⏳ Waiting for services..."
-          sleep 5
+          # Ensure postgres and redis are running (needed for migrations)
+          docker compose -f docker-compose.prod.yml up -d postgres redis
 
-          # Wait for postgres specifically
+          # Wait for postgres to accept connections
           echo "⏳ Waiting for postgres to accept connections..."
           for i in $(seq 1 15); do
             if docker compose -f docker-compose.prod.yml exec -T postgres pg_isready -U regionify -d regionify > /dev/null 2>&1; then
               echo "✅ Postgres is ready"
               break
             fi
+            if [ "$i" -eq 15 ]; then
+              echo "❌ Postgres failed to become ready"
+              exit 1
+            fi
             echo "  Attempt $i/15..."
             sleep 2
           done
 
-          # Run database migrations
+          # Run database migrations BEFORE starting the server
           echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml exec -T server pnpm exec prisma migrate deploy
+          docker compose -f docker-compose.prod.yml run --rm -T --no-deps server pnpm exec prisma migrate deploy
+
+          # Now start the server with the migrated database
+          docker compose -f docker-compose.prod.yml up -d server
 
           # Cleanup
           docker image prune -f
