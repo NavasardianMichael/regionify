@@ -17,6 +17,7 @@ const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const SignUpPage = lazy(() => import('@/pages/SignUpPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
+const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmailPage'));
 const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'));
 const BillingPage = lazy(() => import('@/pages/BillingPage'));
 const PaymentReturnPage = lazy(() => import('@/pages/PaymentReturnPage'));
@@ -42,6 +43,7 @@ function AppContent() {
               <Route path={ROUTES.LOGIN} element={<LoginPage />} />
               <Route path={ROUTES.SIGN_UP} element={<SignUpPage />} />
               <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+              <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
               <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
               <Route path={ROUTES.BILLING} element={<BillingPage />} />
               <Route path={ROUTES.PAYMENTS_RETURN} element={<PaymentReturnPage />} />

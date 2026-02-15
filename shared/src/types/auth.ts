@@ -25,6 +25,10 @@ export type AuthResponse = {
   message: string;
 };
 
+export type RegisterResponse = {
+  message: string;
+};
+
 import type { Plan } from './plan.js';
 
 export type UserPublic = {

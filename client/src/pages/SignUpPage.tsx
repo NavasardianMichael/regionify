@@ -1,11 +1,9 @@
 import { type FC, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { App, Button, Card, Divider, Flex, Form, Input, Typography } from 'antd';
+import { Button, Card, Divider, Flex, Form, Input, Typography } from 'antd';
 import { register } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
-import { selectSetUser } from '@/store/profile/selectors';
-import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 
 type SignUpFormValues = {
@@ -19,22 +17,18 @@ const SignUpPage: FC = () => {
   const [form] = Form.useForm<SignUpFormValues>();
   const [loading, setLoading] = useState(false);
   const [signUpError, setSignUpError] = useState<string | null>(null);
-  const { message } = App.useApp();
-  const navigate = useNavigate();
-  const setUser = useProfileStore(selectSetUser);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (values: SignUpFormValues) => {
     setLoading(true);
     setSignUpError(null);
     try {
-      const response = await register({
+      await register({
         name: values.name,
         email: values.email,
         password: values.password,
       });
-      setUser(response.user);
-      message.success('Account created successfully!');
-      navigate(ROUTES.HOME);
+      setSubmitted(true);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create account';
       setSignUpError(errorMessage);
@@ -42,6 +36,45 @@ const SignUpPage: FC = () => {
       setLoading(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <Card className="mx-auto! w-full max-w-144! shadow-sm">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+            <svg
+              className="h-8 w-8 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <Typography.Title level={2} className="text-primary text-xl font-bold">
+            Verify Your Email
+          </Typography.Title>
+          <Typography.Paragraph className="mt-2 text-gray-500">
+            We&apos;ve sent a verification link to your email address. Please check your inbox and
+            click the link to complete your registration.
+          </Typography.Paragraph>
+          <Typography.Paragraph className="text-sm text-gray-400">
+            Once verified, you&apos;ll be able to log in with your credentials.
+          </Typography.Paragraph>
+          <Link to={ROUTES.LOGIN}>
+            <Button type="primary" className="mt-4">
+              Go to Login
+            </Button>
+          </Link>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mx-auto! w-full max-w-144! shadow-sm">

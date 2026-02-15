@@ -6,6 +6,7 @@ export const AUTH_ENDPOINTS = {
   logout: `${BASE_URL}/auth/logout`,
   forgotPassword: `${BASE_URL}/auth/forgot-password`,
   resetPassword: `${BASE_URL}/auth/reset-password`,
+  verifyEmail: `${BASE_URL}/auth/verify-email`,
   deleteAccount: `${BASE_URL}/auth/account`,
   google: `${BASE_URL}/auth/google`,
 } as const;

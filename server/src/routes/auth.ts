@@ -3,6 +3,7 @@ import {
   loginSchema,
   registerSchema,
   resetPasswordSchema,
+  verifyEmailSchema,
 } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 import passport from 'passport';
@@ -19,9 +20,6 @@ const router: ExpressRouter = Router();
 router.post('/register', authLimiter, validate(registerSchema), async (req, res, next) => {
   try {
     const result = await authService.register(req.body);
-
-    // Set session
-    req.session.userId = result.user.id;
 
     res.status(201).json({
       success: true,
@@ -183,6 +181,20 @@ router.post(
     }
   },
 );
+
+// POST /api/auth/verify-email
+router.post('/verify-email', authLimiter, validate(verifyEmailSchema), async (req, res, next) => {
+  try {
+    const result = await authService.verifyEmail(req.body);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 // DELETE /api/auth/account
 router.delete('/account', requireAuth, async (req, res, next) => {

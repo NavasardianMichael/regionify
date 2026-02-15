@@ -147,7 +147,7 @@ function emailButton(text: string, url: string): string {
       </v:roundrect>
       <![endif]-->
       <!--[if !mso]><!-->
-      <a href="${url}" target="_blank" style="display: inline-block; padding: 14px 32px; font-size: 16px; font-weight: 600; color: ${COLORS.white}; text-decoration: none; border-radius: 6px; background-color: ${COLORS.primary};">${text}</a>
+      <a href="${url}" target="_blank" style="display: inline-block; padding: 10px 40px; font-size: 16px; font-weight: 600; color: ${COLORS.white}; text-decoration: none; border-radius: 6px; background-color: ${COLORS.primary};">${text}</a>
       <!--<![endif]-->
     </td>
   </tr>
@@ -211,7 +211,7 @@ The ${APP_NAME} Team
       `
         ${emailHeading(`Welcome, ${name}!`)}
         ${emailParagraph(`Thank you for creating an account. We're excited to have you on board.`)}
-        ${emailParagraph(`With <strong>${APP_NAME}</strong>, you can create stunning data visualizations for regions around the world.`)}
+        ${emailParagraph(`With <strong>${APP_NAME}</strong>, you can create stunning data visualizations for countries and regions around the world.`)}
         ${emailButton('Get Started', env.CLIENT_URL)}
         ${emailMuted(`If you have any questions, feel free to reach out to our support team.`)}
       `,

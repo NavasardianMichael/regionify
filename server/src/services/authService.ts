@@ -8,13 +8,16 @@ import {
   type LoginInput,
   PLANS,
   type RegisterInput,
+  type RegisterResponse,
   type ResetPasswordInput,
   type UserPublic,
+  type VerifyEmailInput,
 } from '@regionify/shared';
 
 import { hashPassword, verifyPassword, needsRehash } from '../lib/password.js';
 import { logger } from '../lib/logger.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { emailVerificationRepository } from '../repositories/emailVerificationRepository.js';
 import { passwordResetRepository } from '../repositories/passwordResetRepository.js';
 import { userRepository } from '../repositories/userRepository.js';
 import { emailService } from './emailService.js';
@@ -34,7 +37,7 @@ function toPublicUser(user: User): UserPublic {
 }
 
 export const authService = {
-  async register(input: RegisterInput): Promise<AuthResponse> {
+  async register(input: RegisterInput): Promise<RegisterResponse> {
     // Check if email already exists
     const exists = await userRepository.existsByEmail(input.email);
     if (exists) {
@@ -45,7 +48,7 @@ export const authService = {
       );
     }
 
-    // Hash password and create user
+    // Hash password and create user (unverified)
     const passwordHash = await hashPassword(input.password);
     const user = await userRepository.create({
       email: input.email,
@@ -54,14 +57,15 @@ export const authService = {
       provider: 'local',
     });
 
-    // Send welcome email (don't block on failure)
-    emailService.sendWelcome(user.email, user.name).catch((error) => {
-      logger.error({ error, userId: user.id }, 'Failed to send welcome email');
+    // Create verification token and send verification email
+    const verificationToken = await emailVerificationRepository.create(user.id);
+
+    emailService.sendVerifyEmail(user.email, user.name, verificationToken.token).catch((error) => {
+      logger.error({ error, userId: user.id }, 'Failed to send verification email');
     });
 
     return {
-      user: toPublicUser(user),
-      message: 'Registration successful',
+      message: 'Registration successful. Please check your email to verify your account.',
     };
   },
 
@@ -73,6 +77,15 @@ export const authService = {
         HttpStatus.UNAUTHORIZED,
         ErrorCode.INVALID_CREDENTIALS,
         'Invalid email or password',
+      );
+    }
+
+    // Block login for unverified local accounts
+    if (user.provider === 'local' && !user.emailVerified) {
+      throw new AppError(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.EMAIL_NOT_VERIFIED,
+        'Please verify your email address before logging in. Check your inbox for the verification link.',
       );
     }
 
@@ -235,5 +248,33 @@ export const authService = {
       });
 
     return { message: 'Password reset successfully' };
+  },
+
+  /**
+   * Verify email using token
+   */
+  async verifyEmail(input: VerifyEmailInput): Promise<{ message: string }> {
+    const tokenRecord = await emailVerificationRepository.findValidToken(input.token);
+
+    if (!tokenRecord) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.INVALID_TOKEN,
+        'Invalid or expired verification link. Please register again.',
+      );
+    }
+
+    // Mark user as verified
+    await userRepository.update(tokenRecord.userId, { emailVerified: true });
+
+    // Mark token as used
+    await emailVerificationRepository.markAsUsed(tokenRecord.id);
+
+    // Send welcome email now that user is verified
+    emailService.sendWelcome(tokenRecord.user.email, tokenRecord.user.name).catch((error) => {
+      logger.error({ error, userId: tokenRecord.userId }, 'Failed to send welcome email');
+    });
+
+    return { message: 'Email verified successfully. You can now log in.' };
   },
 };

@@ -4,8 +4,10 @@ import type {
   AuthErrorResponse,
   ForgotPasswordPayload,
   LoginPayload,
+  RegisterApiResponse,
   RegisterPayload,
   ResetPasswordPayload,
+  VerifyEmailPayload,
 } from './types';
 
 /**
@@ -46,7 +48,7 @@ export const login = async (payload: LoginPayload): Promise<AuthApiResponse> => 
 /**
  * Register a new user
  */
-export const register = async (payload: RegisterPayload): Promise<AuthApiResponse> => {
+export const register = async (payload: RegisterPayload): Promise<RegisterApiResponse> => {
   const response = await fetch(AUTH_ENDPOINTS.register, {
     method: 'POST',
     headers: {
@@ -62,7 +64,7 @@ export const register = async (payload: RegisterPayload): Promise<AuthApiRespons
     throw new Error(getErrorMessage(data, 'Failed to register'));
   }
 
-  return data;
+  return data.data as RegisterApiResponse;
 };
 
 /**
@@ -127,5 +129,23 @@ export const resetPassword = async (payload: ResetPasswordPayload): Promise<void
   if (!response.ok) {
     const data = await response.json();
     throw new Error(getErrorMessage(data, 'Failed to reset password'));
+  }
+};
+
+/**
+ * Verify email with token
+ */
+export const verifyEmail = async (payload: VerifyEmailPayload): Promise<void> => {
+  const response = await fetch(AUTH_ENDPOINTS.verifyEmail, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(getErrorMessage(data, 'Failed to verify email'));
   }
 };

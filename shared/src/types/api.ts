@@ -28,6 +28,9 @@ export const ErrorCode = {
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   INVALID_INPUT: 'INVALID_INPUT',
 
+  // Email verification
+  EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
+
   // General errors
   NOT_FOUND: 'NOT_FOUND',
   FORBIDDEN: 'FORBIDDEN',

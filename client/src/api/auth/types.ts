@@ -1,4 +1,4 @@
-import type { AuthResponse, UserPublic } from '@regionify/shared';
+import type { AuthResponse, RegisterResponse, UserPublic } from '@regionify/shared';
 
 export type LoginPayload = {
   email: string;
@@ -21,6 +21,12 @@ export type ResetPasswordPayload = {
 };
 
 export type AuthApiResponse = AuthResponse;
+
+export type RegisterApiResponse = RegisterResponse;
+
+export type VerifyEmailPayload = {
+  token: string;
+};
 
 export type AuthErrorResponse = {
   success: false;

@@ -11,6 +11,7 @@ export const ROUTES = {
   SIGN_UP: '/sign-up',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
+  VERIFY_EMAIL: '/verify-email',
   AUTH_CALLBACK: '/auth/callback',
 
   // Payment return/cancel (PayPal redirect)
