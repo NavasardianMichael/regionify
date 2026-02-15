@@ -1,10 +1,23 @@
+import { createRequire } from 'module';
 import pino from 'pino';
 
 import { env, isDev } from '../config/env.js';
 
+function canUsePrettyTransport(): boolean {
+  if (!isDev) return false;
+
+  try {
+    const require = createRequire(import.meta.url);
+    require.resolve('pino-pretty');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export const logger = pino({
   level: env.LOG_LEVEL,
-  ...(isDev && {
+  ...(canUsePrettyTransport() && {
     transport: {
       target: 'pino-pretty',
       options: {
