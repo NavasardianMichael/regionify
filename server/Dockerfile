@@ -35,6 +35,8 @@ RUN pnpm --filter @regionify/shared build && pnpm --filter @regionify/server bui
 # -----------------------------------------------------------------------------
 FROM node:22-alpine AS runtime
 
+ENV NODE_ENV=production
+
 RUN apk add --no-cache libc6-compat && \
     corepack enable && corepack prepare pnpm@latest --activate
 
