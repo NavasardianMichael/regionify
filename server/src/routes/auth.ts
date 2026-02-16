@@ -182,6 +182,21 @@ router.post(
   },
 );
 
+// POST /api/auth/resend-verification-email
+router.post('/resend-verification-email', authLimiter, async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email || typeof email !== 'string') {
+      res.status(400).json({ success: false, error: 'Email is required' });
+      return;
+    }
+    const result = await authService.resendVerification(email);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // POST /api/auth/verify-email
 router.post('/verify-email', authLimiter, validate(verifyEmailSchema), async (req, res, next) => {
   try {

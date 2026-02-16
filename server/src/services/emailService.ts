@@ -401,7 +401,7 @@ export const emailService = {
    */
   async sendPasswordReset(to: string, name: string, resetToken: string): Promise<void> {
     const resetUrl = `${env.CLIENT_URL}/reset-password?token=${resetToken}`;
-    const expiresInMinutes = 60; // 1 hour
+    const expiresInMinutes = 30; // 30 minutes - improved security per OWASP recommendations
     const { subject, text, html } = emailTemplates.passwordReset(name, resetUrl, expiresInMinutes);
     await this.send({ to, subject, text, html });
   },

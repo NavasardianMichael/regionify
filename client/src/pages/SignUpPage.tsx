@@ -5,6 +5,7 @@ import { Button, Card, Divider, Flex, Form, Input, Typography } from 'antd';
 import { register } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
 import { ROUTES } from '@/constants/routes';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type SignUpFormValues = {
   name: string;
@@ -215,9 +216,14 @@ const SignUpPage: FC = () => {
         </Flex>
 
         {signUpError && (
-          <div className="mt-4 mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">
+          <Flex justify='space-between' align='center' className="mt-4! p-2! rounded-md bg-red-50 text-sm text-red-600">
             {signUpError}
-          </div>
+            {signUpError.toLowerCase().includes('account with this email already exists') && (
+              <AppNavLink to={ROUTES.FORGOT_PASSWORD} className="text-sm font-semibold">
+                Forgot password?
+              </AppNavLink>
+            )}
+          </Flex>
         )}
 
         <Flex gap={8} className="mt-8!" vertical>

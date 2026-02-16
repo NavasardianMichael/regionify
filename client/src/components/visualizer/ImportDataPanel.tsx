@@ -287,6 +287,7 @@ export const ImportDataPanel: FC = () => {
         setSvgTitles([]);
         setVisualizerState({ data: { allIds: [], byId: {} } });
         clearTimelineData();
+        setIsHistoricalData(false);
         return;
       }
 
@@ -746,7 +747,11 @@ Moscow,2500`}
       {importActionComponents[importDataType]}
 
       {limits.historicalDataImport && (
-        <Checkbox checked={isHistoricalData} onChange={handleHistoricalDataStatus}>
+        <Checkbox
+          checked={isHistoricalData}
+          onChange={handleHistoricalDataStatus}
+          disabled={!selectedRegionId}
+        >
           <Typography.Text className="text-sm text-gray-600">
             Historical data (includes time dimension)
           </Typography.Text>

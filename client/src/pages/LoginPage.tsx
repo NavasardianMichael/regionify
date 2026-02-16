@@ -2,12 +2,23 @@ import { type FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Divider, Form, Input, Typography } from 'antd';
-import { login } from '@/api/auth';
+import { login, resendVerificationEmail } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
+import { AppNavLink } from '@/components/ui/AppNavLink';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
+import { ROUTES } from '@/constants/routes';
+import {
+  clearReturnUrl,
+  clearTemporaryProjectState,
+  getReturnUrl,
+  getTemporaryProjectState,
+} from '@/helpers/temporaryProjectState';
+import { useLegendDataStore } from '@/store/legendData/store';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { useVisualizerStore } from '@/store/mapData/store';
+import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { ROUTES } from '@/constants/routes';
-import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type LoginFormValues = {
   email: string;
@@ -18,6 +29,7 @@ const LoginPage: FC = () => {
   const [form] = Form.useForm<LoginFormValues>();
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
   const { message } = App.useApp();
   const navigate = useNavigate();
   const setUser = useProfileStore(selectSetUser);
@@ -28,13 +40,75 @@ const LoginPage: FC = () => {
     try {
       const response = await login(values);
       setUser(response.user);
+
+      // Restore temporary project state if it exists
+      const tempState = getTemporaryProjectState();
+      if (tempState) {
+        const { setVisualizerState } = useVisualizerStore.getState();
+        const { setMapStylesState } = useMapStylesStore.getState();
+        const { setLegendStylesState } = useLegendStylesStore.getState();
+        const { setItems } = useLegendDataStore.getState();
+
+        // Restore visualizer state
+        setVisualizerState({
+          selectedRegionId: tempState.selectedRegionId,
+          importDataType: tempState.dataset?.importDataType ?? IMPORT_DATA_TYPES.csv,
+          data: tempState.dataset
+            ? {
+                allIds: tempState.dataset.allIds,
+                byId: tempState.dataset.byId as Record<string, { id: string; label: string; value: number }>,
+              }
+            : { allIds: [], byId: {} },
+        });
+
+        // Restore map styles
+        setMapStylesState(tempState.mapStyles);
+
+        // Restore legend styles
+        setLegendStylesState(tempState.legendStyles);
+
+        // Restore legend data
+        if (tempState.legendData?.items) {
+          setItems(tempState.legendData.items);
+        }
+
+        clearTemporaryProjectState();
+      }
+
       message.success('Logged in successfully!');
-      navigate(ROUTES.HOME);
+
+      // Redirect to return URL or home
+      const returnUrl = getReturnUrl();
+      if (returnUrl) {
+        clearReturnUrl();
+        navigate(returnUrl, { replace: true });
+      } else {
+        navigate(ROUTES.HOME);
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login';
       setLoginError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const isUnverifiedError = loginError?.includes('verify your email');
+
+  const handleResendVerification = async () => {
+    const email = form.getFieldValue('email');
+    if (!email) {
+      message.error('Please enter your email address.');
+      return;
+    }
+    setResendLoading(true);
+    try {
+      const result = await resendVerificationEmail(email);
+      message.success(result.message);
+    } catch {
+      message.error('Failed to resend verification email.');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -106,7 +180,22 @@ const LoginPage: FC = () => {
         </Form.Item>
 
         {loginError && (
-          <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">{loginError}</div>
+          <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">
+            {loginError}
+            {isUnverifiedError && (
+              <div className="mt-2">
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={handleResendVerification}
+                  loading={resendLoading}
+                  className="p-0! h-auto!"
+                >
+                  Resend verification email
+                </Button>
+              </div>
+            )}
+          </div>
         )}
 
         <div className="mb-4 text-right">

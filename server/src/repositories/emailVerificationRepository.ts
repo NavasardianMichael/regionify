@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 import { prisma } from '../db/index.js';
 
-const TOKEN_EXPIRY_HOURS = 24; // 24 hours
+const TOKEN_EXPIRY_HOURS = 48; // 48 hours - improved UX for initial signup
 
 export const emailVerificationRepository = {
   /**

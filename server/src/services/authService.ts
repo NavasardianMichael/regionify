@@ -37,6 +37,19 @@ function toPublicUser(user: User): UserPublic {
 }
 
 export const authService = {
+  async resendVerification(email: string): Promise<{ message: string }> {
+    const user = await userRepository.findByEmail(email);
+    if (!user) {
+      return { message: 'If an account exists with this email, a verification email has been sent.' };
+    }
+    if (user.emailVerified) {
+      return { message: 'Email is already verified.' };
+    }
+    const verificationToken = await emailVerificationRepository.create(user.id);
+    await emailService.sendVerifyEmail(user.email, user.name, verificationToken.token);
+    return { message: 'Verification email sent. Please check your inbox.' };
+  },
+
   async register(input: RegisterInput): Promise<RegisterResponse> {
     // Check if email already exists
     const exists = await userRepository.existsByEmail(input.email);

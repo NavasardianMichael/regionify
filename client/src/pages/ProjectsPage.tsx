@@ -5,7 +5,7 @@ import { Button, Empty, Flex, Input, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { useProjects } from '@/hooks/useProjects';
-import { ROUTES } from '@/constants/routes';
+import { ROUTES, getProjectRoute } from '@/constants/routes';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
@@ -31,7 +31,7 @@ const ProjectsPage: FC = () => {
   const handleOpen = useCallback(
     (project: Project) => {
       loadProject(project);
-      navigate(ROUTES.PROJECT_EDITOR);
+      navigate(getProjectRoute(project.id));
     },
     [loadProject, navigate],
   );
@@ -44,7 +44,7 @@ const ProjectsPage: FC = () => {
   );
 
   const handleNewProject = useCallback(() => {
-    navigate(ROUTES.PROJECT_EDITOR);
+    navigate(ROUTES.PROJECT_NEW);
   }, [navigate]);
 
   return (

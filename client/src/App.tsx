@@ -23,6 +23,7 @@ const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'));
 const BillingPage = lazy(() => import('@/pages/BillingPage'));
 const PaymentReturnPage = lazy(() => import('@/pages/PaymentReturnPage'));
 const PaymentCancelPage = lazy(() => import('@/pages/PaymentCancelPage'));
+const AccountDeletedPage = lazy(() => import('@/pages/AccountDeletedPage'));
 
 function AppContent() {
   useAuthRevalidation();
@@ -38,6 +39,8 @@ function AppContent() {
             <Routes>
               <Route path={ROUTES.HOME} element={<HomePage />} />
               <Route path={ROUTES.PROJECT_EDITOR} element={<VisualizerPage />} />
+              <Route path={ROUTES.PROJECT_NEW} element={<VisualizerPage />} />
+              <Route path="/projects/:projectId" element={<VisualizerPage />} />
               <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
               <Route path={ROUTES.CONTACT} element={<ContactPage />} />
               <Route path={ROUTES.ABOUT} element={<AboutPage />} />
@@ -47,6 +50,7 @@ function AppContent() {
               <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
               <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
               <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
+              <Route path={ROUTES.ACCOUNT_DELETED} element={<AccountDeletedPage />} />
               <Route path={ROUTES.BILLING} element={<BillingPage />} />
               <Route path={ROUTES.PAYMENTS_RETURN} element={<PaymentReturnPage />} />
               <Route path={ROUTES.PAYMENTS_CANCEL} element={<PaymentCancelPage />} />

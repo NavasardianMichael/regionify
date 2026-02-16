@@ -81,6 +81,11 @@ export const logout = async (): Promise<void> => {
   }
 };
 
+type DeleteAccountResponse = {
+  success: boolean;
+  data: { message: string };
+};
+
 /**
  * Delete the current user's account
  */
@@ -90,8 +95,9 @@ export const deleteAccount = async (): Promise<void> => {
     credentials: 'include',
   });
 
-  if (!response.ok) {
-    const data = await response.json();
+  const data = (await response.json()) as DeleteAccountResponse;
+
+  if (!response.ok || !data.success) {
     throw new Error(getErrorMessage(data, 'Failed to delete account'));
   }
 };
@@ -148,4 +154,19 @@ export const verifyEmail = async (payload: VerifyEmailPayload): Promise<void> =>
     const data = await response.json();
     throw new Error(getErrorMessage(data, 'Failed to verify email'));
   }
+};
+
+export const resendVerificationEmail = async (email: string): Promise<{ message: string }> => {
+  const response = await fetch(AUTH_ENDPOINTS.resendVerificationEmail, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(getErrorMessage(data, 'Failed to resend verification email'));
+  }
+  return data;
 };

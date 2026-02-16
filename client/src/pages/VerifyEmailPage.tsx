@@ -97,11 +97,19 @@ const VerifyEmailPage: FC = () => {
             Verification Failed
           </Typography.Title>
           <Typography.Paragraph className="mt-2 text-gray-500">{errorMessage}</Typography.Paragraph>
-          <Link to={ROUTES.SIGN_UP}>
-            <Button type="primary" className="mt-4">
-              Back to Sign Up
-            </Button>
-          </Link>
+          <Typography.Paragraph className="mt-4 text-sm text-gray-600">
+            You can resend a verification email from the login page.
+          </Typography.Paragraph>
+          <div className="mt-4 flex flex-col gap-2">
+            <Link to={ROUTES.LOGIN}>
+              <Button type="primary" block>
+                Go to Login
+              </Button>
+            </Link>
+            <Link to={ROUTES.SIGN_UP}>
+              <Button block>Back to Sign Up</Button>
+            </Link>
+          </div>
         </div>
       </Card>
     );

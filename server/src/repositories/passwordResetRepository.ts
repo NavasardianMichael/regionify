@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 import { prisma } from '../db/index.js';
 
-const TOKEN_EXPIRY_HOURS = 1; // 1 hour
+const TOKEN_EXPIRY_MINUTES = 30; // 30 minutes - improved security per OWASP recommendations
 
 export const passwordResetRepository = {
   /**
@@ -19,7 +19,7 @@ export const passwordResetRepository = {
    */
   async create(userId: string): Promise<PasswordResetToken> {
     const token = this.generateToken();
-    const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_HOURS * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + TOKEN_EXPIRY_MINUTES * 60 * 1000);
 
     // Delete any existing unused tokens for this user
     await prisma.passwordResetToken.deleteMany({

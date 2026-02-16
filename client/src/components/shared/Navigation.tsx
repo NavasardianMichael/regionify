@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CreditCardOutlined,
   DeleteOutlined,
-  ExclamationCircleFilled,
   FolderOutlined,
   HomeOutlined,
   LoginOutlined,
@@ -12,7 +11,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
-import { App, Avatar, Dropdown, Flex } from 'antd';
+import { App, Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { deleteAccount, logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
@@ -56,50 +55,69 @@ export const Navigation: FC = () => {
   };
 
   const handleDeleteAccount = () => {
-    modal.confirm({
+    const modalInstance = modal.confirm({
       title: 'Delete Account',
-      icon: <ExclamationCircleFilled />,
+      icon: null,
       content:
         'Are you sure you want to delete your account? All your data, including projects, will be permanently removed. This action cannot be undone.',
       okText: 'Delete Account',
-      okType: 'danger',
+      okButtonProps: { type: 'primary', danger: true },
       cancelText: 'Cancel',
+      closable: true,
+      maskClosable: false,
       onOk: async () => {
+        // Disable buttons and prevent closing during request
+        modalInstance.update({
+          okButtonProps: { disabled: true, loading: true },
+          cancelButtonProps: { disabled: true },
+          closable: false,
+          maskClosable: false,
+        });
+
         try {
           await deleteAccount();
+          // Verify success before proceeding - destroy modal and navigate
+          modalInstance.destroy();
           logout();
-          navigate(ROUTES.HOME);
-          message.success('Account deleted successfully');
+          navigate(ROUTES.ACCOUNT_DELETED);
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
           message.error(errorMessage);
+          // Re-enable buttons on error
+          modalInstance.update({
+            okButtonProps: { disabled: false, loading: false, type: 'primary', danger: true },
+            cancelButtonProps: { disabled: false },
+            closable: true,
+            maskClosable: false,
+          });
         }
       },
     });
   };
 
-  const userMenuItems = [
-    {
-      key: 'logout',
-      label: 'Logout',
-      icon: <LogoutOutlined />,
-      onClick: handleLogout,
-    },
-    { type: 'divider' as const },
-    {
-      key: 'delete-account',
-      label: 'Delete Account',
-      icon: <DeleteOutlined />,
-      danger: true,
-      onClick: handleDeleteAccount,
-    },
-  ];
+  const userMenuItems: DropdownProps['menu'] = {
+    items: [
+      {
+        key: 'logout',
+        label: 'Logout',
+        icon: <LogoutOutlined />,
+        onClick: handleLogout,
+      },
+      { type: 'divider' as const },
+      {
+        key: 'delete-account',
+        label: 'Delete Account',
+        icon: <DeleteOutlined />,
+        danger: true,
+        onClick: handleDeleteAccount,
+      },
+    ]
+  }
 
   const getNavLinkClassName = (path: string) => {
     const isActive = location.pathname === path;
-    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-      isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
-    }`;
+    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
+      }`;
   };
 
   return (
@@ -137,7 +155,7 @@ export const Navigation: FC = () => {
           </Flex>
           <div className="h-6 w-px bg-gray-200" />
           {isLoggedIn ? (
-            <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="bottomRight">
+            <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
               <button className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100">
                 <Avatar
                   src={user?.avatarUrl}

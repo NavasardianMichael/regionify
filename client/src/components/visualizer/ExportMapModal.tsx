@@ -245,10 +245,11 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           {allowedFormats.length === 1 && (
             <Typography.Text type="secondary" className="text-xs">
               Free plan: PNG only.{' '}
+              <br />
               <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
                 Upgrade
               </AppNavLink>{' '}
-              for SVG, JPEG, GIF and Video.
+              for SVG, JPEG, GIF and MP4.
             </Typography.Text>
           )}
         </Flex>
@@ -271,16 +272,14 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
                 value={quality}
                 onChange={handleQualityChange}
                 className="w-20"
-                disabled={plan === PLANS.observer}
               />
             </Flex>
             <Slider
               min={1}
               max={100}
               value={quality}
-              onChange={(v: number) => setQuality(Math.min(v, maxQuality))}
+              onChange={handleQualityChange}
               aria-label="Export quality"
-              disabled={plan === PLANS.observer}
             />
             {limits.pictureQualityLimit && (
               <Typography.Text type="secondary" className="text-xs">
