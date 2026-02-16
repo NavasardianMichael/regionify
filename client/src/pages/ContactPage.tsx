@@ -1,7 +1,8 @@
 import { type FC, useState } from 'react';
-import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
+import { App, Button, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processContactFormData } from '@/api/contact/processors';
+import { Card } from '@/components/ui/Card';
 
 type ContactFormValues = {
   firstName: string;

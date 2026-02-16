@@ -1,13 +1,13 @@
 import { type FC, lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
-import { App, Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
 import { PLANS } from '@regionify/shared';
+import { App, Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
 import { createProject, updateProject } from '@/api/projects';
-import { selectHasTimelineData, selectSelectedRegionId } from '@/store/mapData/selectors';
-import { useVisualizerStore } from '@/store/mapData/store';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { selectHasTimelineData, selectSelectedRegionId } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
@@ -25,11 +25,12 @@ import {
   useHasUnsavedChanges,
 } from '@/hooks/useProjectState';
 import { REGION_OPTIONS } from '@/constants/regions';
-import { ROUTES, getProjectRoute } from '@/constants/routes';
+import { getProjectRoute, ROUTES } from '@/constants/routes';
 import {
-  saveTemporaryProjectState,
+  buildPartialTemporaryState,
+  type FullTemporaryProjectState,
   saveReturnUrl,
-  type TemporaryProjectState,
+  saveTemporaryProjectState,
 } from '@/helpers/temporaryProjectState';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
@@ -80,46 +81,40 @@ const VisualizerPage: FC = () => {
 
   const handleOpenExportModal = useCallback(() => {
     if (!isLoggedIn) {
-      // Save current state and return URL before redirecting
       const visualizerState = useVisualizerStore.getState();
       const mapStylesState = useMapStylesStore.getState();
       const legendStylesState = useLegendStylesStore.getState();
       const legendDataState = useLegendDataStore.getState();
 
-      const currentState: TemporaryProjectState = {
-        selectedRegionId,
-        dataset: {
-          allIds: visualizerState.data.allIds,
-          byId: visualizerState.data.byId as Record<string, unknown>,
-          importDataType: visualizerState.importDataType,
-        },
-        mapStyles: {
-          border: mapStylesState.border,
-          shadow: mapStylesState.shadow,
-          zoomControls: mapStylesState.zoomControls,
-          picture: mapStylesState.picture,
-          regionLabels: mapStylesState.regionLabels,
-        },
-        legendStyles: {
-          labels: legendStylesState.labels,
-          title: legendStylesState.title,
-          position: legendStylesState.position,
-          floatingPosition: legendStylesState.floatingPosition,
-          floatingSize: legendStylesState.floatingSize,
-          backgroundColor: legendStylesState.backgroundColor,
-          noDataColor: legendStylesState.noDataColor,
-        },
-        legendData: {
-          items: legendDataState.items.allIds.map((id) => legendDataState.items.byId[id]),
-        },
+      const fullCurrent: FullTemporaryProjectState = {
+        selectedRegionId: visualizerState.selectedRegionId ?? null,
+        importDataType: visualizerState.importDataType,
+        data: visualizerState.data,
+        timelineData: visualizerState.timelineData,
+        timePeriods: visualizerState.timePeriods,
+        activeTimePeriod: visualizerState.activeTimePeriod,
+        border: mapStylesState.border,
+        shadow: mapStylesState.shadow,
+        zoomControls: mapStylesState.zoomControls,
+        picture: mapStylesState.picture,
+        regionLabels: mapStylesState.regionLabels,
+        labels: legendStylesState.labels,
+        title: legendStylesState.title,
+        position: legendStylesState.position,
+        floatingPosition: legendStylesState.floatingPosition,
+        floatingSize: legendStylesState.floatingSize,
+        backgroundColor: legendStylesState.backgroundColor,
+        noDataColor: legendStylesState.noDataColor,
+        items: legendDataState.items,
       };
-      saveTemporaryProjectState(currentState);
+      const partial = buildPartialTemporaryState(fullCurrent);
+      saveTemporaryProjectState(partial);
       saveReturnUrl(window.location.pathname);
       navigate(ROUTES.LOGIN);
       return;
     }
     setIsExportModalOpen(true);
-  }, [isLoggedIn, selectedRegionId, navigate]);
+  }, [isLoggedIn, navigate]);
 
   const handleCloseExportModal = useCallback(() => {
     setIsExportModalOpen(false);
@@ -133,34 +128,29 @@ const VisualizerPage: FC = () => {
       const legendStylesState = useLegendStylesStore.getState();
       const legendDataState = useLegendDataStore.getState();
 
-      const currentState: TemporaryProjectState = {
-        selectedRegionId,
-        dataset: {
-          allIds: visualizerState.data.allIds,
-          byId: visualizerState.data.byId as Record<string, unknown>,
-          importDataType: visualizerState.importDataType,
-        },
-        mapStyles: {
-          border: mapStylesState.border,
-          shadow: mapStylesState.shadow,
-          zoomControls: mapStylesState.zoomControls,
-          picture: mapStylesState.picture,
-          regionLabels: mapStylesState.regionLabels,
-        },
-        legendStyles: {
-          labels: legendStylesState.labels,
-          title: legendStylesState.title,
-          position: legendStylesState.position,
-          floatingPosition: legendStylesState.floatingPosition,
-          floatingSize: legendStylesState.floatingSize,
-          backgroundColor: legendStylesState.backgroundColor,
-          noDataColor: legendStylesState.noDataColor,
-        },
-        legendData: {
-          items: legendDataState.items.allIds.map((id) => legendDataState.items.byId[id]),
-        },
+      const fullCurrent: FullTemporaryProjectState = {
+        selectedRegionId: visualizerState.selectedRegionId ?? null,
+        importDataType: visualizerState.importDataType,
+        data: visualizerState.data,
+        timelineData: visualizerState.timelineData,
+        timePeriods: visualizerState.timePeriods,
+        activeTimePeriod: visualizerState.activeTimePeriod,
+        border: mapStylesState.border,
+        shadow: mapStylesState.shadow,
+        zoomControls: mapStylesState.zoomControls,
+        picture: mapStylesState.picture,
+        regionLabels: mapStylesState.regionLabels,
+        labels: legendStylesState.labels,
+        title: legendStylesState.title,
+        position: legendStylesState.position,
+        floatingPosition: legendStylesState.floatingPosition,
+        floatingSize: legendStylesState.floatingSize,
+        backgroundColor: legendStylesState.backgroundColor,
+        noDataColor: legendStylesState.noDataColor,
+        items: legendDataState.items,
       };
-      saveTemporaryProjectState(currentState);
+      const partial = buildPartialTemporaryState(fullCurrent);
+      saveTemporaryProjectState(partial);
       saveReturnUrl(window.location.pathname);
       navigate(ROUTES.LOGIN);
       return;

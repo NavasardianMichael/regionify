@@ -1,33 +1,163 @@
 /**
  * Helper functions for managing temporary project state in localStorage.
- * Used when user needs to login before saving/exporting.
+ * Only changed (partial) data is stored; on restore it is merged with default initial data.
  */
 
-import type { DataSet } from '@/store/mapData/types';
-import type { MapStylesState } from '@/store/mapStyles/types';
+import type { LegendDataState } from '@/store/legendData/types';
 import type { LegendStylesState } from '@/store/legendStyles/types';
-import type { LegendItem } from '@/store/legendData/types';
-import type { ImportDataType, RegionId } from '@/types/mapData';
+import type { VisualizerState } from '@/store/mapData/types';
+import type { MapStylesState } from '@/store/mapStyles/types';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
+import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 
 const TEMP_PROJECT_STATE_KEY = 'regionify-temp-project-state';
 const RETURN_URL_KEY = 'regionify-return-url';
 
-export type TemporaryProjectState = {
-  selectedRegionId: RegionId | null;
-  dataset: {
-    allIds: string[];
-    byId: Record<string, unknown>;
-    importDataType: ImportDataType;
-  } | null;
-  mapStyles: MapStylesState;
-  legendStyles: LegendStylesState;
-  legendData: {
-    items: LegendItem[];
-  };
+export type TemporaryProjectState = Partial<
+  Pick<
+    VisualizerState,
+    | 'selectedRegionId'
+    | 'importDataType'
+    | 'data'
+    | 'timelineData'
+    | 'timePeriods'
+    | 'activeTimePeriod'
+  > &
+    Pick<MapStylesState, 'border' | 'shadow' | 'zoomControls' | 'picture' | 'regionLabels'> &
+    Pick<
+      LegendStylesState,
+      | 'labels'
+      | 'title'
+      | 'position'
+      | 'floatingPosition'
+      | 'floatingSize'
+      | 'backgroundColor'
+      | 'noDataColor'
+    > &
+    Pick<LegendDataState, 'items'>
+>;
+
+/** Full default state used when merging partial stored state. */
+export type FullTemporaryProjectState = Required<TemporaryProjectState>;
+
+const EMPTY_DATA = {
+  allIds: [] as string[],
+  byId: {} as Record<string, { id: string; label: string; value: number }>,
 };
 
+function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
+  return {
+    selectedRegionId: null,
+    importDataType: IMPORT_DATA_TYPES.csv,
+    data: EMPTY_DATA,
+    timelineData: {},
+    timePeriods: [],
+    activeTimePeriod: null,
+    border: {
+      show: true,
+      color: '#FFFFFF',
+      width: 1,
+    },
+    shadow: {
+      show: false,
+      color: '#000000',
+      blur: 10,
+      offsetX: 0,
+      offsetY: 4,
+    },
+    zoomControls: {
+      show: true,
+      position: { x: 20, y: 20 },
+    },
+    picture: {
+      transparentBackground: true,
+      backgroundColor: '#F5F5F5',
+    },
+    regionLabels: {
+      show: true,
+      color: '#333333',
+      fontSize: 10,
+    },
+    labels: {
+      color: '#18294D',
+      fontSize: 12,
+    },
+    title: {
+      show: true,
+      text: 'INTENSITY RATIO',
+    },
+    position: LEGEND_POSITIONS.floating,
+    floatingPosition: { x: 20, y: 20 },
+    floatingSize: { width: 160, height: 'auto' },
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    noDataColor: '#E5E7EB',
+    items: { allIds: [], byId: {} },
+  };
+}
+
+function deepEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') return false;
+  const keysA = Object.keys(a) as (keyof typeof a)[];
+  const keysB = new Set(Object.keys(b));
+  if (keysA.length !== keysB.size) return false;
+  return keysA.every(
+    (key) =>
+      keysB.has(key as string) &&
+      deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]),
+  );
+}
+
 /**
- * Save temporary project state to localStorage
+ * Build partial state containing only keys that differ from default (for minimal localStorage).
+ */
+export function buildPartialTemporaryState(
+  current: FullTemporaryProjectState,
+): TemporaryProjectState {
+  const defaults = getDefaultTemporaryProjectState();
+  const partial: TemporaryProjectState = {};
+  const keys = Object.keys(defaults) as (keyof FullTemporaryProjectState)[];
+  for (const key of keys) {
+    if (!deepEqual(current[key], defaults[key])) {
+      (partial as Record<string, unknown>)[key] = current[key];
+    }
+  }
+  return partial;
+}
+
+/**
+ * Merge stored partial state with defaults. Call when restoring after login.
+ * Nested objects (e.g. border, data) are merged so partial overrides only provided fields.
+ */
+export function mergeTemporaryStateWithDefaults(
+  partial: TemporaryProjectState | null,
+): FullTemporaryProjectState {
+  const defaults = getDefaultTemporaryProjectState();
+  if (!partial || Object.keys(partial).length === 0) return defaults;
+  const merged = { ...defaults };
+  const keys = Object.keys(partial) as (keyof TemporaryProjectState)[];
+  for (const key of keys) {
+    const p = partial[key];
+    if (p === undefined) continue;
+    const d = defaults[key];
+    if (
+      p != null &&
+      d != null &&
+      typeof p === 'object' &&
+      typeof d === 'object' &&
+      !Array.isArray(p) &&
+      !Array.isArray(d)
+    ) {
+      (merged as Record<string, unknown>)[key] = { ...(d as object), ...(p as object) };
+    } else {
+      (merged as Record<string, unknown>)[key] = p;
+    }
+  }
+  return merged as FullTemporaryProjectState;
+}
+
+/**
+ * Save temporary project state to localStorage (only pass changed/partial data).
  */
 export function saveTemporaryProjectState(state: TemporaryProjectState): void {
   try {
@@ -38,7 +168,7 @@ export function saveTemporaryProjectState(state: TemporaryProjectState): void {
 }
 
 /**
- * Get temporary project state from localStorage
+ * Get temporary project state from localStorage (partial; merge with defaults when applying).
  */
 export function getTemporaryProjectState(): TemporaryProjectState | null {
   try {
