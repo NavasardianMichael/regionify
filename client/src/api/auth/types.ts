@@ -1,4 +1,4 @@
-import type { AuthResponse, RegisterResponse, UserPublic } from '@regionify/shared';
+import type { AuthResponse, Locale, RegisterResponse, UserPublic } from '@regionify/shared';
 
 export type LoginPayload = {
   email: string;
@@ -29,7 +29,8 @@ export type VerifyEmailPayload = {
 };
 
 export type UpdateProfilePayload = {
-  name: string;
+  name?: string;
+  locale?: Locale;
 };
 
 export type ChangePasswordPayload = {

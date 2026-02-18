@@ -8,9 +8,12 @@ import { useProjects } from '@/hooks/useProjects';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
 
 const ProjectsPage: FC = () => {
+  const { t } = useTypedTranslation();
   const navigate = useNavigate();
   const loadProject = useLoadProject();
   const {
@@ -52,18 +55,18 @@ const ProjectsPage: FC = () => {
       <Flex vertical className="mx-auto h-full w-full" gap="middle">
         <Flex align="center" justify="space-between">
           <Typography.Title level={2} className="text-primary mb-0! text-xl font-bold">
-            My Projects
+            {t('projects.title')}
           </Typography.Title>
           <Flex gap="small">
             <Input.Search
-              placeholder="Search projects..."
+              placeholder={t('projects.searchPlaceholder')}
               className="w-64"
               value={search}
               onChange={handleSearchChange}
               allowClear
             />
             <Button type="primary" icon={<PlusOutlined />} onClick={handleNewProject}>
-              New Project
+              {t('projects.newProject')}
             </Button>
           </Flex>
         </Flex>
@@ -76,14 +79,12 @@ const ProjectsPage: FC = () => {
           <Flex align="center" justify="center" className="flex-1">
             <Empty
               description={
-                projects.length === 0
-                  ? 'No projects yet. Create your first map visualization!'
-                  : 'No projects match your search'
+                projects.length === 0 ? t('projects.empty') : t('projects.emptyFiltered')
               }
             >
               {projects.length === 0 && (
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleNewProject}>
-                  Create Project
+                  {t('projects.newProject')}
                 </Button>
               )}
             </Empty>

@@ -4,6 +4,8 @@ import { sendContactMessage } from '@/api/contact';
 import { processContactFormData } from '@/api/contact/processors';
 import { Card } from '@/components/ui/Card';
 
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+
 type ContactFormValues = {
   firstName: string;
   lastName: string;
@@ -14,6 +16,7 @@ type ContactFormValues = {
 const ContactPage: FC = () => {
   const [form] = Form.useForm<ContactFormValues>();
   const [loading, setLoading] = useState(false);
+  const { t } = useTypedTranslation();
   const { message } = App.useApp();
 
   const handleSubmit = async (values: ContactFormValues) => {
@@ -21,10 +24,10 @@ const ContactPage: FC = () => {
     try {
       const payload = processContactFormData(values);
       await sendContactMessage(payload);
-      message.success('Message sent successfully! We will get in touch with you soon.');
+      message.success(t('contact.success'));
       form.resetFields();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+      const errorMessage = error instanceof Error ? error.message : t('contact.error');
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -35,10 +38,10 @@ const ContactPage: FC = () => {
     <Card className="mx-auto! w-full max-w-144 shadow-sm">
       <div className="mb-6 text-center">
         <Typography.Title level={1} className="text-primary mb-sm! text-2xl">
-          Contact Us
+          {t('contact.title')}
         </Typography.Title>
         <Typography.Paragraph className="mt-2 font-medium text-gray-500">
-          Have a question? We are here to help.
+          {t('contact.subtitle')}
         </Typography.Paragraph>
       </div>
 
@@ -46,29 +49,33 @@ const ContactPage: FC = () => {
         <Flex gap="middle">
           <Form.Item
             name="firstName"
-            label={<Typography.Text className="font-medium">First Name</Typography.Text>}
-            rules={[{ required: true, message: 'Please enter your first name' }]}
+            label={
+              <Typography.Text className="font-medium">{t('contact.firstName')}</Typography.Text>
+            }
+            rules={[{ required: true, message: t('contact.firstNameRequired') }]}
             className="flex-1"
           >
-            <Input placeholder="First name" />
+            <Input placeholder={t('contact.firstName')} />
           </Form.Item>
 
           <Form.Item
             name="lastName"
-            label={<Typography.Text className="font-medium">Last Name</Typography.Text>}
-            rules={[{ required: true, message: 'Please enter your last name' }]}
+            label={
+              <Typography.Text className="font-medium">{t('contact.lastName')}</Typography.Text>
+            }
+            rules={[{ required: true, message: t('contact.lastNameRequired') }]}
             className="flex-1"
           >
-            <Input placeholder="Last name" />
+            <Input placeholder={t('contact.lastName')} />
           </Form.Item>
         </Flex>
 
         <Form.Item
           name="email"
-          label={<Typography.Text className="font-medium">Email</Typography.Text>}
+          label={<Typography.Text className="font-medium">{t('contact.email')}</Typography.Text>}
           rules={[
-            { required: true, message: 'Please enter your email' },
-            { type: 'email', message: 'Please enter a valid email' },
+            { required: true, message: t('contact.emailRequired') },
+            { type: 'email', message: t('contact.emailRequired') },
           ]}
         >
           <Input placeholder="email@example.com" />
@@ -76,10 +83,10 @@ const ContactPage: FC = () => {
 
         <Form.Item
           name="message"
-          label={<Typography.Text className="font-medium">Message</Typography.Text>}
-          rules={[{ required: true, message: 'Please enter your message' }]}
+          label={<Typography.Text className="font-medium">{t('contact.message')}</Typography.Text>}
+          rules={[{ required: true, message: t('contact.messageRequired') }]}
         >
-          <Input.TextArea placeholder="How can we assist you?" rows={4} className="resize-none!" />
+          <Input.TextArea placeholder={t('contact.message')} rows={4} className="resize-none!" />
         </Form.Item>
 
         <input
@@ -92,7 +99,7 @@ const ContactPage: FC = () => {
 
         <Form.Item className="mt-8! mb-0!">
           <Button type="primary" htmlType="submit" block loading={loading}>
-            Submit
+            {t('contact.submit')}
           </Button>
         </Form.Item>
       </Form>

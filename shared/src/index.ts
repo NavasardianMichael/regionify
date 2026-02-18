@@ -1,5 +1,6 @@
 // Types
 export * from './types/auth.js';
+export * from './types/locale.js';
 export * from './types/plan.js';
 export * from './types/user.js';
 export * from './types/api.js';

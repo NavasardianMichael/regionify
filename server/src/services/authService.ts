@@ -34,6 +34,7 @@ function toPublicUser(user: User): UserPublic {
     // plan: user.plan as UserPublic['plan'],
     // TODO - remove hardcoded plan after implementing real subscription management
     plan: PLANS.chronographer as UserPublic['plan'],
+    locale: (user.locale ?? 'en') as UserPublic['locale'],
     createdAt: user.createdAt.toISOString(),
   };
 }
@@ -176,7 +177,10 @@ export const authService = {
     if (!user) {
       throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'User not found');
     }
-    const updated = await userRepository.update(userId, { name: input.name });
+    const updateData: { name?: string; locale?: string } = {};
+    if (input.name !== undefined) updateData.name = input.name;
+    if (input.locale !== undefined) updateData.locale = input.locale;
+    const updated = await userRepository.update(userId, updateData);
     if (!updated) {
       throw new AppError(
         HttpStatus.INTERNAL_SERVER_ERROR,

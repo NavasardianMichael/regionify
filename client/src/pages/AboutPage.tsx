@@ -1,14 +1,17 @@
 import type { FC } from 'react';
 import { Flex, Typography } from 'antd';
 
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+
 const AboutPage: FC = () => {
+  const { t } = useTypedTranslation();
   return (
     <Flex vertical gap="middle">
       <Typography.Title level={1} className="text-primary text-3xl font-bold">
-        About
+        {t('about.title')}
       </Typography.Title>
       <Typography.Paragraph className="text-gray-600">
-        Learn more about this application.
+        {t('about.description')}
       </Typography.Paragraph>
     </Flex>
   );

@@ -29,6 +29,7 @@ export type RegisterResponse = {
   message: string;
 };
 
+import type { Locale } from './locale.js';
 import type { Plan } from './plan.js';
 
 export type UserPublic = {
@@ -38,5 +39,6 @@ export type UserPublic = {
   avatarUrl: string | null;
   provider: AuthProvider;
   plan: Plan;
+  locale: Locale;
   createdAt: string;
 };

@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { type FC, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CreditCardOutlined,
@@ -18,7 +18,10 @@ import { deleteAccount, logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
 import { AppNavLink } from '@/components/ui/AppNavLink';
+
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type NavItem = {
   path: string;
@@ -28,46 +31,47 @@ type NavItem = {
   >;
 };
 
-const PUBLIC_NAV_ITEMS: NavItem[] = [
-  { path: ROUTES.HOME, label: 'Home', icon: HomeOutlined },
-  { path: ROUTES.PROJECTS, label: 'Projects', icon: FolderOutlined },
-  { path: ROUTES.CONTACT, label: 'Contact', icon: MailOutlined },
-  { path: ROUTES.BILLING, label: 'Billing', icon: CreditCardOutlined },
-];
-
-const AUTH_NAV_ITEMS: NavItem[] = [];
-
 export const Navigation: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, i18n } = useTypedTranslation();
   const { modal, message } = App.useApp();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
   const logout = useProfileStore(selectLogout);
 
-  const handleLogout = async () => {
+  const publicNavItems: NavItem[] = useMemo(
+    () => [
+      { path: ROUTES.HOME, label: t('nav.home'), icon: HomeOutlined },
+      { path: ROUTES.PROJECTS, label: t('nav.projects'), icon: FolderOutlined },
+      { path: ROUTES.CONTACT, label: t('nav.contact'), icon: MailOutlined },
+      { path: ROUTES.BILLING, label: t('nav.billing'), icon: CreditCardOutlined },
+    ],
+    [t],
+  );
+
+  const handleLogout = useCallback(async () => {
     try {
       await logoutApi();
       logout();
       navigate(ROUTES.HOME);
-    } catch {
-      // Ignore error
+    } catch (error) {
+      const text = error instanceof Error ? error.message : t('nav.logoutError');
+      message.error(text);
     }
-  };
+  }, [logout, navigate, message, t]);
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = useCallback(() => {
     const modalInstance = modal.confirm({
-      title: 'Delete Account',
+      title: t('deleteAccountModal.title'),
       icon: null,
-      content:
-        'Are you sure you want to delete your account? All your data, including projects, will be permanently removed. This action cannot be undone.',
-      okText: 'Delete Account',
+      content: t('deleteAccountModal.content'),
+      okText: t('deleteAccountModal.ok'),
       okButtonProps: { type: 'primary', danger: true },
-      cancelText: 'Cancel',
+      cancelText: t('nav.cancel'),
       closable: true,
       maskClosable: false,
       onOk: async () => {
-        // Disable buttons and prevent closing during request
         modalInstance.update({
           okButtonProps: { disabled: true, loading: true },
           cancelButtonProps: { disabled: true },
@@ -77,12 +81,12 @@ export const Navigation: FC = () => {
 
         try {
           await deleteAccount();
-          // Verify success before proceeding - destroy modal and navigate
           modalInstance.destroy();
           logout();
           navigate(ROUTES.ACCOUNT_DELETED);
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
+          const errorMessage =
+            error instanceof Error ? error.message : t('deleteAccountModal.error');
           message.error(errorMessage);
           // Re-enable buttons on error
           modalInstance.update({
@@ -94,32 +98,35 @@ export const Navigation: FC = () => {
         }
       },
     });
-  };
+  }, [modal, message, t, logout, navigate]);
 
-  const userMenuItems: DropdownProps['menu'] = {
-    items: [
-      {
-        key: 'profile',
-        label: 'Edit profile',
-        icon: <SettingOutlined />,
-        onClick: () => navigate(ROUTES.PROFILE),
-      },
-      {
-        key: 'logout',
-        label: 'Logout',
-        icon: <LogoutOutlined />,
-        onClick: handleLogout,
-      },
-      { type: 'divider' as const },
-      {
-        key: 'delete-account',
-        label: 'Delete Account',
-        icon: <DeleteOutlined />,
-        danger: true,
-        onClick: handleDeleteAccount,
-      },
-    ],
-  };
+  const userMenuItems: DropdownProps['menu'] = useMemo(
+    () => ({
+      items: [
+        {
+          key: 'profile',
+          label: t('nav.editProfile'),
+          icon: <SettingOutlined />,
+          onClick: () => navigate(ROUTES.PROFILE),
+        },
+        {
+          key: 'logout',
+          label: t('nav.logout'),
+          icon: <LogoutOutlined />,
+          onClick: handleLogout,
+        },
+        { type: 'divider' as const },
+        {
+          key: 'delete-account',
+          label: t('nav.deleteAccount'),
+          icon: <DeleteOutlined />,
+          danger: true,
+          onClick: handleDeleteAccount,
+        },
+      ],
+    }),
+    [t, navigate, handleLogout, handleDeleteAccount],
+  );
 
   const getNavLinkClassName = (path: string) => {
     const isActive = location.pathname === path;
@@ -134,7 +141,7 @@ export const Navigation: FC = () => {
         <Link to={ROUTES.HOME}>
           <img
             src={logoImage}
-            alt="Region Map"
+            alt={t('appName')}
             className="h-12 w-auto"
             width={120}
             height={32}
@@ -143,7 +150,7 @@ export const Navigation: FC = () => {
         </Link>
         <Flex align="center" gap={16}>
           <Flex component="ul" gap={4}>
-            {PUBLIC_NAV_ITEMS.map((item) => (
+            {publicNavItems.map((item) => (
               <li key={item.path}>
                 <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
                   <item.icon />
@@ -151,16 +158,9 @@ export const Navigation: FC = () => {
                 </AppNavLink>
               </li>
             ))}
-            {isLoggedIn &&
-              AUTH_NAV_ITEMS.map((item) => (
-                <li key={item.path}>
-                  <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
-                    <item.icon />
-                    {item.label}
-                  </AppNavLink>
-                </li>
-              ))}
           </Flex>
+          <div className="h-6 w-px bg-gray-200" />
+          <LanguageDropdown currentLocale={i18n.language} />
           <div className="h-6 w-px bg-gray-200" />
           {isLoggedIn ? (
             <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
@@ -178,7 +178,7 @@ export const Navigation: FC = () => {
               <li>
                 <AppNavLink to={ROUTES.LOGIN} className={getNavLinkClassName(ROUTES.LOGIN)}>
                   <LoginOutlined />
-                  Login
+                  {t('nav.login')}
                 </AppNavLink>
               </li>
             </Flex>

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { SUPPORTED_LOCALES } from '../types/locale.js';
 import { AUTH_VALIDATION } from '../constants/validation.js';
 
 const { email, password, name, token } = AUTH_VALIDATION;
@@ -46,13 +47,20 @@ export const verifyEmailSchema = z.object({
   token: z.string().min(1, token.messages.required),
 });
 
-export const updateProfileSchema = z.object({
-  name: z
-    .string()
-    .min(name.minLength, name.messages.minLength)
-    .max(name.maxLength, name.messages.maxLength)
-    .regex(name.pattern, name.messages.pattern),
-});
+export const updateProfileSchema = z
+  .object({
+    name: z
+      .string()
+      .min(name.minLength, name.messages.minLength)
+      .max(name.maxLength, name.messages.maxLength)
+      .regex(name.pattern, name.messages.pattern)
+      .optional(),
+    locale: z.enum(SUPPORTED_LOCALES).optional(),
+  })
+  .strict()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field (name or locale) is required',
+  });
 
 // Type inference from schemas
 export type LoginInput = z.infer<typeof loginSchema>;
