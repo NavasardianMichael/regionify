@@ -1,5 +1,5 @@
 import { type FC, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Form, Input, Typography } from 'antd';
 import { resetPassword } from '@/api/auth';

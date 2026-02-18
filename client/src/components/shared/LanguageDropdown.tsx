@@ -11,8 +11,8 @@ import { updateProfile } from '@/api/auth';
 import { selectSetUser, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LOCALE_OPTIONS } from '@/constants/locales';
-import { setStoredLocale } from '@/helpers/localeStorage';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { setStoredLocale } from '@/helpers/localeStorage';
 
 const FLAG_SRC: Record<Locale, string> = {
   en: enFlag,

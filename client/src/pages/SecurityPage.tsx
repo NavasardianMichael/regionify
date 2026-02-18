@@ -1,5 +1,5 @@
 import { type FC, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card as AntCard, Divider, Form, Input, Typography } from 'antd';
@@ -7,10 +7,9 @@ import { changePassword } from '@/api/auth';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { Card } from '@/components/ui/Card';
-
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type PasswordFormValues = {
   currentPassword: string;

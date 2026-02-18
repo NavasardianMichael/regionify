@@ -1,5 +1,4 @@
 import { type FC, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { Button, Card, Divider, Flex, Form, Input, Typography } from 'antd';
 import { register } from '@/api/auth';

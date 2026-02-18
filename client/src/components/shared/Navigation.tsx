@@ -1,6 +1,5 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import type { Locale } from '@regionify/shared';
 import {
   CreditCardOutlined,
   FolderOutlined,
@@ -13,13 +12,14 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
+import type { Locale } from '@regionify/shared';
 import { App, Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { logout as logoutApi } from '@/api/auth';
-import { ROUTES } from '@/constants/routes';
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 

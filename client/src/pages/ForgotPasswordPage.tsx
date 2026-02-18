@@ -1,5 +1,4 @@
 import { type FC, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Form, Input, Typography } from 'antd';

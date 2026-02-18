@@ -1,5 +1,5 @@
 import { type FC, useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Button, Card, Spin, Typography } from 'antd';
 import { verifyEmail } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
