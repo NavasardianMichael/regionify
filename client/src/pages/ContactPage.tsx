@@ -90,7 +90,7 @@ const ContactPage: FC = () => {
           autoComplete="off"
         />
 
-        <Form.Item className="mb-0">
+        <Form.Item className="mt-8! mb-0!">
           <Button type="primary" htmlType="submit" block loading={loading}>
             Submit
           </Button>

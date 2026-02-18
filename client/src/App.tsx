@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { App as AntApp, ConfigProvider, Flex } from 'antd';
-import { useAuthRevalidation } from '@/hooks/useAuthRevalidation';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { ROUTES } from '@/constants/routes';
 import { Navigation } from '@/components/shared/Navigation';
@@ -24,10 +23,9 @@ const BillingPage = lazy(() => import('@/pages/BillingPage'));
 const PaymentReturnPage = lazy(() => import('@/pages/PaymentReturnPage'));
 const PaymentCancelPage = lazy(() => import('@/pages/PaymentCancelPage'));
 const AccountDeletedPage = lazy(() => import('@/pages/AccountDeletedPage'));
+const EditProfilePage = lazy(() => import('@/pages/EditProfilePage'));
 
 function AppContent() {
-  useAuthRevalidation();
-
   return (
     <BrowserRouter>
       <Flex vertical className="h-screen overflow-hidden">
@@ -50,6 +48,7 @@ function AppContent() {
               <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
               <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
               <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
+              <Route path={ROUTES.PROFILE} element={<EditProfilePage />} />
               <Route path={ROUTES.ACCOUNT_DELETED} element={<AccountDeletedPage />} />
               <Route path={ROUTES.BILLING} element={<BillingPage />} />
               <Route path={ROUTES.PAYMENTS_RETURN} element={<PaymentReturnPage />} />

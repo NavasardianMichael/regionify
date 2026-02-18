@@ -1,4 +1,4 @@
-import { type FC, useMemo, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button, Card, Spin, Typography } from 'antd';
 import { verifyEmail } from '@/api/auth';
@@ -10,22 +10,27 @@ const VerifyEmailPage: FC = () => {
   const [searchParams] = useSearchParams();
   const [state, setState] = useState<VerifyState>('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  const token = searchParams.get('token');
 
-  const token = useMemo(() => searchParams.get('token'), [searchParams]);
+  useEffect(() => {
+    if (!token) return;
 
-  useMemo(() => {
-    if (!token) {
-      return;
-    }
-
+    let cancelled = false;
     verifyEmail({ token })
-      .then(() => setState('success'))
+      .then(() => {
+        if (!cancelled) setState('success');
+      })
       .catch((error: unknown) => {
-        setState('error');
-        setErrorMessage(
-          error instanceof Error ? error.message : 'Failed to verify email. Please try again.',
-        );
+        if (!cancelled) {
+          setState('error');
+          setErrorMessage(
+            error instanceof Error ? error.message : 'Failed to verify email. Please try again.',
+          );
+        }
       });
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   if (!token) {

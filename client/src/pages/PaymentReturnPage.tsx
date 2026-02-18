@@ -2,7 +2,6 @@ import { type FC, useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
-import { getAuthStatus } from '@/api/auth/status';
 import { captureOrder } from '@/api/payments';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
@@ -32,9 +31,8 @@ const PaymentReturnPage: FC = () => {
       try {
         const result = await captureOrder({ orderId: token });
         if (cancelled) return;
-        const authData = await getAuthStatus();
-        if (authData.authenticated && authData.user) {
-          setUser(authData.user);
+        if (result.user) {
+          setUser(result.user);
         }
         setStatus('success');
         setMessageText(`You're now on the ${result.plan} plan.`);

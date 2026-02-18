@@ -2,11 +2,13 @@ import { AUTH_ENDPOINTS } from './endpoints';
 import type {
   AuthApiResponse,
   AuthErrorResponse,
+  ChangePasswordPayload,
   ForgotPasswordPayload,
   LoginPayload,
   RegisterApiResponse,
   RegisterPayload,
   ResetPasswordPayload,
+  UpdateProfilePayload,
   VerifyEmailPayload,
 } from './types';
 
@@ -169,4 +171,41 @@ export const resendVerificationEmail = async (email: string): Promise<{ message:
     throw new Error(getErrorMessage(data, 'Failed to resend verification email'));
   }
   return data;
+};
+
+type UpdateProfileResponse = {
+  success: boolean;
+  data: { user: AuthApiResponse['user'] };
+};
+
+export const updateProfile = async (
+  payload: UpdateProfilePayload,
+): Promise<UpdateProfileResponse['data']> => {
+  const response = await fetch(AUTH_ENDPOINTS.profile, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+  const data = (await response.json()) as UpdateProfileResponse | AuthErrorResponse;
+  if (!response.ok || !('success' in data) || !data.success) {
+    throw new Error(getErrorMessage(data, 'Failed to update profile'));
+  }
+  return data.data;
+};
+
+export const changePassword = async (
+  payload: ChangePasswordPayload,
+): Promise<{ message: string }> => {
+  const response = await fetch(AUTH_ENDPOINTS.changePassword, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(getErrorMessage(data, 'Failed to change password'));
+  }
+  return (data as { success: boolean; data: { message: string } }).data;
 };

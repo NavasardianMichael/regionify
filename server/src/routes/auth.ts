@@ -1,8 +1,10 @@
 import {
+  changePasswordSchema,
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
   resetPasswordSchema,
+  updateProfileSchema,
   verifyEmailSchema,
 } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
@@ -110,37 +112,32 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
-// GET /api/auth/status - Returns auth state and user data if authenticated
-router.get('/status', async (req, res, next) => {
+// PATCH /api/auth/profile - Update profile (name); requires auth
+router.patch('/profile', requireAuth, validate(updateProfileSchema), async (req, res, next) => {
   try {
-    if (!req.session.userId) {
-      res.json({
-        success: true,
-        data: { authenticated: false, user: null },
-      });
-      return;
-    }
-
-    const user = await authService.getUserById(req.session.userId);
-
-    if (!user) {
-      // Session references a deleted user — clean up
-      req.session.destroy(() => {});
-      res.json({
-        success: true,
-        data: { authenticated: false, user: null },
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      data: { authenticated: true, user },
-    });
+    const userId = req.session.userId!;
+    const user = await authService.updateProfile(userId, req.body);
+    res.json({ success: true, data: { user } });
   } catch (error) {
     next(error);
   }
 });
+
+// POST /api/auth/change-password - Change password when logged in; requires auth
+router.post(
+  '/change-password',
+  requireAuth,
+  validate(changePasswordSchema),
+  async (req, res, next) => {
+    try {
+      const userId = req.session.userId!;
+      const result = await authService.changePassword(userId, req.body);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 // POST /api/auth/forgot-password
 router.post(

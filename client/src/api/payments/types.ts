@@ -1,4 +1,5 @@
 import type { Plan } from '@regionify/shared';
+import type { UserPublic } from '@/api/auth/types';
 import type { PayablePlan } from '@/constants/plans';
 
 export type CreateOrderPayload = {
@@ -16,4 +17,5 @@ export type CapturePayload = {
 
 export type CaptureResponse = {
   plan: Plan;
+  user?: UserPublic;
 };

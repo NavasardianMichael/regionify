@@ -8,6 +8,7 @@ import {
   LoginOutlined,
   LogoutOutlined,
   MailOutlined,
+  SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
@@ -98,6 +99,12 @@ export const Navigation: FC = () => {
   const userMenuItems: DropdownProps['menu'] = {
     items: [
       {
+        key: 'profile',
+        label: 'Edit profile',
+        icon: <SettingOutlined />,
+        onClick: () => navigate(ROUTES.PROFILE),
+      },
+      {
         key: 'logout',
         label: 'Logout',
         icon: <LogoutOutlined />,
@@ -111,13 +118,14 @@ export const Navigation: FC = () => {
         danger: true,
         onClick: handleDeleteAccount,
       },
-    ]
-  }
+    ],
+  };
 
   const getNavLinkClassName = (path: string) => {
     const isActive = location.pathname === path;
-    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
-      }`;
+    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+      isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
+    }`;
   };
 
   return (

@@ -28,6 +28,15 @@ export type VerifyEmailPayload = {
   token: string;
 };
 
+export type UpdateProfilePayload = {
+  name: string;
+};
+
+export type ChangePasswordPayload = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 export type AuthErrorResponse = {
   success: false;
   error: {

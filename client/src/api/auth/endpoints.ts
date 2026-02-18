@@ -4,6 +4,8 @@ export const AUTH_ENDPOINTS = {
   login: `${BASE_URL}/auth/login`,
   register: `${BASE_URL}/auth/register`,
   logout: `${BASE_URL}/auth/logout`,
+  profile: `${BASE_URL}/auth/profile`,
+  changePassword: `${BASE_URL}/auth/change-password`,
   forgotPassword: `${BASE_URL}/auth/forgot-password`,
   resetPassword: `${BASE_URL}/auth/reset-password`,
   verifyEmail: `${BASE_URL}/auth/verify-email`,

@@ -9,6 +9,7 @@ export const ROUTES = {
   BILLING: '/billing',
 
   // Auth routes
+  PROFILE: '/profile',
   LOGIN: '/login',
   SIGN_UP: '/sign-up',
   FORGOT_PASSWORD: '/forgot-password',

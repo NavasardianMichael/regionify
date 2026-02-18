@@ -1,6 +1,7 @@
 import { Plan, PLANS } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
+import { authService } from '../services/authService.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { paymentService } from '../services/paymentService.js';
 
@@ -38,7 +39,8 @@ router.post('/capture', requireAuth, async (req, res, next) => {
       return;
     }
     const result = await paymentService.captureOrder(userId, orderId);
-    res.json({ success: true, data: result });
+    const user = await authService.getUserById(userId);
+    res.json({ success: true, data: { ...result, user: user ?? undefined } });
   } catch (error) {
     next(error);
   }

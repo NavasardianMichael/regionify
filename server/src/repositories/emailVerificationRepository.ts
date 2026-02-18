@@ -67,6 +67,30 @@ export const emailVerificationRepository = {
   },
 
   /**
+   * Find token record by token string (valid or already used), with user including emailVerified
+   */
+  async findByTokenWithUser(token: string): Promise<
+    | (EmailVerificationToken & {
+        user: { id: string; email: string; name: string; emailVerified: boolean };
+      })
+    | null
+  > {
+    return prisma.emailVerificationToken.findFirst({
+      where: { token },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            emailVerified: true,
+          },
+        },
+      },
+    });
+  },
+
+  /**
    * Mark a token as used
    */
   async markAsUsed(id: string): Promise<void> {

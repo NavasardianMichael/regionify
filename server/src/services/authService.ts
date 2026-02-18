@@ -3,6 +3,7 @@ import {
   type AuthProvider,
   type AuthResponse,
   ErrorCode,
+  type ChangePasswordInput,
   type ForgotPasswordInput,
   HttpStatus,
   type LoginInput,
@@ -10,6 +11,7 @@ import {
   type RegisterInput,
   type RegisterResponse,
   type ResetPasswordInput,
+  type UpdateProfileInput,
   type UserPublic,
   type VerifyEmailInput,
 } from '@regionify/shared';
@@ -40,7 +42,9 @@ export const authService = {
   async resendVerification(email: string): Promise<{ message: string }> {
     const user = await userRepository.findByEmail(email);
     if (!user) {
-      return { message: 'If an account exists with this email, a verification email has been sent.' };
+      return {
+        message: 'If an account exists with this email, a verification email has been sent.',
+      };
     }
     if (user.emailVerified) {
       return { message: 'Email is already verified.' };
@@ -167,6 +171,50 @@ export const authService = {
     return user ? toPublicUser(user) : null;
   },
 
+  async updateProfile(userId: string, input: UpdateProfileInput): Promise<UserPublic> {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'User not found');
+    }
+    const updated = await userRepository.update(userId, { name: input.name });
+    if (!updated) {
+      throw new AppError(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        ErrorCode.INTERNAL_ERROR,
+        'Failed to update profile',
+      );
+    }
+    return toPublicUser(updated);
+  },
+
+  async changePassword(userId: string, input: ChangePasswordInput): Promise<{ message: string }> {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'User not found');
+    }
+    if (user.provider !== 'local' || !user.passwordHash) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.VALIDATION_ERROR,
+        'Password change is only available for email/password accounts',
+      );
+    }
+    const valid = await verifyPassword(input.currentPassword, user.passwordHash);
+    if (!valid) {
+      throw new AppError(
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.INVALID_CREDENTIALS,
+        'Current password is incorrect',
+      );
+    }
+    const passwordHash = await hashPassword(input.newPassword);
+    await userRepository.update(userId, { passwordHash });
+    emailService.sendPasswordChanged(user.email, user.name).catch((error) => {
+      logger.error({ error, userId }, 'Failed to send password changed email');
+    });
+    return { message: 'Password updated successfully' };
+  },
+
   async deleteAccount(userId: string): Promise<void> {
     const user = await userRepository.findById(userId);
 
@@ -264,30 +312,30 @@ export const authService = {
   },
 
   /**
-   * Verify email using token
+   * Verify email using token.
+   * If token already used but user is verified, returns success (e.g. user double-clicked link).
    */
   async verifyEmail(input: VerifyEmailInput): Promise<{ message: string }> {
     const tokenRecord = await emailVerificationRepository.findValidToken(input.token);
 
-    if (!tokenRecord) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        ErrorCode.INVALID_TOKEN,
-        'Invalid or expired verification link. Please register again.',
-      );
+    if (tokenRecord) {
+      await userRepository.update(tokenRecord.userId, { emailVerified: true });
+      await emailVerificationRepository.markAsUsed(tokenRecord.id);
+      emailService.sendWelcome(tokenRecord.user.email, tokenRecord.user.name).catch((error) => {
+        logger.error({ error, userId: tokenRecord.userId }, 'Failed to send welcome email');
+      });
+      return { message: 'Email verified successfully. You can now log in.' };
     }
 
-    // Mark user as verified
-    await userRepository.update(tokenRecord.userId, { emailVerified: true });
+    const usedRecord = await emailVerificationRepository.findByTokenWithUser(input.token);
+    if (usedRecord?.user.emailVerified) {
+      return { message: 'Email already verified. You can log in.' };
+    }
 
-    // Mark token as used
-    await emailVerificationRepository.markAsUsed(tokenRecord.id);
-
-    // Send welcome email now that user is verified
-    emailService.sendWelcome(tokenRecord.user.email, tokenRecord.user.name).catch((error) => {
-      logger.error({ error, userId: tokenRecord.userId }, 'Failed to send welcome email');
-    });
-
-    return { message: 'Email verified successfully. You can now log in.' };
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      ErrorCode.INVALID_TOKEN,
+      'Invalid or expired verification link. Please register again.',
+    );
   },
 };
