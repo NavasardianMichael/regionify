@@ -26,11 +26,14 @@
   },
   "lint-staged": {
     "client/**/*.{ts,tsx}": [
-      "pnpm --filter @regionify/client exec eslint --fix",
+      "node scripts/lint-staged-client.js",
       "prettier --write"
     ],
     "server/**/*.{ts,tsx}": [
-      "pnpm --filter @regionify/server exec eslint --fix",
+      "node scripts/lint-staged-server.js",
+      "prettier --write"
+    ],
+    "shared/**/*.{ts,tsx}": [
       "prettier --write"
     ],
     "*.{ts,tsx,json,css,md}": [

@@ -1,5 +1,6 @@
 import { type FC, useCallback, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import type { Locale } from '@regionify/shared';
 import {
   CreditCardOutlined,
   FolderOutlined,
@@ -12,17 +13,15 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
-import type { Locale } from '@regionify/shared';
 import { App, Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { logout as logoutApi } from '@/api/auth';
-import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
-import { useProfileStore } from '@/store/profile/store';
-import { ROUTES } from '@/constants/routes';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
 import { AppNavLink } from '@/components/ui/AppNavLink';
-
+import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 
 type NavItem = {
   path: string;
@@ -99,7 +98,7 @@ export const Navigation: FC = () => {
   return (
     <nav className="border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
-        <AppNavLink to={ROUTES.HOME}>
+        <Link to={ROUTES.HOME}>
           <img
             src={logoImage}
             alt={t('appName')}
@@ -108,7 +107,7 @@ export const Navigation: FC = () => {
             height={32}
             fetchPriority="high"
           />
-        </AppNavLink>
+        </Link>
         <Flex align="center" gap={16}>
           <Flex component="ul" gap={4}>
             {publicNavItems.map((item) => (
