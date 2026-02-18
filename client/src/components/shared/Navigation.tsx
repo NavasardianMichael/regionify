@@ -16,12 +16,12 @@ import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import { App, Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { logout as logoutApi } from '@/api/auth';
-import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
-import { AppNavLink } from '@/components/ui/AppNavLink';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type NavItem = {
   path: string;
