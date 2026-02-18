@@ -1,10 +1,10 @@
+import { PAYMENT_ENDPOINTS } from './endpoints';
 import type {
   CapturePayload,
   CaptureResponse,
   CreateOrderPayload,
   CreateOrderResponse,
 } from './types';
-import { PAYMENT_ENDPOINTS } from './endpoints';
 
 type ApiResult<T> = { success: true; data: T } | { success: false; error: { message: string } };
 

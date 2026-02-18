@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-
 import type { AnimationState } from './types';
 
 export const useAnimationStore = create<AnimationState>((set) => ({

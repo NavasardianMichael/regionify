@@ -5,7 +5,7 @@ import { Button, Empty, Flex, Input, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { useProjects } from '@/hooks/useProjects';
-import { ROUTES, getProjectRoute } from '@/constants/routes';
+import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));

@@ -4,7 +4,12 @@ import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Divider, Form, Input, Typography } from 'antd';
 import { login, resendVerificationEmail } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
-import { AppNavLink } from '@/components/ui/AppNavLink';
+import { useLegendDataStore } from '@/store/legendData/store';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { useVisualizerStore } from '@/store/mapData/store';
+import { useMapStylesStore } from '@/store/mapStyles/store';
+import { selectSetUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import {
   clearReturnUrl,
@@ -13,12 +18,7 @@ import {
   getTemporaryProjectState,
   mergeTemporaryStateWithDefaults,
 } from '@/helpers/temporaryProjectState';
-import { useLegendDataStore } from '@/store/legendData/store';
-import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { useVisualizerStore } from '@/store/mapData/store';
-import { useMapStylesStore } from '@/store/mapStyles/store';
-import { selectSetUser } from '@/store/profile/selectors';
-import { useProfileStore } from '@/store/profile/store';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type LoginFormValues = {
   email: string;

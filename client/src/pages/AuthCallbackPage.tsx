@@ -2,13 +2,6 @@ import { type FC, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Flex, Spin } from 'antd';
 import type { UserPublic } from '@/api/auth/types';
-import {
-  clearReturnUrl,
-  clearTemporaryProjectState,
-  getReturnUrl,
-  getTemporaryProjectState,
-  mergeTemporaryStateWithDefaults,
-} from '@/helpers/temporaryProjectState';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useVisualizerStore } from '@/store/mapData/store';
@@ -16,6 +9,13 @@ import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import {
+  clearReturnUrl,
+  clearTemporaryProjectState,
+  getReturnUrl,
+  getTemporaryProjectState,
+  mergeTemporaryStateWithDefaults,
+} from '@/helpers/temporaryProjectState';
 
 const AuthCallbackPage: FC = () => {
   const navigate = useNavigate();

@@ -13,6 +13,8 @@ type RenderStyledSvgOptions = {
   border: BorderConfig;
   shadow: ShadowConfig;
   picture: PictureConfig;
+  /** When set, path fill is taken from this map (region id → color) for smooth interpolation. */
+  colorMap?: Record<string, string>;
 };
 
 /**
@@ -118,6 +120,7 @@ export function renderStyledSvg({
   border,
   shadow,
   picture,
+  colorMap,
 }: RenderStyledSvgOptions): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(rawSvg, 'image/svg+xml');
@@ -203,14 +206,18 @@ export function renderStyledSvg({
 
     const pathTitle = path.getAttribute('title');
     if (pathTitle) {
-      const regionData = data.byId[pathTitle];
-      if (regionData) {
-        const matchingItem = legendItems.find(
-          (item) => regionData.value >= item.min && regionData.value <= item.max,
-        );
-        path.style.fill = matchingItem ? matchingItem.color : noDataColor;
+      if (colorMap !== undefined && pathTitle in colorMap) {
+        path.style.fill = colorMap[pathTitle];
       } else {
-        path.style.fill = noDataColor;
+        const regionData = data.byId[pathTitle];
+        if (regionData) {
+          const matchingItem = legendItems.find(
+            (item) => regionData.value >= item.min && regionData.value <= item.max,
+          );
+          path.style.fill = matchingItem ? matchingItem.color : noDataColor;
+        } else {
+          path.style.fill = noDataColor;
+        }
       }
     }
   });

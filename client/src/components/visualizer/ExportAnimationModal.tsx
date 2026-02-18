@@ -22,7 +22,11 @@ import { selectBorder, selectPicture, selectShadow } from '@/store/mapStyles/sel
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { exportAnimationAsGif, exportAnimationAsVideo } from '@/helpers/animationExport';
+import {
+  exportAnimationAsGif,
+  exportAnimationAsVideo,
+  getAnimationTotalFrames,
+} from '@/helpers/animationExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
 
 type AnimationFormat = typeof EXPORT_TYPES.gif | typeof EXPORT_TYPES.mp4;
@@ -63,6 +67,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const [format, setFormat] = useState<AnimationFormat>(EXPORT_TYPES.gif);
   const [quality, setQuality] = useState(60);
   const [fps, setFps] = useState(1);
+  const [framesPerTransition, setFramesPerTransition] = useState(24);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -81,6 +86,10 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
 
   const handleFpsChange = useCallback((value: number | null) => {
     setFps(Math.max(0.5, Math.min(value ?? 1, 10)));
+  }, []);
+
+  const handleFramesPerTransitionChange = useCallback((value: number | null) => {
+    setFramesPerTransition(Math.max(8, Math.min(value ?? 24, 60)));
   }, []);
 
   const handleExport = useCallback(async () => {
@@ -109,6 +118,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         },
         quality,
         fps,
+        framesPerTransition,
         onProgress: setProgress,
       };
 
@@ -139,6 +149,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     legendBackgroundColor,
     quality,
     fps,
+    framesPerTransition,
     format,
     onClose,
   ]);
@@ -200,7 +211,28 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
             />
           </Flex>
           <Typography.Text type="secondary" className="text-xs">
-            {timePeriods.length} frames · ~{Math.round(timePeriods.length / fps)}s duration
+            {getAnimationTotalFrames(timePeriods.length, framesPerTransition)} frames · ~
+            {(getAnimationTotalFrames(timePeriods.length, framesPerTransition) / fps).toFixed(1)}s
+            duration
+          </Typography.Text>
+        </Flex>
+
+        {/* Smooth transitions */}
+        <Flex vertical gap="small">
+          <Flex align="center" justify="space-between">
+            <Typography.Text className="text-sm text-gray-600">
+              Frames per transition:
+            </Typography.Text>
+            <InputNumber
+              min={8}
+              max={60}
+              value={framesPerTransition}
+              onChange={handleFramesPerTransitionChange}
+              className="w-20"
+            />
+          </Flex>
+          <Typography.Text type="secondary" className="text-xs">
+            More frames = smoother color changes between periods
           </Typography.Text>
         </Flex>
 

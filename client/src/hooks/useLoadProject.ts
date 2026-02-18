@@ -1,14 +1,13 @@
 import { useCallback } from 'react';
-
 import type { Project } from '@/api/projects/types';
-import { IMPORT_DATA_TYPES } from '@/constants/data';
-import { captureStateSnapshot } from '@/hooks/useProjectState';
-import type { ImportDataType, RegionId } from '@/types/mapData';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { useProjectsStore } from '@/store/projects/store';
+import { captureStateSnapshot } from '@/hooks/useProjectState';
+import type { ImportDataType, RegionId } from '@/types/mapData';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
 
 /**
  * Returns a callback that loads a project's data into all stores.
