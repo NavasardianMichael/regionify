@@ -84,7 +84,7 @@ export const LanguageDropdown: FC<Props> = ({
       bordered={variant === 'bordered'}
       className={
         variant === 'borderless'
-          ? '[&_.ant-select-selector]:border-none! [&_.ant-select-selector]:shadow-none! [&_.ant-select-selector]:bg-transparent!'
+          ? '[&_.ant-select-selector]:border-none! [&_.ant-select-selector]:bg-transparent! [&_.ant-select-selector]:shadow-none!'
           : ''
       }
       {...selectProps}

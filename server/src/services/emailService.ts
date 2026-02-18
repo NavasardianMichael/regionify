@@ -4,6 +4,12 @@ import { logger } from '../lib/logger.js';
 const APP_ID = 'regionify';
 const APP_NAME = 'Regionify';
 
+/** Logo URL for auth emails. Place logo at client/public/logo.png so it is served at /logo.png. */
+const LOGO_URL = `${env.CLIENT_URL.replace(/\/$/, '')}/logo.png`;
+
+/** Verification link expiry (must match emailVerificationRepository TOKEN_EXPIRY_HOURS) */
+const VERIFY_EMAIL_EXPIRY_HOURS = 48;
+
 // Brand colors - keep in sync with client theme
 const COLORS = {
   primary: '#18294d',
@@ -35,14 +41,19 @@ interface SendEmailParams {
   html: string;
 }
 
+type EmailLayoutOptions = { preheader?: string; logoUrl?: string };
+
 /**
- * Base email layout wrapper with responsive design and email client compatibility
+ * Base email layout: minimal, logo in header, compact spacing
  */
-function emailLayout(content: string, preheader?: string): string {
-  // Preheader is the preview text shown in email clients
+function emailLayout(content: string, options?: EmailLayoutOptions): string {
+  const preheader = options?.preheader;
+  const logoUrl = options?.logoUrl ?? LOGO_URL;
   const preheaderHtml = preheader
     ? `<div style="display:none;font-size:1px;color:#f5f5f5;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">${preheader}</div>`
     : '';
+
+  const headerContent = `<img src="${logoUrl}" alt="${APP_NAME}" width="140" height="32" style="display:block;max-height:32px;width:auto;height:auto;" />`;
 
   return `
 <!DOCTYPE html>
@@ -64,66 +75,39 @@ function emailLayout(content: string, preheader?: string): string {
   </noscript>
   <![endif]-->
   <style>
-    /* Reset styles */
     body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
     table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
     img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
     body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
-    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important; }
-    /* Button hover - for clients that support it */
+    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
     @media only screen and (max-width: 600px) {
       .email-container { width: 100% !important; }
-      .mobile-padding { padding: 20px !important; }
+      .mobile-padding { padding: 16px 20px !important; }
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: ${COLORS.background}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+<body style="margin:0;padding:0;background-color:${COLORS.background};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
   ${preheaderHtml}
-  
-  <!-- Email wrapper -->
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${COLORS.background};">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:${COLORS.background};">
     <tr>
-      <td style="padding: 40px 20px;">
-        
-        <!-- Email container -->
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-container" style="margin: 0 auto; background-color: ${COLORS.white}; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-          
-          <!-- Header -->
+      <td style="padding:24px 16px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="560" class="email-container" style="margin:0 auto;background-color:${COLORS.white};border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
           <tr>
-            <td style="padding: 32px 40px 24px 40px; text-align: center; border-bottom: 1px solid ${COLORS.border};">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: ${COLORS.primary}; letter-spacing: -0.5px;">
-                ${APP_NAME}
-              </h1>
+            <td style="padding:20px 24px 16px;text-align:center;">
+              ${headerContent}
             </td>
           </tr>
-          
-          <!-- Content -->
           <tr>
-            <td class="mobile-padding" style="padding: 40px;">
+            <td class="mobile-padding" style="padding:0 24px 24px;">
               ${content}
             </td>
           </tr>
-          
-          <!-- Footer -->
           <tr>
-            <td style="padding: 24px 40px; background-color: ${COLORS.background}; border-radius: 0 0 8px 8px; border-top: 1px solid ${COLORS.border};">
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                <tr>
-                  <td style="text-align: center; color: ${COLORS.textMuted}; font-size: 13px; line-height: 20px;">
-                    <p style="margin: 0 0 8px 0;">
-                      &copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
-                    </p>
-                    <p style="margin: 0;">
-                      Create beautiful data visualizations for your regions.
-                    </p>
-                  </td>
-                </tr>
-              </table>
+            <td style="padding:12px 24px;text-align:center;color:${COLORS.textMuted};font-size:12px;">
+              &copy; ${new Date().getFullYear()} ${APP_NAME}
             </td>
           </tr>
-          
         </table>
-        
       </td>
     </tr>
   </table>
@@ -132,22 +116,19 @@ function emailLayout(content: string, preheader?: string): string {
 `.trim();
 }
 
-/**
- * Creates a styled button for email
- */
 function emailButton(text: string, url: string): string {
   return `
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 24px 0;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:16px 0;">
   <tr>
-    <td style="border-radius: 6px; background-color: ${COLORS.primary};">
+    <td style="border-radius:6px;background-color:${COLORS.primary};">
       <!--[if mso]>
-      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:48px;v-text-anchor:middle;width:200px;" arcsize="13%" strokecolor="${COLORS.primary}" fillcolor="${COLORS.primary}">
+      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:44px;v-text-anchor:middle;width:180px;" arcsize="14%" strokecolor="${COLORS.primary}" fillcolor="${COLORS.primary}">
         <w:anchorlock/>
-        <center style="color:#ffffff;font-family:sans-serif;font-size:16px;font-weight:600;">${text}</center>
+        <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:600;">${text}</center>
       </v:roundrect>
       <![endif]-->
       <!--[if !mso]><!-->
-      <a href="${url}" target="_blank" style="display: inline-block; padding: 10px 40px; font-size: 16px; font-weight: 600; color: ${COLORS.white}; text-decoration: none; border-radius: 6px; background-color: ${COLORS.primary};">${text}</a>
+      <a href="${url}" target="_blank" style="display:inline-block;padding:10px 32px;font-size:15px;font-weight:600;color:${COLORS.white};text-decoration:none;border-radius:6px;background-color:${COLORS.primary};">${text}</a>
       <!--<![endif]-->
     </td>
   </tr>
@@ -155,32 +136,16 @@ function emailButton(text: string, url: string): string {
 `.trim();
 }
 
-/**
- * Creates a styled heading
- */
 function emailHeading(text: string): string {
-  return `<h2 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 600; color: ${COLORS.textDark}; line-height: 32px;">${text}</h2>`;
+  return `<h2 style="margin:0 0 12px 0;font-size:20px;font-weight:600;color:${COLORS.textDark};line-height:28px;">${text}</h2>`;
 }
 
-/**
- * Creates a styled paragraph
- */
 function emailParagraph(text: string): string {
-  return `<p style="margin: 0 0 16px 0; font-size: 16px; line-height: 26px; color: ${COLORS.textLight};">${text}</p>`;
+  return `<p style="margin:0 0 12px 0;font-size:15px;line-height:24px;color:${COLORS.textLight};">${text}</p>`;
 }
 
-/**
- * Creates a muted/small text
- */
 function emailMuted(text: string): string {
-  return `<p style="margin: 16px 0 0 0; font-size: 14px; line-height: 22px; color: ${COLORS.textMuted};">${text}</p>`;
-}
-
-/**
- * Creates a divider
- */
-function emailDivider(): string {
-  return `<hr style="margin: 24px 0; border: none; border-top: 1px solid ${COLORS.border};">`;
+  return `<p style="margin:8px 0 0 0;font-size:13px;line-height:20px;color:${COLORS.textMuted};">${text}</p>`;
 }
 
 // =============================================================================
@@ -209,13 +174,12 @@ The ${APP_NAME} Team
 
     const html = emailLayout(
       `
-        ${emailHeading(`Welcome, ${name}!`)}
-        ${emailParagraph(`Thank you for creating an account. We're excited to have you on board.`)}
-        ${emailParagraph(`With <strong>${APP_NAME}</strong>, you can create stunning data visualizations for countries and regions around the world.`)}
+        ${emailHeading(`Welcome, ${name}`)}
+        ${emailParagraph(`Thanks for signing up. Create stunning data visualizations for regions around the world.`)}
         ${emailButton('Get Started', env.CLIENT_URL)}
-        ${emailMuted(`If you have any questions, feel free to reach out to our support team.`)}
+        ${emailMuted('Questions? Reach out to our support team.')}
       `,
-      `Welcome to ${APP_NAME}! Start creating beautiful visualizations today.`,
+      { preheader: `Welcome to ${APP_NAME}. Start creating visualizations today.` },
     );
 
     return { subject, text, html };
@@ -249,16 +213,13 @@ The ${APP_NAME} Team
 
     const html = emailLayout(
       `
-        ${emailHeading('Reset Your Password')}
-        ${emailParagraph(`Hi ${name},`)}
-        ${emailParagraph(`We received a request to reset your password for your ${APP_NAME} account. Click the button below to create a new password.`)}
+        ${emailHeading('Reset your password')}
+        ${emailParagraph(`Hi ${name}, we received a request to reset your password. Click below to set a new one.`)}
         ${emailButton('Reset Password', resetUrl)}
-        ${emailMuted(`This link will expire in <strong>${expiresInMinutes} minutes</strong>.`)}
-        ${emailDivider()}
-        ${emailMuted(`If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.`)}
-        ${emailMuted(`Or copy this link: <a href="${resetUrl}" style="color: ${COLORS.primary}; word-break: break-all;">${resetUrl}</a>`)}
+        ${emailMuted(`Link expires in <strong>${expiresInMinutes} minutes</strong>. If you didn't request this, ignore this email.`)}
+        ${emailMuted(`<a href="${resetUrl}" style="color:${COLORS.primary};word-break:break-all;">${resetUrl}</a>`)}
       `,
-      `Reset your ${APP_NAME} password. This link expires in ${expiresInMinutes} minutes.`,
+      { preheader: `Reset your ${APP_NAME} password. Expires in ${expiresInMinutes} minutes.` },
     );
 
     return { subject, text, html };
@@ -285,32 +246,33 @@ The ${APP_NAME} Team
 
     const html = emailLayout(
       `
-        ${emailHeading('Password Changed Successfully')}
-        ${emailParagraph(`Hi ${name},`)}
-        ${emailParagraph(`Your ${APP_NAME} password was successfully changed.`)}
-        ${emailParagraph(`If you made this change, no further action is needed.`)}
-        ${emailDivider()}
-        ${emailMuted(`If you didn't make this change, please <a href="${env.CLIENT_URL}/forgot-password" style="color: ${COLORS.primary};">reset your password</a> immediately or contact our support team.`)}
+        ${emailHeading('Password changed')}
+        ${emailParagraph(`Hi ${name}, your ${APP_NAME} password was updated. No action needed if you made this change.`)}
+        ${emailMuted(`If not, <a href="${env.CLIENT_URL}/forgot-password" style="color:${COLORS.primary};">reset your password</a> or contact support.`)}
       `,
-      `Your ${APP_NAME} password was changed successfully.`,
+      { preheader: 'Your password was changed successfully.' },
     );
 
     return { subject, text, html };
   },
 
-  /**
-   * Email verification (for future use)
-   */
-  verifyEmail(name: string, verifyUrl: string): { subject: string; text: string; html: string } {
-    const subject = `Verify Your ${APP_NAME} Email`;
+  /** Email verification (link expires in 48 hours) */
+  verifyEmail(
+    name: string,
+    verifyUrl: string,
+    expiresInHours: number,
+  ): { subject: string; text: string; html: string } {
+    const subject = `Verify your ${APP_NAME} email`;
 
     const text = `
 Hi ${name},
 
-Please verify your email address by clicking the link below:
+Verify your email by clicking the link below:
 ${verifyUrl}
 
-If you didn't create an account with ${APP_NAME}, you can safely ignore this email.
+This link expires in ${expiresInHours} hours.
+
+If you didn't create an account with ${APP_NAME}, ignore this email.
 
 Best regards,
 The ${APP_NAME} Team
@@ -318,15 +280,13 @@ The ${APP_NAME} Team
 
     const html = emailLayout(
       `
-        ${emailHeading('Verify Your Email')}
-        ${emailParagraph(`Hi ${name},`)}
-        ${emailParagraph(`Please verify your email address to complete your registration and unlock all features.`)}
+        ${emailHeading('Verify your email')}
+        ${emailParagraph(`Hi ${name}, click below to verify your email and complete registration.`)}
         ${emailButton('Verify Email', verifyUrl)}
-        ${emailDivider()}
-        ${emailMuted(`If you didn't create an account with ${APP_NAME}, you can safely ignore this email.`)}
-        ${emailMuted(`Or copy this link: <a href="${verifyUrl}" style="color: ${COLORS.primary}; word-break: break-all;">${verifyUrl}</a>`)}
+        ${emailMuted(`Link expires in <strong>${expiresInHours} hours</strong>. If you didn't sign up, ignore this email.`)}
+        ${emailMuted(`<a href="${verifyUrl}" style="color:${COLORS.primary};word-break:break-all;">${verifyUrl}</a>`)}
       `,
-      `Verify your email to complete your ${APP_NAME} registration.`,
+      { preheader: `Verify your ${APP_NAME} email. Expires in ${expiresInHours} hours.` },
     );
 
     return { subject, text, html };
@@ -415,11 +375,15 @@ export const emailService = {
   },
 
   /**
-   * Send email verification
+   * Send email verification (link expires in 48 hours)
    */
   async sendVerifyEmail(to: string, name: string, verifyToken: string): Promise<void> {
-    const verifyUrl = `${env.CLIENT_URL}/verify-email?token=${verifyToken}`;
-    const { subject, text, html } = emailTemplates.verifyEmail(name, verifyUrl);
+    const verifyUrl = `${env.CLIENT_URL.replace(/\/$/, '')}/verify-email?token=${verifyToken}`;
+    const { subject, text, html } = emailTemplates.verifyEmail(
+      name,
+      verifyUrl,
+      VERIFY_EMAIL_EXPIRY_HOURS,
+    );
     await this.send({ to, subject, text, html });
   },
 };
