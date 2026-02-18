@@ -67,11 +67,11 @@ const SignUpPage: FC = () => {
           <Typography.Paragraph className="text-sm text-gray-400">
             Once verified, you&apos;ll be able to log in with your credentials.
           </Typography.Paragraph>
-          <Link to={ROUTES.LOGIN}>
+          <AppNavLink to={ROUTES.LOGIN}>
             <Button type="primary" className="mt-4">
               Go to Login
             </Button>
-          </Link>
+          </AppNavLink>
         </div>
       </Card>
     );
@@ -235,9 +235,9 @@ const SignUpPage: FC = () => {
 
           <div className="text-center text-gray-600">
             Already have an account?{' '}
-            <Link to={ROUTES.LOGIN} className="text-primary font-medium hover:underline">
+            <AppNavLink to={ROUTES.LOGIN} className="text-primary font-medium hover:underline">
               Sign in
-            </Link>
+            </AppNavLink>
           </div>
         </Flex>
       </Form>

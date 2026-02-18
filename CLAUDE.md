@@ -80,6 +80,7 @@ import { useAuth } from '@/hooks/useAuth';
 - Strongly typed Props type required.
 - Reuse existing components before creating new ones.
 - Prefer Ant Design components over custom UI.
+- Use components from `src/components/ui/` (e.g., `AppNavLink`, `Card`) for consistent application-wide UI patterns instead of creating new components or using raw HTML elements.
 - Style with Tailwind utilities; avoid inline styles and minimal custom CSS.
 - Performance optimizations:
   - `useMemo` for expensive calculations.

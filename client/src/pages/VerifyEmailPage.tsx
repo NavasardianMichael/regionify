@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Button, Card, Spin, Typography } from 'antd';
 import { verifyEmail } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type VerifyState = 'loading' | 'success' | 'error';
 
@@ -58,11 +59,11 @@ const VerifyEmailPage: FC = () => {
           <Typography.Paragraph className="mt-2 text-gray-500">
             Invalid verification link. No token provided.
           </Typography.Paragraph>
-          <Link to={ROUTES.SIGN_UP}>
+          <AppNavLink to={ROUTES.SIGN_UP}>
             <Button type="primary" className="mt-4">
               Back to Sign Up
             </Button>
-          </Link>
+          </AppNavLink>
         </div>
       </Card>
     );
@@ -106,14 +107,14 @@ const VerifyEmailPage: FC = () => {
             You can resend a verification email from the login page.
           </Typography.Paragraph>
           <div className="mt-4 flex flex-col gap-2">
-            <Link to={ROUTES.LOGIN}>
+            <AppNavLink to={ROUTES.LOGIN}>
               <Button type="primary" block>
                 Go to Login
               </Button>
-            </Link>
-            <Link to={ROUTES.SIGN_UP}>
+            </AppNavLink>
+            <AppNavLink to={ROUTES.SIGN_UP}>
               <Button block>Back to Sign Up</Button>
-            </Link>
+            </AppNavLink>
           </div>
         </div>
       </Card>
@@ -139,11 +140,11 @@ const VerifyEmailPage: FC = () => {
         <Typography.Paragraph className="mt-2 text-gray-500">
           Your email has been verified successfully. You can now log in with your credentials.
         </Typography.Paragraph>
-        <Link to={ROUTES.LOGIN}>
+        <AppNavLink to={ROUTES.LOGIN}>
           <Button type="primary" className="mt-4">
             Go to Login
           </Button>
-        </Link>
+        </AppNavLink>
       </div>
     </Card>
   );

@@ -4,6 +4,7 @@ import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Form, Input, Typography } from 'antd';
 import { resetPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type ResetPasswordFormValues = {
   password: string;
@@ -44,11 +45,11 @@ const ResetPasswordPage: FC = () => {
           <Typography.Paragraph className="mt-2 text-gray-500">
             No reset token provided. Please request a new password reset link.
           </Typography.Paragraph>
-          <Link to={ROUTES.FORGOT_PASSWORD}>
+          <AppNavLink to={ROUTES.FORGOT_PASSWORD}>
             <Button type="primary" className="mt-4">
               Request New Link
             </Button>
-          </Link>
+          </AppNavLink>
         </div>
       </Card>
     );
@@ -79,11 +80,11 @@ const ResetPasswordPage: FC = () => {
           <Typography.Paragraph className="mt-2 text-gray-500">
             Your password has been updated. You can now log in with your new password.
           </Typography.Paragraph>
-          <Link to={ROUTES.LOGIN}>
+          <AppNavLink to={ROUTES.LOGIN}>
             <Button type="primary" className="mt-4">
               Go to Login
             </Button>
-          </Link>
+          </AppNavLink>
         </div>
       </Card>
     );

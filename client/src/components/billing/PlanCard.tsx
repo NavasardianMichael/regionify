@@ -2,6 +2,7 @@ import { type FC, useCallback, useMemo } from 'react';
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 import { type Plan, PLANS } from '@regionify/shared';
 import { Button, Card, Flex, Typography } from 'antd';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import type { BillingPlan, PayablePlan } from './types';
 
 export type PlanCardProps = {
@@ -12,6 +13,7 @@ export type PlanCardProps = {
 };
 
 const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPlan }) => {
+  const { t } = useTypedTranslation();
   const isCurrentPlan = plan.id === currentPlan;
   const isUpgrading = upgradingPlan === plan.id;
 
@@ -47,7 +49,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
     <Card className={cardClassName} styles={{ body: cardBodyStyles }}>
       {plan.popular && (
         <div className="bg-primary absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-medium text-white">
-          Best Choice
+          {t('billing.bestChoice')}
         </div>
       )}
 
@@ -88,7 +90,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           icon={isUpgrading ? <LoadingOutlined /> : undefined}
           onClick={handleClick}
         >
-          {isCurrentPlan ? 'Current Plan' : plan.buttonText}
+          {isCurrentPlan ? t('billing.currentPlan') : plan.buttonText}
         </Button>
       </Flex>
     </Card>

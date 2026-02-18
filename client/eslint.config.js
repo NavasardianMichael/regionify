@@ -62,6 +62,7 @@ export default defineConfig([
               '^@/types',
               '^@/interfaces',
               '^@/constants',
+              '^@/i18n',
               '^@/helpers',
               '^@/components',
               '^@/pages',

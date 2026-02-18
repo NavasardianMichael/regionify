@@ -14,7 +14,7 @@ export const AppNavLink = ({ className, ...props }: Props) => {
       isPending: boolean;
       isTransitioning: boolean;
     }) => {
-      const baseClass = 'text-primary-600';
+      const baseClass = 'text-primary-600 hover:text-primary-400!';
       const customClass =
         typeof className === 'function'
           ? className({ isActive, isPending, isTransitioning })

@@ -1,20 +1,21 @@
 import { type FC, useCallback, useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   CreditCardOutlined,
-  DeleteOutlined,
   FolderOutlined,
   HomeOutlined,
   LoginOutlined,
   LogoutOutlined,
   MailOutlined,
+  SafetyOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
+import type { Locale } from '@regionify/shared';
 import { App, Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
-import { deleteAccount, logout as logoutApi } from '@/api/auth';
+import { logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
@@ -35,7 +36,7 @@ export const Navigation: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTypedTranslation();
-  const { modal, message } = App.useApp();
+  const { message } = App.useApp();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
   const logout = useProfileStore(selectLogout);
@@ -61,84 +62,44 @@ export const Navigation: FC = () => {
     }
   }, [logout, navigate, message, t]);
 
-  const handleDeleteAccount = useCallback(() => {
-    const modalInstance = modal.confirm({
-      title: t('deleteAccountModal.title'),
-      icon: null,
-      content: t('deleteAccountModal.content'),
-      okText: t('deleteAccountModal.ok'),
-      okButtonProps: { type: 'primary', danger: true },
-      cancelText: t('nav.cancel'),
-      closable: true,
-      maskClosable: false,
-      onOk: async () => {
-        modalInstance.update({
-          okButtonProps: { disabled: true, loading: true },
-          cancelButtonProps: { disabled: true },
-          closable: false,
-          maskClosable: false,
-        });
-
-        try {
-          await deleteAccount();
-          modalInstance.destroy();
-          logout();
-          navigate(ROUTES.ACCOUNT_DELETED);
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : t('deleteAccountModal.error');
-          message.error(errorMessage);
-          // Re-enable buttons on error
-          modalInstance.update({
-            okButtonProps: { disabled: false, loading: false, type: 'primary', danger: true },
-            cancelButtonProps: { disabled: false },
-            closable: true,
-            maskClosable: false,
-          });
-        }
-      },
-    });
-  }, [modal, message, t, logout, navigate]);
 
   const userMenuItems: DropdownProps['menu'] = useMemo(
     () => ({
       items: [
         {
-          key: 'profile',
-          label: t('nav.editProfile'),
+          key: 'account',
+          label: t('nav.account'),
           icon: <SettingOutlined />,
           onClick: () => navigate(ROUTES.PROFILE),
         },
+        {
+          key: 'security',
+          label: t('nav.security'),
+          icon: <SafetyOutlined />,
+          onClick: () => navigate(ROUTES.SECURITY),
+        },
+        { type: 'divider' as const },
         {
           key: 'logout',
           label: t('nav.logout'),
           icon: <LogoutOutlined />,
           onClick: handleLogout,
         },
-        { type: 'divider' as const },
-        {
-          key: 'delete-account',
-          label: t('nav.deleteAccount'),
-          icon: <DeleteOutlined />,
-          danger: true,
-          onClick: handleDeleteAccount,
-        },
       ],
     }),
-    [t, navigate, handleLogout, handleDeleteAccount],
+    [t, navigate, handleLogout],
   );
 
   const getNavLinkClassName = (path: string) => {
     const isActive = location.pathname === path;
-    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-      isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
-    }`;
+    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
+      }`;
   };
 
   return (
     <nav className="border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
-        <Link to={ROUTES.HOME}>
+        <AppNavLink to={ROUTES.HOME}>
           <img
             src={logoImage}
             alt={t('appName')}
@@ -147,7 +108,7 @@ export const Navigation: FC = () => {
             height={32}
             fetchPriority="high"
           />
-        </Link>
+        </AppNavLink>
         <Flex align="center" gap={16}>
           <Flex component="ul" gap={4}>
             {publicNavItems.map((item) => (
@@ -160,7 +121,7 @@ export const Navigation: FC = () => {
             ))}
           </Flex>
           <div className="h-6 w-px bg-gray-200" />
-          <LanguageDropdown currentLocale={i18n.language} />
+          <LanguageDropdown variant="borderless" currentLocale={i18n.language as Locale} placement="bottomRight" />
           <div className="h-6 w-px bg-gray-200" />
           {isLoggedIn ? (
             <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">

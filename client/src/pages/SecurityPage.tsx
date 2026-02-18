@@ -1,16 +1,16 @@
 import { type FC, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { App, Button, Divider, Form, Input, Typography } from 'antd';
-import { changePassword, updateProfile } from '@/api/auth';
-import { selectIsLoggedIn, selectSetUser, selectUser } from '@/store/profile/selectors';
+import { App, Button, Card as AntCard, Divider, Form, Input, Typography } from 'antd';
+import { changePassword } from '@/api/auth';
+import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 import { Card } from '@/components/ui/Card';
 
-type ProfileFormValues = {
-  name: string;
-};
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type PasswordFormValues = {
   currentPassword: string;
@@ -18,16 +18,14 @@ type PasswordFormValues = {
   confirmPassword: string;
 };
 
-const EditProfilePage: FC = () => {
+const SecurityPage: FC = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
+  const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
-  const setUser = useProfileStore(selectSetUser);
 
-  const [profileForm] = Form.useForm<ProfileFormValues>();
   const [passwordForm] = Form.useForm<PasswordFormValues>();
-  const [profileLoading, setProfileLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
@@ -35,24 +33,7 @@ const EditProfilePage: FC = () => {
       navigate(ROUTES.LOGIN, { replace: true });
       return;
     }
-    if (user) {
-      profileForm.setFieldsValue({ name: user.name });
-    }
-  }, [isLoggedIn, user, navigate, profileForm]);
-
-  const handleProfileSubmit = async (values: ProfileFormValues) => {
-    setProfileLoading(true);
-    try {
-      const { user: updatedUser } = await updateProfile({ name: values.name });
-      setUser(updatedUser);
-      message.success('Profile updated successfully.');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
-      message.error(errorMessage);
-    } finally {
-      setProfileLoading(false);
-    }
-  };
+  }, [isLoggedIn, navigate]);
 
   const handlePasswordSubmit = async (values: PasswordFormValues) => {
     setPasswordLoading(true);
@@ -61,10 +42,10 @@ const EditProfilePage: FC = () => {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      message.success('Password updated successfully.');
+      message.success(t('security.passwordUpdated'));
       passwordForm.resetFields();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to change password';
+      const errorMessage = error instanceof Error ? error.message : t('security.updateError');
       message.error(errorMessage);
     } finally {
       setPasswordLoading(false);
@@ -81,73 +62,18 @@ const EditProfilePage: FC = () => {
     <Card className="mx-auto! w-full max-w-144! bg-white! px-6! py-8! shadow-sm! md:px-10! md:py-10!">
       <header className="mb-8 text-center">
         <Typography.Title level={1} className="text-primary mb-1! text-2xl font-semibold">
-          Edit profile
+          {t('security.title')}
         </Typography.Title>
-        <Typography.Text className="text-gray-500">Update your name and password.</Typography.Text>
+        <Typography.Text className="text-gray-500">{t('security.subtitle')}</Typography.Text>
       </header>
 
-      <Form
-        form={profileForm}
-        layout="vertical"
-        onFinish={handleProfileSubmit}
-        requiredMark={false}
-        className="mb-0"
-      >
-        <Form.Item
-          name="name"
-          label={<span className="text-gray-700">Name</span>}
-          rules={[
-            { required: true, message: AUTH_VALIDATION.name.messages.required },
-            {
-              min: AUTH_VALIDATION.name.minLength,
-              message: AUTH_VALIDATION.name.messages.minLength,
-            },
-            {
-              max: AUTH_VALIDATION.name.maxLength,
-              message: AUTH_VALIDATION.name.messages.maxLength,
-            },
-            {
-              pattern: AUTH_VALIDATION.name.pattern,
-              message: AUTH_VALIDATION.name.messages.pattern,
-            },
-          ]}
-        >
-          <Input placeholder="Your name" size="large" className="rounded-lg" />
-        </Form.Item>
-
-        <Form.Item label={<span className="text-gray-700">Email</span>}>
-          <Input
-            value={user.email}
-            disabled
-            size="large"
-            className="rounded-lg bg-gray-50 text-gray-600"
-          />
-        </Form.Item>
-        <Typography.Text className="mb-6 block text-xs text-gray-400">
-          Email cannot be changed for security reasons.
-        </Typography.Text>
-
-        <Form.Item className="mb-0">
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            loading={profileLoading}
-            className="w-full rounded-lg font-medium"
-          >
-            Save profile
-          </Button>
-        </Form.Item>
-      </Form>
-
-      {canChangePassword && (
+      {canChangePassword ? (
         <>
-          <Divider className="my-8 border-gray-200" />
           <Typography.Title level={5} className="text-primary mb-1! text-sm font-semibold">
-            Change password
+            {t('security.changePassword')}
           </Typography.Title>
           <Typography.Text className="mb-5 block text-sm text-gray-500">
-            Enter your current password and choose a new one.
+            {t('security.changePasswordDescription')}
           </Typography.Text>
           <Form
             form={passwordForm}
@@ -157,15 +83,19 @@ const EditProfilePage: FC = () => {
           >
             <Form.Item
               name="currentPassword"
-              label={<span className="text-gray-700">Current password</span>}
+              label={<span className="text-gray-700">{t('security.currentPassword')}</span>}
               rules={[{ required: true, message: AUTH_VALIDATION.password.messages.required }]}
             >
-              <Input.Password placeholder="Current password" size="large" className="rounded-lg" />
+              <Input.Password
+                placeholder={t('security.currentPassword')}
+                size="large"
+                className="rounded-lg"
+              />
             </Form.Item>
 
             <Form.Item
               name="newPassword"
-              label={<span className="text-gray-700">New password</span>}
+              label={<span className="text-gray-700">{t('security.newPassword')}</span>}
               rules={[
                 { required: true, message: AUTH_VALIDATION.password.messages.required },
                 {
@@ -190,12 +120,16 @@ const EditProfilePage: FC = () => {
                 },
               ]}
             >
-              <Input.Password placeholder="New password" size="large" className="rounded-lg" />
+              <Input.Password
+                placeholder={t('security.newPassword')}
+                size="large"
+                className="rounded-lg"
+              />
             </Form.Item>
 
             <Form.Item
               name="confirmPassword"
-              label={<span className="text-gray-700">Confirm new password</span>}
+              label={<span className="text-gray-700">{t('security.confirmPassword')}</span>}
               dependencies={['newPassword']}
               rules={[
                 { required: true, message: AUTH_VALIDATION.confirmPassword.messages.required },
@@ -212,7 +146,7 @@ const EditProfilePage: FC = () => {
               ]}
             >
               <Input.Password
-                placeholder="Confirm new password"
+                placeholder={t('security.confirmPassword')}
                 size="large"
                 className="rounded-lg"
               />
@@ -226,23 +160,60 @@ const EditProfilePage: FC = () => {
                 loading={passwordLoading}
                 className="w-full rounded-lg font-medium"
               >
-                Change password
+                {t('security.changePassword')}
               </Button>
             </Form.Item>
           </Form>
         </>
+      ) : (
+        <AntCard className="mb-6 border-gray-200">
+          <Typography.Text className="text-gray-600">{t('security.googleAccountNote')}</Typography.Text>
+        </AntCard>
       )}
 
+      <Divider className="my-8 border-gray-200" />
+
+      <div>
+        <Typography.Title level={5} className="text-primary mb-4! text-sm font-semibold">
+          {t('security.securityInfo.title')}
+        </Typography.Title>
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <CheckCircleOutlined className="mt-0.5 text-green-500" />
+            <Typography.Text className="text-sm text-gray-700">
+              {t('security.securityInfo.passwordHashing')}
+            </Typography.Text>
+          </div>
+          <div className="flex items-start gap-3">
+            <CheckCircleOutlined className="mt-0.5 text-green-500" />
+            <Typography.Text className="text-sm text-gray-700">
+              {t('security.securityInfo.sessionSecurity')}
+            </Typography.Text>
+          </div>
+          <div className="flex items-start gap-3">
+            <CheckCircleOutlined className="mt-0.5 text-green-500" />
+            <Typography.Text className="text-sm text-gray-700">
+              {t('security.securityInfo.rateLimiting')}
+            </Typography.Text>
+          </div>
+          <div className="flex items-start gap-3">
+            <CheckCircleOutlined className="mt-0.5 text-green-500" />
+            <Typography.Text className="text-sm text-gray-700">
+              {t('security.securityInfo.dataEncryption')}
+            </Typography.Text>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-8 border-t border-gray-100 pt-6 text-center">
-        <Link
+        <AppNavLink
           to={ROUTES.PROJECTS}
-          className="hover:text-primary text-sm text-gray-500 transition-colors"
         >
-          ← Back to Projects
-        </Link>
+          {t('security.backToProjects')}
+        </AppNavLink>
       </div>
     </Card>
   );
 };
 
-export default EditProfilePage;
+export default SecurityPage;

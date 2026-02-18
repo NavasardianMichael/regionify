@@ -8,9 +8,11 @@ import { useProfileStore } from '@/store/profile/store';
 import { BILLING_PLANS } from '@/components/billing/constants';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 const BillingPage: FC = () => {
   const { message } = App.useApp();
+  const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const navigate = useNavigate();
@@ -28,21 +30,21 @@ const BillingPage: FC = () => {
         const { approvalUrl } = await createOrder({ plan });
         window.location.href = approvalUrl;
       } catch {
-        message.error('Could not start checkout. Please try again.');
+        message.error(t('billing.checkoutError'));
         setUpgradingPlan(null);
       }
     },
-    [isLoggedIn, message, navigate],
+    [isLoggedIn, message, navigate, t],
   );
 
   return (
     <Flex vertical align="center" gap="large" className="mx-auto! w-full max-w-5xl">
       <Flex vertical align="center" gap="small">
         <Typography.Title level={1} className="text-primary mb-0! text-3xl font-bold">
-          Choose Your Plan
+          {t('billing.title')}
         </Typography.Title>
         <Typography.Paragraph className="mb-0! text-gray-500">
-          Select the perfect plan for your mapping needs
+          {t('billing.subtitle')}
         </Typography.Paragraph>
       </Flex>
 
@@ -59,9 +61,7 @@ const BillingPage: FC = () => {
         ))}
       </Flex>
 
-      <Typography.Text type="secondary">
-        Payments are secure via PayPal. No card data is stored on our servers.
-      </Typography.Text>
+      <Typography.Text type="secondary">{t('billing.paymentNote')}</Typography.Text>
     </Flex>
   );
 };

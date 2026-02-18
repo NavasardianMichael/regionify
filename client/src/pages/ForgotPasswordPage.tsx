@@ -5,6 +5,7 @@ import { AUTH_VALIDATION } from '@regionify/shared';
 import { App, Button, Card, Form, Input, Typography } from 'antd';
 import { forgotPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type ForgotPasswordFormValues = {
   email: string;
@@ -55,11 +56,11 @@ const ForgotPasswordPage: FC = () => {
             If an account with the provided email exists, we will send a password reset link to your
             email address. Please check your inbox and follow the instructions.
           </Typography.Paragraph>
-          <Link to={ROUTES.LOGIN}>
+          <AppNavLink to={ROUTES.LOGIN}>
             <Button type="primary" className="mt-4">
               Back to Login
             </Button>
-          </Link>
+          </AppNavLink>
         </div>
       </Card>
     );
@@ -95,13 +96,10 @@ const ForgotPasswordPage: FC = () => {
         </Form.Item>
 
         <div className="text-center">
-          <Link
-            to={ROUTES.LOGIN}
-            className="text-primary inline-flex items-center gap-1 hover:underline"
-          >
+          <AppNavLink to={ROUTES.LOGIN}>
             <ArrowLeftOutlined />
             Back to Login
-          </Link>
+          </AppNavLink>
         </div>
       </Form>
     </Card>
