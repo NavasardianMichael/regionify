@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 
 /**
- * Post-install setup script for local development.
- * Handles Prisma client generation and database migrations.
- * Skips migrations in CI/CD and production environments.
+ * Post-install setup script for local development and CI build.
+ * - Generates Prisma client (required for the app to run).
+ * - Optionally runs migrations only in local dev (not in CI or production).
+ *
+ * Production: This script is not run in production Docker (install uses --ignore-scripts).
+ * Prisma client is generated explicitly in the Dockerfile. Migrations should be run as a
+ * separate deploy step (e.g. db:migrate:prod), not during install.
  */
 
 import { execSync } from 'child_process';

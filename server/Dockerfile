@@ -12,12 +12,13 @@ RUN apk add --no-cache libc6-compat && \
 
 WORKDIR /app
 
-# Copy package files and prisma schema (needed for postinstall)
+# Copy package files, prisma schema, and server scripts (postinstall needs scripts/)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
 COPY server/prisma ./server/prisma
+COPY server/scripts ./server/scripts
 
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
