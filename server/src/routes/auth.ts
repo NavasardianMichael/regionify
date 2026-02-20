@@ -112,6 +112,21 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
+// GET /api/auth/me - Get current user (requires auth); used e.g. after payment return to refresh plan
+router.get('/me', requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.session.userId!;
+    const user = await authService.getUserById(userId);
+    if (!user) {
+      res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'User not found' } });
+      return;
+    }
+    res.json({ success: true, data: { user } });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // PATCH /api/auth/profile - Update profile (name); requires auth
 router.patch('/profile', requireAuth, validate(updateProfileSchema), async (req, res, next) => {
   try {

@@ -1,215 +1,170 @@
-import { Plan, PLANS } from '@regionify/shared';
-import { HttpStatus, ErrorCode } from '@regionify/shared';
+import { HttpStatus, ErrorCode, PLAN_DETAILS, Plan, PLANS } from '@regionify/shared';
+import crypto from 'node:crypto';
 
 import { env } from '../config/env.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { userRepository } from '../repositories/userRepository.js';
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 
-/** Plan to USD amount (for PayPal purchase_units). Values can be changed. */
-const PLAN_AMOUNTS: Record<Exclude<Plan, typeof PLANS.observer>, string> = {
-  [PLANS.explorer]: '9.99',
-  [PLANS.chronographer]: '19.99',
-};
+type PayablePlan = Exclude<Plan, typeof PLANS.observer>;
 
-const PAYPAL_SANDBOX_DEFAULT = 'https://api-m.sandbox.paypal.com';
-
-function getPayPalBaseUrl(): string {
-  return env.PAYPAL_API_BASE_URL ?? PAYPAL_SANDBOX_DEFAULT;
-}
-
-async function getAccessToken(): Promise<string> {
-  const clientId = env.PAYPAL_CLIENT_ID;
-  const clientSecret = env.PAYPAL_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
+/** Plan to Lemon Squeezy variant ID (from env). */
+function getVariantIdByPlan(plan: PayablePlan): string {
+  const id =
+    plan === PLANS.explorer
+      ? env.LEMON_SQUEEZY_VARIANT_ID_EXPLORER
+      : env.LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER;
+  if (!id) {
     throw new AppError(
       HttpStatus.SERVICE_UNAVAILABLE,
       ErrorCode.INTERNAL_ERROR,
-      'PayPal is not configured',
+      'Lemon Squeezy variant not configured for this plan',
     );
   }
-
-  const baseUrl = getPayPalBaseUrl();
-  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
-  const res = await fetch(`${baseUrl}/v1/oauth2/token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: `Basic ${auth}`,
-    },
-    body: 'grant_type=client_credentials',
-  });
-
-  if (!res.ok) {
-    const err = (await res.json().catch(() => ({}))) as { error_description?: string };
-    throw new AppError(
-      HttpStatus.BAD_GATEWAY,
-      ErrorCode.INTERNAL_ERROR,
-      err.error_description ?? 'Failed to get PayPal access token',
-    );
-  }
-
-  const data = (await res.json()) as { access_token: string };
-  return data.access_token;
+  return id;
 }
 
-export type CreateOrderResult = {
-  orderId: string;
-  approvalUrl: string;
+/** Plan to price in cents (from shared PLAN_DETAILS). */
+function getPriceCents(plan: PayablePlan): number {
+  const price = PLAN_DETAILS[plan].price;
+  return Math.round(price * 100);
+}
+
+export type CreateCheckoutResult = {
+  checkoutUrl: string;
 };
+
+const LEMON_SQUEEZY_API = 'https://api.lemonsqueezy.com';
 
 export const paymentService = {
   /**
-   * Create a PayPal order for a plan upgrade. Returns orderId and URL to redirect the user.
-   * Server-only; no client tokens.
+   * Create a Lemon Squeezy checkout for a plan upgrade. Returns URL to redirect the user.
+   * Server-only; API key never sent to client.
    */
-  async createOrder(
+  async createCheckout(
     userId: string,
-    plan: Exclude<Plan, typeof PLANS.observer>,
-  ): Promise<CreateOrderResult> {
-    const amount = PLAN_AMOUNTS[plan];
-    if (!amount) {
-      throw new AppError(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, 'Invalid plan');
+    plan: PayablePlan,
+  ): Promise<CreateCheckoutResult> {
+    const apiKey = env.LEMON_SQUEEZY_API_KEY;
+    const storeId = env.LEMON_SQUEEZY_STORE_ID;
+    if (!apiKey || !storeId) {
+      throw new AppError(
+        HttpStatus.SERVICE_UNAVAILABLE,
+        ErrorCode.INTERNAL_ERROR,
+        'Lemon Squeezy is not configured',
+      );
     }
 
-    const token = await getAccessToken();
-    const baseUrl = getPayPalBaseUrl();
-    const returnUrl = `${env.CLIENT_URL}/payments/return`;
-    const cancelUrl = `${env.CLIENT_URL}/payments/cancel`;
+    const variantId = getVariantIdByPlan(plan);
+    const customPrice = getPriceCents(plan);
+    const redirectUrl = `${env.CLIENT_URL}/payments/return`;
 
-    const res = await fetch(`${baseUrl}/v2/checkout/orders`, {
+    const res = await fetch(`${LEMON_SQUEEZY_API}/v1/checkouts`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        intent: 'CAPTURE',
-        purchase_units: [
-          {
-            amount: { currency_code: 'USD', value: amount },
-            custom_id: userId,
-            description: `Regionify ${plan} plan (lifetime, one-time purchase)`,
+        data: {
+          type: 'checkouts',
+          attributes: {
+            custom_price: customPrice,
+            product_options: {
+              redirect_url: redirectUrl,
+              name: `Regionify ${plan} plan`,
+              description: `Lifetime access, one-time purchase.`,
+            },
+            checkout_data: {
+              custom: {
+                user_id: userId,
+              },
+            },
           },
-        ],
-        application_context: {
-          return_url: returnUrl,
-          cancel_url: cancelUrl,
-          brand_name: 'Regionify',
-          user_action: 'PAY_NOW',
+          relationships: {
+            store: {
+              data: { type: 'stores', id: storeId },
+            },
+            variant: {
+              data: { type: 'variants', id: variantId },
+            },
+          },
         },
       }),
     });
 
     if (!res.ok) {
-      const err = (await res.json().catch(() => ({}))) as { message?: string; details?: unknown };
+      const err = (await res.json().catch(() => ({}))) as { errors?: Array<{ detail?: string }> };
+      const detail = err.errors?.[0]?.detail ?? res.statusText;
       throw new AppError(
         HttpStatus.BAD_GATEWAY,
         ErrorCode.INTERNAL_ERROR,
-        err.message ?? 'Failed to create PayPal order',
+        `Lemon Squeezy checkout failed: ${detail}`,
       );
     }
 
-    const order = (await res.json()) as {
-      id: string;
-      links?: Array<{ rel: string; href: string }>;
+    const json = (await res.json()) as {
+      data?: { attributes?: { url?: string } };
     };
-    const approveLink = order.links?.find((l) => l.rel === 'approve');
-    if (!approveLink?.href) {
+    const checkoutUrl = json.data?.attributes?.url;
+    if (!checkoutUrl) {
       throw new AppError(
         HttpStatus.BAD_GATEWAY,
         ErrorCode.INTERNAL_ERROR,
-        'PayPal did not return approval URL',
+        'Lemon Squeezy did not return a checkout URL',
       );
     }
 
-    return { orderId: order.id, approvalUrl: approveLink.href };
+    return { checkoutUrl };
   },
 
   /**
-   * Capture a PayPal order and upgrade the user's plan. Idempotent: if order already captured, still returns success.
+   * Verify webhook signature using HMAC-SHA256 (Lemon Squeezy signing).
    */
-  async captureOrder(userId: string, orderId: string): Promise<{ plan: Plan }> {
-    const token = await getAccessToken();
-    const baseUrl = getPayPalBaseUrl();
+  verifyWebhookSignature(rawBody: Buffer, signature: string): boolean {
+    const secret = env.LEMON_SQUEEZY_WEBHOOK_SECRET;
+    if (!secret) return false;
+    const hmac = crypto.createHmac('sha256', secret);
+    const digest = Buffer.from(hmac.update(rawBody).digest('hex'), 'utf8');
+    const sigBuffer = Buffer.from(signature, 'utf8');
+    return digest.length === sigBuffer.length && crypto.timingSafeEqual(digest, sigBuffer);
+  },
 
-    const getRes = await fetch(`${baseUrl}/v2/checkout/orders/${orderId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!getRes.ok) {
-      if (getRes.status === 404) {
-        throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'Order not found');
-      }
-      throw new AppError(
-        HttpStatus.BAD_GATEWAY,
-        ErrorCode.INTERNAL_ERROR,
-        'Failed to fetch PayPal order',
-      );
-    }
-
-    const order = (await getRes.json()) as {
-      status: string;
-      purchase_units?: Array<{ custom_id?: string; amount?: { value?: string } }>;
+  /**
+   * Handle order_created webhook: upgrade user plan from custom_data.user_id and variant_id.
+   * Idempotent.
+   */
+  async handleOrderCreated(payload: {
+    meta?: { custom_data?: { user_id?: string } };
+    data?: {
+      attributes?: {
+        first_order_item?: { variant_id: number };
+      };
     };
+  }): Promise<void> {
+    const userId = payload.meta?.custom_data?.user_id;
+    const variantId = payload.data?.attributes?.first_order_item?.variant_id;
+    if (!userId || variantId == null) return;
 
-    const customId = order.purchase_units?.[0]?.custom_id;
-    if (customId && customId !== userId) {
-      throw new AppError(HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN, 'Order does not belong to you');
+    const variantExplorer = env.LEMON_SQUEEZY_VARIANT_ID_EXPLORER
+      ? Number(env.LEMON_SQUEEZY_VARIANT_ID_EXPLORER)
+      : null;
+    const variantChronographer = env.LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER
+      ? Number(env.LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER)
+      : null;
+
+    let plan: User['plan'] | null = null;
+    if (variantExplorer !== null && variantId === variantExplorer) {
+      plan = PLANS.explorer as User['plan'];
+    } else if (variantChronographer !== null && variantId === variantChronographer) {
+      plan = PLANS.chronographer as User['plan'];
     }
+    if (!plan) return;
 
-    if (order.status === 'COMPLETED') {
-      const planFromAmount = (
-        Object.entries(PLAN_AMOUNTS) as [Exclude<Plan, typeof PLANS.observer>, string][]
-      ).find(([, v]) => v === order.purchase_units?.[0]?.amount?.value)?.[0];
-      const plan = planFromAmount as User['plan'];
-      const user = await userRepository.findById(userId);
-      if (user && user.plan !== plan) {
-        await userRepository.update(userId, { plan });
-      }
-      return { plan: plan as Plan };
+    const user = await userRepository.findById(userId);
+    if (user && user.plan !== plan) {
+      await userRepository.update(userId, { plan });
     }
-
-    if (order.status !== 'APPROVED') {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        ErrorCode.VALIDATION_ERROR,
-        'Order is not approved for capture',
-      );
-    }
-
-    const captureRes = await fetch(`${baseUrl}/v2/checkout/orders/${orderId}/capture`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: '{}',
-    });
-
-    if (!captureRes.ok) {
-      const err = (await captureRes.json().catch(() => ({}))) as { message?: string };
-      throw new AppError(
-        HttpStatus.BAD_GATEWAY,
-        ErrorCode.INTERNAL_ERROR,
-        err.message ?? 'Failed to capture PayPal order',
-      );
-    }
-
-    const captureData = (await captureRes.json()) as {
-      status: string;
-      purchase_units?: Array<{ amount?: { value?: string } }>;
-    };
-
-    const amountValue = captureData.purchase_units?.[0]?.amount?.value;
-    const planFromAmount = (
-      Object.entries(PLAN_AMOUNTS) as [Exclude<Plan, typeof PLANS.observer>, string][]
-    ).find(([, v]) => v === amountValue)?.[0];
-    const plan = planFromAmount as User['plan'];
-
-    await userRepository.update(userId, { plan });
-
-    return { plan: plan as Plan };
   },
 };

@@ -42,8 +42,15 @@ export function createApp(): express.Application {
   // Rate limiting (apply to all routes)
   app.use(generalLimiter);
 
-  // Body parsing
-  app.use(express.json({ limit: '10kb' }));
+  // Body parsing (store raw body for Lemon Squeezy webhook signature verification)
+  app.use(
+    express.json({
+      limit: '10kb',
+      verify: (req: Request, _res, buf: Buffer) => {
+        (req as Request & { rawBody?: Buffer }).rawBody = buf;
+      },
+    }),
+  );
   app.use(express.urlencoded({ extended: true, limit: '10kb' }));
   app.use(cookieParser());
 

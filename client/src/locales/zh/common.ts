@@ -33,7 +33,7 @@ const zh: CommonNs = {
   billing: {
     title: '选择您的计划',
     subtitle: '选择最适合您的地图制作需求的计划',
-    paymentNote: '通过 PayPal 安全支付。我们的服务器不存储卡数据。',
+    paymentNote: '通过 Lemon Squeezy 安全支付。我们的服务器不存储卡数据。',
     checkoutError: '无法开始结账。请重试。',
     currentPlan: '当前计划',
     bestChoice: '最佳选择',

@@ -34,7 +34,7 @@ const fr: CommonNs = {
   billing: {
     title: 'Choisissez votre plan',
     subtitle: 'Sélectionnez le plan parfait pour vos besoins de cartographie',
-    paymentNote: 'Les paiements sont sécurisés via PayPal. Aucune donnée de carte n\'est stockée sur nos serveurs.',
+    paymentNote: 'Les paiements sont sécurisés via Lemon Squeezy. Aucune donnée de carte n\'est stockée sur nos serveurs.',
     checkoutError: 'Impossible de démarrer le paiement. Veuillez réessayer.',
     currentPlan: 'Plan actuel',
     bestChoice: 'Meilleur choix',

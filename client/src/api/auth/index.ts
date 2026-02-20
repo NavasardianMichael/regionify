@@ -70,6 +70,24 @@ export const register = async (payload: RegisterPayload): Promise<RegisterApiRes
 };
 
 /**
+ * Get current user (requires session). Used e.g. after payment return to refresh plan.
+ */
+type GetMeResponse = { success: true; data: { user: AuthApiResponse['user'] } };
+
+export const getMe = async (): Promise<AuthApiResponse> => {
+  const response = await fetch(AUTH_ENDPOINTS.me, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(getErrorMessage(data, 'Failed to get current user'));
+  }
+  const typed = data as GetMeResponse;
+  return { user: typed.data.user, message: '' };
+};
+
+/**
  * Logout the current user
  */
 export const logout = async (): Promise<void> => {

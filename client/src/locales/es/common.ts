@@ -34,7 +34,7 @@ const es: CommonNs = {
   billing: {
     title: 'Elige tu plan',
     subtitle: 'Selecciona el plan perfecto para tus necesidades de mapeo',
-    paymentNote: 'Los pagos son seguros a través de PayPal. No se almacenan datos de tarjeta en nuestros servidores.',
+    paymentNote: 'Los pagos son seguros a través de Lemon Squeezy. No se almacenan datos de tarjeta en nuestros servidores.',
     checkoutError: 'No se pudo iniciar el pago. Inténtalo de nuevo.',
     currentPlan: 'Plan actual',
     bestChoice: 'Mejor opción',

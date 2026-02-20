@@ -34,7 +34,7 @@ const ar: CommonNs = {
   billing: {
     title: 'اختر خطتك',
     subtitle: 'اختر الخطة المثالية لاحتياجاتك في رسم الخرائط',
-    paymentNote: 'المدفوعات آمنة عبر PayPal. لا يتم تخزين بيانات البطاقة على خوادمنا.',
+    paymentNote: 'المدفوعات آمنة عبر Lemon Squeezy. لا يتم تخزين بيانات البطاقة على خوادمنا.',
     checkoutError: 'تعذر بدء الدفع. يرجى المحاولة مرة أخرى.',
     currentPlan: 'الخطة الحالية',
     bestChoice: 'أفضل خيار',

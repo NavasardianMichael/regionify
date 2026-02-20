@@ -1,71 +1,77 @@
-import { type FC, useCallback, useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { type FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
-import { captureOrder } from '@/api/payments';
+import { getMe } from '@/api/auth';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import { PLANS } from '@regionify/shared';
+
+const POLL_INTERVAL_MS = 2000;
+const POLL_TIMEOUT_MS = 60000;
 
 const PaymentReturnPage: FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const setUser = useProfileStore(selectSetUser);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [messageText, setMessageText] = useState('');
-
-  const token = searchParams.get('token');
+  const [upgradedPlan, setUpgradedPlan] = useState<string | null>(null);
+  const pollStartRef = useRef<number>(Date.now());
 
   const handleContinue = useCallback(() => {
     navigate(ROUTES.PROJECTS);
   }, [navigate]);
 
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
+  const intervalIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  useEffect(() => {
     let cancelled = false;
 
-    const run = async (): Promise<void> => {
-      try {
-        const result = await captureOrder({ orderId: token });
-        if (cancelled) return;
-        if (result.user) {
-          setUser(result.user);
-        }
+    const poll = async (): Promise<void> => {
+      if (cancelled) return;
+      if (Date.now() - pollStartRef.current > POLL_TIMEOUT_MS) {
+        if (intervalIdRef.current) clearInterval(intervalIdRef.current);
         setStatus('success');
-        setMessageText(`You're now on the ${result.plan} plan.`);
+        setMessageText(
+          'Payment received. Your plan may take a moment to update. Refresh the page or check Billing.',
+        );
+        return;
+      }
+      try {
+        const { user } = await getMe();
+        if (cancelled) return;
+        setUser(user);
+        if (user.plan !== PLANS.observer) {
+          if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+          setUpgradedPlan(user.plan);
+          setStatus('success');
+          setMessageText(`You're now on the ${user.plan} plan.`);
+          return;
+        }
       } catch {
         if (!cancelled) {
+          if (intervalIdRef.current) clearInterval(intervalIdRef.current);
           setStatus('error');
-          setMessageText('Payment could not be completed. Please try again or contact support.');
+          setMessageText('Could not verify your plan. Please refresh or check Billing.');
         }
       }
     };
 
-    void run();
+    void poll();
+    intervalIdRef.current = setInterval(poll, POLL_INTERVAL_MS);
+
     return () => {
       cancelled = true;
+      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
     };
-  }, [token, setUser]);
-
-  if (!token) {
-    return (
-      <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
-        <Typography.Text type="danger">No order ID in URL.</Typography.Text>
-        <Button type="primary" onClick={() => navigate(ROUTES.BILLING)}>
-          Back to Billing
-        </Button>
-      </Flex>
-    );
-  }
+  }, [setUser]);
 
   if (status === 'loading') {
     return (
       <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
         <Spin size="large" />
-        <Typography.Text>Completing your payment...</Typography.Text>
+        <Typography.Text>Payment successful. Updating your plan...</Typography.Text>
       </Flex>
     );
   }
@@ -89,6 +95,11 @@ const PaymentReturnPage: FC = () => {
       <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleContinue}>
         Continue to My Projects
       </Button>
+      {!upgradedPlan && (
+        <Button type="link" onClick={() => navigate(ROUTES.BILLING)}>
+          Go to Billing
+        </Button>
+      )}
     </Flex>
   );
 };

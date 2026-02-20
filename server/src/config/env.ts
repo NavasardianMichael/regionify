@@ -48,11 +48,12 @@ const envSchema = z.object({
   MAIL_API_URL: z.string().url(),
   MAIL_API_KEY: z.string().optional(),
 
-  // PayPal (backend-only; no client tokens)
-  PAYPAL_CLIENT_ID: z.string().optional(),
-  PAYPAL_CLIENT_SECRET: z.string().optional(),
-  PAYPAL_API_BASE_URL: z.string().url().optional().default('https://api-m.sandbox.paypal.com'),
-  PAYPAL_WEBHOOK_ID: z.string().optional(),
+  // Lemon Squeezy (one-time checkouts; webhook for order_created)
+  LEMON_SQUEEZY_API_KEY: z.string().optional(),
+  LEMON_SQUEEZY_STORE_ID: z.string().optional(),
+  LEMON_SQUEEZY_VARIANT_ID_EXPLORER: z.string().optional(),
+  LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER: z.string().optional(),
+  LEMON_SQUEEZY_WEBHOOK_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

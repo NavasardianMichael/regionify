@@ -2,7 +2,7 @@ import { type FC, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type Plan, PLANS } from '@regionify/shared';
 import { App, Flex, Typography } from 'antd';
-import { createOrder } from '@/api/payments';
+import { createCheckout } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { BILLING_PLANS } from '@/components/billing/constants';
@@ -27,8 +27,8 @@ const BillingPage: FC = () => {
       }
       setUpgradingPlan(plan);
       try {
-        const { approvalUrl } = await createOrder({ plan });
-        window.location.href = approvalUrl;
+        const { checkoutUrl } = await createCheckout({ plan });
+        window.location.href = checkoutUrl;
       } catch {
         message.error(t('billing.checkoutError'));
         setUpgradingPlan(null);
