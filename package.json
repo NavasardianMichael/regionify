@@ -15,7 +15,6 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm run --parallel -r typecheck",
     "prepare": "husky",
-    "postinstall": "pnpm --filter @regionify/server postinstall",
     "db:generate": "pnpm --filter @regionify/server db:generate",
     "db:migrate": "pnpm --filter @regionify/server db:migrate",
     "db:migrate:deploy": "pnpm --filter @regionify/server db:migrate:deploy",

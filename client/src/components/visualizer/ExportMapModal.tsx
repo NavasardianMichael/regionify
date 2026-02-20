@@ -301,11 +301,11 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
                 Speed (frames/sec):
               </Typography.Text>
               <InputNumber
-                min={0.5}
-                max={10}
+                min={5}
+                max={60}
                 step={0.5}
                 value={fps}
-                onChange={(v: number | null) => setFps(Math.max(0.5, Math.min(v ?? 1, 10)))}
+                onChange={(v: number | null) => setFps(Math.max(0.5, Math.min(v ?? 1, 60)))}
                 className="w-20"
               />
             </Flex>

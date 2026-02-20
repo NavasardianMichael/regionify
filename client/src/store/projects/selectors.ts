@@ -5,6 +5,10 @@ export const selectProjects = (state: ProjectsState) => state.projects;
 export const selectCurrentProjectId = (state: ProjectsState) => state.currentProjectId;
 export const selectSavedStateSnapshot = (state: ProjectsState) => state.savedStateSnapshot;
 export const selectProjectsLoading = (state: ProjectsState) => state.isLoading;
+export const selectCurrentProject = (state: ProjectsState) => {
+  if (!state.currentProjectId) return null;
+  return state.projects.find((p) => p.id === state.currentProjectId) ?? null;
+};
 
 // Action selectors
 export const selectSetProjects = (state: ProjectsState) => state.setProjects;

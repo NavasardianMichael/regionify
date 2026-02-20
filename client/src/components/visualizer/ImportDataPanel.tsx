@@ -14,6 +14,7 @@ import {
   EditOutlined,
   FileExcelOutlined,
   InfoCircleOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons';
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { CheckboxProps, UploadProps } from 'antd';
@@ -37,11 +38,15 @@ import {
   selectSelectedRegionId,
   selectSetTimelineData,
   selectSetVisualizerState,
+  selectTimelineData,
+  selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { DataSet, RegionData } from '@/store/mapData/types';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { selectCurrentProject } from '@/store/projects/selectors';
+import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
@@ -49,6 +54,25 @@ import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
+
+/**
+ * Sanitize project name for use in filename
+ * Removes invalid characters and limits length
+ */
+const sanitizeFilename = (name: string): string => {
+  // Remove invalid filename characters: < > : " / \ | ? * and control characters
+  const invalidChars = /[<>:"/\\|?*]/g;
+  // eslint-disable-next-line no-control-regex
+  const controlChars = /[\u0000-\u001f]/g;
+  return name
+    .replace(invalidChars, '')
+    .replace(controlChars, '')
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+    .slice(0, 100) // Limit length
+    .trim() || 'data'; // Fallback to 'data' if empty
+};
 
 /**
  * Parsed row from user data
@@ -218,6 +242,7 @@ export const ImportDataPanel: FC = () => {
   const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
   const [isHistoricalData, setIsHistoricalData] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
@@ -225,58 +250,124 @@ export const ImportDataPanel: FC = () => {
   const setTimelineData = useVisualizerStore(selectSetTimelineData);
   const clearTimelineData = useVisualizerStore(selectClearTimelineData);
   const data = useVisualizerStore(selectData);
+  const timelineData = useVisualizerStore(selectTimelineData);
+  const timePeriods = useVisualizerStore(selectTimePeriods);
 
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
   const { limits } = PLAN_DETAILS[plan];
+  const currentProject = useProjectsStore(selectCurrentProject);
 
-  const handleDownloadData = useCallback(() => {
+  // Check if current data supports historical format (has timeline data with time periods)
+  const hasHistoricalFormat = useMemo(() => {
+    return (
+      limits.historicalDataImport &&
+      timePeriods &&
+      Array.isArray(timePeriods) &&
+      timePeriods.length > 0 &&
+      timelineData &&
+      Object.keys(timelineData).length > 0
+    );
+  }, [limits.historicalDataImport, timePeriods, timelineData]);
+
+  const handleDownloadData = useCallback(async () => {
     if (data.allIds.length === 0) {
       message.warning('No data available to download');
       return;
     }
 
-    const rows = data.allIds.map((id) => ({
-      id: data.byId[id].id,
-      label: data.byId[id].label,
-      value: data.byId[id].value,
-    }));
+    setIsDownloading(true);
 
-    let content: string;
-    let filename: string;
-    let mimeType: string;
+    try {
+      // Generate data format based on historical data status
+      let rows: Array<{ id: string; label: string; value: number; year?: string }>;
 
-    switch (importDataType) {
-      case 'json':
-        content = JSON.stringify(rows, null, 2);
-        filename = 'data.json';
-        mimeType = 'application/json';
-        break;
-      case 'excel': {
-        const worksheet = XLSX.utils.json_to_sheet(rows);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-        XLSX.writeFile(workbook, 'data.xlsx');
-        return;
+      // Use hasHistoricalFormat to determine format, not just checkbox state
+      // This ensures downloaded data matches the actual data structure
+      if (hasHistoricalFormat && timePeriods && Array.isArray(timePeriods) && timePeriods.length > 0 && timelineData) {
+        // Generate dynamic data with years/time periods from current timeline data
+        rows = [];
+        for (const period of timePeriods) {
+          const periodData = timelineData[period];
+          if (periodData) {
+            for (const id of periodData.allIds) {
+              const item = periodData.byId[id];
+              rows.push({
+                id: item.id,
+                label: item.label,
+                value: item.value,
+                year: period,
+              });
+            }
+          }
+        }
+      } else {
+        // Generate static data (no time periods) - uses current data state (includes manual edits)
+        rows = data.allIds.map((id) => ({
+          id: data.byId[id].id,
+          label: data.byId[id].label,
+          value: data.byId[id].value,
+        }));
       }
-      case 'csv':
-      default:
-        content = 'id,label,value\n' + rows.map((r) => `${r.id},${r.label},${r.value}`).join('\n');
-        filename = 'data.csv';
-        mimeType = 'text/csv';
-        break;
-    }
 
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [data, importDataType]);
+      // Small delay to ensure UI updates
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Get project name for filename, fallback to 'data'
+      const projectName = currentProject?.name ? sanitizeFilename(currentProject.name) : 'data';
+      const suffix = hasHistoricalFormat ? '-historical' : '';
+
+      let content: string;
+      let filename: string;
+      let mimeType: string;
+
+      switch (importDataType) {
+        case 'json':
+          content = JSON.stringify(rows, null, 2);
+          filename = `${projectName}${suffix}.json`;
+          mimeType = 'application/json';
+          break;
+        case 'excel': {
+          const worksheet = XLSX.utils.json_to_sheet(rows);
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+          const filename = `${projectName}${suffix}.xlsx`;
+          XLSX.writeFile(workbook, filename);
+          setIsDownloading(false);
+          return;
+        }
+        case 'csv':
+        default: {
+          const headers = hasHistoricalFormat ? 'id,label,value,year' : 'id,label,value';
+          const csvRows = rows.map((r) => {
+            if (hasHistoricalFormat && r.year) {
+              return `${r.id},${r.label},${r.value},${r.year}`;
+            }
+            return `${r.id},${r.label},${r.value}`;
+          });
+          content = headers + '\n' + csvRows.join('\n');
+          filename = `${projectName}${suffix}.csv`;
+          mimeType = 'text/csv';
+          break;
+        }
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download data:', error);
+      message.error('Failed to download data. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [data, importDataType, hasHistoricalFormat, timePeriods, timelineData, currentProject]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -353,6 +444,7 @@ export const ImportDataPanel: FC = () => {
         }
 
         setTimelineData(timeline, periodOrder);
+        setIsHistoricalData(true); // Auto-enable historical data checkbox when importing historical format
         message.success(`Imported ${parsed.length} rows across ${periodOrder.length} time periods`);
         onSuccess?.(timeline);
       } else {
@@ -363,6 +455,7 @@ export const ImportDataPanel: FC = () => {
         }
         const regionData = convertToRegionData(parsed, svgTitles);
         clearTimelineData();
+        setIsHistoricalData(false); // Disable historical data checkbox when importing static format
         setVisualizerState({ data: regionData });
         message.success(`Imported ${parsed.length} regions`);
         onSuccess?.(regionData);
@@ -689,11 +782,12 @@ Moscow,2500`}
           >
             <Button
               type="text"
-              icon={<DownloadOutlined />}
+              icon={isDownloading ? <LoadingOutlined /> : <DownloadOutlined />}
               size="small"
               onClick={handleDownloadData}
               className="text-gray-500"
-              disabled={data.allIds.length === 0}
+              disabled={data.allIds.length === 0 || isDownloading}
+              loading={isDownloading}
               aria-label="Download data"
             />
           </Tooltip>
@@ -747,15 +841,26 @@ Moscow,2500`}
       {importActionComponents[importDataType]}
 
       {limits.historicalDataImport && (
-        <Checkbox
-          checked={isHistoricalData}
-          onChange={handleHistoricalDataStatus}
-          disabled={!selectedRegionId}
-        >
-          <Typography.Text className="text-sm text-gray-600">
-            Historical data (includes time dimension)
-          </Typography.Text>
-        </Checkbox>
+        <Flex vertical gap="small">
+          <Checkbox
+            checked={isHistoricalData}
+            onChange={handleHistoricalDataStatus}
+            disabled={!selectedRegionId || !hasHistoricalFormat}
+          >
+            <Typography.Text className="text-sm text-gray-600">
+              Historical data (includes time dimension)
+            </Typography.Text>
+          </Checkbox>
+          {!hasHistoricalFormat && data.allIds.length > 0 && (
+            <Flex align="center" gap="small" className="ml-6">
+              <InfoCircleOutlined className="text-amber-500" />
+              <Typography.Text className="text-xs text-gray-500">
+                Imported data does not match historical format. Import data with a time column (year,
+                time, period, etc.) to enable historical data visualization.
+              </Typography.Text>
+            </Flex>
+          )}
+        </Flex>
       )}
 
       <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">

@@ -1,4 +1,3 @@
-import type { Plan } from '@regionify/shared';
 import type { PayablePlan } from '@/constants/plans';
 
 export type CreateCheckoutPayload = {

@@ -11,7 +11,11 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { selectData, selectSetVisualizerState } from '@/store/mapData/selectors';
+import {
+  selectClearTimelineData,
+  selectData,
+  selectSetVisualizerState,
+} from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { RegionData, VisualizerState } from '@/store/mapData/types';
 import { generateRandomId } from '@/helpers/common';
@@ -58,6 +62,7 @@ const initializeLocalData = (storeData: LocalDataState): LocalDataState => {
 const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
   const storeData = useVisualizerStore(selectData);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
+  const clearTimelineData = useVisualizerStore(selectClearTimelineData);
 
   // Local normalized state matching store structure
   const [localData, setLocalData] = useState<LocalDataState>(() => initializeLocalData(storeData));
@@ -141,9 +146,12 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
       ]),
     );
 
+    // Manual data entry always creates static data (no time periods)
+    // Clear any existing timeline data
+    clearTimelineData();
     setVisualizerState({ data: { allIds, byId } });
     onClose();
-  }, [localData, setVisualizerState, onClose]);
+  }, [localData, setVisualizerState, clearTimelineData, onClose]);
 
   const handleCancelDataEntry = useCallback(() => {
     onClose();

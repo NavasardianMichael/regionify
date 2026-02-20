@@ -85,7 +85,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   }, []);
 
   const handleFpsChange = useCallback((value: number | null) => {
-    setFps(Math.max(0.5, Math.min(value ?? 1, 10)));
+    setFps(Math.max(0.5, Math.min(value ?? 1, 60)));
   }, []);
 
   const handleFramesPerTransitionChange = useCallback((value: number | null) => {
@@ -203,7 +203,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
             <Typography.Text className="text-sm text-gray-600">Speed (frames/sec):</Typography.Text>
             <InputNumber
               min={0.5}
-              max={10}
+              max={60}
               step={0.5}
               value={fps}
               onChange={handleFpsChange}
