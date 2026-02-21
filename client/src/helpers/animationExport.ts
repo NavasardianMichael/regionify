@@ -2,14 +2,27 @@ import { applyPalette, GIFEncoder, quantize } from 'gifenc';
 import type { LegendItem } from '@/store/legendData/types';
 import type { LegendLabelsConfig, LegendTitleConfig } from '@/store/legendStyles/types';
 import type { DataSet } from '@/store/mapData/types';
-import type { BorderConfig, PictureConfig, ShadowConfig } from '@/store/mapStyles/types';
+import type {
+  BorderConfig,
+  PictureConfig,
+  RegionLabelPositions,
+  RegionLabelsConfig,
+  ShadowConfig,
+} from '@/store/mapStyles/types';
 import { renderStyledSvg } from './svgRenderer';
+
+const LEGEND_REFERENCE_SIZE = 800;
+const PREVIEW_FPS = 30;
+const DEFAULT_SECONDS_PER_PERIOD = 2;
+const TRANSITION_FRAMES_WHEN_SMOOTH = 30;
 
 type LegendConfig = {
   title: LegendTitleConfig;
   labels: LegendLabelsConfig;
   backgroundColor: string;
 };
+
+export type LegendPositionExport = 'bottom' | 'floating';
 
 type AnimationExportOptions = {
   rawSvg: string;
@@ -22,21 +35,39 @@ type AnimationExportOptions = {
   picture: PictureConfig;
   legend: LegendConfig;
   quality: number;
+  /** Output frame rate (e.g. 30 for video/GIF). */
   fps: number;
-  /** Frames generated between each pair of time periods for smooth color transitions. */
-  framesPerTransition?: number;
+  /** Seconds to show each time period (default 2). Drives hold frames per period. */
+  secondsPerPeriod?: number;
+  /** When true, add intermediate frames between periods for smooth transitions. */
+  smooth?: boolean;
+  /** Legend position for export. */
+  legendPosition?: LegendPositionExport;
+  /** Legend position in pixels when legendPosition is 'floating'. Scaled to canvas. */
+  floatingPosition?: { x: number; y: number };
+  /** Region labels config (show, color, fontSize). When set, labels are drawn on export. */
+  regionLabels?: RegionLabelsConfig;
+  /** Optional positions for region labels (path id → { x, y }). */
+  labelPositions?: RegionLabelPositions;
   onProgress?: (progress: number) => void;
 };
 
-const DEFAULT_FRAMES_PER_TRANSITION = 24;
-
-/** Total frame count for smooth animation (for UI duration estimate). */
+/** Total frame count for animation (for UI duration estimate). */
 export const getAnimationTotalFrames = (
   timePeriodCount: number,
-  framesPerTransition: number = DEFAULT_FRAMES_PER_TRANSITION,
+  options: {
+    secondsPerPeriod?: number;
+    fps?: number;
+    smooth?: boolean;
+  } = {},
 ): number => {
   if (timePeriodCount <= 1) return Math.max(1, timePeriodCount);
-  return (timePeriodCount - 1) * Math.max(2, framesPerTransition);
+  const fps = options.fps ?? PREVIEW_FPS;
+  const secondsPerPeriod = options.secondsPerPeriod ?? DEFAULT_SECONDS_PER_PERIOD;
+  const smooth = options.smooth ?? true;
+  const holdFrames = Math.max(1, Math.round(secondsPerPeriod * fps));
+  const transitionFrames = smooth ? TRANSITION_FRAMES_WHEN_SMOOTH : 0;
+  return timePeriodCount * holdFrames + (timePeriodCount - 1) * transitionFrames;
 };
 
 /** Quality (1–100) maps to a canvas scale multiplier. */
@@ -106,20 +137,39 @@ type FrameSpec = {
   label: string;
 };
 
-/** Build list of frame specs for smooth transitions between time periods. */
-const buildFrameList = (timePeriods: string[], framesPerTransition: number): FrameSpec[] => {
+/** Build list of frame specs: hold frames per period + optional smooth transition frames between periods. */
+const buildFrameList = (
+  timePeriods: string[],
+  opts: {
+    secondsPerPeriod: number;
+    fps: number;
+    smooth: boolean;
+  },
+): FrameSpec[] => {
   const list: FrameSpec[] = [];
   if (timePeriods.length === 0) return list;
+
+  const holdFrames = Math.max(1, Math.round(opts.secondsPerPeriod * opts.fps));
+  const transitionFrames = opts.smooth ? TRANSITION_FRAMES_WHEN_SMOOTH : 0;
+
   if (timePeriods.length === 1) {
-    list.push({ periodIndex: 0, t: 1, label: timePeriods[0] });
+    for (let k = 0; k < holdFrames; k++) {
+      list.push({ periodIndex: 0, t: 1, label: timePeriods[0] });
+    }
     return list;
   }
-  for (let i = 0; i < timePeriods.length - 1; i++) {
-    const steps = Math.max(2, framesPerTransition);
-    for (let k = 0; k < steps; k++) {
-      const t = k / (steps - 1);
-      const label = t >= 0.5 ? timePeriods[i + 1] : timePeriods[i];
-      list.push({ periodIndex: i, t, label });
+
+  for (let i = 0; i < timePeriods.length; i++) {
+    for (let k = 0; k < holdFrames; k++) {
+      list.push({ periodIndex: i, t: 1, label: timePeriods[i] });
+    }
+    if (i < timePeriods.length - 1 && transitionFrames > 0) {
+      const steps = Math.max(2, transitionFrames);
+      for (let k = 0; k < steps; k++) {
+        const t = k / (steps - 1);
+        const label = t >= 0.5 ? timePeriods[i + 1] : timePeriods[i];
+        list.push({ periodIndex: i, t, label });
+      }
     }
   }
   return list;
@@ -196,12 +246,17 @@ const addPeriodLabel = (canvas: HTMLCanvasElement, label: string): void => {
   ctx.restore();
 };
 
-/** Draws the legend box overlay in the bottom-left corner of the canvas. */
+type AddLegendOptions = LegendConfig & {
+  position?: LegendPositionExport;
+  floatingPosition?: { x: number; y: number };
+};
+
+/** Draws the legend box overlay. Position: bottom-left by default, or floating at given position. */
 const addLegend = (
   canvas: HTMLCanvasElement,
   legendItems: LegendItem[],
   noDataColor: string,
-  legend: LegendConfig,
+  legend: AddLegendOptions,
 ): void => {
   if (legendItems.length === 0) return;
 
@@ -210,7 +265,7 @@ const addLegend = (
 
   ctx.save();
 
-  const scale = Math.max(1, canvas.width / 800);
+  const scale = Math.max(1, canvas.width / LEGEND_REFERENCE_SIZE);
   const fontSize = Math.max(11, Math.round(legend.labels.fontSize * scale));
   const titleFontSize = Math.max(11, Math.round(legend.labels.fontSize * scale));
   const swatchSize = Math.round(12 * scale);
@@ -234,9 +289,13 @@ const addLegend = (
     boxHeight += titleFontSize + titleGap;
   }
 
-  // Position: bottom-left corner with margin
-  const boxX = margin;
-  const boxY = canvas.height - boxHeight - margin;
+  const isFloating = legend.position === 'floating' && legend.floatingPosition;
+  const boxX = isFloating
+    ? (legend.floatingPosition!.x / LEGEND_REFERENCE_SIZE) * canvas.width
+    : margin;
+  const boxY = isFloating
+    ? (legend.floatingPosition!.y / LEGEND_REFERENCE_SIZE) * canvas.height
+    : canvas.height - boxHeight - margin;
 
   // Background with rounded corners
   ctx.fillStyle = legend.backgroundColor;
@@ -300,7 +359,16 @@ const triggerDownload = (blob: Blob, fileName: string): void => {
 
 type FrameOptions = Pick<
   AnimationExportOptions,
-  'legendItems' | 'noDataColor' | 'border' | 'shadow' | 'picture' | 'legend'
+  | 'legendItems'
+  | 'noDataColor'
+  | 'border'
+  | 'shadow'
+  | 'picture'
+  | 'legend'
+  | 'legendPosition'
+  | 'floatingPosition'
+  | 'regionLabels'
+  | 'labelPositions'
 >;
 
 /** Render a single frame canvas for the given time period (no interpolation). */
@@ -319,9 +387,15 @@ const renderFrame = async (
     border: options.border,
     shadow: options.shadow,
     picture: options.picture,
+    regionLabels: options.regionLabels,
+    labelPositions: options.labelPositions,
   });
   const canvas = await svgToCanvas(svgString, scale);
-  addLegend(canvas, options.legendItems, options.noDataColor, options.legend);
+  addLegend(canvas, options.legendItems, options.noDataColor, {
+    ...options.legend,
+    position: options.legendPosition,
+    floatingPosition: options.floatingPosition,
+  });
   addPeriodLabel(canvas, period);
   return canvas;
 };
@@ -352,9 +426,15 @@ const renderInterpolatedFrame = async (
     shadow: options.shadow,
     picture: options.picture,
     colorMap,
+    regionLabels: options.regionLabels,
+    labelPositions: options.labelPositions,
   });
   const canvas = await svgToCanvas(svgString, scale);
-  addLegend(canvas, options.legendItems, options.noDataColor, options.legend);
+  addLegend(canvas, options.legendItems, options.noDataColor, {
+    ...options.legend,
+    position: options.legendPosition,
+    floatingPosition: options.floatingPosition,
+  });
   addPeriodLabel(canvas, label);
   return canvas;
 };
@@ -393,13 +473,18 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     timelineData,
     quality,
     fps,
-    framesPerTransition = DEFAULT_FRAMES_PER_TRANSITION,
+    secondsPerPeriod = DEFAULT_SECONDS_PER_PERIOD,
+    smooth = true,
     onProgress,
   } = options;
 
   const scale = qualityToScale(quality);
   const delay = Math.round(1000 / fps);
-  const frameList = buildFrameList(timePeriods, framesPerTransition);
+  const frameList = buildFrameList(timePeriods, {
+    secondsPerPeriod,
+    fps,
+    smooth,
+  });
   const totalFrames = frameList.length;
 
   if (totalFrames === 0) return;
@@ -460,12 +545,17 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
     timelineData,
     quality,
     fps,
-    framesPerTransition = DEFAULT_FRAMES_PER_TRANSITION,
+    secondsPerPeriod = DEFAULT_SECONDS_PER_PERIOD,
+    smooth = true,
     onProgress,
   } = options;
 
   const scale = qualityToScale(quality);
-  const frameList = buildFrameList(timePeriods, framesPerTransition);
+  const frameList = buildFrameList(timePeriods, {
+    secondsPerPeriod,
+    fps,
+    smooth,
+  });
   const totalFrames = frameList.length;
   const frameDurationMs = 1000 / fps;
 

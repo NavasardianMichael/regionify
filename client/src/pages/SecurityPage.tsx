@@ -41,11 +41,11 @@ const SecurityPage: FC = () => {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      message.success(t('security.passwordUpdated'));
+      message.success(t('security.passwordUpdated'), 5);
       passwordForm.resetFields();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('security.updateError');
-      message.error(errorMessage);
+      message.error(errorMessage, 0);
     } finally {
       setPasswordLoading(false);
     }
@@ -166,7 +166,9 @@ const SecurityPage: FC = () => {
         </>
       ) : (
         <AntCard className="mb-6 border-gray-200">
-          <Typography.Text className="text-gray-600">{t('security.googleAccountNote')}</Typography.Text>
+          <Typography.Text className="text-gray-600">
+            {t('security.googleAccountNote')}
+          </Typography.Text>
         </AntCard>
       )}
 
@@ -205,11 +207,7 @@ const SecurityPage: FC = () => {
       </div>
 
       <div className="mt-8 border-t border-gray-100 pt-6 text-center">
-        <AppNavLink
-          to={ROUTES.PROJECTS}
-        >
-          {t('security.backToProjects')}
-        </AppNavLink>
+        <AppNavLink to={ROUTES.PROJECTS}>{t('security.backToProjects')}</AppNavLink>
       </div>
     </Card>
   );

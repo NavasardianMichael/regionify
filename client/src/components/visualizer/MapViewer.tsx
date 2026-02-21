@@ -35,6 +35,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
   selectPicture,
+  selectRegionLabelPositions,
   selectRegionLabels,
   selectShadow,
   selectZoomControls,
@@ -72,6 +73,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   // Region label drag state
   const labelPositionsRef = useRef<Record<string, { x: number; y: number }>>({});
+  const prevSelectedRegionIdRef = useRef<string | null>(null);
   const draggingLabelRef = useRef<{
     element: SVGTextElement;
     svgElement: SVGSVGElement;
@@ -89,6 +91,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const zoomControls = useMapStylesStore(selectZoomControls);
   const picture = useMapStylesStore(selectPicture);
   const regionLabels = useMapStylesStore(selectRegionLabels);
+  const regionLabelPositions = useMapStylesStore(selectRegionLabelPositions);
+  const setRegionLabelPositions = useMapStylesStore((s) => s.setRegionLabelPositions);
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
@@ -464,7 +468,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
       return svg;
     },
-    [border, shadow, picture, regionLabels, data, deferredLegendItems, noDataColor, transitionType],
+    [
+      border,
+      shadow,
+      picture,
+      regionLabels,
+      data,
+      deferredLegendItems,
+      noDataColor,
+      transitionType,
+      regionLabelPositions,
+    ],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)
@@ -477,6 +491,26 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       ADD_ATTR: ['data-region-id', 'cursor'],
     });
   }, [rawSvgContent, applyStylesToSvg]);
+
+  // Clear region label positions only when switching to a different region (not on initial mount)
+  useEffect(() => {
+    const prev = prevSelectedRegionIdRef.current;
+    prevSelectedRegionIdRef.current = selectedRegionId;
+    if (prev != null && selectedRegionId != null && prev !== selectedRegionId) {
+      setRegionLabelPositions({});
+    }
+  }, [selectedRegionId, setRegionLabelPositions]);
+
+  // Sync label positions from store when we have content (e.g. after re-open)
+  useEffect(() => {
+    if (
+      rawSvgContent &&
+      Object.keys(labelPositionsRef.current).length === 0 &&
+      Object.keys(regionLabelPositions).length > 0
+    ) {
+      labelPositionsRef.current = { ...regionLabelPositions };
+    }
+  }, [rawSvgContent, regionLabelPositions]);
 
   // Load raw SVG content only when region changes
   useEffect(() => {
@@ -502,7 +536,6 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       }
     };
 
-    // Reset view and label positions when loading new region
     setZoom(1);
     setPan({ x: 0, y: 0 });
     labelPositionsRef.current = {};
@@ -602,13 +635,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
       if (svgCoords) {
         labelPositionsRef.current[dragging.regionId] = { x: svgCoords.x, y: svgCoords.y };
+        setRegionLabelPositions({ ...labelPositionsRef.current });
       }
 
       draggingLabelRef.current = null;
       window.removeEventListener('mousemove', handleLabelDragMove);
       window.removeEventListener('mouseup', handleLabelDragEnd);
     },
-    [screenToSvgCoords, handleLabelDragMove],
+    [screenToSvgCoords, handleLabelDragMove, setRegionLabelPositions],
   );
 
   // Attach drag handlers to SVG region label text elements after render

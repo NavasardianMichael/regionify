@@ -9,16 +9,18 @@ import {
   useState,
 } from 'react';
 import {
+  CloseOutlined,
   CloudUploadOutlined,
   DownloadOutlined,
   EditOutlined,
   FileExcelOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
+  SwapOutlined,
 } from '@ant-design/icons';
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
-import { Button, Flex, message, Modal, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
+import { App, Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import {
   selectClearTimelineData,
@@ -39,6 +41,7 @@ import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
+import { showMessageWithSampleDownload } from '@/components/shared/MessageWithSampleDownload';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
@@ -72,7 +75,7 @@ const sanitizeFilename = (name: string): string => {
  * value - numeric value for visualization
  * timePeriod - optional time period for historical data animation
  */
-type ParsedRow = { id?: string; label: string; value: number; timePeriod?: string };
+type ParsedRow = { id: string; label: string; value: number; timePeriod?: string };
 
 const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
 
@@ -102,17 +105,22 @@ const hasIdColumn = (header: string): boolean => {
   return parts.some((p) => p === 'id');
 };
 
-const parseCSV = (content: string): ParsedRow[] => {
+type ParseCSVResult = ParsedRow[] | { error: 'missing_id' };
+
+const parseCSV = (content: string): ParseCSVResult => {
   const lines = content.trim().split('\n');
   const data: ParsedRow[] = [];
 
-  // Detect header format
   const headerLine = lines[0] || '';
   const hasId = hasIdColumn(headerLine);
   const hasTime = hasTimeColumn(headerLine);
   const timeIdx = hasTime ? getTimeColumnIndex(headerLine) : -1;
   const isHeader = /^(id|label|region|name)/i.test(headerLine) || hasTime;
   const startIndex = isHeader ? 1 : 0;
+
+  if (isHeader && !hasId && lines.length > 1) {
+    return { error: 'missing_id' };
+  }
 
   for (let i = startIndex; i < lines.length; i++) {
     const line = lines[i];
@@ -126,21 +134,20 @@ const parseCSV = (content: string): ParsedRow[] => {
     }
 
     const timePeriod = hasTime && timeIdx >= 0 ? parts[timeIdx] : undefined;
-    // Remove time column from parts so id/label/value parsing stays unchanged
     const filteredParts =
       hasTime && timeIdx >= 0 ? parts.filter((_, idx) => idx !== timeIdx) : parts;
 
     if (hasId) {
       const [id, label, valueStr] = filteredParts;
       const value = parseFloat(valueStr);
-      if (label && !isNaN(value)) {
-        data.push({ id: id || undefined, label, value, timePeriod: timePeriod || undefined });
-      }
-    } else {
-      const [label, valueStr] = filteredParts;
-      const value = parseFloat(valueStr);
-      if (label && !isNaN(value)) {
-        data.push({ label, value, timePeriod: timePeriod || undefined });
+      const idTrimmed = id?.trim();
+      if (idTrimmed && label && !isNaN(value)) {
+        data.push({
+          id: idTrimmed,
+          label,
+          value,
+          timePeriod: timePeriod || undefined,
+        });
       }
     }
   }
@@ -169,13 +176,13 @@ const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
     const timeKey = keys.find((key) => TIME_COLUMN_PATTERN.test(String(key)));
 
     // Determine column order based on available keys
-    const id = idKey ? String(row[idKey] ?? '') : undefined;
+    const id = idKey ? String(row[idKey] ?? '').trim() : undefined;
     const label = String(row[labelKey ?? keys[idKey ? 1 : 0]] ?? '');
     const value = parseFloat(String(row[valueKey ?? keys[idKey ? 2 : 1]] ?? ''));
     const timePeriod = timeKey ? String(row[timeKey] ?? '') : undefined;
 
-    if (label && !isNaN(value)) {
-      data.push({ id: id || undefined, label, value, timePeriod: timePeriod || undefined });
+    if (id && label && !isNaN(value)) {
+      data.push({ id, label, value, timePeriod: timePeriod || undefined });
     }
   }
 
@@ -188,14 +195,15 @@ const parseJSON = (content: string): ParsedRow[] => {
     if (Array.isArray(parsed)) {
       return parsed
         .filter((item) => {
+          const hasId = item.id != null && String(item.id).trim() !== '';
           const hasLabel = item.label || item.region || item.name;
           const hasValue = typeof item.value === 'number' || typeof item.count === 'number';
-          return hasLabel && hasValue;
+          return hasId && hasLabel && hasValue;
         })
         .map((item) => {
           const rawTime = item.year ?? item.time ?? item.period ?? item.date ?? item.month;
           return {
-            id: item.id ? String(item.id) : undefined,
+            id: String(item.id).trim(),
             label: String(item.label ?? item.region ?? item.name ?? ''),
             value: Number(item.value ?? item.count ?? 0),
             timePeriod: rawTime !== undefined && rawTime !== null ? String(rawTime) : undefined,
@@ -227,12 +235,44 @@ const convertToRegionData = (
   return { allIds, byId };
 };
 
+const SUCCESS_MESSAGE_DURATION = 5;
+
+/** Show a message. Success auto-hides after 5s; other types have a Close button and no auto-hide. */
+function showMessageWithClose(
+  messageApi: ReturnType<ReturnType<typeof App.useApp>['message']>,
+  type: 'success' | 'info' | 'warning' | 'error',
+  content: string,
+): void {
+  if (type === 'success') {
+    messageApi.success({ content, duration: SUCCESS_MESSAGE_DURATION });
+    return;
+  }
+  const closeRef = { current: () => {} };
+  closeRef.current = messageApi[type]({
+    content: (
+      <Flex align="center" gap="small" style={{ alignItems: 'center' }}>
+        <span>{content}</span>
+        <Button
+          type="text"
+          size="small"
+          icon={<CloseOutlined />}
+          onClick={() => closeRef.current()}
+          style={{ padding: 0 }}
+          aria-label="Close"
+        />
+      </Flex>
+    ),
+    duration: 0,
+  }) as () => void;
+}
+
 export const ImportDataPanel: FC = () => {
+  const { modal, message: messageApi } = App.useApp();
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
-  const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isDownloadingSample, setIsDownloadingSample] = useState(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
@@ -260,47 +300,30 @@ export const ImportDataPanel: FC = () => {
     );
   }, [limits.historicalDataImport, timePeriods, timelineData]);
 
+  /** Download current dataset only (no sample generation). */
   const handleDownloadData = useCallback(async () => {
-    const hasData = data.allIds.length > 0;
-    const canGenerateSample = svgTitles.length > 0;
-    if (!hasData && !canGenerateSample) {
-      message.warning('No data available to download');
+    if (data.allIds.length === 0) {
+      showMessageWithClose(
+        messageApi,
+        'warning',
+        'No data available to download. Add or import data first.',
+      );
       return;
     }
 
     setIsDownloading(true);
 
     try {
-      // Format: when we have data use actual format; when generating sample use plan support for dynamic
       let rows: Array<{ id: string; label: string; value: number; year?: string }>;
-      const useHistoricalFormat =
-        hasData && hasHistoricalFormat ? true : !hasData && limits.historicalDataImport;
+      const useHistoricalFormat = Boolean(
+        hasHistoricalFormat &&
+        timePeriods &&
+        Array.isArray(timePeriods) &&
+        timePeriods.length > 0 &&
+        timelineData,
+      );
 
-      if (!hasData && canGenerateSample) {
-        if (useHistoricalFormat) {
-          const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
-          rows = [];
-          for (let p = 0; p < samplePeriods.length; p++) {
-            const baseMultiplier = 1 + p * 0.3;
-            for (const title of svgTitles) {
-              rows.push({
-                id: title,
-                label: title,
-                value: Math.floor(
-                  (100 + svgTitles.indexOf(title) * 50) * baseMultiplier + Math.random() * 200,
-                ),
-                year: samplePeriods[p],
-              });
-            }
-          }
-        } else {
-          rows = svgTitles.map((title) => ({
-            id: title,
-            label: title,
-            value: Math.floor(Math.random() * 900) + 100,
-          }));
-        }
-      } else if (
+      if (
         useHistoricalFormat &&
         timePeriods &&
         Array.isArray(timePeriods) &&
@@ -383,20 +406,218 @@ export const ImportDataPanel: FC = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download data:', error);
-      message.error('Failed to download data. Please try again.');
+      showMessageWithClose(messageApi, 'error', 'Failed to download data. Please try again.');
     } finally {
       setIsDownloading(false);
     }
   }, [
+    messageApi,
     data,
     importDataType,
     hasHistoricalFormat,
-    limits.historicalDataImport,
-    svgTitles,
     timePeriods,
     timelineData,
     currentProject,
   ]);
+
+  /** Download sample data only (template with region IDs for matching). */
+  const handleDownloadSampleOnly = useCallback(async () => {
+    if (!selectedRegionId || svgTitles.length === 0) return;
+
+    setIsDownloadingSample(true);
+    try {
+      const useHistoricalFormat = limits.historicalDataImport;
+      let rows: Array<{ id: string; label: string; value: number; year?: string }>;
+
+      if (useHistoricalFormat) {
+        const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+        rows = [];
+        for (let p = 0; p < samplePeriods.length; p++) {
+          const baseMultiplier = 1 + p * 0.3;
+          for (const title of svgTitles) {
+            rows.push({
+              id: title,
+              label: title,
+              value: Math.floor(
+                (100 + svgTitles.indexOf(title) * 50) * baseMultiplier + Math.random() * 200,
+              ),
+              year: samplePeriods[p],
+            });
+          }
+        }
+      } else {
+        rows = svgTitles.map((title) => ({
+          id: title,
+          label: title,
+          value: Math.floor(Math.random() * 900) + 100,
+        }));
+      }
+
+      const projectName = currentProject?.name ? sanitizeFilename(currentProject.name) : 'data';
+      const suffix = useHistoricalFormat ? '-historical' : '';
+      const baseName = `${projectName}-sample${suffix}`;
+
+      let content: string;
+      let filename: string;
+      let mimeType: string;
+
+      switch (importDataType) {
+        case 'json':
+          content = JSON.stringify(rows, null, 2);
+          filename = `${baseName}.json`;
+          mimeType = 'application/json';
+          break;
+        case 'excel': {
+          const worksheet = XLSX.utils.json_to_sheet(rows);
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+          XLSX.writeFile(workbook, `${baseName}.xlsx`);
+          setIsDownloadingSample(false);
+          return;
+        }
+        case 'csv':
+        default: {
+          const headers = useHistoricalFormat ? 'id,label,value,year' : 'id,label,value';
+          const csvRows = rows.map((r) => {
+            if (useHistoricalFormat && r.year) {
+              return `${r.id},${r.label},${r.value},${r.year}`;
+            }
+            return `${r.id},${r.label},${r.value}`;
+          });
+          content = headers + '\n' + csvRows.join('\n');
+          filename = `${baseName}.csv`;
+          mimeType = 'text/csv';
+          break;
+        }
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download sample:', error);
+      showMessageWithSampleDownload(
+        messageApi,
+        'error',
+        'Failed to download sample. Please try again.',
+        handleDownloadSampleOnly,
+      );
+    } finally {
+      setIsDownloadingSample(false);
+    }
+  }, [
+    messageApi,
+    selectedRegionId,
+    svgTitles,
+    limits.historicalDataImport,
+    importDataType,
+    currentProject,
+  ]);
+
+  const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
+
+  const switchModeConfirmContent = useMemo(
+    () => (
+      <Flex vertical gap="small">
+        <Typography.Text>All changes to your dataset will be lost. Are you sure?</Typography.Text>
+        <Typography.Text type="secondary" className="text-xs">
+          We recommend saving your current project first, then creating a new one if you need to
+          keep this data.
+        </Typography.Text>
+      </Flex>
+    ),
+    [],
+  );
+
+  /** Apply static mode: clear timeline and set data to sample (or empty if no region). */
+  const applySwitchToStatic = useCallback(() => {
+    clearTimelineData();
+    if (svgTitles.length > 0) {
+      const sampleData = svgTitles.map((title) => ({
+        id: title,
+        label: title,
+        value: Math.floor(Math.random() * 900) + 100,
+      }));
+      const allIds = sampleData.map((item) => item.id);
+      const byId = Object.fromEntries(sampleData.map((item) => [item.id, item as RegionData]));
+      setVisualizerState({ data: { allIds, byId } });
+    } else {
+      setVisualizerState({ data: { allIds: [], byId: {} } });
+    }
+    showMessageWithClose(
+      messageApi,
+      'success',
+      'Switched to static data. Export as PNG, SVG or JPEG.',
+    );
+  }, [messageApi, svgTitles, clearTimelineData, setVisualizerState]);
+
+  /** Apply dynamic mode: set timeline to sample (or empty if no region). */
+  const applySwitchToDynamic = useCallback(() => {
+    if (svgTitles.length > 0) {
+      const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+      const timeline: Record<string, DataSet> = {};
+      for (let p = 0; p < samplePeriods.length; p++) {
+        const baseMultiplier = 1 + p * 0.3;
+        const periodData = svgTitles.map((title, i) => ({
+          id: title,
+          label: title,
+          value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
+        }));
+        timeline[samplePeriods[p]] = {
+          allIds: periodData.map((item) => item.id),
+          byId: Object.fromEntries(periodData.map((item) => [item.id, item])),
+        };
+      }
+      setTimelineData(timeline, samplePeriods);
+    } else {
+      setTimelineData({}, []);
+    }
+    showMessageWithClose(
+      messageApi,
+      'success',
+      'Switched to dynamic data. Add more time periods in Manual entry or re-import to export GIF/Video.',
+    );
+  }, [messageApi, svgTitles, setTimelineData]);
+
+  const handleSwitchToStatic = useCallback(() => {
+    if (hasHistoricalFormat && hasDataOrTimeline) {
+      modal.confirm({
+        title: 'Switch to static data?',
+        content: switchModeConfirmContent,
+        okText: 'Switch',
+        cancelText: 'Cancel',
+        onOk: applySwitchToStatic,
+      });
+    } else {
+      applySwitchToStatic();
+    }
+  }, [
+    modal,
+    hasHistoricalFormat,
+    hasDataOrTimeline,
+    applySwitchToStatic,
+    switchModeConfirmContent,
+  ]);
+
+  const handleSwitchToDynamic = useCallback(() => {
+    if (hasDataOrTimeline) {
+      modal.confirm({
+        title: 'Switch to dynamic data?',
+        content: switchModeConfirmContent,
+        okText: 'Switch',
+        cancelText: 'Cancel',
+        onOk: applySwitchToDynamic,
+      });
+    } else {
+      applySwitchToDynamic();
+    }
+  }, [modal, hasDataOrTimeline, applySwitchToDynamic, switchModeConfirmContent]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -493,27 +714,36 @@ export const ImportDataPanel: FC = () => {
         }
 
         setTimelineData(timeline, periodOrder);
-        message.success(`Imported ${parsed.length} rows across ${periodOrder.length} time periods`);
+        showMessageWithClose(
+          messageApi,
+          'success',
+          `Imported ${parsed.length} rows across ${periodOrder.length} time periods`,
+        );
         onSuccess?.(timeline);
       } else {
         if (hasTimePeriods && !limits.historicalDataImport) {
-          message.info(
+          showMessageWithClose(
+            messageApi,
+            'info',
             'Time series data detected. Upgrade to Atlas plan for animated visualizations.',
           );
         }
         if (limits.historicalDataImport) {
-          message.warning(
+          showMessageWithClose(
+            messageApi,
+            'warning',
             'No time column detected (year, time, period, etc.). Data imported as single period.',
           );
         }
         const regionData = convertToRegionData(parsed, svgTitles);
         clearTimelineData();
         setVisualizerState({ data: regionData });
-        message.success(`Imported ${parsed.length} regions`);
+        showMessageWithClose(messageApi, 'success', `Imported ${parsed.length} regions`);
         onSuccess?.(regionData);
       }
     },
     [
+      messageApi,
       limits.historicalDataImport,
       svgTitles,
       setVisualizerState,
@@ -524,16 +754,28 @@ export const ImportDataPanel: FC = () => {
 
   const handleSheetCsvFetched = useCallback(
     (csv: string) => {
-      const parsed = parseCSV(csv);
-
-      if (parsed.length === 0) {
-        message.warning('No valid data found in Google Sheet');
+      const result = parseCSV(csv);
+      if (typeof result === 'object' && 'error' in result) {
+        showMessageWithSampleDownload(
+          messageApi,
+          'error',
+          'Dataset must include an id column.',
+          handleDownloadSampleOnly,
+        );
         return;
       }
-
-      processImportedData(parsed);
+      if (result.length === 0) {
+        showMessageWithSampleDownload(
+          messageApi,
+          'error',
+          'Data does not match the expected format. Download sample to get the correct IDs and match your labels.',
+          handleDownloadSampleOnly,
+        );
+        return;
+      }
+      processImportedData(result);
     },
-    [processImportedData],
+    [messageApi, processImportedData, handleDownloadSampleOnly],
   );
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
@@ -549,14 +791,19 @@ export const ImportDataPanel: FC = () => {
             const parsed = parseExcel(buffer);
 
             if (parsed.length === 0) {
-              message.warning('No valid data found in Excel file');
+              showMessageWithClose(messageApi, 'warning', 'No valid data found in Excel file');
               onError?.(new Error('No valid data found'));
               return;
             }
 
             processImportedData(parsed, onSuccess);
           } catch (error) {
-            message.error('Failed to parse Excel file');
+            showMessageWithSampleDownload(
+              messageApi,
+              'error',
+              'Failed to parse Excel file. Download sample to get the correct format and match your labels.',
+              handleDownloadSampleOnly,
+            );
             onError?.(error as Error);
           }
         };
@@ -573,20 +820,36 @@ export const ImportDataPanel: FC = () => {
           let parsed: ParsedRow[] = [];
 
           if (importDataType === 'csv') {
-            parsed = parseCSV(content);
+            const result = parseCSV(content);
+            if (typeof result === 'object' && 'error' in result) {
+              showMessageWithSampleDownload(
+                messageApi,
+                'error',
+                'Dataset must include an id column.',
+                handleDownloadSampleOnly,
+              );
+              onError?.(new Error('Missing id column'));
+              return;
+            }
+            parsed = result;
           } else if (importDataType === 'json') {
             parsed = parseJSON(content);
           }
 
           if (parsed.length === 0) {
-            message.warning('No valid data found in file');
+            showMessageWithClose(messageApi, 'warning', 'No valid data found in file');
             onError?.(new Error('No valid data found'));
             return;
           }
 
           processImportedData(parsed, onSuccess);
         } catch (error) {
-          message.error('Failed to parse file');
+          showMessageWithSampleDownload(
+            messageApi,
+            'error',
+            'Failed to parse file. Download sample to get the correct format and match your labels.',
+            handleDownloadSampleOnly,
+          );
           onError?.(error as Error);
         }
       };
@@ -597,34 +860,39 @@ export const ImportDataPanel: FC = () => {
 
       reader.readAsText(file as File);
     },
-    [importDataType, processImportedData],
+    [messageApi, importDataType, processImportedData, handleDownloadSampleOnly],
   );
 
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
       manual: (
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          block
-          onClick={() => setIsManualModalOpen(true)}
-        >
-          Enter Data Manually
-        </Button>
+        <Tooltip title={selectedRegionId ? 'Enter data manually' : 'Select a region first'}>
+          <span>
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={() => setIsManualModalOpen(true)}
+              disabled={!selectedRegionId}
+            >
+              Enter Data Manually
+            </Button>
+          </span>
+        </Tooltip>
       ),
       sheets: (
-        <Button
-          type="primary"
-          icon={<CloudUploadOutlined />}
-          block
-          onClick={() => setIsSheetsModalOpen(true)}
-        >
-          Connect Google Sheets
-        </Button>
+        <Flex>
+          <Button
+            type="primary"
+            icon={<CloudUploadOutlined />}
+            onClick={() => setIsSheetsModalOpen(true)}
+          >
+            Connect Google Sheets
+          </Button>
+        </Flex>
       ),
       csv: (
         <Upload accept=".csv" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
-          <Button type="primary" icon={<CloudUploadOutlined />} block>
+          <Button type="primary" icon={<CloudUploadOutlined />}>
             Choose CSV File
           </Button>
         </Upload>
@@ -649,7 +917,7 @@ export const ImportDataPanel: FC = () => {
         </Upload>
       ),
     }),
-    [handleFileUpload],
+    [handleFileUpload, selectedRegionId],
   );
 
   const expectedFormatExamples: Record<ImportDataType, JSX.Element> = useMemo(
@@ -658,11 +926,7 @@ export const ImportDataPanel: FC = () => {
         <pre className="font-mono text-xs text-gray-600">
           {`id,label,value
 Moscow,Moscow Oblast,2500
-Saint Petersburg,St. Petersburg,1800
-
-# or without id (auto-match):
-label,value
-Moscow,2500`}
+Saint Petersburg,St. Petersburg,1800`}
         </pre>
       ),
       excel: (
@@ -672,9 +936,7 @@ Moscow,2500`}
           </Typography.Text>
           <pre className="font-mono text-xs text-gray-600">
             {`| id     | label       | value |
-| Moscow | Moscow City | 2500  |
-
-# id column is optional`}
+| Moscow | Moscow City | 2500  |`}
           </pre>
         </Flex>
       ),
@@ -682,7 +944,7 @@ Moscow,2500`}
         <pre className="font-mono text-xs text-gray-600">
           {`[
   { "id": "Moscow", "label": "Moscow City", "value": 2500 },
-  { "label": "Saint Petersburg", "value": 1800 }
+  { "id": "Saint Petersburg", "label": "St. Petersburg", "value": 1800 }
 ]`}
         </pre>
       ),
@@ -693,9 +955,7 @@ Moscow,2500`}
           </Typography.Text>
           <pre className="font-mono text-xs text-gray-600">
             {`| id     | label       | value |
-| Moscow | Moscow City | 2500  |
-
-# id column is optional`}
+| Moscow | Moscow City | 2500  |`}
           </pre>
         </Flex>
       ),
@@ -761,9 +1021,9 @@ Moscow,2500`}
   );
 
   const formatInfoContent = (
-    <ul className="m-0 list-disc space-y-2 pl-4 text-sm text-gray-600">
+    <ul className="m-0 list-disc space-y-2 p-3 pl-8 text-sm text-white">
       <li>
-        <strong>id</strong> — (Optional) Region ID matching SVG path title
+        <strong>id</strong> — Region ID; must exactly match the expected IDs (e.g. from sample data)
       </li>
       <li>
         <strong>label</strong> — Display label for the region
@@ -771,7 +1031,6 @@ Moscow,2500`}
       <li>
         <strong>value</strong> — Numeric value for the region
       </li>
-      <li>If id is missing, we match labels to SVG regions automatically</li>
       <li>Labels are displayed on the map when &quot;Show Labels&quot; is enabled</li>
     </ul>
   );
@@ -780,16 +1039,12 @@ Moscow,2500`}
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
         <SectionTitle IconComponent={FileExcelOutlined}>Import Data</SectionTitle>
-        <Flex gap={4}>
+        <Flex gap={4} align="center">
           <Tooltip
             title={
-              !selectedRegionId
-                ? 'Select country to download sample data'
-                : data.allIds.length === 0 && svgTitles.length === 0
-                  ? 'Loading map…'
-                  : data.allIds.length === 0
-                    ? 'Download sample data (format follows Historical data checkbox)'
-                    : 'Download data in selected format'
+              data.allIds.length === 0
+                ? 'Add or import data to download current dataset'
+                : 'Download current dataset'
             }
           >
             <Button
@@ -798,24 +1053,52 @@ Moscow,2500`}
               size="small"
               onClick={handleDownloadData}
               className="text-gray-500"
-              disabled={
-                !selectedRegionId ||
-                (data.allIds.length === 0 && svgTitles.length === 0) ||
-                isDownloading
-              }
+              disabled={data.allIds.length === 0 || isDownloading}
               loading={isDownloading}
-              aria-label="Download data"
+              aria-label="Download current dataset"
             />
           </Tooltip>
-          <Tooltip title="Enter Data Manually">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              size="small"
-              onClick={() => setIsManualModalOpen(true)}
-              className="text-gray-500"
-              aria-label="Enter data manually"
-            />
+
+          <Tooltip title={selectedRegionId ? 'Enter data manually' : 'Select a region first'}>
+            <span>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                size="small"
+                onClick={() => setIsManualModalOpen(true)}
+                className="text-gray-500"
+                disabled={!selectedRegionId}
+                aria-label="Enter data manually"
+              />
+            </span>
+          </Tooltip>
+          {limits.historicalDataImport && (
+            <Tooltip
+              title={
+                selectedRegionId
+                  ? hasHistoricalFormat
+                    ? 'Switch to static data'
+                    : 'Switch to dynamic data'
+                  : 'Select a region first'
+              }
+            >
+              <span>
+                <Button
+                  type="text"
+                  icon={<SwapOutlined />}
+                  size="small"
+                  disabled={!selectedRegionId}
+                  onClick={hasHistoricalFormat ? handleSwitchToStatic : handleSwitchToDynamic}
+                  className="text-gray-500"
+                  aria-label={
+                    hasHistoricalFormat ? 'Switch to static data' : 'Switch to dynamic data'
+                  }
+                />
+              </span>
+            </Tooltip>
+          )}
+          <Tooltip title={formatInfoContent} placement="bottom">
+            <InfoCircleOutlined className="cursor-help text-gray-400" />
           </Tooltip>
         </Flex>
       </Flex>
@@ -830,34 +1113,30 @@ Moscow,2500`}
         aria-label="Import data format"
       />
 
-      <Flex gap="small" align="center">
+      <Flex gap="small" align="center" wrap="wrap" className="text-sm text-gray-500">
         <Typography.Text className="text-sm text-gray-500">
-          Upload your dataset to visualize regional metrics
+          Region IDs must exactly match the expected IDs in the system.
+          <br />
+          <Button
+            type="text"
+            size="small"
+            icon={isDownloadingSample ? <LoadingOutlined /> : null}
+            onClick={handleDownloadSampleOnly}
+            disabled={!selectedRegionId || svgTitles.length === 0 || isDownloadingSample}
+            loading={isDownloadingSample}
+            className="h-auto p-0! font-medium!"
+            aria-label="Download sample data"
+          >
+            {!isDownloadingSample && 'Download'}
+          </Button>{' '}
+          sample data to get the correct IDs and match your labels.
         </Typography.Text>
-        <button
-          type="button"
-          className="hover:text-primary cursor-pointer border-none bg-transparent p-0 text-gray-400"
-          onClick={() => setIsFormatInfoModalOpen(true)}
-          aria-label="View expected data format"
-        >
-          <InfoCircleOutlined />
-        </button>
       </Flex>
-
-      <Modal
-        title="Expected Data Format"
-        open={isFormatInfoModalOpen}
-        onCancel={() => setIsFormatInfoModalOpen(false)}
-        footer={null}
-        width={400}
-      >
-        {formatInfoContent}
-      </Modal>
 
       {importActionComponents[importDataType]}
 
       <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">
-        <Typography.Text className="text-xs font-medium text-gray-500">
+        <Typography.Text className="text-xs font-semibold text-gray-500">
           EXPECTED FORMAT:
         </Typography.Text>
         {hasHistoricalFormat

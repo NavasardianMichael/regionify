@@ -82,11 +82,11 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
           </Typography.Text>
         )}
 
-        <Flex vertical gap={4} className="rounded-md bg-gray-50 p-3">
+        <Flex vertical gap={4} className="rounded-md bg-gray-50 p-3!">
           <Typography.Text className="text-xs font-medium text-gray-500">
             HOW TO SHARE:
           </Typography.Text>
-          <ol className="m-0 space-y-1 pl-4 text-xs text-gray-500">
+          <ol className="m-0 space-y-1 text-xs text-gray-500">
             <li>Open your Google Sheet</li>
             <li>
               Click <strong>Share</strong> → <strong>General access</strong>

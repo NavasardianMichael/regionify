@@ -22,10 +22,10 @@ const AccountDeletedPage: FC = () => {
       const payload = processAccountDeletionFeedback(values);
       await sendContactMessage(payload);
       setSubmitted(true);
-      message.success('Thank you for your feedback!');
+      message.success('Thank you for your feedback!', 5);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send feedback';
-      message.error(errorMessage);
+      message.error(errorMessage, 0);
     } finally {
       setLoading(false);
     }

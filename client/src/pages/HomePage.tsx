@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { Flex, Typography } from 'antd';
-
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 const HomePage: FC = () => {

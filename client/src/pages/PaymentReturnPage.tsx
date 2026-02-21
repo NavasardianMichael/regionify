@@ -1,12 +1,12 @@
 import { type FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
+import { PLANS } from '@regionify/shared';
 import { Button, Flex, Spin, Typography } from 'antd';
 import { getMe } from '@/api/auth';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
-import { PLANS } from '@regionify/shared';
 
 const POLL_INTERVAL_MS = 2000;
 const POLL_TIMEOUT_MS = 60000;

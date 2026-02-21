@@ -1,6 +1,12 @@
 import type { LegendItem } from '@/store/legendData/types';
 import type { RegionData } from '@/store/mapData/types';
-import type { BorderConfig, PictureConfig, ShadowConfig } from '@/store/mapStyles/types';
+import type {
+  BorderConfig,
+  PictureConfig,
+  RegionLabelPositions,
+  RegionLabelsConfig,
+  ShadowConfig,
+} from '@/store/mapStyles/types';
 
 type RenderStyledSvgOptions = {
   rawSvg: string;
@@ -15,6 +21,10 @@ type RenderStyledSvgOptions = {
   picture: PictureConfig;
   /** When set, path fill is taken from this map (region id → color) for smooth interpolation. */
   colorMap?: Record<string, string>;
+  /** When set, region labels are drawn (e.g. for export). */
+  regionLabels?: RegionLabelsConfig;
+  /** Optional positions for region labels (path title → { x, y } in SVG space). */
+  labelPositions?: RegionLabelPositions;
 };
 
 /**
@@ -108,9 +118,88 @@ function computePathBounds(paths: NodeListOf<SVGPathElement>): {
   return { minX, minY, maxX, maxY };
 }
 
+/** Computes bounding box of a single path from its `d` attribute. */
+function getPathBounds(
+  d: string,
+): { minX: number; minY: number; maxX: number; maxY: number } | null {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+  const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
+  let match;
+  let currentX = 0,
+    currentY = 0;
+
+  while ((match = coordRegex.exec(d)) !== null) {
+    const command = match[1];
+    const params = match[2].trim();
+    const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
+    const isRelative = command === command.toLowerCase();
+    const cmd = command.toUpperCase();
+
+    if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
+      for (let i = 0; i < numbers.length; i += 2) {
+        const x = isRelative ? currentX + numbers[i] : numbers[i];
+        const y = isRelative ? currentY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
+        currentX = x;
+        currentY = y;
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      }
+    } else if (cmd === 'H') {
+      for (const num of numbers) {
+        const x = isRelative ? currentX + num : num;
+        currentX = x;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+      }
+    } else if (cmd === 'V') {
+      for (const num of numbers) {
+        const y = isRelative ? currentY + num : num;
+        currentY = y;
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+      }
+    } else if (cmd === 'C') {
+      for (let i = 0; i < numbers.length; i += 6) {
+        for (let j = 0; j < 6; j += 2) {
+          const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
+          const y = isRelative ? currentY + (numbers[i + j + 1] ?? 0) : (numbers[i + j + 1] ?? 0);
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+        currentX = isRelative ? currentX + numbers[i + 4] : numbers[i + 4];
+        currentY = isRelative ? currentY + (numbers[i + 5] ?? 0) : numbers[i + 5];
+      }
+    } else if (cmd === 'S' || cmd === 'Q') {
+      const step = 4;
+      for (let i = 0; i < numbers.length; i += step) {
+        for (let j = 0; j < step; j += 2) {
+          const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
+          const y = isRelative ? currentY + (numbers[i + j + 1] ?? 0) : (numbers[i + j + 1] ?? 0);
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+        currentX = isRelative ? currentX + numbers[step - 2] : numbers[step - 2];
+        currentY = isRelative ? currentY + (numbers[step - 1] ?? 0) : (numbers[step - 1] ?? 0);
+      }
+    }
+  }
+
+  if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) return null;
+  return { minX, minY, maxX, maxY };
+}
+
 /**
  * Renders a styled SVG string from raw SVG content and visualization config.
- * Used for animation frame export — does not include region labels or CSS classes.
+ * Used for animation frame export; optionally includes region labels when regionLabels is set.
  */
 export function renderStyledSvg({
   rawSvg,
@@ -121,6 +210,8 @@ export function renderStyledSvg({
   shadow,
   picture,
   colorMap,
+  regionLabels,
+  labelPositions,
 }: RenderStyledSvgOptions): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(rawSvg, 'image/svg+xml');
@@ -256,6 +347,53 @@ export function renderStyledSvg({
     const pathsToMove = Array.from(svgElement.querySelectorAll('g > path, svg > path'));
     pathsToMove.forEach((p) => g.appendChild(p));
     svgElement.appendChild(g);
+  }
+
+  // Region labels (e.g. for export) — use paths before they were moved into shadow group
+  const pathsForLabels = svgElement.querySelectorAll('g > path, svg > path');
+  if (regionLabels?.show && data.allIds.length > 0 && pathsForLabels.length > 0) {
+    const existing = svgElement.querySelector('#regionLabelsGroup');
+    if (existing) existing.remove();
+
+    const labelsGroup = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+    labelsGroup.setAttribute('id', 'regionLabelsGroup');
+
+    pathsForLabels.forEach((path) => {
+      const pathTitle = path.getAttribute('title');
+      if (!pathTitle) return;
+
+      const regionData = data.byId[pathTitle];
+      if (!regionData) return;
+
+      const stored = labelPositions?.[pathTitle];
+      let labelX: number;
+      let labelY: number;
+
+      if (stored) {
+        labelX = stored.x;
+        labelY = stored.y;
+      } else {
+        const d = path.getAttribute('d');
+        if (!d) return;
+        const bounds = getPathBounds(d);
+        if (!bounds) return;
+        labelX = (bounds.minX + bounds.maxX) / 2;
+        labelY = (bounds.minY + bounds.maxY) / 2;
+      }
+
+      const text = doc.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', String(labelX));
+      text.setAttribute('y', String(labelY));
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('fill', regionLabels.color);
+      text.setAttribute('font-size', String(regionLabels.fontSize));
+      text.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+      text.textContent = regionData.label;
+      labelsGroup.appendChild(text);
+    });
+
+    svgElement.appendChild(labelsGroup);
   }
 
   return new XMLSerializer().serializeToString(doc);

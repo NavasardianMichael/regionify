@@ -67,7 +67,7 @@ function AppContent() {
 function App() {
   return (
     <ConfigProvider theme={theme}>
-      <AntApp message={{ duration: 0 }}>
+      <AntApp message={{ duration: 5 }}>
         <LocaleSync />
         <AppContent />
       </AntApp>

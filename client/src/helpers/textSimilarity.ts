@@ -151,58 +151,31 @@ export const extractSvgTitles = (svgContent: string): string[] => {
 };
 
 type ParsedRow = {
-  id?: string; // Optional - if provided, use directly; if not, match via similarity
+  id: string;
   label: string;
   value: number;
 };
 
 type MappedRegionData = {
-  id: string; // SVG title (the matched region ID)
-  label: string; // Original user label
+  id: string;
+  label: string;
   value: number;
 };
 
 /**
- * Map parsed data rows to SVG region IDs
- * - If id is provided, use it directly
- * - If id is missing, use similarity matching on label
+ * Map parsed data rows to region data. Id must exactly match expected region IDs (e.g. from sample).
  *
- * @param rows - Parsed data rows with optional id, label and value
- * @param svgTitles - Array of titles from SVG paths
- * @returns Mapped region data with id (SVG title), label (user's original), and value
+ * @param rows - Parsed data rows with id, label and value
+ * @param _svgTitles - Unused; kept for API compatibility
+ * @returns Mapped region data
  */
-export const mapDataToSvgRegions = (rows: ParsedRow[], svgTitles: string[]): MappedRegionData[] => {
-  const result: MappedRegionData[] = [];
-
-  for (const row of rows) {
-    // If id is provided, use it directly
-    if (row.id) {
-      result.push({
-        id: row.id,
-        label: row.label,
-        value: row.value,
-      });
-      continue;
-    }
-
-    // No id provided - use similarity matching on label
-    const match = findBestMatch(row.label, svgTitles);
-
-    if (match) {
-      result.push({
-        id: match.svgId, // Use SVG title as the ID
-        label: row.label, // Keep original user label
-        value: row.value,
-      });
-    } else {
-      // No match found - use the original label as ID (user can still visualize)
-      result.push({
-        id: row.label,
-        label: row.label,
-        value: row.value,
-      });
-    }
-  }
-
-  return result;
+export const mapDataToSvgRegions = (
+  rows: ParsedRow[],
+  _svgTitles: string[],
+): MappedRegionData[] => {
+  return rows.map((row) => ({
+    id: row.id,
+    label: row.label,
+    value: row.value,
+  }));
 };

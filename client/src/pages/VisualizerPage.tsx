@@ -169,9 +169,9 @@ const VisualizerPage: FC = () => {
       const updated = await updateProject(currentProjectId, payload);
       updateProjectInList(updated);
       setSavedStateSnapshot(captureStateSnapshot());
-      message.success('Project saved');
+      message.success('Project saved', 5);
     } catch {
-      message.error('Failed to save project');
+      message.error('Failed to save project', 0);
     } finally {
       setIsSaving(false);
     }
@@ -199,10 +199,10 @@ const VisualizerPage: FC = () => {
       setSavedStateSnapshot(captureStateSnapshot());
       // Update URL to reflect new project ID
       navigate(getProjectRoute(created.id), { replace: true });
-      message.success('Project created');
+      message.success('Project created', 5);
       setProjectName('');
     } catch {
-      message.error('Failed to create project');
+      message.error('Failed to create project', 0);
     } finally {
       setIsSaving(false);
     }

@@ -5,10 +5,10 @@ import { App, Flex, Typography } from 'antd';
 import { createCheckout } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { BILLING_PLANS } from '@/components/billing/constants';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 const BillingPage: FC = () => {
   const { message } = App.useApp();
@@ -30,7 +30,7 @@ const BillingPage: FC = () => {
         const { checkoutUrl } = await createCheckout({ plan });
         window.location.href = checkoutUrl;
       } catch {
-        message.error(t('billing.checkoutError'));
+        message.error(t('billing.checkoutError'), 0);
         setUpgradingPlan(null);
       }
     },

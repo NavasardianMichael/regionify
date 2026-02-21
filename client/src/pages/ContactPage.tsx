@@ -2,9 +2,8 @@ import { type FC, useState } from 'react';
 import { App, Button, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processContactFormData } from '@/api/contact/processors';
-import { Card } from '@/components/ui/Card';
-
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { Card } from '@/components/ui/Card';
 
 type ContactFormValues = {
   firstName: string;
@@ -24,11 +23,11 @@ const ContactPage: FC = () => {
     try {
       const payload = processContactFormData(values);
       await sendContactMessage(payload);
-      message.success(t('contact.success'));
+      message.success(t('contact.success'), 5);
       form.resetFields();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('contact.error');
-      message.error(errorMessage);
+      message.error(errorMessage, 0);
     } finally {
       setLoading(false);
     }

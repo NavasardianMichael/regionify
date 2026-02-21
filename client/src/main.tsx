@@ -6,8 +6,8 @@ import './index.css';
 
 import '@/i18n';
 
-// Messages stay until user closes them (no autohide)
-message.config({ duration: 0 });
+// Success/info auto-hide after 5s; error/warning use duration 0 at call site
+message.config({ duration: 5 });
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

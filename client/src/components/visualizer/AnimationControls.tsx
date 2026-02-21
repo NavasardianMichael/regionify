@@ -9,9 +9,9 @@ import { Button, Flex, Select, Slider, Switch, Typography } from 'antd';
 import {
   selectIsPlaying,
   selectPause,
-  selectSetSpeed,
+  selectSecondsPerPeriod,
+  selectSetSecondsPerPeriod,
   selectSetTransitionType,
-  selectSpeed,
   selectTogglePlay,
   selectTransitionType,
 } from '@/store/animation/selectors';
@@ -24,11 +24,11 @@ import {
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 
-const SPEED_OPTIONS = [
-  { value: 0.5, label: '0.5x' },
-  { value: 1, label: '1x' },
-  { value: 2, label: '2x' },
-  { value: 3, label: '3x' },
+const SECONDS_PER_PERIOD_OPTIONS = [
+  { value: 1, label: '1s' },
+  { value: 2, label: '2s' },
+  { value: 3, label: '3s' },
+  { value: 5, label: '5s' },
 ];
 
 const AnimationControls: FC = () => {
@@ -38,11 +38,11 @@ const AnimationControls: FC = () => {
   const setActiveTimePeriod = useVisualizerStore(selectSetActiveTimePeriod);
 
   const isPlaying = useAnimationStore(selectIsPlaying);
-  const speed = useAnimationStore(selectSpeed);
+  const secondsPerPeriod = useAnimationStore(selectSecondsPerPeriod);
   const transitionType = useAnimationStore(selectTransitionType);
   const togglePlay = useAnimationStore(selectTogglePlay);
   const pause = useAnimationStore(selectPause);
-  const setSpeed = useAnimationStore(selectSetSpeed);
+  const setSecondsPerPeriod = useAnimationStore(selectSetSecondsPerPeriod);
   const setTransitionType = useAnimationStore(selectSetTransitionType);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -51,10 +51,11 @@ const AnimationControls: FC = () => {
   const isFirstPeriod = currentIndex <= 0;
   const isLastPeriod = currentIndex >= timePeriods.length - 1;
 
-  // Animation playback loop
+  // Playback: advance to next period every secondsPerPeriod (independent of smooth transition)
   useEffect(() => {
     if (!isPlaying || timePeriods.length < 2) return;
 
+    const intervalMs = secondsPerPeriod * 1000;
     intervalRef.current = setInterval(() => {
       const state = useVisualizerStore.getState();
       const currentPeriod = state.activeTimePeriod;
@@ -62,12 +63,12 @@ const AnimationControls: FC = () => {
       const idx = periods.indexOf(currentPeriod ?? '');
       const nextIdx = idx >= periods.length - 1 ? 0 : idx + 1;
       state.setActiveTimePeriod(periods[nextIdx]);
-    }, 1000 / speed);
+    }, intervalMs);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isPlaying, speed, timePeriods.length]);
+  }, [isPlaying, secondsPerPeriod, timePeriods.length]);
 
   const handleStepBackward = useCallback(() => {
     pause();
@@ -93,11 +94,11 @@ const AnimationControls: FC = () => {
     [timePeriods, setActiveTimePeriod, pause],
   );
 
-  const handleSpeedChange = useCallback(
+  const handleSecondsPerPeriodChange = useCallback(
     (value: number) => {
-      setSpeed(value);
+      setSecondsPerPeriod(value);
     },
-    [setSpeed],
+    [setSecondsPerPeriod],
   );
 
   const handleTransitionToggle = useCallback(
@@ -157,11 +158,11 @@ const AnimationControls: FC = () => {
 
         <Flex align="center" gap="middle">
           <Flex align="center" gap={4}>
-            <Typography.Text className="text-xs text-gray-500">Speed:</Typography.Text>
+            <Typography.Text className="text-xs text-gray-500">Seconds per period:</Typography.Text>
             <Select
-              value={speed}
-              onChange={handleSpeedChange}
-              options={SPEED_OPTIONS}
+              value={secondsPerPeriod}
+              onChange={handleSecondsPerPeriodChange}
+              options={SECONDS_PER_PERIOD_OPTIONS}
               size="small"
               className="w-18"
             />

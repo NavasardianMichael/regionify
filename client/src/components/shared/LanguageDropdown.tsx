@@ -30,7 +30,7 @@ type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'
 
 export const LanguageDropdown: FC<Props> = ({
   currentLocale,
-  variant = 'bordered',
+  variant = 'borderless',
   ...selectProps
 }) => {
   const { i18n } = useTypedTranslation();
@@ -80,7 +80,6 @@ export const LanguageDropdown: FC<Props> = ({
       role="combobox"
       onChange={handleLocaleChange}
       options={options}
-      bordered={variant === 'bordered'}
       className={
         variant === 'borderless'
           ? '[&_.ant-select-selector]:border-none! [&_.ant-select-selector]:bg-transparent! [&_.ant-select-selector]:shadow-none!'

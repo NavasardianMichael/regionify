@@ -6,9 +6,8 @@ import type { Project } from '@/api/projects/types';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { useProjects } from '@/hooks/useProjects';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
-import { ProjectCard } from '@/components/projects/ProjectCard';
-
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { ProjectCard } from '@/components/projects/ProjectCard';
 
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
 

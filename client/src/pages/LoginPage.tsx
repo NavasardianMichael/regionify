@@ -79,7 +79,7 @@ const LoginPage: FC = () => {
         clearTemporaryProjectState();
       }
 
-      message.success('Logged in successfully!');
+      message.success('Logged in successfully!', 5);
 
       // Redirect to return URL or home
       const returnUrl = getReturnUrl();
@@ -102,15 +102,15 @@ const LoginPage: FC = () => {
   const handleResendVerification = async () => {
     const email = form.getFieldValue('email');
     if (!email) {
-      message.error('Please enter your email address.');
+      message.error('Please enter your email address.', 0);
       return;
     }
     setResendLoading(true);
     try {
       const result = await resendVerificationEmail(email);
-      message.success(result.message);
+      message.success(result.message, 5);
     } catch {
-      message.error('Failed to resend verification email.');
+      message.error('Failed to resend verification email.', 0);
     } finally {
       setResendLoading(false);
     }

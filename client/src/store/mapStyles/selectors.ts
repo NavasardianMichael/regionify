@@ -25,6 +25,7 @@ export const selectRegionLabels = (state: MapStylesState) => state.regionLabels;
 export const selectRegionLabelsShow = (state: MapStylesState) => state.regionLabels.show;
 export const selectRegionLabelsColor = (state: MapStylesState) => state.regionLabels.color;
 export const selectRegionLabelsFontSize = (state: MapStylesState) => state.regionLabels.fontSize;
+export const selectRegionLabelPositions = (state: MapStylesState) => state.regionLabelPositions;
 
 // Action selectors
 export const selectSetMapStylesState = (state: MapStylesState) => state.setMapStylesState;

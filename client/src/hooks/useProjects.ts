@@ -57,7 +57,7 @@ export function useProjects(): UseProjectsReturn {
         const data = await getProjects();
         setProjects(data);
       } catch {
-        message.error('Failed to load projects');
+        message.error('Failed to load projects', 0);
       } finally {
         setLoading(false);
       }
@@ -87,9 +87,9 @@ export function useProjects(): UseProjectsReturn {
           try {
             await deleteProjectApi(project.id);
             removeProject(project.id);
-            message.success('Project deleted');
+            message.success('Project deleted', 5);
           } catch {
-            message.error('Failed to delete project');
+            message.error('Failed to delete project', 0);
           }
         },
       });
@@ -109,9 +109,9 @@ export function useProjects(): UseProjectsReturn {
       try {
         const updated = await updateProjectApi(renamingProject.id, { name: trimmed });
         updateProjectInList(updated);
-        message.success('Project renamed');
+        message.success('Project renamed', 5);
       } catch {
-        message.error('Failed to rename project');
+        message.error('Failed to rename project', 0);
       }
     }
     setRenamingProject(null);

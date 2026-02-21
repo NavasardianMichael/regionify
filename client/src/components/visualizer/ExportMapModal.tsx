@@ -10,6 +10,7 @@ import {
   Progress,
   Select,
   Slider,
+  Switch,
   Tooltip,
   Typography,
 } from 'antd';
@@ -18,8 +19,10 @@ import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import {
   selectBackgroundColor,
+  selectFloatingPosition,
   selectLabels,
   selectNoDataColor,
+  selectPosition,
   selectTitle,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
@@ -30,12 +33,24 @@ import {
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { selectBorder, selectPicture, selectShadow } from '@/store/mapStyles/selectors';
+import {
+  selectBorder,
+  selectPicture,
+  selectRegionLabelPositions,
+  selectRegionLabels,
+  selectShadow,
+} from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { ROUTES } from '@/constants/routes';
-import { exportAnimationAsGif, exportAnimationAsVideo } from '@/helpers/animationExport';
+import {
+  exportAnimationAsGif,
+  exportAnimationAsVideo,
+  getAnimationTotalFrames,
+  type LegendPositionExport,
+} from '@/helpers/animationExport';
 import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -62,6 +77,8 @@ type Props = {
 };
 
 const DEFAULT_QUALITY = 60;
+const DEFAULT_SECONDS_PER_PERIOD = 2;
+const EXPORT_FPS = 30;
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const { message } = App.useApp();
@@ -79,9 +96,13 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const legendLabels = useLegendStylesStore(selectLabels);
   const legendTitle = useLegendStylesStore(selectTitle);
   const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
+  const legendPosition = useLegendStylesStore(selectPosition);
+  const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
+  const regionLabels = useMapStylesStore(selectRegionLabels);
+  const regionLabelPositions = useMapStylesStore(selectRegionLabelPositions);
   const maxQuality = limits.maxExportQuality;
   const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
   const allowedFormats = limits.allowedExportFormats;
@@ -108,7 +129,8 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   const [quality, setQuality] = useState(initialQuality);
-  const [fps, setFps] = useState(1);
+  const [secondsPerPeriod, setSecondsPerPeriod] = useState(DEFAULT_SECONDS_PER_PERIOD);
+  const [smoothTransitions, setSmoothTransitions] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -169,11 +191,17 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     try {
       if (isAnimationFormat) {
         if (!hasTimelineData) {
-          message.warning('Import historical data with a time column first to export animations.');
+          message.warning(
+            'Import historical data with a time column first to export animations.',
+            0,
+          );
           return;
         }
         const rawSvg = await loadMapSvg(selectedRegionId!);
         if (!rawSvg) throw new Error('Failed to load map SVG');
+
+        const exportLegendPosition: LegendPositionExport =
+          legendPosition === LEGEND_POSITIONS.floating ? 'floating' : 'bottom';
 
         const exportOptions = {
           rawSvg,
@@ -190,7 +218,13 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
             backgroundColor: legendBackgroundColor,
           },
           quality,
-          fps,
+          fps: EXPORT_FPS,
+          secondsPerPeriod,
+          smooth: smoothTransitions,
+          legendPosition: exportLegendPosition,
+          floatingPosition,
+          regionLabels,
+          labelPositions: regionLabelPositions,
           onProgress: setProgress,
         };
 
@@ -204,10 +238,10 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
         if (!handler) return;
         await handler(fileName);
       }
-      message.success(`Map exported as ${exportType.toUpperCase()}`);
+      message.success(`Map exported as ${exportType.toUpperCase()}`, 5);
       onClose();
     } catch {
-      message.error('Failed to export. Please try again.');
+      message.error('Failed to export. Please try again.', 0);
     } finally {
       setIsExporting(false);
       setProgress(0);
@@ -229,8 +263,13 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     legendLabels,
     legendTitle,
     legendBackgroundColor,
+    legendPosition,
+    floatingPosition,
+    regionLabels,
+    regionLabelPositions,
     quality,
-    fps,
+    secondsPerPeriod,
+    smoothTransitions,
     onClose,
   ]);
 
@@ -323,24 +362,49 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           </Flex>
         )}
 
-        {/* Animation: FPS control */}
+        {/* Animation: seconds per period + smooth */}
         {isAnimationFormat && hasTimelineData && (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
               <Typography.Text className="text-sm text-gray-600">
-                Speed (frames/sec):
+                Seconds per time period:
               </Typography.Text>
               <InputNumber
-                min={5}
-                max={60}
+                min={0.5}
+                max={10}
                 step={0.5}
-                value={fps}
-                onChange={(v: number | null) => setFps(Math.max(0.5, Math.min(v ?? 1, 60)))}
+                value={secondsPerPeriod}
+                onChange={(v: number | null) =>
+                  setSecondsPerPeriod(Math.max(0.5, Math.min(v ?? 2, 10)))
+                }
                 className="w-20"
               />
             </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">
+                Smooth transitions:
+              </Typography.Text>
+              <Switch
+                checked={smoothTransitions}
+                onChange={setSmoothTransitions}
+                aria-label="Smooth transitions between time periods"
+              />
+            </Flex>
             <Typography.Text type="secondary" className="text-xs">
-              {timePeriods.length} frames · ~{Math.round(timePeriods.length / fps)}s duration
+              {getAnimationTotalFrames(timePeriods.length, {
+                secondsPerPeriod,
+                fps: EXPORT_FPS,
+                smooth: smoothTransitions,
+              })}{' '}
+              frames · {EXPORT_FPS} FPS · ~
+              {(
+                getAnimationTotalFrames(timePeriods.length, {
+                  secondsPerPeriod,
+                  fps: EXPORT_FPS,
+                  smooth: smoothTransitions,
+                }) / EXPORT_FPS
+              ).toFixed(1)}
+              s duration
             </Typography.Text>
           </Flex>
         )}

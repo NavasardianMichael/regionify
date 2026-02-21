@@ -5,10 +5,11 @@ import { AppError } from '../middleware/errorHandler.js';
 
 /**
  * Builds the CSV export URL for a public Google Sheet.
+ * Includes id= for compatibility with "Anyone with the link" access.
  */
 function buildCsvExportUrl(spreadsheetId: string, gid: string | null): string {
-  const base = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv`;
-  return gid ? `${base}&gid=${gid}` : base;
+  const base = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&id=${spreadsheetId}`;
+  return gid ? `${base}&gid=${gid}` : `${base}&gid=0`;
 }
 
 /**
@@ -32,9 +33,12 @@ async function fetchPublicSheet(url: string): Promise<string> {
 
   logger.debug({ csvUrl, spreadsheetId, gid }, 'Fetching public Google Sheet');
 
+  // Browser-like headers so Google allows "Anyone with the link" export (avoids 403 for server fetches)
   const response = await fetch(csvUrl, {
     headers: {
-      'User-Agent': 'Regionify/1.0',
+      Accept: 'text/csv, text/plain, */*',
+      Referer: 'https://docs.google.com/',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:130.0) Gecko/20100101 Firefox/130.0',
     },
     redirect: 'follow',
   });

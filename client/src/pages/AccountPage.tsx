@@ -47,10 +47,10 @@ const AccountPage: FC = () => {
     try {
       const { user: updatedUser } = await updateProfile({ name: values.name });
       setUser(updatedUser);
-      message.success(t('account.profileUpdated'));
+      message.success(t('account.profileUpdated'), 5);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('account.updateError');
-      message.error(errorMessage);
+      message.error(errorMessage, 0);
     } finally {
       setProfileLoading(false);
     }
@@ -82,7 +82,7 @@ const AccountPage: FC = () => {
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : t('deleteAccountModal.error');
-          message.error(errorMessage);
+          message.error(errorMessage, 0);
           // Re-enable buttons on error
           modalInstance.update({
             okButtonProps: { disabled: false, loading: false, type: 'primary', danger: true },
