@@ -100,6 +100,52 @@ const zh: CommonNs = {
     error: '出错了',
     language: '语言',
   },
+  messages: {
+    projectSaved: '项目已保存',
+    projectSaveFailed: '保存项目失败',
+    projectCreated: '项目已创建',
+    projectCreateFailed: '创建项目失败',
+    projectDeleted: '项目已删除',
+    projectDeleteFailed: '删除项目失败',
+    projectRenamed: '项目已重命名',
+    projectRenameFailed: '重命名项目失败',
+    projectsLoadFailed: '加载项目失败',
+    mapExportedAs: '地图已导出为 {{format}}',
+    exportFailed: '导出失败，请重试。',
+    importHistoricalFirst: '请先导入带时间列的历史数据以导出动画。',
+    loggedInSuccess: '登录成功！',
+    enterEmail: '请输入您的电子邮箱地址。',
+    resendVerificationFailed: '重新发送验证邮件失败。',
+    feedbackThankYou: '感谢您的反馈！',
+    noDataToDownload: '没有可下载的数据。请先添加或导入数据。',
+    downloadDataFailed: '下载数据失败，请重试。',
+    switchedToStatic: '已切换为静态数据。可导出为 PNG、SVG 或 JPEG。',
+    switchedToDynamic:
+      '已切换为动态数据。在手动输入中添加更多时间段或重新导入以导出 GIF/视频。',
+    switchToStaticConfirm: '切换为静态数据？',
+    switchToDynamicConfirm: '切换为动态数据？',
+    switch: '切换',
+    importedRegions: '已导入 {{count}} 个区域',
+    importedRowsPeriods: '已导入 {{count}} 行，共 {{periods}} 个时间段',
+    timeSeriesDetected: '检测到时间序列数据。升级至 Atlas 计划以使用动画。',
+    noTimeColumnDetected:
+      '未检测到时间列（year、time、period 等）。数据已作为单一时间段导入。',
+    datasetMustIncludeId: '数据集必须包含 id 列。',
+    dataFormatMismatch:
+      '数据格式与预期不符。下载示例以获取正确的 ID 并匹配标签。',
+    failedParseExcel:
+      '解析 Excel 文件失败。下载示例以获取正确格式并匹配标签。',
+    failedParseFile:
+      '解析文件失败。下载示例以获取正确格式并匹配标签。',
+    noValidDataExcel: 'Excel 文件中未找到有效数据',
+    noValidDataFile: '文件中未找到有效数据',
+    downloadSampleFailed: '下载示例失败，请重试。',
+    downloadSample: '下载示例',
+    close: '关闭',
+    deleteProjectTitle: '删除项目',
+    deleteProjectContent: '确定要删除「{{name}}」吗？此操作无法撤销。',
+    deleteProjectOk: '删除',
+  },
 };
 
 export default zh;

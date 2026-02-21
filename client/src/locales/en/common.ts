@@ -101,6 +101,52 @@ const en: CommonNs = {
     error: 'Something went wrong',
     language: 'Language',
   },
+  messages: {
+    projectSaved: 'Project saved',
+    projectSaveFailed: 'Failed to save project',
+    projectCreated: 'Project created',
+    projectCreateFailed: 'Failed to create project',
+    projectDeleted: 'Project deleted',
+    projectDeleteFailed: 'Failed to delete project',
+    projectRenamed: 'Project renamed',
+    projectRenameFailed: 'Failed to rename project',
+    projectsLoadFailed: 'Failed to load projects',
+    mapExportedAs: 'Map exported as {{format}}',
+    exportFailed: 'Failed to export. Please try again.',
+    importHistoricalFirst: 'Import historical data with a time column first to export animations.',
+    loggedInSuccess: 'Logged in successfully!',
+    enterEmail: 'Please enter your email address.',
+    resendVerificationFailed: 'Failed to resend verification email.',
+    feedbackThankYou: 'Thank you for your feedback!',
+    noDataToDownload: 'No data available to download. Add or import data first.',
+    downloadDataFailed: 'Failed to download data. Please try again.',
+    switchedToStatic: 'Switched to static data. Export as PNG, SVG or JPEG.',
+    switchedToDynamic:
+      'Switched to dynamic data. Add more time periods in Manual entry or re-import to export GIF/Video.',
+    switchToStaticConfirm: 'Switch to static data?',
+    switchToDynamicConfirm: 'Switch to dynamic data?',
+    switch: 'Switch',
+    importedRegions: 'Imported {{count}} regions',
+    importedRowsPeriods: 'Imported {{count}} rows across {{periods}} time periods',
+    timeSeriesDetected: 'Time series data detected. Upgrade to Atlas plan for animated visualizations.',
+    noTimeColumnDetected:
+      'No time column detected (year, time, period, etc.). Data imported as single period.',
+    datasetMustIncludeId: 'Dataset must include an id column.',
+    dataFormatMismatch:
+      'Data does not match the expected format. Download sample to get the correct IDs and match your labels.',
+    failedParseExcel:
+      'Failed to parse Excel file. Download sample to get the correct format and match your labels.',
+    failedParseFile:
+      'Failed to parse file. Download sample to get the correct format and match your labels.',
+    noValidDataExcel: 'No valid data found in Excel file',
+    noValidDataFile: 'No valid data found in file',
+    downloadSampleFailed: 'Failed to download sample. Please try again.',
+    downloadSample: 'Download sample',
+    close: 'Close',
+    deleteProjectTitle: 'Delete Project',
+    deleteProjectContent: 'Are you sure you want to delete "{{name}}"? This action cannot be undone.',
+    deleteProjectOk: 'Delete',
+  },
 };
 
 export default en;

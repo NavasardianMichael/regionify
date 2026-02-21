@@ -101,6 +101,52 @@ const fr: CommonNs = {
     error: "Une erreur s'est produite",
     language: 'Langue',
   },
+  messages: {
+    projectSaved: 'Projet enregistré',
+    projectSaveFailed: 'Échec de l\'enregistrement du projet',
+    projectCreated: 'Projet créé',
+    projectCreateFailed: 'Échec de la création du projet',
+    projectDeleted: 'Projet supprimé',
+    projectDeleteFailed: 'Échec de la suppression du projet',
+    projectRenamed: 'Projet renommé',
+    projectRenameFailed: 'Échec du renommage du projet',
+    projectsLoadFailed: 'Échec du chargement des projets',
+    mapExportedAs: 'Carte exportée en {{format}}',
+    exportFailed: 'Échec de l\'export. Veuillez réessayer.',
+    importHistoricalFirst: 'Importez d\'abord des données historiques avec une colonne temporelle pour exporter des animations.',
+    loggedInSuccess: 'Connexion réussie !',
+    enterEmail: 'Veuillez indiquer votre adresse e-mail.',
+    resendVerificationFailed: 'Échec du renvoi de l\'e-mail de vérification.',
+    feedbackThankYou: 'Merci pour votre retour !',
+    noDataToDownload: 'Aucune donnée à télécharger. Ajoutez ou importez des données d\'abord.',
+    downloadDataFailed: 'Échec du téléchargement des données. Veuillez réessayer.',
+    switchedToStatic: 'Passé en données statiques. Exportez en PNG, SVG ou JPEG.',
+    switchedToDynamic:
+      'Passé en données dynamiques. Ajoutez des périodes dans Saisie manuelle ou réimportez pour exporter en GIF/Video.',
+    switchToStaticConfirm: 'Passer aux données statiques ?',
+    switchToDynamicConfirm: 'Passer aux données dynamiques ?',
+    switch: 'Changer',
+    importedRegions: '{{count}} régions importées',
+    importedRowsPeriods: '{{count}} lignes importées sur {{periods}} périodes',
+    timeSeriesDetected: 'Données de séries temporelles détectées. Passez au plan Atlas pour les animations.',
+    noTimeColumnDetected:
+      'Aucune colonne de temps détectée (year, time, period, etc.). Données importées en une seule période.',
+    datasetMustIncludeId: 'Le jeu de données doit contenir une colonne id.',
+    dataFormatMismatch:
+      'Les données ne correspondent pas au format attendu. Téléchargez l\'exemple pour les bons ID.',
+    failedParseExcel:
+      'Échec de la lecture du fichier Excel. Téléchargez l\'exemple pour le bon format.',
+    failedParseFile:
+      'Échec de la lecture du fichier. Téléchargez l\'exemple pour le bon format.',
+    noValidDataExcel: 'Aucune donnée valide dans le fichier Excel',
+    noValidDataFile: 'Aucune donnée valide dans le fichier',
+    downloadSampleFailed: 'Échec du téléchargement de l\'exemple. Veuillez réessayer.',
+    downloadSample: 'Télécharger l\'exemple',
+    close: 'Fermer',
+    deleteProjectTitle: 'Supprimer le projet',
+    deleteProjectContent: 'Êtes-vous sûr de vouloir supprimer « {{name}} » ? Cette action est irréversible.',
+    deleteProjectOk: 'Supprimer',
+  },
 };
 
 export default fr;

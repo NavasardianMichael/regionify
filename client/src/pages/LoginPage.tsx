@@ -10,6 +10,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { ROUTES } from '@/constants/routes';
 import {
   clearReturnUrl,
@@ -26,6 +27,7 @@ type LoginFormValues = {
 };
 
 const LoginPage: FC = () => {
+  const { t } = useTypedTranslation();
   const [form] = Form.useForm<LoginFormValues>();
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -79,7 +81,7 @@ const LoginPage: FC = () => {
         clearTemporaryProjectState();
       }
 
-      message.success('Logged in successfully!', 5);
+      message.success(t('messages.loggedInSuccess'), 5);
 
       // Redirect to return URL or home
       const returnUrl = getReturnUrl();
@@ -102,7 +104,7 @@ const LoginPage: FC = () => {
   const handleResendVerification = async () => {
     const email = form.getFieldValue('email');
     if (!email) {
-      message.error('Please enter your email address.', 0);
+      message.error(t('messages.enterEmail'), 0);
       return;
     }
     setResendLoading(true);
@@ -110,7 +112,7 @@ const LoginPage: FC = () => {
       const result = await resendVerificationEmail(email);
       message.success(result.message, 5);
     } catch {
-      message.error('Failed to resend verification email.', 0);
+      message.error(t('messages.resendVerificationFailed'), 0);
     } finally {
       setResendLoading(false);
     }

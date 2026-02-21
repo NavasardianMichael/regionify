@@ -151,7 +151,7 @@ const AnimationControls: FC = () => {
             size="small"
             aria-label="Next period"
           />
-          <Typography.Text strong className="ml-2 text-sm">
+          <Typography.Text strong className="ms-2 text-sm">
             {activeTimePeriod ?? timePeriods[0]}
           </Typography.Text>
         </Flex>

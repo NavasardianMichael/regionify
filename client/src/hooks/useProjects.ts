@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { App } from 'antd';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   deleteProject as deleteProjectApi,
   getProjects,
@@ -35,6 +36,7 @@ type UseProjectsReturn = {
 };
 
 export function useProjects(): UseProjectsReturn {
+  const { t } = useTypedTranslation();
   const { message, modal } = App.useApp();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const projects = useProjectsStore(selectProjects);
@@ -57,14 +59,14 @@ export function useProjects(): UseProjectsReturn {
         const data = await getProjects();
         setProjects(data);
       } catch {
-        message.error('Failed to load projects', 0);
+        message.error(t('messages.projectsLoadFailed'), 0);
       } finally {
         setLoading(false);
       }
     };
 
     void fetchProjects();
-  }, [isLoggedIn, setProjects, setLoading, message]);
+  }, [isLoggedIn, setProjects, setLoading, message, t]);
 
   const filteredProjects = useMemo(() => {
     if (!search.trim()) return projects;
@@ -78,23 +80,23 @@ export function useProjects(): UseProjectsReturn {
   const handleDelete = useCallback(
     (project: Project) => {
       modal.confirm({
-        title: 'Delete Project',
+        title: t('messages.deleteProjectTitle'),
         icon: null,
-        content: `Are you sure you want to delete "${project.name}"? This action cannot be undone.`,
-        okText: 'Delete',
+        content: t('messages.deleteProjectContent', { name: project.name }),
+        okText: t('messages.deleteProjectOk'),
         okButtonProps: { danger: true },
         onOk: async () => {
           try {
             await deleteProjectApi(project.id);
             removeProject(project.id);
-            message.success('Project deleted', 5);
+            message.success(t('messages.projectDeleted'), 5);
           } catch {
-            message.error('Failed to delete project', 0);
+            message.error(t('messages.projectDeleteFailed'), 0);
           }
         },
       });
     },
-    [modal, removeProject, message],
+    [modal, removeProject, message, t],
   );
 
   const handleRenameStart = useCallback((project: Project) => {
@@ -109,14 +111,14 @@ export function useProjects(): UseProjectsReturn {
       try {
         const updated = await updateProjectApi(renamingProject.id, { name: trimmed });
         updateProjectInList(updated);
-        message.success('Project renamed', 5);
+        message.success(t('messages.projectRenamed'), 5);
       } catch {
-        message.error('Failed to rename project', 0);
+        message.error(t('messages.projectRenameFailed'), 0);
       }
     }
     setRenamingProject(null);
     setNewName('');
-  }, [renamingProject, newName, updateProjectInList, message]);
+  }, [renamingProject, newName, updateProjectInList, message, t]);
 
   const handleRenameCancel = useCallback(() => {
     setRenamingProject(null);

@@ -1,13 +1,13 @@
 import type { FC } from 'react';
 import { CloseOutlined, DownloadOutlined } from '@ant-design/icons';
-import type { App } from 'antd';
-import { Button, Flex } from 'antd';
+import { App, Button, Flex } from 'antd';
 
 export type MessageWithSampleDownloadProps = {
   message: string;
   onDownloadSample: () => void;
   onClose: () => void;
   downloadLabel?: string;
+  closeLabel?: string;
 };
 
 /** Message content with a "Download sample" button and Close, for use in Ant Design message. */
@@ -16,6 +16,7 @@ export const MessageWithSampleDownload: FC<MessageWithSampleDownloadProps> = ({
   onDownloadSample,
   onClose,
   downloadLabel = 'Download sample',
+  closeLabel = 'Close',
 }) => (
   <Flex align="center" gap="small" style={{ alignItems: 'center' }}>
     <span>{message}</span>
@@ -34,12 +35,12 @@ export const MessageWithSampleDownload: FC<MessageWithSampleDownloadProps> = ({
       icon={<CloseOutlined />}
       onClick={onClose}
       style={{ padding: 0 }}
-      aria-label="Close"
+      aria-label={closeLabel}
     />
   </Flex>
 );
 
-export type MessageApi = ReturnType<App['useApp']>['message'];
+export type MessageApi = ReturnType<ReturnType<typeof App.useApp>>['message'];
 
 /**
  * Shows an error/warning/info message with a "Download sample" button.
@@ -50,7 +51,7 @@ export function showMessageWithSampleDownload(
   type: 'error' | 'warning' | 'info',
   message: string,
   onDownloadSample: () => void,
-  options?: { downloadLabel?: string },
+  options?: { downloadLabel?: string; closeLabel?: string },
 ): void {
   const closeRef = { current: () => {} };
   closeRef.current = messageApi[type]({
@@ -60,6 +61,7 @@ export function showMessageWithSampleDownload(
         onDownloadSample={onDownloadSample}
         onClose={() => closeRef.current()}
         downloadLabel={options?.downloadLabel}
+        closeLabel={options?.closeLabel}
       />
     ),
     duration: 0,

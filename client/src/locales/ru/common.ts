@@ -101,6 +101,52 @@ const ru: CommonNs = {
     error: 'Что-то пошло не так',
     language: 'Язык',
   },
+  messages: {
+    projectSaved: 'Проект сохранён',
+    projectSaveFailed: 'Не удалось сохранить проект',
+    projectCreated: 'Проект создан',
+    projectCreateFailed: 'Не удалось создать проект',
+    projectDeleted: 'Проект удалён',
+    projectDeleteFailed: 'Не удалось удалить проект',
+    projectRenamed: 'Проект переименован',
+    projectRenameFailed: 'Не удалось переименовать проект',
+    projectsLoadFailed: 'Не удалось загрузить проекты',
+    mapExportedAs: 'Карта экспортирована в {{format}}',
+    exportFailed: 'Ошибка экспорта. Попробуйте снова.',
+    importHistoricalFirst: 'Сначала импортируйте данные с временной колонкой для экспорта анимаций.',
+    loggedInSuccess: 'Вход выполнен успешно!',
+    enterEmail: 'Введите адрес электронной почты.',
+    resendVerificationFailed: 'Не удалось отправить письмо с подтверждением повторно.',
+    feedbackThankYou: 'Спасибо за отзыв!',
+    noDataToDownload: 'Нет данных для загрузки. Добавьте или импортируйте данные.',
+    downloadDataFailed: 'Не удалось загрузить данные. Попробуйте снова.',
+    switchedToStatic: 'Переключено на статические данные. Экспорт в PNG, SVG или JPEG.',
+    switchedToDynamic:
+      'Переключено на динамические данные. Добавьте периоды вручную или импортируйте снова для экспорта GIF/Video.',
+    switchToStaticConfirm: 'Переключить на статические данные?',
+    switchToDynamicConfirm: 'Переключить на динамические данные?',
+    switch: 'Переключить',
+    importedRegions: 'Импортировано регионов: {{count}}',
+    importedRowsPeriods: 'Импортировано {{count}} строк за {{periods}} периодов',
+    timeSeriesDetected: 'Обнаружены данные временных рядов. Перейдите на план Atlas для анимаций.',
+    noTimeColumnDetected:
+      'Временная колонка не обнаружена (year, time, period и т.д.). Данные импортированы как один период.',
+    datasetMustIncludeId: 'В наборе данных должна быть колонка id.',
+    dataFormatMismatch:
+      'Данные не соответствуют ожидаемому формату. Скачайте образец для правильных ID.',
+    failedParseExcel:
+      'Не удалось прочитать файл Excel. Скачайте образец для правильного формата.',
+    failedParseFile:
+      'Не удалось прочитать файл. Скачайте образец для правильного формата.',
+    noValidDataExcel: 'В файле Excel нет допустимых данных',
+    noValidDataFile: 'В файле нет допустимых данных',
+    downloadSampleFailed: 'Не удалось скачать образец. Попробуйте снова.',
+    downloadSample: 'Скачать образец',
+    close: 'Закрыть',
+    deleteProjectTitle: 'Удалить проект',
+    deleteProjectContent: 'Вы уверены, что хотите удалить «{{name}}»? Это действие нельзя отменить.',
+    deleteProjectOk: 'Удалить',
+  },
 };
 
 export default ru;

@@ -39,6 +39,7 @@ import { useProfileStore } from '@/store/profile/store';
 import { selectCurrentProject } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/MessageWithSampleDownload';
@@ -267,6 +268,7 @@ function showMessageWithClose(
 }
 
 export const ImportDataPanel: FC = () => {
+  const { t } = useTypedTranslation();
   const { modal, message: messageApi } = App.useApp();
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
@@ -303,11 +305,7 @@ export const ImportDataPanel: FC = () => {
   /** Download current dataset only (no sample generation). */
   const handleDownloadData = useCallback(async () => {
     if (data.allIds.length === 0) {
-      showMessageWithClose(
-        messageApi,
-        'warning',
-        'No data available to download. Add or import data first.',
-      );
+      showMessageWithClose(messageApi, 'warning', t('messages.noDataToDownload'));
       return;
     }
 
@@ -406,7 +404,7 @@ export const ImportDataPanel: FC = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download data:', error);
-      showMessageWithClose(messageApi, 'error', 'Failed to download data. Please try again.');
+      showMessageWithClose(messageApi, 'error', t('messages.downloadDataFailed'));
     } finally {
       setIsDownloading(false);
     }
@@ -418,6 +416,7 @@ export const ImportDataPanel: FC = () => {
     timePeriods,
     timelineData,
     currentProject,
+    t,
   ]);
 
   /** Download sample data only (template with region IDs for matching). */
@@ -505,8 +504,9 @@ export const ImportDataPanel: FC = () => {
       showMessageWithSampleDownload(
         messageApi,
         'error',
-        'Failed to download sample. Please try again.',
+        t('messages.downloadSampleFailed'),
         handleDownloadSampleOnly,
+        { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
       );
     } finally {
       setIsDownloadingSample(false);
@@ -518,6 +518,7 @@ export const ImportDataPanel: FC = () => {
     limits.historicalDataImport,
     importDataType,
     currentProject,
+    t,
   ]);
 
   const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
@@ -550,12 +551,8 @@ export const ImportDataPanel: FC = () => {
     } else {
       setVisualizerState({ data: { allIds: [], byId: {} } });
     }
-    showMessageWithClose(
-      messageApi,
-      'success',
-      'Switched to static data. Export as PNG, SVG or JPEG.',
-    );
-  }, [messageApi, svgTitles, clearTimelineData, setVisualizerState]);
+    showMessageWithClose(messageApi, 'success', t('messages.switchedToStatic'));
+  }, [messageApi, svgTitles, clearTimelineData, setVisualizerState, t]);
 
   /** Apply dynamic mode: set timeline to sample (or empty if no region). */
   const applySwitchToDynamic = useCallback(() => {
@@ -578,20 +575,16 @@ export const ImportDataPanel: FC = () => {
     } else {
       setTimelineData({}, []);
     }
-    showMessageWithClose(
-      messageApi,
-      'success',
-      'Switched to dynamic data. Add more time periods in Manual entry or re-import to export GIF/Video.',
-    );
-  }, [messageApi, svgTitles, setTimelineData]);
+    showMessageWithClose(messageApi, 'success', t('messages.switchedToDynamic'));
+  }, [messageApi, svgTitles, setTimelineData, t]);
 
   const handleSwitchToStatic = useCallback(() => {
     if (hasHistoricalFormat && hasDataOrTimeline) {
       modal.confirm({
-        title: 'Switch to static data?',
+        title: t('messages.switchToStaticConfirm'),
         content: switchModeConfirmContent,
-        okText: 'Switch',
-        cancelText: 'Cancel',
+        okText: t('messages.switch'),
+        cancelText: t('nav.cancel'),
         onOk: applySwitchToStatic,
       });
     } else {
@@ -603,21 +596,22 @@ export const ImportDataPanel: FC = () => {
     hasDataOrTimeline,
     applySwitchToStatic,
     switchModeConfirmContent,
+    t,
   ]);
 
   const handleSwitchToDynamic = useCallback(() => {
     if (hasDataOrTimeline) {
       modal.confirm({
-        title: 'Switch to dynamic data?',
+        title: t('messages.switchToDynamicConfirm'),
         content: switchModeConfirmContent,
-        okText: 'Switch',
-        cancelText: 'Cancel',
+        okText: t('messages.switch'),
+        cancelText: t('nav.cancel'),
         onOk: applySwitchToDynamic,
       });
     } else {
       applySwitchToDynamic();
     }
-  }, [modal, hasDataOrTimeline, applySwitchToDynamic, switchModeConfirmContent]);
+  }, [modal, hasDataOrTimeline, applySwitchToDynamic, switchModeConfirmContent, t]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -717,28 +711,24 @@ export const ImportDataPanel: FC = () => {
         showMessageWithClose(
           messageApi,
           'success',
-          `Imported ${parsed.length} rows across ${periodOrder.length} time periods`,
+          t('messages.importedRowsPeriods', { count: parsed.length, periods: periodOrder.length }),
         );
         onSuccess?.(timeline);
       } else {
         if (hasTimePeriods && !limits.historicalDataImport) {
-          showMessageWithClose(
-            messageApi,
-            'info',
-            'Time series data detected. Upgrade to Atlas plan for animated visualizations.',
-          );
+          showMessageWithClose(messageApi, 'info', t('messages.timeSeriesDetected'));
         }
         if (limits.historicalDataImport) {
-          showMessageWithClose(
-            messageApi,
-            'warning',
-            'No time column detected (year, time, period, etc.). Data imported as single period.',
-          );
+          showMessageWithClose(messageApi, 'warning', t('messages.noTimeColumnDetected'));
         }
         const regionData = convertToRegionData(parsed, svgTitles);
         clearTimelineData();
         setVisualizerState({ data: regionData });
-        showMessageWithClose(messageApi, 'success', `Imported ${parsed.length} regions`);
+        showMessageWithClose(
+          messageApi,
+          'success',
+          t('messages.importedRegions', { count: parsed.length }),
+        );
         onSuccess?.(regionData);
       }
     },
@@ -749,6 +739,7 @@ export const ImportDataPanel: FC = () => {
       setVisualizerState,
       setTimelineData,
       clearTimelineData,
+      t,
     ],
   );
 
@@ -759,8 +750,9 @@ export const ImportDataPanel: FC = () => {
         showMessageWithSampleDownload(
           messageApi,
           'error',
-          'Dataset must include an id column.',
+          t('messages.datasetMustIncludeId'),
           handleDownloadSampleOnly,
+          { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
         );
         return;
       }
@@ -768,14 +760,15 @@ export const ImportDataPanel: FC = () => {
         showMessageWithSampleDownload(
           messageApi,
           'error',
-          'Data does not match the expected format. Download sample to get the correct IDs and match your labels.',
+          t('messages.dataFormatMismatch'),
           handleDownloadSampleOnly,
+          { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
         );
         return;
       }
       processImportedData(result);
     },
-    [messageApi, processImportedData, handleDownloadSampleOnly],
+    [messageApi, processImportedData, handleDownloadSampleOnly, t],
   );
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
@@ -791,7 +784,7 @@ export const ImportDataPanel: FC = () => {
             const parsed = parseExcel(buffer);
 
             if (parsed.length === 0) {
-              showMessageWithClose(messageApi, 'warning', 'No valid data found in Excel file');
+              showMessageWithClose(messageApi, 'warning', t('messages.noValidDataExcel'));
               onError?.(new Error('No valid data found'));
               return;
             }
@@ -801,8 +794,9 @@ export const ImportDataPanel: FC = () => {
             showMessageWithSampleDownload(
               messageApi,
               'error',
-              'Failed to parse Excel file. Download sample to get the correct format and match your labels.',
+              t('messages.failedParseExcel'),
               handleDownloadSampleOnly,
+              { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
             );
             onError?.(error as Error);
           }
@@ -825,8 +819,9 @@ export const ImportDataPanel: FC = () => {
               showMessageWithSampleDownload(
                 messageApi,
                 'error',
-                'Dataset must include an id column.',
+                t('messages.datasetMustIncludeId'),
                 handleDownloadSampleOnly,
+                { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
               );
               onError?.(new Error('Missing id column'));
               return;
@@ -837,7 +832,7 @@ export const ImportDataPanel: FC = () => {
           }
 
           if (parsed.length === 0) {
-            showMessageWithClose(messageApi, 'warning', 'No valid data found in file');
+            showMessageWithClose(messageApi, 'warning', t('messages.noValidDataFile'));
             onError?.(new Error('No valid data found'));
             return;
           }
@@ -847,8 +842,9 @@ export const ImportDataPanel: FC = () => {
           showMessageWithSampleDownload(
             messageApi,
             'error',
-            'Failed to parse file. Download sample to get the correct format and match your labels.',
+            t('messages.failedParseFile'),
             handleDownloadSampleOnly,
+            { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
           );
           onError?.(error as Error);
         }
@@ -860,7 +856,7 @@ export const ImportDataPanel: FC = () => {
 
       reader.readAsText(file as File);
     },
-    [messageApi, importDataType, processImportedData, handleDownloadSampleOnly],
+    [messageApi, importDataType, processImportedData, handleDownloadSampleOnly, t],
   );
 
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
@@ -1021,7 +1017,7 @@ Saint Petersburg,St. Petersburg,1800`}
   );
 
   const formatInfoContent = (
-    <ul className="m-0 list-disc space-y-2 p-3 pl-8 text-sm text-white">
+    <ul className="m-0 list-disc space-y-2 p-3 ps-8 text-sm text-white">
       <li>
         <strong>id</strong> — Region ID; must exactly match the expected IDs (e.g. from sample data)
       </li>

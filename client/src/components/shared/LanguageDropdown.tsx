@@ -1,10 +1,11 @@
 import { type FC, useCallback, useMemo } from 'react';
 import type { Locale } from '@regionify/shared';
 import { Flex, Select, type SelectProps } from 'antd';
-import arFlag from '@/assets/images/flags/ar.svg';
+import deFlag from '@/assets/images/flags/de.svg';
 import enFlag from '@/assets/images/flags/en.svg';
 import esFlag from '@/assets/images/flags/es.svg';
 import frFlag from '@/assets/images/flags/fr.svg';
+import ptFlag from '@/assets/images/flags/pt.svg';
 import ruFlag from '@/assets/images/flags/ru.svg';
 import zhFlag from '@/assets/images/flags/zh.svg';
 import { updateProfile } from '@/api/auth';
@@ -19,8 +20,9 @@ const FLAG_SRC: Record<Locale, string> = {
   es: esFlag,
   fr: frFlag,
   ru: ruFlag,
-  ar: arFlag,
   zh: zhFlag,
+  pt: ptFlag,
+  de: deFlag,
 };
 
 type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'> & {

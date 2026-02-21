@@ -24,6 +24,7 @@ import {
   getProjectPayload,
   useHasUnsavedChanges,
 } from '@/hooks/useProjectState';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import {
@@ -45,6 +46,7 @@ const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 const VisualizerPage: FC = () => {
+  const { t } = useTypedTranslation();
   const { message } = App.useApp();
   const navigate = useNavigate();
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
@@ -169,9 +171,9 @@ const VisualizerPage: FC = () => {
       const updated = await updateProject(currentProjectId, payload);
       updateProjectInList(updated);
       setSavedStateSnapshot(captureStateSnapshot());
-      message.success('Project saved', 5);
+      message.success(t('messages.projectSaved'), 5);
     } catch {
-      message.error('Failed to save project', 0);
+      message.error(t('messages.projectSaveFailed'), 0);
     } finally {
       setIsSaving(false);
     }
@@ -184,6 +186,7 @@ const VisualizerPage: FC = () => {
     setSavedStateSnapshot,
     message,
     navigate,
+    t,
   ]);
 
   const handleCreateProject = useCallback(async () => {
@@ -199,14 +202,14 @@ const VisualizerPage: FC = () => {
       setSavedStateSnapshot(captureStateSnapshot());
       // Update URL to reflect new project ID
       navigate(getProjectRoute(created.id), { replace: true });
-      message.success('Project created', 5);
+      message.success(t('messages.projectCreated'), 5);
       setProjectName('');
     } catch {
-      message.error('Failed to create project', 0);
+      message.error(t('messages.projectCreateFailed'), 0);
     } finally {
       setIsSaving(false);
     }
-  }, [projectName, addProject, setCurrentProjectId, setSavedStateSnapshot, message, navigate]);
+  }, [projectName, addProject, setCurrentProjectId, setSavedStateSnapshot, message, navigate, t]);
 
   const handleNameModalCancel = useCallback(() => {
     setIsNameModalOpen(false);

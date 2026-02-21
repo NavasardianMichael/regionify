@@ -15,14 +15,14 @@
   :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
     > .ant-splitter-bar:nth-of-type(2)
     .ant-splitter-bar-collapse-bar {
-    margin-left: 8px !important;
+    margin-inline-start: 8px !important;
   }
 
   /* Second splitter bar (between center and right sidebar) */
   :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
     > .ant-splitter-bar:nth-of-type(4)
     .ant-splitter-bar-collapse-bar {
-    margin-left: -8px;
+    margin-inline-start: -8px;
   }
 
   /* Fix placeholder color contrast for accessibility (WCAG 4.5:1 ratio) */

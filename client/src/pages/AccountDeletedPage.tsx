@@ -1,6 +1,7 @@
 import { type FC, useState } from 'react';
 import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { processAccountDeletionFeedback } from '@/api/contact/processors';
 
 type FeedbackFormValues = {
@@ -11,6 +12,7 @@ type FeedbackFormValues = {
 };
 
 const AccountDeletedPage: FC = () => {
+  const { t } = useTypedTranslation();
   const [form] = Form.useForm<FeedbackFormValues>();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -22,7 +24,7 @@ const AccountDeletedPage: FC = () => {
       const payload = processAccountDeletionFeedback(values);
       await sendContactMessage(payload);
       setSubmitted(true);
-      message.success('Thank you for your feedback!', 5);
+      message.success(t('messages.feedbackThankYou'), 5);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send feedback';
       message.error(errorMessage, 0);

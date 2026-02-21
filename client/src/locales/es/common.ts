@@ -101,6 +101,52 @@ const es: CommonNs = {
     error: 'Algo salió mal',
     language: 'Idioma',
   },
+  messages: {
+    projectSaved: 'Proyecto guardado',
+    projectSaveFailed: 'Error al guardar el proyecto',
+    projectCreated: 'Proyecto creado',
+    projectCreateFailed: 'Error al crear el proyecto',
+    projectDeleted: 'Proyecto eliminado',
+    projectDeleteFailed: 'Error al eliminar el proyecto',
+    projectRenamed: 'Proyecto renombrado',
+    projectRenameFailed: 'Error al renombrar el proyecto',
+    projectsLoadFailed: 'Error al cargar los proyectos',
+    mapExportedAs: 'Mapa exportado como {{format}}',
+    exportFailed: 'Error al exportar. Inténtalo de nuevo.',
+    importHistoricalFirst: 'Importa datos históricos con columna de tiempo primero para exportar animaciones.',
+    loggedInSuccess: '¡Sesión iniciada correctamente!',
+    enterEmail: 'Introduce tu dirección de correo electrónico.',
+    resendVerificationFailed: 'Error al reenviar el correo de verificación.',
+    feedbackThankYou: '¡Gracias por tus comentarios!',
+    noDataToDownload: 'No hay datos para descargar. Añade o importa datos primero.',
+    downloadDataFailed: 'Error al descargar los datos. Inténtalo de nuevo.',
+    switchedToStatic: 'Cambiado a datos estáticos. Exporta como PNG, SVG o JPEG.',
+    switchedToDynamic:
+      'Cambiado a datos dinámicos. Añade más períodos en Entrada manual o reimporta para exportar GIF/Video.',
+    switchToStaticConfirm: '¿Cambiar a datos estáticos?',
+    switchToDynamicConfirm: '¿Cambiar a datos dinámicos?',
+    switch: 'Cambiar',
+    importedRegions: '{{count}} regiones importadas',
+    importedRowsPeriods: '{{count}} filas importadas en {{periods}} períodos',
+    timeSeriesDetected: 'Datos de series temporales detectados. Mejora al plan Atlas para animaciones.',
+    noTimeColumnDetected:
+      'No se detectó columna de tiempo (año, time, period, etc.). Datos importados como un solo período.',
+    datasetMustIncludeId: 'El conjunto de datos debe incluir una columna id.',
+    dataFormatMismatch:
+      'Los datos no coinciden con el formato esperado. Descarga la plantilla para obtener los ID correctos.',
+    failedParseExcel:
+      'Error al leer el archivo Excel. Descarga la plantilla para el formato correcto.',
+    failedParseFile:
+      'Error al leer el archivo. Descarga la plantilla para el formato correcto.',
+    noValidDataExcel: 'No se encontraron datos válidos en el archivo Excel',
+    noValidDataFile: 'No se encontraron datos válidos en el archivo',
+    downloadSampleFailed: 'Error al descargar la plantilla. Inténtalo de nuevo.',
+    downloadSample: 'Descargar plantilla',
+    close: 'Cerrar',
+    deleteProjectTitle: 'Eliminar proyecto',
+    deleteProjectContent: '¿Estás seguro de que quieres eliminar "{{name}}"? Esta acción no se puede deshacer.',
+    deleteProjectOk: 'Eliminar',
+  },
 };
 
 export default es;

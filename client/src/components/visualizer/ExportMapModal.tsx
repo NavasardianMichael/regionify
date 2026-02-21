@@ -1,5 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { EXPORT_TYPES, type ExportType, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import {
   App,
@@ -81,6 +82,7 @@ const DEFAULT_SECONDS_PER_PERIOD = 2;
 const EXPORT_FPS = 30;
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
+  const { t } = useTypedTranslation();
   const { message } = App.useApp();
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
@@ -191,10 +193,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     try {
       if (isAnimationFormat) {
         if (!hasTimelineData) {
-          message.warning(
-            'Import historical data with a time column first to export animations.',
-            0,
-          );
+          message.warning(t('messages.importHistoricalFirst'), 0);
           return;
         }
         const rawSvg = await loadMapSvg(selectedRegionId!);
@@ -238,10 +237,10 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
         if (!handler) return;
         await handler(fileName);
       }
-      message.success(`Map exported as ${exportType.toUpperCase()}`, 5);
+      message.success(t('messages.mapExportedAs', { format: exportType.toUpperCase() }), 5);
       onClose();
     } catch {
-      message.error('Failed to export. Please try again.', 0);
+      message.error(t('messages.exportFailed'), 0);
     } finally {
       setIsExporting(false);
       setProgress(0);
@@ -271,6 +270,7 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
     secondsPerPeriod,
     smoothTransitions,
     onClose,
+    t,
   ]);
 
   const showQualityControl = useMemo(() => {
