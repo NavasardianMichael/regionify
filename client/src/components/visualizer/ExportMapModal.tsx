@@ -1,7 +1,18 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
-import { DownloadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, type ExportType, PLAN_DETAILS, PLANS } from '@regionify/shared';
-import { App, Button, Flex, InputNumber, Modal, Progress, Select, Slider, Typography } from 'antd';
+import {
+  App,
+  Button,
+  Flex,
+  InputNumber,
+  Modal,
+  Progress,
+  Select,
+  Slider,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -42,6 +53,9 @@ const ALL_EXPORT_OPTIONS: ExportTypeOption[] = [
   { value: EXPORT_TYPES.mp4, label: 'Video (MP4/WebM)' },
 ];
 
+const STATIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg];
+const DYNAMIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.gif, EXPORT_TYPES.mp4];
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -71,11 +85,26 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const maxQuality = limits.maxExportQuality;
   const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
   const allowedFormats = limits.allowedExportFormats;
-  const exportTypeOptions = useMemo(
-    () => ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value)),
-    [allowedFormats],
-  );
-  const defaultExportType = allowedFormats[0] ?? EXPORT_TYPES.png;
+  const planSupportsDynamic = limits.historicalDataImport;
+
+  // With panel/dynamic data: only GIF and MP4. With static data: only PNG, SVG, JPEG.
+  const exportTypeOptions = useMemo(() => {
+    const allowed = ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value));
+    if (hasTimelineData) {
+      return allowed.filter((o) => DYNAMIC_EXPORT_TYPES.includes(o.value));
+    }
+    return allowed.filter((o) => STATIC_EXPORT_TYPES.includes(o.value));
+  }, [allowedFormats, hasTimelineData]);
+
+  const defaultExportType = exportTypeOptions[0]?.value ?? allowedFormats[0] ?? EXPORT_TYPES.png;
+
+  const exportTypeInfoTooltip = useMemo(() => {
+    if (!planSupportsDynamic) return null;
+    if (hasTimelineData) {
+      return 'Static image formats are not supported with panel data. Use GIF or MP4 to export the animation.';
+    }
+    return 'Animated formats (GIF, MP4) require panel/dynamic data with a time column. Use static image formats with current data.';
+  }, [planSupportsDynamic, hasTimelineData]);
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   const [quality, setQuality] = useState(initialQuality);
@@ -233,19 +262,27 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       destroyOnHidden
     >
       <Flex vertical gap="middle" className="py-md">
-        {/* Export Type — varies by plan */}
+        {/* Export Type — varies by plan and by data (static vs panel/dynamic) */}
         <Flex vertical gap="small">
-          <Typography.Text className="text-sm text-gray-600">Export type:</Typography.Text>
+          <Flex align="center" gap="small">
+            <Typography.Text className="text-sm text-gray-600">Export type:</Typography.Text>
+            {exportTypeInfoTooltip && (
+              <Tooltip title={exportTypeInfoTooltip}>
+                <InfoCircleOutlined className="cursor-help text-gray-400" />
+              </Tooltip>
+            )}
+          </Flex>
           <Select
-            value={exportType}
+            value={
+              exportTypeOptions.some((o) => o.value === exportType) ? exportType : defaultExportType
+            }
             onChange={handleExportTypeChange}
             options={exportTypeOptions}
             className="w-full"
           />
           {allowedFormats.length === 1 && (
             <Typography.Text type="secondary" className="text-xs">
-              Free plan: PNG only.{' '}
-              <br />
+              Free plan: PNG only. <br />
               <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
                 Upgrade
               </AppNavLink>{' '}
@@ -253,13 +290,6 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
             </Typography.Text>
           )}
         </Flex>
-
-        {/* Animation: no timeline data warning */}
-        {isAnimationFormat && !hasTimelineData && (
-          <Typography.Text type="warning" className="text-xs">
-            Import a dataset with a time column (year, month, period…) to enable animation export.
-          </Typography.Text>
-        )}
 
         {/* Quality Control */}
         {showQualityControl && (

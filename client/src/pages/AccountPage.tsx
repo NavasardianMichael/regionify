@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { AUTH_VALIDATION, type Locale } from '@regionify/shared';
 import { App, Button, Divider, Flex, Form, Input, Typography } from 'antd';
 import { deleteAccount, updateProfile } from '@/api/auth';
-import { selectIsLoggedIn, selectLogout, selectSetUser, selectUser } from '@/store/profile/selectors';
+import {
+  selectIsLoggedIn,
+  selectLogout,
+  selectSetUser,
+  selectUser,
+} from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
@@ -112,7 +117,11 @@ const AccountPage: FC = () => {
       >
         <Form.Item
           name="name"
-          label={<Typography.Text className="font-medium text-gray-700">{t('account.name')}</Typography.Text>}
+          label={
+            <Typography.Text className="font-medium text-gray-700">
+              {t('account.name')}
+            </Typography.Text>
+          }
           rules={[
             { required: true, message: AUTH_VALIDATION.name.messages.required },
             {
@@ -132,8 +141,15 @@ const AccountPage: FC = () => {
           <Input placeholder={t('account.name')} size="large" className="rounded-lg" />
         </Form.Item>
 
-        <Flex vertical gap="small" className='mb-6!'>
-          <Form.Item className='mb-0!' label={<Typography.Text className="font-medium text-gray-700">{t('account.email')}</Typography.Text>}>
+        <Flex vertical gap="small" className="mb-6!">
+          <Form.Item
+            className="mb-0!"
+            label={
+              <Typography.Text className="font-medium text-gray-700">
+                {t('account.email')}
+              </Typography.Text>
+            }
+          >
             <Input
               value={user.email}
               disabled
@@ -147,10 +163,14 @@ const AccountPage: FC = () => {
         </Flex>
 
         <Form.Item
-          label={<Typography.Text className="font-medium text-gray-700">{t('account.language')}</Typography.Text>}
+          label={
+            <Typography.Text className="font-medium text-gray-700">
+              {t('account.language')}
+            </Typography.Text>
+          }
           className="mb-6"
         >
-          <LanguageDropdown variant="bordered" currentLocale={i18n.language as Locale} />
+          <LanguageDropdown currentLocale={i18n.language as Locale} />
         </Form.Item>
 
         <Form.Item className="mb-0">
@@ -187,13 +207,9 @@ const AccountPage: FC = () => {
       </Flex>
 
       <div className="mt-8 border-t border-gray-100 pt-6 text-center">
-        <AppNavLink
-          to={ROUTES.PROJECTS}
-        >
-          {t('account.backToProjects')}
-        </AppNavLink>
+        <AppNavLink to={ROUTES.PROJECTS}>{t('account.backToProjects')}</AppNavLink>
       </div>
-    </Card >
+    </Card>
   );
 };
 

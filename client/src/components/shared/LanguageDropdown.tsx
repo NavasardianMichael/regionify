@@ -23,11 +23,9 @@ const FLAG_SRC: Record<Locale, string> = {
   zh: zhFlag,
 };
 
-type Props = Omit<SelectProps, 'value' | 'onChange' | 'options' | 'variant'> & {
+type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'> & {
   /** Current locale from i18n (e.g. after changeLanguage). */
   currentLocale: Locale;
-  /** Variant: 'bordered' shows border, 'borderless' removes border */
-  variant?: 'bordered' | 'borderless';
 };
 
 export const LanguageDropdown: FC<Props> = ({
@@ -79,6 +77,7 @@ export const LanguageDropdown: FC<Props> = ({
   return (
     <Select<Locale>
       value={currentLocale}
+      role="combobox"
       onChange={handleLocaleChange}
       options={options}
       bordered={variant === 'bordered'}

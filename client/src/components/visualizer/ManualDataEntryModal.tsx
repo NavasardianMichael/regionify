@@ -25,6 +25,7 @@ type LocalDataState = VisualizerState['data'];
 type Props = {
   open: boolean;
   onClose: () => void;
+  onSave?: () => void;
 };
 
 const createEmptyRow = (): RegionData => ({
@@ -59,7 +60,7 @@ const initializeLocalData = (storeData: LocalDataState): LocalDataState => {
   };
 };
 
-const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
+const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
   const storeData = useVisualizerStore(selectData);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
   const clearTimelineData = useVisualizerStore(selectClearTimelineData);
@@ -150,8 +151,9 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose }) => {
     // Clear any existing timeline data
     clearTimelineData();
     setVisualizerState({ data: { allIds, byId } });
+    onSave?.();
     onClose();
-  }, [localData, setVisualizerState, clearTimelineData, onClose]);
+  }, [localData, setVisualizerState, clearTimelineData, onClose, onSave]);
 
   const handleCancelDataEntry = useCallback(() => {
     onClose();

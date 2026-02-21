@@ -17,19 +17,8 @@ import {
   LoadingOutlined,
 } from '@ant-design/icons';
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
-import type { CheckboxProps, UploadProps } from 'antd';
-import {
-  Button,
-  Checkbox,
-  Flex,
-  message,
-  Modal,
-  Segmented,
-  Spin,
-  Tooltip,
-  Typography,
-  Upload,
-} from 'antd';
+import type { UploadProps } from 'antd';
+import { Button, Flex, message, Modal, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import {
   selectClearTimelineData,
@@ -64,14 +53,16 @@ const sanitizeFilename = (name: string): string => {
   const invalidChars = /[<>:"/\\|?*]/g;
   // eslint-disable-next-line no-control-regex
   const controlChars = /[\u0000-\u001f]/g;
-  return name
-    .replace(invalidChars, '')
-    .replace(controlChars, '')
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
-    .slice(0, 100) // Limit length
-    .trim() || 'data'; // Fallback to 'data' if empty
+  return (
+    name
+      .replace(invalidChars, '')
+      .replace(controlChars, '')
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+      .slice(0, 100) // Limit length
+      .trim() || 'data'
+  ); // Fallback to 'data' if empty
 };
 
 /**
@@ -241,7 +232,6 @@ export const ImportDataPanel: FC = () => {
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [isFormatInfoModalOpen, setIsFormatInfoModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
-  const [isHistoricalData, setIsHistoricalData] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
@@ -258,7 +248,7 @@ export const ImportDataPanel: FC = () => {
   const { limits } = PLAN_DETAILS[plan];
   const currentProject = useProjectsStore(selectCurrentProject);
 
-  // Check if current data supports historical format (has timeline data with time periods)
+  /** Auto-detected: current data is panel/dynamic (has time dimension). */
   const hasHistoricalFormat = useMemo(() => {
     return (
       limits.historicalDataImport &&
@@ -271,7 +261,9 @@ export const ImportDataPanel: FC = () => {
   }, [limits.historicalDataImport, timePeriods, timelineData]);
 
   const handleDownloadData = useCallback(async () => {
-    if (data.allIds.length === 0) {
+    const hasData = data.allIds.length > 0;
+    const canGenerateSample = svgTitles.length > 0;
+    if (!hasData && !canGenerateSample) {
       message.warning('No data available to download');
       return;
     }
@@ -279,13 +271,42 @@ export const ImportDataPanel: FC = () => {
     setIsDownloading(true);
 
     try {
-      // Generate data format based on historical data status
+      // Format: when we have data use actual format; when generating sample use plan support for dynamic
       let rows: Array<{ id: string; label: string; value: number; year?: string }>;
+      const useHistoricalFormat =
+        hasData && hasHistoricalFormat ? true : !hasData && limits.historicalDataImport;
 
-      // Use hasHistoricalFormat to determine format, not just checkbox state
-      // This ensures downloaded data matches the actual data structure
-      if (hasHistoricalFormat && timePeriods && Array.isArray(timePeriods) && timePeriods.length > 0 && timelineData) {
-        // Generate dynamic data with years/time periods from current timeline data
+      if (!hasData && canGenerateSample) {
+        if (useHistoricalFormat) {
+          const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+          rows = [];
+          for (let p = 0; p < samplePeriods.length; p++) {
+            const baseMultiplier = 1 + p * 0.3;
+            for (const title of svgTitles) {
+              rows.push({
+                id: title,
+                label: title,
+                value: Math.floor(
+                  (100 + svgTitles.indexOf(title) * 50) * baseMultiplier + Math.random() * 200,
+                ),
+                year: samplePeriods[p],
+              });
+            }
+          }
+        } else {
+          rows = svgTitles.map((title) => ({
+            id: title,
+            label: title,
+            value: Math.floor(Math.random() * 900) + 100,
+          }));
+        }
+      } else if (
+        useHistoricalFormat &&
+        timePeriods &&
+        Array.isArray(timePeriods) &&
+        timePeriods.length > 0 &&
+        timelineData
+      ) {
         rows = [];
         for (const period of timePeriods) {
           const periodData = timelineData[period];
@@ -302,7 +323,6 @@ export const ImportDataPanel: FC = () => {
           }
         }
       } else {
-        // Generate static data (no time periods) - uses current data state (includes manual edits)
         rows = data.allIds.map((id) => ({
           id: data.byId[id].id,
           label: data.byId[id].label,
@@ -315,7 +335,7 @@ export const ImportDataPanel: FC = () => {
 
       // Get project name for filename, fallback to 'data'
       const projectName = currentProject?.name ? sanitizeFilename(currentProject.name) : 'data';
-      const suffix = hasHistoricalFormat ? '-historical' : '';
+      const suffix = useHistoricalFormat ? '-historical' : '';
 
       let content: string;
       let filename: string;
@@ -338,9 +358,9 @@ export const ImportDataPanel: FC = () => {
         }
         case 'csv':
         default: {
-          const headers = hasHistoricalFormat ? 'id,label,value,year' : 'id,label,value';
+          const headers = useHistoricalFormat ? 'id,label,value,year' : 'id,label,value';
           const csvRows = rows.map((r) => {
-            if (hasHistoricalFormat && r.year) {
+            if (useHistoricalFormat && r.year) {
               return `${r.id},${r.label},${r.value},${r.year}`;
             }
             return `${r.id},${r.label},${r.value}`;
@@ -367,7 +387,16 @@ export const ImportDataPanel: FC = () => {
     } finally {
       setIsDownloading(false);
     }
-  }, [data, importDataType, hasHistoricalFormat, timePeriods, timelineData, currentProject]);
+  }, [
+    data,
+    importDataType,
+    hasHistoricalFormat,
+    limits.historicalDataImport,
+    svgTitles,
+    timePeriods,
+    timelineData,
+    currentProject,
+  ]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -378,7 +407,6 @@ export const ImportDataPanel: FC = () => {
         setSvgTitles([]);
         setVisualizerState({ data: { allIds: [], byId: {} } });
         clearTimelineData();
-        setIsHistoricalData(false);
         return;
       }
 
@@ -388,20 +416,35 @@ export const ImportDataPanel: FC = () => {
           const titles = extractSvgTitles(svgContent);
           setSvgTitles(titles);
 
-          // Generate sample data for visualization preview
+          // Generate sample: panel/dynamic if plan supports it, else static
           if (titles.length > 0) {
-            const sampleData = titles.map((title) => ({
-              id: title,
-              label: title,
-              value: Math.floor(Math.random() * 900) + 100, // Random value 100-999
-            }));
-
-            const allIds = sampleData.map((item) => item.id);
-            const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
-
-            clearTimelineData();
-            setIsHistoricalData(false);
-            setVisualizerState({ data: { allIds, byId } });
+            if (limits.historicalDataImport) {
+              const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+              const timeline: Record<string, DataSet> = {};
+              for (let p = 0; p < samplePeriods.length; p++) {
+                const baseMultiplier = 1 + p * 0.3;
+                const periodData = titles.map((title, i) => ({
+                  id: title,
+                  label: title,
+                  value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
+                }));
+                timeline[samplePeriods[p]] = {
+                  allIds: periodData.map((item) => item.id),
+                  byId: Object.fromEntries(periodData.map((item) => [item.id, item])),
+                };
+              }
+              setTimelineData(timeline, samplePeriods);
+            } else {
+              const sampleData = titles.map((title) => ({
+                id: title,
+                label: title,
+                value: Math.floor(Math.random() * 900) + 100,
+              }));
+              const allIds = sampleData.map((item) => item.id);
+              const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
+              clearTimelineData();
+              setVisualizerState({ data: { allIds, byId } });
+            }
           }
         }
       } catch (error) {
@@ -417,7 +460,13 @@ export const ImportDataPanel: FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [selectedRegionId, setVisualizerState, clearTimelineData]);
+  }, [
+    selectedRegionId,
+    setVisualizerState,
+    clearTimelineData,
+    setTimelineData,
+    limits.historicalDataImport,
+  ]);
 
   /** Process parsed rows — groups by time period for Atlas users or imports flat data. */
   const processImportedData = useCallback(
@@ -444,7 +493,6 @@ export const ImportDataPanel: FC = () => {
         }
 
         setTimelineData(timeline, periodOrder);
-        setIsHistoricalData(true); // Auto-enable historical data checkbox when importing historical format
         message.success(`Imported ${parsed.length} rows across ${periodOrder.length} time periods`);
         onSuccess?.(timeline);
       } else {
@@ -453,9 +501,13 @@ export const ImportDataPanel: FC = () => {
             'Time series data detected. Upgrade to Atlas plan for animated visualizations.',
           );
         }
+        if (limits.historicalDataImport) {
+          message.warning(
+            'No time column detected (year, time, period, etc.). Data imported as single period.',
+          );
+        }
         const regionData = convertToRegionData(parsed, svgTitles);
         clearTimelineData();
-        setIsHistoricalData(false); // Disable historical data checkbox when importing static format
         setVisualizerState({ data: regionData });
         message.success(`Imported ${parsed.length} regions`);
         onSuccess?.(regionData);
@@ -547,50 +599,6 @@ export const ImportDataPanel: FC = () => {
     },
     [importDataType, processImportedData],
   );
-
-  const handleHistoricalDataStatus: CheckboxProps['onChange'] = (e) => {
-    const { checked } = e.target;
-    setIsHistoricalData(checked);
-
-    if (svgTitles.length === 0) return;
-
-    if (checked) {
-      // Generate sample historical data with ascending base values per period
-      const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
-      const timeline: Record<string, DataSet> = {};
-
-      for (let p = 0; p < samplePeriods.length; p++) {
-        const baseMultiplier = 1 + p * 0.3;
-        const periodData = svgTitles.map((title, i) => ({
-          id: title,
-          label: title,
-          value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
-        }));
-
-        timeline[samplePeriods[p]] = {
-          allIds: periodData.map((item) => item.id),
-          byId: Object.fromEntries(periodData.map((item) => [item.id, item])),
-        };
-      }
-
-      setTimelineData(timeline, samplePeriods);
-    } else {
-      // Revert to flat sample data
-      const flatData = svgTitles.map((title) => ({
-        id: title,
-        label: title,
-        value: Math.floor(Math.random() * 900) + 100,
-      }));
-
-      const newData = {
-        allIds: flatData.map((item) => item.id),
-        byId: Object.fromEntries(flatData.map((item) => [item.id, item])),
-      };
-
-      clearTimelineData();
-      setVisualizerState({ data: newData });
-    }
-  };
 
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
@@ -775,9 +783,13 @@ Moscow,2500`}
         <Flex gap={4}>
           <Tooltip
             title={
-              data.allIds.length === 0
-                ? 'Select country to download some sample data'
-                : 'Download data in selected format'
+              !selectedRegionId
+                ? 'Select country to download sample data'
+                : data.allIds.length === 0 && svgTitles.length === 0
+                  ? 'Loading map…'
+                  : data.allIds.length === 0
+                    ? 'Download sample data (format follows Historical data checkbox)'
+                    : 'Download data in selected format'
             }
           >
             <Button
@@ -786,7 +798,11 @@ Moscow,2500`}
               size="small"
               onClick={handleDownloadData}
               className="text-gray-500"
-              disabled={data.allIds.length === 0 || isDownloading}
+              disabled={
+                !selectedRegionId ||
+                (data.allIds.length === 0 && svgTitles.length === 0) ||
+                isDownloading
+              }
               loading={isDownloading}
               aria-label="Download data"
             />
@@ -840,34 +856,11 @@ Moscow,2500`}
 
       {importActionComponents[importDataType]}
 
-      {limits.historicalDataImport && (
-        <Flex vertical gap="small">
-          <Checkbox
-            checked={isHistoricalData}
-            onChange={handleHistoricalDataStatus}
-            disabled={!selectedRegionId || !hasHistoricalFormat}
-          >
-            <Typography.Text className="text-sm text-gray-600">
-              Historical data (includes time dimension)
-            </Typography.Text>
-          </Checkbox>
-          {!hasHistoricalFormat && data.allIds.length > 0 && (
-            <Flex align="center" gap="small" className="ml-6">
-              <InfoCircleOutlined className="text-amber-500" />
-              <Typography.Text className="text-xs text-gray-500">
-                Imported data does not match historical format. Import data with a time column (year,
-                time, period, etc.) to enable historical data visualization.
-              </Typography.Text>
-            </Flex>
-          )}
-        </Flex>
-      )}
-
       <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">
         <Typography.Text className="text-xs font-medium text-gray-500">
           EXPECTED FORMAT:
         </Typography.Text>
-        {isHistoricalData
+        {hasHistoricalFormat
           ? historicalFormatExamples[importDataType]
           : expectedFormatExamples[importDataType]}
       </Flex>

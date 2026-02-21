@@ -61,7 +61,6 @@ export const Navigation: FC = () => {
     }
   }, [logout, navigate, message, t]);
 
-
   const userMenuItems: DropdownProps['menu'] = useMemo(
     () => ({
       items: [
@@ -91,8 +90,9 @@ export const Navigation: FC = () => {
 
   const getNavLinkClassName = (path: string) => {
     const isActive = location.pathname === path;
-    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
-      }`;
+    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+      isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
+    }`;
   };
 
   return (
@@ -120,7 +120,11 @@ export const Navigation: FC = () => {
             ))}
           </Flex>
           <div className="h-6 w-px bg-gray-200" />
-          <LanguageDropdown variant="borderless" currentLocale={i18n.language as Locale} placement="bottomRight" />
+          <LanguageDropdown
+            variant="borderless"
+            currentLocale={i18n.language as Locale}
+            placement="bottomRight"
+          />
           <div className="h-6 w-px bg-gray-200" />
           {isLoggedIn ? (
             <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
