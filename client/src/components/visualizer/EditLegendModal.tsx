@@ -1,9 +1,11 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { PlusOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
-import { Button, type ColorPicker, Flex, Modal, Tooltip, Typography } from 'antd';
+import { Button, Flex, Modal, Tooltip, Typography } from 'antd';
 import type { LegendItem } from '@/store/legendData/types';
 import { generateRandomId } from '@/helpers/common';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
+
+type ColorLike = { toHexString: () => string };
 
 type Props = {
   open: boolean;
@@ -97,11 +99,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
         acc[id] = {
           onMinChange: (value: number | null) => handleUpdateItem(id, { min: value! }),
           onMaxChange: (value: number | null) => handleUpdateItem(id, { max: value! }),
-          onColorChange: (
-            color: Parameters<
-              Exclude<Parameters<typeof ColorPicker>[0]['onChangeComplete'], undefined>
-            >[0],
-          ) => handleUpdateItem(id, { color: color.toHexString() }),
+          onColorChange: (color: ColorLike) => handleUpdateItem(id, { color: color.toHexString() }),
         };
         return acc;
       },
@@ -110,11 +108,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
         {
           onMinChange: (value: number | null) => void;
           onMaxChange: (value: number | null) => void;
-          onColorChange: (
-            color: Parameters<
-              Exclude<Parameters<typeof ColorPicker>[0]['onChangeComplete'], undefined>
-            >[0],
-          ) => void;
+          onColorChange: (color: ColorLike) => void;
         }
       >,
     );

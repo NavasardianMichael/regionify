@@ -1,7 +1,7 @@
 import type { App } from 'antd';
 import { MessageWithSampleDownload } from '@/components/shared/MessageWithSampleDownload';
 
-export type MessageApi = ReturnType<ReturnType<typeof App.useApp>>['message'];
+export type MessageApi = ReturnType<typeof App.useApp>['message'];
 
 /**
  * Shows an error/warning/info message with a "Download sample" button.

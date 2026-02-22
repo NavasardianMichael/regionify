@@ -64,7 +64,7 @@ const SUCCESS_MESSAGE_DURATION = 5;
 
 /** Show a message. Success auto-hides after 5s; other types have a Close button and no auto-hide. */
 function showMessageWithClose(
-  messageApi: ReturnType<ReturnType<typeof App.useApp>['message']>,
+  messageApi: ReturnType<typeof App.useApp>['message'],
   type: 'success' | 'info' | 'warning' | 'error',
   content: string,
 ): void {
