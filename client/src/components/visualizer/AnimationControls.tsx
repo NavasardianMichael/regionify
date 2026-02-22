@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useRef } from 'react';
+import { type FC, startTransition, useCallback, useEffect, useRef } from 'react';
 import {
   PauseCircleOutlined,
   PlayCircleOutlined,
@@ -72,24 +72,30 @@ const AnimationControls: FC = () => {
 
   const handleStepBackward = useCallback(() => {
     pause();
-    if (currentIndex > 0) {
-      setActiveTimePeriod(timePeriods[currentIndex - 1]);
-    }
+    startTransition(() => {
+      if (currentIndex > 0) {
+        setActiveTimePeriod(timePeriods[currentIndex - 1]);
+      }
+    });
   }, [currentIndex, timePeriods, setActiveTimePeriod, pause]);
 
   const handleStepForward = useCallback(() => {
     pause();
-    if (currentIndex < timePeriods.length - 1) {
-      setActiveTimePeriod(timePeriods[currentIndex + 1]);
-    }
+    startTransition(() => {
+      if (currentIndex < timePeriods.length - 1) {
+        setActiveTimePeriod(timePeriods[currentIndex + 1]);
+      }
+    });
   }, [currentIndex, timePeriods, setActiveTimePeriod, pause]);
 
   const handleSliderChange = useCallback(
     (value: number) => {
       pause();
-      if (timePeriods[value]) {
-        setActiveTimePeriod(timePeriods[value]);
-      }
+      startTransition(() => {
+        if (timePeriods[value]) {
+          setActiveTimePeriod(timePeriods[value]);
+        }
+      });
     },
     [timePeriods, setActiveTimePeriod, pause],
   );

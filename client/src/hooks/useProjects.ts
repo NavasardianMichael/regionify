@@ -17,6 +17,7 @@ import {
   selectUpdateProjectInList,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { useDebounceValue } from '@/hooks/useDebounce';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type UseProjectsReturn = {
@@ -47,6 +48,7 @@ export function useProjects(): UseProjectsReturn {
   const updateProjectInList = useProjectsStore(selectUpdateProjectInList);
 
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounceValue(search, 300);
   const [renamingProject, setRenamingProject] = useState<Project | null>(null);
   const [newName, setNewName] = useState('');
 
@@ -69,13 +71,13 @@ export function useProjects(): UseProjectsReturn {
   }, [isLoggedIn, setProjects, setLoading, message, t]);
 
   const filteredProjects = useMemo(() => {
-    if (!search.trim()) return projects;
-    const query = search.toLowerCase();
+    if (!debouncedSearch.trim()) return projects;
+    const query = debouncedSearch.toLowerCase();
     return projects.filter(
       (p) =>
         p.name.toLowerCase().includes(query) || p.selectedRegionId?.toLowerCase().includes(query),
     );
-  }, [projects, search]);
+  }, [projects, debouncedSearch]);
 
   const handleDelete = useCallback(
     (project: Project) => {

@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { memo } from 'react';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Button, Input, InputNumber, Typography } from 'antd';
 import type { DataRow } from '@/helpers/manualDataEntryHelpers';
@@ -15,7 +15,7 @@ type ManualDataEntryRowProps = {
   canRemove: boolean;
 };
 
-export const ManualDataEntryRow: FC<ManualDataEntryRowProps> = ({
+export const ManualDataEntryRow = memo<ManualDataEntryRowProps>(function ManualDataEntryRow({
   row,
   index,
   isTimelineMode,
@@ -25,38 +25,40 @@ export const ManualDataEntryRow: FC<ManualDataEntryRowProps> = ({
   onTimePeriodChange,
   onRemove,
   canRemove,
-}) => (
-  <div key={row.key} data-rowkey={row.key} className={`gap-sm grid ${gridCols} items-center`}>
-    <Typography.Text className="text-center text-sm text-gray-500">{index + 1}</Typography.Text>
-    <Input
-      value={row.id}
-      data-rowkey={row.key}
-      readOnly
-      placeholder="Region ID"
-      className="bg-gray-50"
-    />
-    <Input value={row.label} data-rowkey={row.key} onChange={onLabelChange} placeholder="Label" />
-    <InputNumber
-      value={row.value}
-      onChange={(value: number | null) => onValueChange(row.key, value)}
-      min={0}
-      className="w-full"
-    />
-    {isTimelineMode && (
+}) {
+  return (
+    <div key={row.key} data-rowkey={row.key} className={`gap-sm grid ${gridCols} items-center`}>
+      <Typography.Text className="text-center text-sm text-gray-500">{index + 1}</Typography.Text>
       <Input
-        value={row.timePeriod ?? ''}
+        value={row.id}
         data-rowkey={row.key}
-        onChange={onTimePeriodChange}
-        placeholder="e.g. 2020"
+        readOnly
+        placeholder="Region ID"
+        className="bg-gray-50"
       />
-    )}
-    <Button
-      type="text"
-      icon={<DeleteOutlined />}
-      danger
-      data-rowkey={row.key}
-      onClick={onRemove}
-      disabled={!canRemove}
-    />
-  </div>
-);
+      <Input value={row.label} data-rowkey={row.key} onChange={onLabelChange} placeholder="Label" />
+      <InputNumber
+        value={row.value}
+        onChange={(value: number | null) => onValueChange(row.key, value)}
+        min={0}
+        className="w-full"
+      />
+      {isTimelineMode && (
+        <Input
+          value={row.timePeriod ?? ''}
+          data-rowkey={row.key}
+          onChange={onTimePeriodChange}
+          placeholder="e.g. 2020"
+        />
+      )}
+      <Button
+        type="text"
+        icon={<DeleteOutlined />}
+        danger
+        data-rowkey={row.key}
+        onClick={onRemove}
+        disabled={!canRemove}
+      />
+    </div>
+  );
+});

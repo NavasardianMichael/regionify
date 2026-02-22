@@ -1,4 +1,4 @@
-import { type FC, useCallback, useMemo, useRef } from 'react';
+import { type FC, startTransition, useCallback, useMemo, useRef } from 'react';
 import { GlobalOutlined } from '@ant-design/icons';
 import { Flex, Modal, type RefSelectProps, Select, type SelectProps, Typography } from 'antd';
 import {
@@ -30,7 +30,9 @@ export const RegionSelect: FC = () => {
       if (newRegionId === selectedRegionId) return;
 
       const doChange = () => {
-        setVisualizerState({ selectedRegionId: newRegionId });
+        startTransition(() => {
+          setVisualizerState({ selectedRegionId: newRegionId });
+        });
         selectRef.current?.blur();
       };
 
