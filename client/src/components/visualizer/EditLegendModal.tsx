@@ -1,14 +1,9 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
-import {
-  DeleteOutlined,
-  HolderOutlined,
-  PlusOutlined,
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-} from '@ant-design/icons';
-import { Button, ColorPicker, Flex, Input, InputNumber, Modal, Tooltip, Typography } from 'antd';
+import { PlusOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import { Button, type ColorPicker, Flex, Modal, Tooltip, Typography } from 'antd';
 import type { LegendItem } from '@/store/legendData/types';
 import { generateRandomId } from '@/helpers/common';
+import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 
 type Props = {
   open: boolean;
@@ -247,58 +242,22 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
         {/* Legend Items */}
         <Flex vertical className="max-h-4/5 overflow-y-auto">
           {localItems.map((item, index) => (
-            <div
+            <LegendItemRow
               key={item.id}
-              data-id={item.id}
-              data-index={index}
-              draggable
+              item={item}
+              index={index}
+              isDragged={draggedIndex === index}
+              isRemoveDisabled={!canDelete}
+              gridCols={GRID_COLS}
               onDragStart={handleDragStartLegendRange}
               onDragOver={handleDragOverLegendRange}
               onDragEnd={handleDragEndLegendRange}
-              className={`grid ${GRID_COLS} items-center gap-2 rounded-md border border-none py-1 transition-opacity ${
-                draggedIndex === index ? 'opacity-50' : ''
-              }`}
-            >
-              <HolderOutlined className="cursor-grab text-gray-400 active:cursor-grabbing" />
-              <Input
-                value={item.name}
-                data-id={item.id}
-                onChange={handleNameChange}
-                placeholder="Name"
-                size="middle"
-                className="min-w-0"
-              />
-              <InputNumber
-                value={item.min}
-                onChange={itemHandlers[item.id]?.onMinChange}
-                min={0}
-                controls={false}
-                className="w-full!"
-              />
-              <InputNumber
-                value={item.max}
-                onChange={itemHandlers[item.id]?.onMaxChange}
-                min={0}
-                controls={false}
-                className="w-full!"
-              />
-              <ColorPicker
-                value={item.color}
-                onChangeComplete={itemHandlers[item.id]?.onColorChange}
-                size="small"
-              />
-              <Tooltip title="Remove">
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  size="small"
-                  danger
-                  data-id={item.id}
-                  onClick={handleRemoveLegendRange}
-                  disabled={!canDelete}
-                />
-              </Tooltip>
-            </div>
+              onNameChange={handleNameChange}
+              onMinChange={itemHandlers[item.id]?.onMinChange ?? (() => {})}
+              onMaxChange={itemHandlers[item.id]?.onMaxChange ?? (() => {})}
+              onColorChange={itemHandlers[item.id]?.onColorChange ?? (() => {})}
+              onRemove={handleRemoveLegendRange}
+            />
           ))}
         </Flex>
 

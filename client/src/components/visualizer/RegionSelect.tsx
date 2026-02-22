@@ -8,9 +8,9 @@ import {
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
+import { useHasUnsavedChanges } from '@/hooks/useProjectState';
 import type { RegionId } from '@/types/mapData';
 import { REGION_OPTIONS } from '@/constants/regions';
-import { useHasUnsavedChanges } from '@/hooks/useProjectState';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 export const RegionSelect: FC = () => {

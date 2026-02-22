@@ -42,7 +42,9 @@ import {
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { MapLegendContent } from '@/components/visualizer/MapViewer/MapLegendContent';
 import styles from './MapViewer.module.css';
 
 type MapViewerProps = {
@@ -111,374 +113,21 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const deferredLegendItems = useDeferredValue(legendItems);
 
   const applyStylesToSvg = useCallback(
-    (svg: string) => {
-      // Parse and modify SVG to apply border styles
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(svg, 'image/svg+xml');
-      const svgElement = doc.querySelector('svg');
-
-      if (svgElement) {
-        // Calculate viewBox from actual path bounding boxes using getBBox simulation
-        // We need to find the actual bounds of all paths
-        const paths = svgElement.querySelectorAll('path');
-        let minX = Infinity,
-          minY = Infinity,
-          maxX = -Infinity,
-          maxY = -Infinity;
-
-        // Parse SVG path data to get actual coordinates
-        paths.forEach((path) => {
-          const d = path.getAttribute('d');
-          if (d) {
-            // Parse path commands properly - extract coordinates from M, L, C, etc.
-            // Match coordinate pairs after commands like M, L, H, V, C, S, Q, T, A, Z
-            const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
-            let match;
-            let currentX = 0;
-            let currentY = 0;
-
-            while ((match = coordRegex.exec(d)) !== null) {
-              const command = match[1];
-              const params = match[2].trim();
-              const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
-
-              const isRelative = command === command.toLowerCase();
-              const cmd = command.toUpperCase();
-
-              if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
-                for (let i = 0; i < numbers.length; i += 2) {
-                  const x = isRelative ? currentX + numbers[i] : numbers[i];
-                  const y = isRelative ? currentY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
-                  currentX = x;
-                  currentY = y;
-                  minX = Math.min(minX, x);
-                  minY = Math.min(minY, y);
-                  maxX = Math.max(maxX, x);
-                  maxY = Math.max(maxY, y);
-                }
-              } else if (cmd === 'H') {
-                for (const num of numbers) {
-                  const x = isRelative ? currentX + num : num;
-                  currentX = x;
-                  minX = Math.min(minX, x);
-                  maxX = Math.max(maxX, x);
-                }
-              } else if (cmd === 'V') {
-                for (const num of numbers) {
-                  const y = isRelative ? currentY + num : num;
-                  currentY = y;
-                  minY = Math.min(minY, y);
-                  maxY = Math.max(maxY, y);
-                }
-              } else if (cmd === 'C') {
-                // Cubic bezier: x1 y1 x2 y2 x y
-                for (let i = 0; i < numbers.length; i += 6) {
-                  for (let j = 0; j < 6; j += 2) {
-                    const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
-                    const y = isRelative
-                      ? currentY + (numbers[i + j + 1] ?? 0)
-                      : (numbers[i + j + 1] ?? 0);
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                  }
-                  currentX = isRelative ? currentX + numbers[i + 4] : numbers[i + 4];
-                  currentY = isRelative ? currentY + (numbers[i + 5] ?? 0) : (numbers[i + 5] ?? 0);
-                }
-              } else if (cmd === 'S' || cmd === 'Q') {
-                // Smooth cubic/quadratic: (x1 y1) x y
-                const step = cmd === 'S' ? 4 : 4;
-                for (let i = 0; i < numbers.length; i += step) {
-                  for (let j = 0; j < step; j += 2) {
-                    const x = isRelative ? currentX + numbers[i + j] : numbers[i + j];
-                    const y = isRelative
-                      ? currentY + (numbers[i + j + 1] ?? 0)
-                      : (numbers[i + j + 1] ?? 0);
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                  }
-                  currentX = isRelative ? currentX + numbers[i + step - 2] : numbers[i + step - 2];
-                  currentY = isRelative
-                    ? currentY + (numbers[i + step - 1] ?? 0)
-                    : (numbers[i + step - 1] ?? 0);
-                }
-              }
-            }
-          }
-        });
-
-        // Always set viewBox based on calculated bounds
-        let viewBoxX = 0,
-          viewBoxY = 0,
-          viewBoxWidth = 0,
-          viewBoxHeight = 0;
-        if (isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
-          const padding = 10;
-          viewBoxWidth = maxX - minX + padding * 2;
-          viewBoxHeight = maxY - minY + padding * 2;
-          viewBoxX = minX - padding;
-          viewBoxY = minY - padding;
-          svgElement.setAttribute(
-            'viewBox',
-            `${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`,
-          );
-        }
-
-        // Add background rectangle if not transparent
-        if (!picture.transparentBackground && viewBoxWidth > 0 && viewBoxHeight > 0) {
-          // Remove existing background rect if any
-          const existingBg = svgElement.querySelector('#mapBackground');
-          if (existingBg) {
-            existingBg.remove();
-          }
-
-          const bgRect = doc.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          bgRect.setAttribute('id', 'mapBackground');
-          bgRect.setAttribute('x', String(viewBoxX));
-          bgRect.setAttribute('y', String(viewBoxY));
-          bgRect.setAttribute('width', String(viewBoxWidth));
-          bgRect.setAttribute('height', String(viewBoxHeight));
-          bgRect.setAttribute('fill', picture.backgroundColor);
-          // Insert as first child so it's behind everything
-          svgElement.insertBefore(bgRect, svgElement.firstChild);
-        }
-
-        // Set SVG to be responsive - remove fixed dimensions
-        svgElement.removeAttribute('width');
-        svgElement.removeAttribute('height');
-
-        // Preserve aspect ratio
-        if (!svgElement.getAttribute('preserveAspectRatio')) {
-          svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-        }
-
-        // Remove or override the internal style that might conflict
-        const styleElement = svgElement.querySelector('style');
-        if (styleElement) {
-          // Update the CSS in the style element to use our colors
-          let cssText = styleElement.textContent || '';
-          // Replace stroke properties
-          if (border.show) {
-            cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, `stroke: ${border.color};`);
-            cssText = cssText.replace(
-              /stroke-width\s*:\s*[^;]+;/g,
-              `stroke-width: ${border.width};`,
-            );
-          } else {
-            cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, 'stroke: none;');
-          }
-          styleElement.textContent = cssText;
-        }
-
-        // Also apply inline styles to ensure they take precedence
-        paths.forEach((path) => {
-          // Apply static styles from CSS module
-          path.classList.add(styles.mapPath);
-
-          // Disable CSS transition for instant mode
-          if (transitionType === 'instant') {
-            path.classList.add(styles.mapPathInstant);
-          }
-
-          // Apply dynamic border styles
-          if (border.show) {
-            path.style.stroke = border.color;
-            path.style.strokeWidth = String(border.width);
-          } else {
-            path.style.stroke = 'none';
-          }
-
-          // Apply fill color based on region data and legend
-          const pathTitle = path.getAttribute('title');
-          if (pathTitle) {
-            const regionData = data.byId[pathTitle];
-            if (regionData) {
-              // Find matching legend item based on value range
-              const matchingLegendItem = deferredLegendItems.find(
-                (item) => regionData.value >= item.min && regionData.value <= item.max,
-              );
-              path.style.fill = matchingLegendItem ? matchingLegendItem.color : noDataColor;
-            } else {
-              // No data for this region
-              path.style.fill = noDataColor;
-            }
-          }
-        });
-
-        // Apply shadow if enabled
-        if (shadow.show) {
-          // Remove existing shadow filter if any
-          const existingFilter = svgElement.querySelector('#mapShadow');
-          if (existingFilter) {
-            existingFilter.remove();
-          }
-
-          const defs =
-            svgElement.querySelector('defs') ||
-            doc.createElementNS('http://www.w3.org/2000/svg', 'defs');
-          if (!svgElement.querySelector('defs')) {
-            svgElement.insertBefore(defs, svgElement.firstChild);
-          }
-
-          const filter = doc.createElementNS('http://www.w3.org/2000/svg', 'filter');
-          filter.setAttribute('id', 'mapShadow');
-          filter.innerHTML = `
-            <feDropShadow 
-              dx="${shadow.offsetX}" 
-              dy="${shadow.offsetY}" 
-              stdDeviation="${shadow.blur / 2}" 
-              flood-color="${shadow.color}"
-              flood-opacity="0.3"
-            />
-          `;
-          defs.appendChild(filter);
-
-          // Apply filter to a group containing all paths
-          const g = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
-          g.setAttribute('filter', 'url(#mapShadow)');
-
-          // Move all path elements into the group
-          const pathsToMove = Array.from(svgElement.querySelectorAll('g > path, svg > path'));
-          pathsToMove.forEach((path) => g.appendChild(path));
-          svgElement.appendChild(g);
-        }
-
-        // Add region labels if enabled
-        if (regionLabels.show && data.allIds.length > 0) {
-          // Remove existing labels group if any
-          const existingLabelsGroup = svgElement.querySelector('#regionLabelsGroup');
-          if (existingLabelsGroup) {
-            existingLabelsGroup.remove();
-          }
-
-          const labelsGroup = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
-          labelsGroup.setAttribute('id', 'regionLabelsGroup');
-
-          paths.forEach((path) => {
-            const pathTitle = path.getAttribute('title');
-            if (!pathTitle) return;
-
-            // Check if we have data for this region
-            const regionData = data.byId[pathTitle];
-            if (!regionData) return;
-
-            // Use stored position if available, otherwise calculate centroid
-            const storedPos = labelPositionsRef.current[pathTitle];
-            let labelX: number;
-            let labelY: number;
-
-            if (storedPos) {
-              labelX = storedPos.x;
-              labelY = storedPos.y;
-            } else {
-              // Calculate centroid using bounding box approximation
-              const d = path.getAttribute('d');
-              if (!d) return;
-
-              let rMinX = Infinity,
-                rMinY = Infinity,
-                rMaxX = -Infinity,
-                rMaxY = -Infinity;
-              const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
-              let match;
-              let cX = 0,
-                cY = 0;
-
-              while ((match = coordRegex.exec(d)) !== null) {
-                const command = match[1];
-                const params = match[2].trim();
-                const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
-                const isRelative = command === command.toLowerCase();
-                const cmd = command.toUpperCase();
-
-                if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
-                  for (let i = 0; i < numbers.length; i += 2) {
-                    const x = isRelative ? cX + numbers[i] : numbers[i];
-                    const y = isRelative ? cY + (numbers[i + 1] ?? 0) : (numbers[i + 1] ?? 0);
-                    cX = x;
-                    cY = y;
-                    rMinX = Math.min(rMinX, x);
-                    rMinY = Math.min(rMinY, y);
-                    rMaxX = Math.max(rMaxX, x);
-                    rMaxY = Math.max(rMaxY, y);
-                  }
-                } else if (cmd === 'H') {
-                  for (const num of numbers) {
-                    const x = isRelative ? cX + num : num;
-                    cX = x;
-                    rMinX = Math.min(rMinX, x);
-                    rMaxX = Math.max(rMaxX, x);
-                  }
-                } else if (cmd === 'V') {
-                  for (const num of numbers) {
-                    const y = isRelative ? cY + num : num;
-                    cY = y;
-                    rMinY = Math.min(rMinY, y);
-                    rMaxY = Math.max(rMaxY, y);
-                  }
-                } else if (cmd === 'C') {
-                  for (let i = 0; i < numbers.length; i += 6) {
-                    for (let j = 0; j < 6; j += 2) {
-                      const x = isRelative ? cX + numbers[i + j] : numbers[i + j];
-                      const y = isRelative
-                        ? cY + (numbers[i + j + 1] ?? 0)
-                        : (numbers[i + j + 1] ?? 0);
-                      rMinX = Math.min(rMinX, x);
-                      rMinY = Math.min(rMinY, y);
-                      rMaxX = Math.max(rMaxX, x);
-                      rMaxY = Math.max(rMaxY, y);
-                    }
-                    cX = isRelative ? cX + numbers[i + 4] : numbers[i + 4];
-                    cY = isRelative ? cY + (numbers[i + 5] ?? 0) : (numbers[i + 5] ?? 0);
-                  }
-                }
-              }
-
-              if (!isFinite(rMinX) || !isFinite(rMinY) || !isFinite(rMaxX) || !isFinite(rMaxY))
-                return;
-
-              labelX = (rMinX + rMaxX) / 2;
-              labelY = (rMinY + rMaxY) / 2;
-            }
-
-            // Create draggable text element
-            const text = doc.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', String(labelX));
-            text.setAttribute('y', String(labelY));
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('dominant-baseline', 'middle');
-            text.setAttribute('fill', regionLabels.color);
-            text.setAttribute('font-size', String(regionLabels.fontSize));
-            text.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
-            text.setAttribute('data-region-id', pathTitle);
-            text.setAttribute('cursor', 'move');
-            text.textContent = regionData.label;
-
-            labelsGroup.appendChild(text);
-          });
-
-          svgElement.appendChild(labelsGroup);
-        }
-
-        return new XMLSerializer().serializeToString(doc);
-      }
-
-      return svg;
-    },
-    [
-      border,
-      shadow,
-      picture,
-      regionLabels,
-      data,
-      deferredLegendItems,
-      noDataColor,
-      transitionType,
-      regionLabelPositions,
-    ],
+    (svg: string) =>
+      applySvgMapStyles(svg, {
+        border,
+        shadow,
+        picture,
+        regionLabels,
+        data,
+        legendItems: deferredLegendItems,
+        noDataColor,
+        transitionType,
+        labelPositions: labelPositionsRef.current,
+        pathClass: styles.mapPath,
+        pathClassInstant: styles.mapPathInstant,
+      }),
+    [border, shadow, picture, regionLabels, data, deferredLegendItems, noDataColor, transitionType],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)
@@ -834,56 +483,6 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   const isBottomLegend = position === LEGEND_POSITIONS.bottom;
 
-  // Render legend content (shared between floating and bottom positions)
-  const legendContent = (
-    <>
-      {title.show && (
-        <Flex align="center" gap={4} className="mb-xs">
-          <Typography.Text className="text-xs text-green-500">●</Typography.Text>
-          <Typography.Text
-            className="text-xs font-medium"
-            style={{
-              color: labels.color,
-              fontSize: `${labels.fontSize}px`,
-            }}
-          >
-            {title.text}
-          </Typography.Text>
-        </Flex>
-      )}
-      <Flex vertical gap="small">
-        {legendItems.map((item) => (
-          <Flex key={item.id} align="center" gap="small">
-            <div className="h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: item.color }} />
-            <Typography.Text
-              className="truncate"
-              style={{
-                color: labels.color,
-                fontSize: `${labels.fontSize}px`,
-              }}
-            >
-              {item.name}
-            </Typography.Text>
-          </Flex>
-        ))}
-        <Flex align="center" gap="small">
-          <div
-            className="h-3 w-3 shrink-0 rounded-sm border border-gray-300"
-            style={{ backgroundColor: noDataColor }}
-          />
-          <Typography.Text
-            style={{
-              color: labels.color,
-              fontSize: `${labels.fontSize}px`,
-            }}
-          >
-            No Data
-          </Typography.Text>
-        </Flex>
-      </Flex>
-    </>
-  );
-
   return (
     <Flex vertical className={`h-full ${className}`}>
       {/* Map Container */}
@@ -960,7 +559,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
               onMouseDown={handleLegendMouseDown}
             />
-            <div className="pointer-events-none relative z-20">{legendContent}</div>
+            <div className="pointer-events-none relative z-20">
+              <MapLegendContent
+                title={title}
+                labels={labels}
+                legendItems={legendItems}
+                noDataColor={noDataColor}
+              />
+            </div>
             {/* Resize handle for floating legend */}
             <button
               type="button"
@@ -1024,7 +630,12 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       {/* Bottom Legend (outside map container, with border separator) */}
       {isBottomLegend && legendItems.length > 0 && (
         <div className="p-md pt-md shrink-0 border-t border-gray-200" style={{ backgroundColor }}>
-          {legendContent}
+          <MapLegendContent
+            title={title}
+            labels={labels}
+            legendItems={legendItems}
+            noDataColor={noDataColor}
+          />
         </div>
       )}
     </Flex>

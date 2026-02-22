@@ -7,6 +7,12 @@ import type {
   RegionLabelsConfig,
   ShadowConfig,
 } from '@/store/mapStyles/types';
+import {
+  CSS_STROKE_PROP_REGEX,
+  CSS_STROKE_WIDTH_PROP_REGEX,
+  SVG_PATH_COORD_REGEX,
+  SVG_PATH_NUMBERS_REGEX,
+} from '@/constants/svgPath';
 
 type RenderStyledSvgOptions = {
   rawSvg: string;
@@ -45,7 +51,7 @@ function computePathBounds(paths: NodeListOf<SVGPathElement>): {
     const d = path.getAttribute('d');
     if (!d) return;
 
-    const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
+    const coordRegex = new RegExp(SVG_PATH_COORD_REGEX.source, 'gi');
     let match;
     let currentX = 0;
     let currentY = 0;
@@ -53,7 +59,8 @@ function computePathBounds(paths: NodeListOf<SVGPathElement>): {
     while ((match = coordRegex.exec(d)) !== null) {
       const command = match[1];
       const params = match[2].trim();
-      const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
+      const numbers =
+        params.match(new RegExp(SVG_PATH_NUMBERS_REGEX.source, 'g'))?.map(Number) || [];
       const isRelative = command === command.toLowerCase();
       const cmd = command.toUpperCase();
 
@@ -126,7 +133,7 @@ function getPathBounds(
     minY = Infinity,
     maxX = -Infinity,
     maxY = -Infinity;
-  const coordRegex = /([MLHVCSQTAZ])([^MLHVCSQTAZ]*)/gi;
+  const coordRegex = new RegExp(SVG_PATH_COORD_REGEX.source, 'gi');
   let match;
   let currentX = 0,
     currentY = 0;
@@ -134,7 +141,7 @@ function getPathBounds(
   while ((match = coordRegex.exec(d)) !== null) {
     const command = match[1];
     const params = match[2].trim();
-    const numbers = params.match(/[-+]?[0-9]*\.?[0-9]+/g)?.map(Number) || [];
+    const numbers = params.match(new RegExp(SVG_PATH_NUMBERS_REGEX.source, 'g'))?.map(Number) || [];
     const isRelative = command === command.toLowerCase();
     const cmd = command.toUpperCase();
 
@@ -187,8 +194,10 @@ function getPathBounds(
           maxX = Math.max(maxX, x);
           maxY = Math.max(maxY, y);
         }
-        currentX = isRelative ? currentX + numbers[step - 2] : numbers[step - 2];
-        currentY = isRelative ? currentY + (numbers[step - 1] ?? 0) : (numbers[step - 1] ?? 0);
+        currentX = isRelative ? currentX + numbers[i + step - 2] : numbers[i + step - 2];
+        currentY = isRelative
+          ? currentY + (numbers[i + step - 1] ?? 0)
+          : (numbers[i + step - 1] ?? 0);
       }
     }
   }
@@ -275,10 +284,10 @@ export function renderStyledSvg({
   if (styleElement) {
     let cssText = styleElement.textContent || '';
     if (border.show) {
-      cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, `stroke: ${border.color};`);
-      cssText = cssText.replace(/stroke-width\s*:\s*[^;]+;/g, `stroke-width: ${border.width};`);
+      cssText = cssText.replace(CSS_STROKE_PROP_REGEX, `stroke: ${border.color};`);
+      cssText = cssText.replace(CSS_STROKE_WIDTH_PROP_REGEX, `stroke-width: ${border.width};`);
     } else {
-      cssText = cssText.replace(/stroke\s*:\s*[^;]+;/g, 'stroke: none;');
+      cssText = cssText.replace(CSS_STROKE_PROP_REGEX, 'stroke: none;');
     }
     styleElement.textContent = cssText;
   }

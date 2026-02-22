@@ -10,8 +10,8 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   clearReturnUrl,
   clearTemporaryProjectState,

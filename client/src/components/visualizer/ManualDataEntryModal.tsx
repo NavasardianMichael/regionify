@@ -1,16 +1,6 @@
 import { type FC, useCallback, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Flex,
-  Input,
-  InputNumber,
-  type InputProps,
-  Modal,
-  type ModalProps,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Button, Flex, type InputProps, Modal, type ModalProps, Tooltip, Typography } from 'antd';
 import {
   selectClearTimelineData,
   selectData,
@@ -20,85 +10,19 @@ import {
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import type { DataSet, RegionData, VisualizerState } from '@/store/mapData/types';
+import type { DataSet, RegionData } from '@/store/mapData/types';
 import { generateRandomId } from '@/helpers/common';
-
-type LocalDataState = VisualizerState['data'];
-
-/** One row in the table. timePeriod set when modal reflects or edits timeline data. */
-type DataRow = {
-  key: string;
-  id: string;
-  label: string;
-  value: number;
-  timePeriod?: string;
-};
+import {
+  buildInitialRows,
+  createEmptyStaticRow,
+  type DataRow,
+} from '@/helpers/manualDataEntryHelpers';
+import { ManualDataEntryRow } from '@/components/visualizer/ManualDataEntryModal/ManualDataEntryRow';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onSave?: () => void;
-};
-
-const createEmptyStaticRow = (): DataRow => ({
-  key: generateRandomId(),
-  id: '',
-  label: '',
-  value: 0,
-});
-
-/** Flatten timeline data into rows (ID, Label, Time, Value) for display/editing. */
-const rowsFromTimeline = (
-  timelineData: Record<string, DataSet>,
-  timePeriods: string[],
-): DataRow[] => {
-  const rows: DataRow[] = [];
-  for (const period of timePeriods) {
-    const data = timelineData[period];
-    if (!data) continue;
-    for (const regionId of data.allIds) {
-      const r = data.byId[regionId];
-      if (!r) continue;
-      rows.push({
-        key: generateRandomId(),
-        id: r.id,
-        label: r.label,
-        value: r.value,
-        timePeriod: period,
-      });
-    }
-  }
-  return rows;
-};
-
-/** Build rows from static data (no time column). */
-const rowsFromStaticData = (storeData: LocalDataState): DataRow[] => {
-  if (storeData.allIds.length === 0) {
-    return [createEmptyStaticRow()];
-  }
-  return storeData.allIds.map((storeId) => {
-    const r = storeData.byId[storeId];
-    return {
-      key: generateRandomId(),
-      id: r.id,
-      label: r.label,
-      value: r.value,
-    };
-  });
-};
-
-/** Build initial rows when modal opens: use timeline if present, else static data. */
-const buildInitialRows = (
-  storeData: LocalDataState,
-  timelineData: Record<string, DataSet>,
-  timePeriods: string[],
-): DataRow[] => {
-  const hasTimeline = timePeriods.length > 0 && Object.keys(timelineData).length > 0;
-  if (hasTimeline) {
-    const rows = rowsFromTimeline(timelineData, timePeriods);
-    return rows.length > 0 ? rows : [createEmptyStaticRow()];
-  }
-  return rowsFromStaticData(storeData);
 };
 
 const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
@@ -309,50 +233,18 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
 
           <Flex vertical gap="small">
             {rows.map((row, index) => (
-              <div
+              <ManualDataEntryRow
                 key={row.key}
-                data-rowkey={row.key}
-                className={`gap-sm grid ${gridCols} items-center`}
-              >
-                <Typography.Text className="text-center text-sm text-gray-500">
-                  {index + 1}
-                </Typography.Text>
-                <Input
-                  value={row.id}
-                  data-rowkey={row.key}
-                  readOnly
-                  placeholder="Region ID"
-                  className="bg-gray-50"
-                />
-                <Input
-                  value={row.label}
-                  data-rowkey={row.key}
-                  onChange={handleLabelChange}
-                  placeholder="Label"
-                />
-                <InputNumber
-                  value={row.value}
-                  onChange={(value: number | null) => handleValueChange(row.key, value)}
-                  min={0}
-                  className="w-full"
-                />
-                {isTimelineMode && (
-                  <Input
-                    value={row.timePeriod ?? ''}
-                    data-rowkey={row.key}
-                    onChange={handleTimePeriodChange}
-                    placeholder="e.g. 2020"
-                  />
-                )}
-                <Button
-                  type="text"
-                  icon={<DeleteOutlined />}
-                  danger
-                  data-rowkey={row.key}
-                  onClick={handleRemoveRow}
-                  disabled={rows.length <= 1}
-                />
-              </div>
+                row={row}
+                index={index}
+                isTimelineMode={isTimelineMode}
+                gridCols={gridCols}
+                onLabelChange={handleLabelChange}
+                onValueChange={handleValueChange}
+                onTimePeriodChange={handleTimePeriodChange}
+                onRemove={handleRemoveRow}
+                canRemove={rows.length > 1}
+              />
             ))}
           </Flex>
         </div>

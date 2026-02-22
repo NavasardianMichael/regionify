@@ -196,3 +196,6 @@ import { useAuth } from '@/hooks/useAuth';
   2. Mapped variable with `{ [key]: Component or tsx) }` structure
   3. Memoized variable (`useMemo`) with internal `if`/`return` logic
 - In loops (e.g., `.map()`), avoid inline event handler functions; instead use `data-*` attributes (or `name`/`id`) on elements and a single memoized (`useCallback`) handler that extracts the identifier from `event.currentTarget.dataset`.
+- Avoid declaring a variable that holds static (or mostly static) markup and rendering it in the same component; extract a presentational component and use it in the parent instead.
+- Refactor very large functions (e.g. 100+ lines) into dedicated helpers or modules; keep UI components focused on composition and state, not heavy pure logic.
+- Keep UI and component files free of static content that belongs in shared constants: move regex patterns, magic strings, and other literals to the `constants/` folder (e.g. `constants/svgPath.ts`, `constants/importData.ts`) and import where needed.

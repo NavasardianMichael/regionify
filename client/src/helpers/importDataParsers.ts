@@ -1,0 +1,183 @@
+/**
+ * Parsers and helpers for import data (CSV, Excel, JSON).
+ * Used by ImportDataPanel to normalize user data into region format.
+ */
+import * as XLSX from 'xlsx';
+import type { RegionData } from '@/store/mapData/types';
+import type { ImportDataType } from '@/types/mapData';
+import { mapDataToSvgRegions } from '@/helpers/textSimilarity';
+
+/** Parsed row from user data (id, label, value, optional timePeriod). */
+export type ParsedRow = { id: string; label: string; value: number; timePeriod?: string };
+
+export const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
+
+export const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
+  { label: 'CSV', value: 'csv' },
+  { label: 'Excel', value: 'excel' },
+  { label: 'JSON', value: 'json' },
+  { label: 'Sheets', value: 'sheets' },
+  { label: 'Manual', value: 'manual' },
+];
+
+export const hasTimeColumn = (header: string): boolean => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim());
+  return parts.some((p) => TIME_COLUMN_PATTERN.test(p));
+};
+
+export const getTimeColumnIndex = (header: string): number => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim());
+  return parts.findIndex((p) => TIME_COLUMN_PATTERN.test(p));
+};
+
+export const hasIdColumn = (header: string): boolean => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim().toLowerCase());
+  return parts.some((p) => p === 'id');
+};
+
+export type ParseCSVResult = ParsedRow[] | { error: 'missing_id' };
+
+export const parseCSV = (content: string): ParseCSVResult => {
+  const lines = content.trim().split('\n');
+  const data: ParsedRow[] = [];
+
+  const headerLine = lines[0] || '';
+  const hasId = hasIdColumn(headerLine);
+  const hasTime = hasTimeColumn(headerLine);
+  const timeIdx = hasTime ? getTimeColumnIndex(headerLine) : -1;
+  const isHeader = /^(id|label|region|name)/i.test(headerLine) || hasTime;
+  const startIndex = isHeader ? 1 : 0;
+
+  if (isHeader && !hasId && lines.length > 1) {
+    return { error: 'missing_id' };
+  }
+
+  for (let i = startIndex; i < lines.length; i++) {
+    const line = lines[i];
+    let parts: string[];
+
+    if (line.includes('"')) {
+      parts = line.match(/(?:[^,"]|"(?:\\.|[^"])*")+/g) || [];
+      parts = parts.map((s) => s.replace(/^"|"$/g, '').trim());
+    } else {
+      parts = line.split(/[,;\t]/).map((s) => s.trim());
+    }
+
+    const timePeriod = hasTime && timeIdx >= 0 ? parts[timeIdx] : undefined;
+    const filteredParts =
+      hasTime && timeIdx >= 0 ? parts.filter((_, idx) => idx !== timeIdx) : parts;
+
+    if (hasId) {
+      const [id, label, valueStr] = filteredParts;
+      const value = parseFloat(valueStr);
+      const idTrimmed = id?.trim();
+      if (idTrimmed && label && !isNaN(value)) {
+        data.push({
+          id: idTrimmed,
+          label,
+          value,
+          timePeriod: timePeriod || undefined,
+        });
+      }
+    }
+  }
+
+  return data;
+};
+
+export const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet);
+
+  const data: ParsedRow[] = [];
+
+  for (const row of jsonData) {
+    const keys = Object.keys(row);
+
+    const idKey = keys.find((key) => key.toLowerCase() === 'id');
+    const labelKey = keys.find((key) =>
+      /^(label|region|name|area|province|state|country)/i.test(String(key)),
+    );
+    const valueKey = keys.find((key) =>
+      /^(value|count|amount|number|data|total|population)/i.test(String(key)),
+    );
+    const timeKey = keys.find((key) => TIME_COLUMN_PATTERN.test(String(key)));
+
+    const id = idKey ? String(row[idKey] ?? '').trim() : undefined;
+    const label = String(row[labelKey ?? keys[idKey ? 1 : 0]] ?? '');
+    const value = parseFloat(String(row[valueKey ?? keys[idKey ? 2 : 1]] ?? ''));
+    const timePeriod = timeKey ? String(row[timeKey] ?? '') : undefined;
+
+    if (id && label && !isNaN(value)) {
+      data.push({ id, label, value, timePeriod: timePeriod || undefined });
+    }
+  }
+
+  return data;
+};
+
+export const parseJSON = (content: string): ParsedRow[] => {
+  try {
+    const parsed = JSON.parse(content);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .filter((item) => {
+          const hasId = item.id != null && String(item.id).trim() !== '';
+          const hasLabel = item.label || item.region || item.name;
+          const hasValue = typeof item.value === 'number' || typeof item.count === 'number';
+          return hasId && hasLabel && hasValue;
+        })
+        .map((item) => {
+          const rawTime = item.year ?? item.time ?? item.period ?? item.date ?? item.month;
+          return {
+            id: String(item.id).trim(),
+            label: String(item.label ?? item.region ?? item.name ?? ''),
+            value: Number(item.value ?? item.count ?? 0),
+            timePeriod: rawTime !== undefined && rawTime !== null ? String(rawTime) : undefined,
+          };
+        });
+    }
+    return [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * Convert parsed data to RegionData format with similarity matching.
+ * Uses SVG titles to match user labels to region IDs.
+ */
+export const convertToRegionData = (
+  parsed: ParsedRow[],
+  svgTitles: string[],
+): { allIds: string[]; byId: Record<string, RegionData> } => {
+  const mappedData = mapDataToSvgRegions(parsed, svgTitles);
+
+  const allIds = mappedData.map((item) => item.id);
+  const byId = Object.fromEntries(
+    mappedData.map((item) => [item.id, { id: item.id, label: item.label, value: item.value }]),
+  );
+
+  return { allIds, byId };
+};
+
+/**
+ * Sanitize project name for use in filename.
+ * Removes invalid characters and limits length.
+ */
+export const sanitizeFilename = (name: string): string => {
+  const invalidChars = /[<>:"/\\|?*]/g;
+  // eslint-disable-next-line no-control-regex
+  const controlChars = /[\u0000-\u001f]/g;
+  return (
+    name
+      .replace(invalidChars, '')
+      .replace(controlChars, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 100)
+      .trim() || 'data'
+  );
+};

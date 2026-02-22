@@ -1,17 +1,7 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
-import { DownloadOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { VideoCameraOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, PLAN_DETAILS, PLANS } from '@regionify/shared';
-import {
-  Button,
-  Flex,
-  InputNumber,
-  Modal,
-  Progress,
-  Select,
-  Slider,
-  Switch,
-  Typography,
-} from 'antd';
+import { Flex, Modal, Typography } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -44,17 +34,14 @@ import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import {
   exportAnimationAsGif,
   exportAnimationAsVideo,
-  getAnimationTotalFrames,
   type LegendPositionExport,
 } from '@/helpers/animationExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { ExportAnimationModalForm } from '@/components/visualizer/ExportAnimationModal/ExportAnimationModalForm';
 
 type AnimationFormat = typeof EXPORT_TYPES.gif | typeof EXPORT_TYPES.mp4;
 
-type FormatOption = {
-  value: AnimationFormat;
-  label: string;
-};
+type FormatOption = { value: AnimationFormat; label: string };
 
 const ANIMATION_FORMAT_OPTIONS: FormatOption[] = [
   { value: EXPORT_TYPES.gif, label: 'GIF' },
@@ -102,18 +89,6 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     () => ANIMATION_FORMAT_OPTIONS.filter((o) => limits.allowedAnimationFormats.includes(o.value)),
     [limits.allowedAnimationFormats],
   );
-
-  const handleFormatChange = useCallback((value: AnimationFormat) => {
-    setFormat(value);
-  }, []);
-
-  const handleQualityChange = useCallback((value: number | null) => {
-    setQuality(value ?? 60);
-  }, []);
-
-  const handleSecondsPerPeriodChange = useCallback((value: number | null) => {
-    setSecondsPerPeriod(Math.max(0.5, Math.min(value ?? 2, 10)));
-  }, []);
 
   const handleExport = useCallback(async () => {
     if (!selectedRegionId || timePeriods.length < 2) return;
@@ -205,91 +180,21 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
       width={420}
       destroyOnHidden
     >
-      <Flex vertical gap="middle" className="py-2">
-        {/* Format */}
-        <Flex vertical gap="small">
-          <Typography.Text className="text-sm text-gray-600">Format:</Typography.Text>
-          <Select
-            value={format}
-            onChange={handleFormatChange}
-            options={allowedFormats}
-            className="w-full"
-          />
-        </Flex>
-
-        {/* Quality */}
-        <Flex vertical gap="small">
-          <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">Quality (%):</Typography.Text>
-            <InputNumber
-              min={25}
-              max={100}
-              value={quality}
-              onChange={handleQualityChange}
-              className="w-20"
-            />
-          </Flex>
-          <Slider min={25} max={100} value={quality} onChange={(v: number) => setQuality(v)} />
-        </Flex>
-
-        {/* Seconds per period + smooth */}
-        <Flex vertical gap="small">
-          <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">
-              Seconds per time period:
-            </Typography.Text>
-            <InputNumber
-              min={0.5}
-              max={10}
-              step={0.5}
-              value={secondsPerPeriod}
-              onChange={handleSecondsPerPeriodChange}
-              className="w-20"
-            />
-          </Flex>
-          <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">Smooth transitions:</Typography.Text>
-            <Switch
-              checked={smoothTransitions}
-              onChange={setSmoothTransitions}
-              aria-label="Smooth transitions between time periods"
-            />
-          </Flex>
-          <Typography.Text type="secondary" className="text-xs">
-            {getAnimationTotalFrames(timePeriods.length, {
-              secondsPerPeriod,
-              fps: EXPORT_FPS,
-              smooth: smoothTransitions,
-            })}{' '}
-            frames · {EXPORT_FPS} FPS · ~
-            {(
-              getAnimationTotalFrames(timePeriods.length, {
-                secondsPerPeriod,
-                fps: EXPORT_FPS,
-                smooth: smoothTransitions,
-              }) / EXPORT_FPS
-            ).toFixed(1)}
-            s duration
-          </Typography.Text>
-        </Flex>
-
-        {/* Progress */}
-        {isExporting && (
-          <Progress percent={Math.round(progress * 100)} status="active" strokeColor="#18294D" />
-        )}
-
-        {/* Export Button */}
-        <Button
-          type="primary"
-          icon={<DownloadOutlined />}
-          onClick={handleExport}
-          loading={isExporting}
-          disabled={timePeriods.length < 2}
-          block
-        >
-          {isExporting ? 'Exporting...' : `Export ${format === EXPORT_TYPES.gif ? 'GIF' : 'Video'}`}
-        </Button>
-      </Flex>
+      <ExportAnimationModalForm
+        format={format}
+        quality={quality}
+        secondsPerPeriod={secondsPerPeriod}
+        smoothTransitions={smoothTransitions}
+        isExporting={isExporting}
+        progress={progress}
+        timePeriodsCount={timePeriods.length}
+        allowedFormats={allowedFormats}
+        onFormatChange={setFormat}
+        onQualityChange={(v) => setQuality(v ?? 60)}
+        onSecondsPerPeriodChange={(v) => setSecondsPerPeriod(Math.max(0.5, Math.min(v ?? 2, 10)))}
+        onSmoothTransitionsChange={setSmoothTransitions}
+        onExport={handleExport}
+      />
     </Modal>
   );
 };

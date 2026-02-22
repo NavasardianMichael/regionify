@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { App } from 'antd';
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   deleteProject as deleteProjectApi,
   getProjects,
@@ -18,6 +17,7 @@ import {
   selectUpdateProjectInList,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type UseProjectsReturn = {
   projects: Project[];

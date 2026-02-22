@@ -1,11 +1,11 @@
 import { type FC, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Locale } from '@regionify/shared';
 import { DEFAULT_LOCALE } from '@regionify/shared';
 import i18n from 'i18next';
-import { useTranslation } from 'react-i18next';
-import { RTL_LOCALES } from '@/constants/locales';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { RTL_LOCALES } from '@/constants/locales';
 import { getStoredLocale } from '@/helpers/localeStorage';
 
 /** Syncs i18n language from user.locale or localStorage (guests). Sets document dir/lang for RTL and a11y. */

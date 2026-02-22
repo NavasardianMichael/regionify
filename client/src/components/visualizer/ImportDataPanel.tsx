@@ -40,201 +40,25 @@ import { selectCurrentProject } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import {
+  convertToRegionData,
+  IMPORT_OPTIONS,
+  parseCSV,
+  type ParsedRow,
+  parseExcel,
+  parseJSON,
+  sanitizeFilename,
+} from '@/helpers/importDataParsers';
 import { loadMapSvg } from '@/helpers/mapLoader';
-import { extractSvgTitles, mapDataToSvgRegions } from '@/helpers/textSimilarity';
-import { showMessageWithSampleDownload } from '@/components/shared/MessageWithSampleDownload';
+import { extractSvgTitles } from '@/helpers/textSimilarity';
+import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
+import { ImportFormatExamples } from '@/components/visualizer/ImportDataPanel/ImportFormatExamples';
+import { ImportFormatInfoTooltip } from '@/components/visualizer/ImportDataPanel/ImportFormatInfoTooltip';
+import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPanel/SwitchModeConfirmContent';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
-
-/**
- * Sanitize project name for use in filename
- * Removes invalid characters and limits length
- */
-const sanitizeFilename = (name: string): string => {
-  // Remove invalid filename characters: < > : " / \ | ? * and control characters
-  const invalidChars = /[<>:"/\\|?*]/g;
-  // eslint-disable-next-line no-control-regex
-  const controlChars = /[\u0000-\u001f]/g;
-  return (
-    name
-      .replace(invalidChars, '')
-      .replace(controlChars, '')
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-') // Replace multiple hyphens with single
-      .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
-      .slice(0, 100) // Limit length
-      .trim() || 'data'
-  ); // Fallback to 'data' if empty
-};
-
-/**
- * Parsed row from user data
- * id - optional region identifier (SVG path title)
- * label - display label for the region
- * value - numeric value for visualization
- * timePeriod - optional time period for historical data animation
- */
-type ParsedRow = { id: string; label: string; value: number; timePeriod?: string };
-
-const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
-
-const hasTimeColumn = (header: string): boolean => {
-  const parts = header.split(/[,;\t]/).map((s) => s.trim());
-  return parts.some((p) => TIME_COLUMN_PATTERN.test(p));
-};
-
-const getTimeColumnIndex = (header: string): number => {
-  const parts = header.split(/[,;\t]/).map((s) => s.trim());
-  return parts.findIndex((p) => TIME_COLUMN_PATTERN.test(p));
-};
-
-const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
-  { label: 'CSV', value: 'csv' },
-  { label: 'Excel', value: 'excel' },
-  { label: 'JSON', value: 'json' },
-  { label: 'Sheets', value: 'sheets' },
-  { label: 'Manual', value: 'manual' },
-];
-
-/**
- * Detect if header row contains an 'id' column
- */
-const hasIdColumn = (header: string): boolean => {
-  const parts = header.split(/[,;\t]/).map((s) => s.trim().toLowerCase());
-  return parts.some((p) => p === 'id');
-};
-
-type ParseCSVResult = ParsedRow[] | { error: 'missing_id' };
-
-const parseCSV = (content: string): ParseCSVResult => {
-  const lines = content.trim().split('\n');
-  const data: ParsedRow[] = [];
-
-  const headerLine = lines[0] || '';
-  const hasId = hasIdColumn(headerLine);
-  const hasTime = hasTimeColumn(headerLine);
-  const timeIdx = hasTime ? getTimeColumnIndex(headerLine) : -1;
-  const isHeader = /^(id|label|region|name)/i.test(headerLine) || hasTime;
-  const startIndex = isHeader ? 1 : 0;
-
-  if (isHeader && !hasId && lines.length > 1) {
-    return { error: 'missing_id' };
-  }
-
-  for (let i = startIndex; i < lines.length; i++) {
-    const line = lines[i];
-    let parts: string[];
-
-    if (line.includes('"')) {
-      parts = line.match(/(?:[^,"]|"(?:\\.|[^"])*")+/g) || [];
-      parts = parts.map((s) => s.replace(/^"|"$/g, '').trim());
-    } else {
-      parts = line.split(/[,;\t]/).map((s) => s.trim());
-    }
-
-    const timePeriod = hasTime && timeIdx >= 0 ? parts[timeIdx] : undefined;
-    const filteredParts =
-      hasTime && timeIdx >= 0 ? parts.filter((_, idx) => idx !== timeIdx) : parts;
-
-    if (hasId) {
-      const [id, label, valueStr] = filteredParts;
-      const value = parseFloat(valueStr);
-      const idTrimmed = id?.trim();
-      if (idTrimmed && label && !isNaN(value)) {
-        data.push({
-          id: idTrimmed,
-          label,
-          value,
-          timePeriod: timePeriod || undefined,
-        });
-      }
-    }
-  }
-
-  return data;
-};
-
-const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
-  const workbook = XLSX.read(buffer, { type: 'array' });
-  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet);
-
-  const data: ParsedRow[] = [];
-
-  for (const row of jsonData) {
-    const keys = Object.keys(row);
-
-    // Check for id column
-    const idKey = keys.find((key) => key.toLowerCase() === 'id');
-    const labelKey = keys.find((key) =>
-      /^(label|region|name|area|province|state|country)/i.test(String(key)),
-    );
-    const valueKey = keys.find((key) =>
-      /^(value|count|amount|number|data|total|population)/i.test(String(key)),
-    );
-    const timeKey = keys.find((key) => TIME_COLUMN_PATTERN.test(String(key)));
-
-    // Determine column order based on available keys
-    const id = idKey ? String(row[idKey] ?? '').trim() : undefined;
-    const label = String(row[labelKey ?? keys[idKey ? 1 : 0]] ?? '');
-    const value = parseFloat(String(row[valueKey ?? keys[idKey ? 2 : 1]] ?? ''));
-    const timePeriod = timeKey ? String(row[timeKey] ?? '') : undefined;
-
-    if (id && label && !isNaN(value)) {
-      data.push({ id, label, value, timePeriod: timePeriod || undefined });
-    }
-  }
-
-  return data;
-};
-
-const parseJSON = (content: string): ParsedRow[] => {
-  try {
-    const parsed = JSON.parse(content);
-    if (Array.isArray(parsed)) {
-      return parsed
-        .filter((item) => {
-          const hasId = item.id != null && String(item.id).trim() !== '';
-          const hasLabel = item.label || item.region || item.name;
-          const hasValue = typeof item.value === 'number' || typeof item.count === 'number';
-          return hasId && hasLabel && hasValue;
-        })
-        .map((item) => {
-          const rawTime = item.year ?? item.time ?? item.period ?? item.date ?? item.month;
-          return {
-            id: String(item.id).trim(),
-            label: String(item.label ?? item.region ?? item.name ?? ''),
-            value: Number(item.value ?? item.count ?? 0),
-            timePeriod: rawTime !== undefined && rawTime !== null ? String(rawTime) : undefined,
-          };
-        });
-    }
-    return [];
-  } catch {
-    return [];
-  }
-};
-
-/**
- * Convert parsed data to RegionData format with similarity matching
- * Uses SVG titles to match user labels to region IDs
- */
-const convertToRegionData = (
-  parsed: ParsedRow[],
-  svgTitles: string[],
-): { allIds: string[]; byId: Record<string, RegionData> } => {
-  // Map data using similarity matching
-  const mappedData = mapDataToSvgRegions(parsed, svgTitles);
-
-  const allIds = mappedData.map((item) => item.id);
-  const byId = Object.fromEntries(
-    mappedData.map((item) => [item.id, { id: item.id, label: item.label, value: item.value }]),
-  );
-
-  return { allIds, byId };
-};
 
 const SUCCESS_MESSAGE_DURATION = 5;
 
@@ -523,19 +347,6 @@ export const ImportDataPanel: FC = () => {
 
   const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
 
-  const switchModeConfirmContent = useMemo(
-    () => (
-      <Flex vertical gap="small">
-        <Typography.Text>All changes to your dataset will be lost. Are you sure?</Typography.Text>
-        <Typography.Text type="secondary" className="text-xs">
-          We recommend saving your current project first, then creating a new one if you need to
-          keep this data.
-        </Typography.Text>
-      </Flex>
-    ),
-    [],
-  );
-
   /** Apply static mode: clear timeline and set data to sample (or empty if no region). */
   const applySwitchToStatic = useCallback(() => {
     clearTimelineData();
@@ -582,7 +393,7 @@ export const ImportDataPanel: FC = () => {
     if (hasHistoricalFormat && hasDataOrTimeline) {
       modal.confirm({
         title: t('messages.switchToStaticConfirm'),
-        content: switchModeConfirmContent,
+        content: <SwitchModeConfirmContent />,
         okText: t('messages.switch'),
         cancelText: t('nav.cancel'),
         onOk: applySwitchToStatic,
@@ -590,20 +401,13 @@ export const ImportDataPanel: FC = () => {
     } else {
       applySwitchToStatic();
     }
-  }, [
-    modal,
-    hasHistoricalFormat,
-    hasDataOrTimeline,
-    applySwitchToStatic,
-    switchModeConfirmContent,
-    t,
-  ]);
+  }, [modal, hasHistoricalFormat, hasDataOrTimeline, applySwitchToStatic, t]);
 
   const handleSwitchToDynamic = useCallback(() => {
     if (hasDataOrTimeline) {
       modal.confirm({
         title: t('messages.switchToDynamicConfirm'),
-        content: switchModeConfirmContent,
+        content: <SwitchModeConfirmContent />,
         okText: t('messages.switch'),
         cancelText: t('nav.cancel'),
         onOk: applySwitchToDynamic,
@@ -611,7 +415,7 @@ export const ImportDataPanel: FC = () => {
     } else {
       applySwitchToDynamic();
     }
-  }, [modal, hasDataOrTimeline, applySwitchToDynamic, switchModeConfirmContent, t]);
+  }, [modal, hasDataOrTimeline, applySwitchToDynamic, t]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -916,121 +720,6 @@ export const ImportDataPanel: FC = () => {
     [handleFileUpload, selectedRegionId],
   );
 
-  const expectedFormatExamples: Record<ImportDataType, JSX.Element> = useMemo(
-    () => ({
-      csv: (
-        <pre className="font-mono text-xs text-gray-600">
-          {`id,label,value
-Moscow,Moscow Oblast,2500
-Saint Petersburg,St. Petersburg,1800`}
-        </pre>
-      ),
-      excel: (
-        <Flex vertical gap={4} className="text-xs text-gray-600">
-          <Typography.Text className="text-xs text-gray-600">
-            Excel file with columns:
-          </Typography.Text>
-          <pre className="font-mono text-xs text-gray-600">
-            {`| id     | label       | value |
-| Moscow | Moscow City | 2500  |`}
-          </pre>
-        </Flex>
-      ),
-      json: (
-        <pre className="font-mono text-xs text-gray-600">
-          {`[
-  { "id": "Moscow", "label": "Moscow City", "value": 2500 },
-  { "id": "Saint Petersburg", "label": "St. Petersburg", "value": 1800 }
-]`}
-        </pre>
-      ),
-      sheets: (
-        <Flex vertical gap={4} className="text-xs text-gray-600">
-          <Typography.Text className="text-xs text-gray-600">
-            Google Sheet with columns:
-          </Typography.Text>
-          <pre className="font-mono text-xs text-gray-600">
-            {`| id     | label       | value |
-| Moscow | Moscow City | 2500  |`}
-          </pre>
-        </Flex>
-      ),
-      manual: (
-        <Typography.Text className="text-xs text-gray-600">
-          Enter region IDs, labels and their corresponding values using the form.
-        </Typography.Text>
-      ),
-    }),
-    [],
-  );
-
-  const historicalFormatExamples: Record<ImportDataType, JSX.Element> = useMemo(
-    () => ({
-      csv: (
-        <pre className="font-mono text-xs text-gray-600">
-          {`year,id,label,value
-2020,Moscow,Moscow Oblast,2500
-2020,Saint Petersburg,St. Petersburg,1800
-2021,Moscow,Moscow Oblast,2700
-2021,Saint Petersburg,St. Petersburg,1900`}
-        </pre>
-      ),
-      excel: (
-        <Flex vertical gap={4} className="text-xs text-gray-600">
-          <Typography.Text className="text-xs text-gray-600">
-            Excel file with columns including a time column:
-          </Typography.Text>
-          <pre className="font-mono text-xs text-gray-600">
-            {`| year | id     | label       | value |
-| 2020 | Moscow | Moscow City | 2500  |
-| 2021 | Moscow | Moscow City | 2700  |`}
-          </pre>
-        </Flex>
-      ),
-      json: (
-        <pre className="font-mono text-xs text-gray-600">
-          {`[
-  { "year": "2020", "label": "Moscow", "value": 2500 },
-  { "year": "2021", "label": "Moscow", "value": 2700 }
-]`}
-        </pre>
-      ),
-      sheets: (
-        <Flex vertical gap={4} className="text-xs text-gray-600">
-          <Typography.Text className="text-xs text-gray-600">
-            Google Sheet with a time column:
-          </Typography.Text>
-          <pre className="font-mono text-xs text-gray-600">
-            {`| year | id     | label       | value |
-| 2020 | Moscow | Moscow City | 2500  |
-| 2021 | Moscow | Moscow City | 2700  |`}
-          </pre>
-        </Flex>
-      ),
-      manual: (
-        <Typography.Text className="text-xs text-gray-600">
-          Enter region IDs, labels and their corresponding values with time periods using the form.
-        </Typography.Text>
-      ),
-    }),
-    [],
-  );
-
-  const formatInfoContent = (
-    <ul className="m-0 list-disc space-y-2 p-3 ps-8 text-sm text-white">
-      <li>
-        <strong>id</strong> — Region ID; must exactly match the expected IDs (e.g. from sample data)
-      </li>
-      <li>
-        <strong>label</strong> — Display label for the region
-      </li>
-      <li>
-        <strong>value</strong> — Numeric value for the region
-      </li>
-      <li>Labels are displayed on the map when &quot;Show Labels&quot; is enabled</li>
-    </ul>
-  );
-
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
@@ -1093,7 +782,7 @@ Saint Petersburg,St. Petersburg,1800`}
               </span>
             </Tooltip>
           )}
-          <Tooltip title={formatInfoContent} placement="bottom">
+          <Tooltip title={<ImportFormatInfoTooltip />} placement="bottom">
             <InfoCircleOutlined className="cursor-help text-gray-400" />
           </Tooltip>
         </Flex>
@@ -1135,9 +824,10 @@ Saint Petersburg,St. Petersburg,1800`}
         <Typography.Text className="text-xs font-semibold text-gray-500">
           EXPECTED FORMAT:
         </Typography.Text>
-        {hasHistoricalFormat
-          ? historicalFormatExamples[importDataType]
-          : expectedFormatExamples[importDataType]}
+        <ImportFormatExamples
+          importDataType={importDataType}
+          hasHistoricalFormat={hasHistoricalFormat}
+        />
       </Flex>
 
       {isManualModalOpen && (

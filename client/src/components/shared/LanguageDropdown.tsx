@@ -30,11 +30,7 @@ type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'
   currentLocale: Locale;
 };
 
-export const LanguageDropdown: FC<Props> = ({
-  currentLocale,
-  variant = 'borderless',
-  ...selectProps
-}) => {
+export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) => {
   const { i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const setUser = useProfileStore(selectSetUser);
@@ -65,7 +61,7 @@ export const LanguageDropdown: FC<Props> = ({
             <img
               src={FLAG_SRC[code]}
               alt=""
-              className="h-4 w-6 rounded object-cover"
+              className="h-4 w-6 rounded-sm object-cover"
               width={24}
               height={16}
             />
@@ -82,11 +78,12 @@ export const LanguageDropdown: FC<Props> = ({
       role="combobox"
       onChange={handleLocaleChange}
       options={options}
-      className={
-        variant === 'borderless'
-          ? '[&_.ant-select-selector]:border-none! [&_.ant-select-selector]:bg-transparent! [&_.ant-select-selector]:shadow-none!'
-          : ''
-      }
+      // className={
+      //   variant === 'borderless'
+      //     ? '[&_.ant-select-selector]:border-none! [&_.ant-select-selector]:bg-transparent! [&_.ant-select-selector]:shadow-none!'
+      //     : ''
+      // }
+      className="w-32"
       {...selectProps}
     />
   );

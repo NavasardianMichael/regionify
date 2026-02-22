@@ -17,7 +17,7 @@ const PaymentReturnPage: FC = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [messageText, setMessageText] = useState('');
   const [upgradedPlan, setUpgradedPlan] = useState<string | null>(null);
-  const pollStartRef = useRef<number>(Date.now());
+  const pollStartRef = useRef<number | null>(null);
 
   const handleContinue = useCallback(() => {
     navigate(ROUTES.PROJECTS);
@@ -26,11 +26,13 @@ const PaymentReturnPage: FC = () => {
   const intervalIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    if (pollStartRef.current === null) pollStartRef.current = Date.now();
     let cancelled = false;
 
     const poll = async (): Promise<void> => {
       if (cancelled) return;
-      if (Date.now() - pollStartRef.current > POLL_TIMEOUT_MS) {
+      const start = pollStartRef.current ?? Date.now();
+      if (Date.now() - start > POLL_TIMEOUT_MS) {
         if (intervalIdRef.current) clearInterval(intervalIdRef.current);
         setStatus('success');
         setMessageText(
