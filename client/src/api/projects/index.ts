@@ -6,9 +6,13 @@ type ApiResponse<T> = {
   data: T;
 };
 
+type ApiErrorResponse = {
+  error?: { message?: string };
+};
+
 const getErrorMessage = (data: unknown, fallback: string): string => {
   if (typeof data === 'object' && data !== null) {
-    const errorData = data as { error?: { message?: string } };
+    const errorData = data as ApiErrorResponse;
     if (errorData.error?.message) {
       return errorData.error.message;
     }
@@ -21,13 +25,21 @@ export const getProjects = async (): Promise<Project[]> => {
     credentials: 'include',
   });
 
-  const data = (await response.json()) as ApiResponse<Project[]>;
+  const data = (await response.json()) as ApiResponse<Project[]> | ApiErrorResponse;
+
+  if (response.status === 401) {
+    const error = new Error(getErrorMessage(data, 'Unauthorized')) as Error & {
+      code?: string;
+    };
+    error.code = 'UNAUTHORIZED';
+    throw error;
+  }
 
   if (!response.ok) {
     throw new Error(getErrorMessage(data, 'Failed to fetch projects'));
   }
 
-  return data.data;
+  return (data as ApiResponse<Project[]>).data;
 };
 
 export const getProject = async (id: string): Promise<Project> => {

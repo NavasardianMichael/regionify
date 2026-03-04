@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { App } from 'antd';
 import {
   deleteProject as deleteProjectApi,
@@ -6,7 +7,7 @@ import {
   updateProject as updateProjectApi,
 } from '@/api/projects';
 import type { Project } from '@/api/projects/types';
-import { selectIsLoggedIn } from '@/store/profile/selectors';
+import { selectIsLoggedIn, selectLogout } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import {
   selectProjects,
@@ -18,6 +19,7 @@ import {
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import { useDebounceValue } from '@/hooks/useDebounce';
+import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type UseProjectsReturn = {
@@ -39,7 +41,9 @@ type UseProjectsReturn = {
 export function useProjects(): UseProjectsReturn {
   const { t } = useTypedTranslation();
   const { message, modal } = App.useApp();
+  const navigate = useNavigate();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
+  const logout = useProfileStore(selectLogout);
   const projects = useProjectsStore(selectProjects);
   const isLoading = useProjectsStore(selectProjectsLoading);
   const setProjects = useProjectsStore(selectSetProjects);
@@ -60,15 +64,22 @@ export function useProjects(): UseProjectsReturn {
       try {
         const data = await getProjects();
         setProjects(data);
-      } catch {
-        message.error(t('messages.projectsLoadFailed'), 0);
+      } catch (error) {
+        const err = error as Error & { code?: string };
+        if (err.code === 'UNAUTHORIZED') {
+          logout();
+          message.error('Session expired. Please log in again.', 0);
+          navigate(ROUTES.LOGIN);
+        } else {
+          message.error(t('messages.projectsLoadFailed'), 0);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     void fetchProjects();
-  }, [isLoggedIn, setProjects, setLoading, message, t]);
+  }, [isLoggedIn, setProjects, setLoading, message, t, logout, navigate]);
 
   const filteredProjects = useMemo(() => {
     if (!debouncedSearch.trim()) return projects;

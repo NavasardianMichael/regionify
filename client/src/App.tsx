@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { App as AntApp, ConfigProvider, Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { ROUTES } from '@/constants/routes';
+import { AuthSync } from '@/components/shared/AuthSync';
 import { LocaleSync } from '@/components/shared/LocaleSync';
 import { Navigation } from '@/components/shared/Navigation';
 import { PageLoader } from '@/components/shared/PageLoader';
@@ -68,6 +69,7 @@ function App() {
   return (
     <ConfigProvider theme={theme}>
       <AntApp message={{ duration: 5 }}>
+        <AuthSync />
         <LocaleSync />
         <AppContent />
       </AntApp>
