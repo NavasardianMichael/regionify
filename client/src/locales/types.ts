@@ -39,6 +39,222 @@ export type CommonNs = {
     checkoutError: string;
     currentPlan: string;
     bestChoice: string;
+    priceFree: string;
+    priceOneTime: string;
+    plans: {
+      observer: {
+        name: string;
+        description: string;
+        buttonText: string;
+        features: string[];
+      };
+      explorer: {
+        name: string;
+        description: string;
+        buttonText: string;
+        features: string[];
+      };
+      chronographer: {
+        name: string;
+        description: string;
+        buttonText: string;
+        features: string[];
+      };
+    };
+  };
+  auth: {
+    login: {
+      title: string;
+      subtitle: string;
+      continueGoogle: string;
+      dividerEmail: string;
+      password: string;
+      emailPlaceholder: string;
+      passwordPlaceholder: string;
+      forgotPassword: string;
+      signIn: string;
+      noAccount: string;
+      signUpLink: string;
+      resendVerification: string;
+    };
+    signUp: {
+      title: string;
+      subtitle: string;
+      verifyTitle: string;
+      verifyBody: string;
+      verifyNote: string;
+      goToLogin: string;
+      continueGoogle: string;
+      dividerEmail: string;
+      fullName: string;
+      fullNamePlaceholder: string;
+      password: string;
+      createPasswordPlaceholder: string;
+      confirmPassword: string;
+      confirmPasswordPlaceholder: string;
+      createAccount: string;
+      alreadyHaveAccount: string;
+      signInLink: string;
+      forgotPassword: string;
+    };
+  };
+  visualizer: {
+    mapAreaTitle: string;
+    saveModalTitle: string;
+    saveModalPrompt: string;
+    saveModalPlaceholder: string;
+    saveModalCreate: string;
+    saveLoginToSave: string;
+    save: string;
+    saveAs: string;
+    export: string;
+    loginToExport: string;
+    resetStyles: string;
+    randomStylesPack: string;
+    defaultLegendTitle: string;
+    done: string;
+    newLegendRangeName: string;
+    region: {
+      sectionTitle: string;
+      placeholder: string;
+      ariaLabel: string;
+      changeConfirmTitle: string;
+      changeConfirmBody: string;
+      saveFirstHint: string;
+      changeOk: string;
+    };
+    importData: {
+      sectionTitle: string;
+      downloadTooltipEmpty: string;
+      downloadTooltip: string;
+      downloadAria: string;
+      manualTooltip: string;
+      manualTooltipNoRegion: string;
+      manualAria: string;
+      switchToStatic: string;
+      switchToDynamic: string;
+      selectRegionFirst: string;
+      switchAriaToStatic: string;
+      switchAriaToDynamic: string;
+      segmentedAria: string;
+      regionIdsNote: string;
+      downloadLink: string;
+      sampleNoteSuffix: string;
+      expectedFormat: string;
+      enterManually: string;
+      connectSheets: string;
+      chooseCsv: string;
+      chooseExcel: string;
+      chooseJson: string;
+      format: {
+        csv: string;
+        excel: string;
+        json: string;
+        sheets: string;
+        manual: string;
+      };
+    };
+    importFormatTooltip: {
+      id: string;
+      label: string;
+      value: string;
+      labelsOnMap: string;
+    };
+    importFormatExamples: {
+      excelColumnsStatic: string;
+      excelColumnsTime: string;
+      sheetsColumnsStatic: string;
+      sheetsColumnsTime: string;
+      manualStatic: string;
+      manualHistorical: string;
+    };
+    switchMode: {
+      body: string;
+      hint: string;
+    };
+    googleSheets: {
+      title: string;
+      intro: string;
+      placeholder: string;
+      howToShare: string;
+      stepOpen: string;
+      stepShare: string;
+      stepAnyone: string;
+      stepPaste: string;
+      importButton: string;
+      fetching: string;
+      fetchFailed: string;
+    };
+    manualEntry: {
+      title: string;
+      clearAll: string;
+      addRow: string;
+      colIndex: string;
+      colId: string;
+      colLabel: string;
+      colValue: string;
+      colTime: string;
+    };
+    legendConfig: {
+      sectionTitle: string;
+      sortAscending: string;
+      sortDescending: string;
+      expandEdit: string;
+      expandEditAria: string;
+      addRange: string;
+      addRangeAria: string;
+    };
+    legendModal: {
+      title: string;
+      sortAscending: string;
+      sortDescending: string;
+      addRange: string;
+    };
+    legendColumns: {
+      name: string;
+      min: string;
+      max: string;
+      minLong: string;
+      maxLong: string;
+      color: string;
+    };
+    mapStyles: {
+      sectionTitle: string;
+      collapseBackground: string;
+      collapseBorder: string;
+      collapseShadow: string;
+      collapseZoom: string;
+      collapseRegionLabels: string;
+      freePlanNote: string;
+      upgradePlanLink: string;
+      transparent: string;
+      color: string;
+      showBorder: string;
+      width: string;
+      showShadow: string;
+      blur: string;
+      offsetX: string;
+      offsetY: string;
+      showControls: string;
+      showLabels: string;
+      fontSize: string;
+    };
+    legendStyles: {
+      sectionTitle: string;
+      collapseTitle: string;
+      collapseLabels: string;
+      collapsePosition: string;
+      showTitle: string;
+      titleField: string;
+      titlePlaceholder: string;
+      textColor: string;
+      fontSize: string;
+      noDataColor: string;
+      positionFloating: string;
+      positionBottom: string;
+      positionHidden: string;
+      floatingHint: string;
+    };
   };
   account: {
     title: string;
@@ -142,5 +358,7 @@ export type CommonNs = {
     deleteProjectTitle: string;
     deleteProjectContent: string;
     deleteProjectOk: string;
+    loginFailed: string;
+    signUpFailed: string;
   };
 };

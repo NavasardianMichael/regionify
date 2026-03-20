@@ -2,6 +2,7 @@ import { type ChangeEvent, type FC, useCallback, useState } from 'react';
 import { LinkOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, Modal, Typography } from 'antd';
 import { fetchGoogleSheet } from '@/api/sheets';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type Props = {
   open: boolean;
@@ -12,6 +13,7 @@ type Props = {
 const GOOGLE_SHEETS_URL_REGEX = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/[a-zA-Z0-9_-]+/;
 
 const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
+  const { t } = useTypedTranslation();
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,11 +32,11 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
       setUrl('');
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch Google Sheet');
+      setError(err instanceof Error ? err.message : t('visualizer.googleSheets.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
-  }, [url, isValidUrl, onCsvFetched, onClose]);
+  }, [url, isValidUrl, onCsvFetched, onClose, t]);
 
   const handleCancel = useCallback(() => {
     setUrl('');
@@ -60,12 +62,11 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
     >
       <Flex vertical gap="middle" className="py-2">
         <Typography.Text className="text-sm text-gray-600">
-          Paste the URL of a <strong>public</strong> Google Sheet. The sheet must be shared as
-          &quot;Anyone with the link&quot;.
+          {t('visualizer.googleSheets.intro')}
         </Typography.Text>
 
         <Input
-          placeholder="https://docs.google.com/spreadsheets/d/..."
+          placeholder={t('visualizer.googleSheets.placeholder')}
           value={url}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setUrl(e.target.value);
@@ -84,17 +85,13 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
 
         <Flex vertical gap={4} className="rounded-md bg-gray-50 p-3!">
           <Typography.Text className="text-xs font-medium text-gray-500">
-            HOW TO SHARE:
+            {t('visualizer.googleSheets.howToShare')}
           </Typography.Text>
           <ol className="m-0 space-y-1 text-xs text-gray-500">
-            <li>Open your Google Sheet</li>
-            <li>
-              Click <strong>Share</strong> → <strong>General access</strong>
-            </li>
-            <li>
-              Change to <strong>&quot;Anyone with the link&quot;</strong>
-            </li>
-            <li>Copy the URL and paste it above</li>
+            <li>{t('visualizer.googleSheets.stepOpen')}</li>
+            <li>{t('visualizer.googleSheets.stepShare')}</li>
+            <li>{t('visualizer.googleSheets.stepAnyone')}</li>
+            <li>{t('visualizer.googleSheets.stepPaste')}</li>
           </ol>
         </Flex>
 
@@ -106,7 +103,9 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
           disabled={!isValidUrl}
           block
         >
-          {isLoading ? 'Fetching...' : 'Import Sheet'}
+          {isLoading
+            ? t('visualizer.googleSheets.fetching')
+            : t('visualizer.googleSheets.importButton')}
         </Button>
       </Flex>
     </Modal>

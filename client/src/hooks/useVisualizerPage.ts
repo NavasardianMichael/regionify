@@ -169,11 +169,14 @@ export function useVisualizerPage() {
   const isSaveDisabled = !selectedRegionId || (!!currentProjectId && !hasUnsavedChanges);
 
   const saveButtonText = useMemo(() => {
-    if (isFreePlan && !isLoggedIn) return 'Login to Save';
-    return currentProjectId ? 'Save' : 'Save As';
-  }, [isFreePlan, isLoggedIn, currentProjectId]);
+    if (isFreePlan && !isLoggedIn) return t('visualizer.saveLoginToSave');
+    return currentProjectId ? t('visualizer.save') : t('visualizer.saveAs');
+  }, [isFreePlan, isLoggedIn, currentProjectId, t]);
 
-  const exportButtonText = useMemo(() => (isLoggedIn ? 'Export' : 'Login to Export'), [isLoggedIn]);
+  const exportButtonText = useMemo(
+    () => (isLoggedIn ? t('visualizer.export') : t('visualizer.loginToExport')),
+    [isLoggedIn, t],
+  );
 
   return {
     selectedRegionId,

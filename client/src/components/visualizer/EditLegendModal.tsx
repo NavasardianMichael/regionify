@@ -2,6 +2,7 @@ import { type FC, useCallback, useMemo, useState } from 'react';
 import { PlusOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import { Button, Flex, Modal, Tooltip, Typography } from 'antd';
 import type { LegendItem } from '@/store/legendData/types';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { generateRandomId } from '@/helpers/common';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 
@@ -38,6 +39,7 @@ const denormalizeItems = (normalized: NormalizedItems): LegendItem[] =>
   normalized.allIds.map((id) => normalized.byId[id]);
 
 const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
+  const { t } = useTypedTranslation();
   const [normalizedItems, setNormalizedItems] = useState<NormalizedItems>(() =>
     normalizeItems(items),
   );
@@ -60,7 +62,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
   const handleAddLegendRange = useCallback(() => {
     const newItem: LegendItem = {
       id: generateRandomId(),
-      name: 'New Range',
+      name: t('visualizer.newLegendRangeName'),
       min: 0,
       max: 100,
       color: '#6B7280',
@@ -69,7 +71,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
       byId: { ...prev.byId, [newItem.id]: newItem },
       allIds: [...prev.allIds, newItem.id],
     }));
-  }, []);
+  }, [t]);
 
   // O(1) update handler - only updates the specific item in byId
   const handleUpdateItem = useCallback((id: string, updates: Partial<LegendItem>) => {
@@ -182,15 +184,15 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
 
   return (
     <Modal
-      title="Manage Legend Ranges"
+      title={t('visualizer.legendModal.title')}
       open={open}
       onCancel={onCancel}
       afterOpenChange={handleAfterOpenChange}
       footer={
         <Flex justify="end" gap="middle">
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>{t('nav.cancel')}</Button>
           <Button type="primary" onClick={handleSaveLegendRanges}>
-            Done
+            {t('visualizer.done')}
           </Button>
         </Flex>
       }
@@ -201,7 +203,13 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
       <Flex vertical gap="small" className="py-md">
         {/* Actions Row */}
         <Flex gap={4} justify="end">
-          <Tooltip title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}>
+          <Tooltip
+            title={
+              sortDirection === 'asc'
+                ? t('visualizer.legendModal.sortAscending')
+                : t('visualizer.legendModal.sortDescending')
+            }
+          >
             <Button
               type="text"
               icon={
@@ -212,7 +220,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
               className="text-gray-500"
             />
           </Tooltip>
-          <Tooltip title="Add Range">
+          <Tooltip title={t('visualizer.legendModal.addRange')}>
             <Button
               type="text"
               icon={<PlusOutlined />}
@@ -226,10 +234,18 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
         {/* Header Row */}
         <div className={`grid ${GRID_COLS} gap-2 text-xs font-medium text-gray-500`}>
           <span />
-          <Typography.Text className="text-xs text-gray-500">Name</Typography.Text>
-          <Typography.Text className="text-xs text-gray-500">Min Value</Typography.Text>
-          <Typography.Text className="text-xs text-gray-500">Max Value</Typography.Text>
-          <Typography.Text className="text-xs text-gray-500">Color</Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">
+            {t('visualizer.legendColumns.name')}
+          </Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">
+            {t('visualizer.legendColumns.minLong')}
+          </Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">
+            {t('visualizer.legendColumns.maxLong')}
+          </Typography.Text>
+          <Typography.Text className="text-xs text-gray-500">
+            {t('visualizer.legendColumns.color')}
+          </Typography.Text>
           <span />
         </div>
 
@@ -256,7 +272,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
         </Flex>
 
         {/* Add Range Button after list */}
-        <Tooltip title="Add Range">
+        <Tooltip title={t('visualizer.legendModal.addRange')}>
           <Button
             type="dashed"
             icon={<PlusOutlined />}

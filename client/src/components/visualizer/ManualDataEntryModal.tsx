@@ -11,6 +11,7 @@ import {
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import type { DataSet, RegionData } from '@/store/mapData/types';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { generateRandomId } from '@/helpers/common';
 import {
   buildInitialRows,
@@ -26,6 +27,7 @@ type Props = {
 };
 
 const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
+  const { t } = useTypedTranslation();
   const storeData = useVisualizerStore(selectData);
   const timelineData = useVisualizerStore(selectTimelineData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
@@ -181,15 +183,15 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
 
   return (
     <Modal
-      title="Manual Data Entry"
+      title={t('visualizer.manualEntry.title')}
       open={open}
       onCancel={handleCancel}
       afterOpenChange={handleAfterOpenChange}
       footer={
         <Flex justify="end" gap="middle">
-          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={handleCancel}>{t('nav.cancel')}</Button>
           <Button type="primary" onClick={handleApplyData}>
-            Done
+            {t('visualizer.done')}
           </Button>
         </Flex>
       }
@@ -199,7 +201,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
     >
       <Flex vertical gap="small" className="py-md">
         <Flex gap={4} justify="end">
-          <Tooltip title="Clear All">
+          <Tooltip title={t('visualizer.manualEntry.clearAll')}>
             <Button
               type="text"
               icon={<DeleteOutlined />}
@@ -208,7 +210,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
               onClick={handleClearAll}
             />
           </Tooltip>
-          <Tooltip title="Add Row">
+          <Tooltip title={t('visualizer.manualEntry.addRow')}>
             <Button
               type="text"
               icon={<PlusOutlined />}
@@ -223,11 +225,15 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
           <div
             className={`gap-sm py-xs sticky top-0 z-10 grid ${gridCols} items-center bg-white text-xs font-medium tracking-wide text-gray-500 uppercase`}
           >
-            <Typography.Text className="text-center">#</Typography.Text>
-            <Typography.Text>ID</Typography.Text>
-            <Typography.Text>Label</Typography.Text>
-            <Typography.Text>Value</Typography.Text>
-            {isTimelineMode && <Typography.Text>Time</Typography.Text>}
+            <Typography.Text className="text-center">
+              {t('visualizer.manualEntry.colIndex')}
+            </Typography.Text>
+            <Typography.Text>{t('visualizer.manualEntry.colId')}</Typography.Text>
+            <Typography.Text>{t('visualizer.manualEntry.colLabel')}</Typography.Text>
+            <Typography.Text>{t('visualizer.manualEntry.colValue')}</Typography.Text>
+            {isTimelineMode && (
+              <Typography.Text>{t('visualizer.manualEntry.colTime')}</Typography.Text>
+            )}
             <Typography.Text />
           </div>
 
@@ -249,7 +255,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
           </Flex>
         </div>
 
-        <Tooltip title="Add Row">
+        <Tooltip title={t('visualizer.manualEntry.addRow')}>
           <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddRow} className="w-full" />
         </Tooltip>
       </Flex>

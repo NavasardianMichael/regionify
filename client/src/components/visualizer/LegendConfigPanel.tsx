@@ -18,6 +18,7 @@ import {
 } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -26,6 +27,7 @@ const EditLegendModal = lazy(() => import('./EditLegendModal'));
 const GRID_COLS = 'grid-cols-[24px_minmax(80px,1fr)_60px_60px_36px_32px]';
 
 const LegendConfigPanel: FC = () => {
+  const { t } = useTypedTranslation();
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -107,9 +109,17 @@ const LegendConfigPanel: FC = () => {
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
-        <SectionTitle IconComponent={BarChartOutlined}>Legend Configuration</SectionTitle>
+        <SectionTitle IconComponent={BarChartOutlined}>
+          {t('visualizer.legendConfig.sectionTitle')}
+        </SectionTitle>
         <Flex gap={4}>
-          <Tooltip title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}>
+          <Tooltip
+            title={
+              sortDirection === 'asc'
+                ? t('visualizer.legendConfig.sortAscending')
+                : t('visualizer.legendConfig.sortDescending')
+            }
+          >
             <Button
               type="text"
               icon={
@@ -118,17 +128,21 @@ const LegendConfigPanel: FC = () => {
               size="small"
               onClick={handleSort}
               className="text-gray-500"
-              aria-label={sortDirection === 'asc' ? 'Sort ascending' : 'Sort descending'}
+              aria-label={
+                sortDirection === 'asc'
+                  ? t('visualizer.legendConfig.sortAscending')
+                  : t('visualizer.legendConfig.sortDescending')
+              }
             />
           </Tooltip>
-          <Tooltip title="Expand to Edit">
+          <Tooltip title={t('visualizer.legendConfig.expandEdit')}>
             <Button
               type="text"
               icon={<EditOutlined />}
               size="small"
               onClick={handleOpenModal}
               className="text-gray-500"
-              aria-label="Expand to edit"
+              aria-label={t('visualizer.legendConfig.expandEditAria')}
             />
           </Tooltip>
         </Flex>
@@ -170,14 +184,14 @@ const LegendConfigPanel: FC = () => {
         </Flex>
       </Flex>
 
-      <Tooltip title="Add Range">
+      <Tooltip title={t('visualizer.legendConfig.addRange')}>
         <Button
           type="dashed"
           icon={<PlusOutlined />}
           size="small"
           onClick={handleAddLegendRange}
           className="w-full text-gray-500"
-          aria-label="Add legend range"
+          aria-label={t('visualizer.legendConfig.addRangeAria')}
         />
       </Tooltip>
 

@@ -11,9 +11,11 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { useHasUnsavedChanges } from '@/hooks/useProjectState';
 import type { RegionId } from '@/types/mapData';
 import { REGION_OPTIONS } from '@/constants/regions';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 export const RegionSelect: FC = () => {
+  const { t } = useTypedTranslation();
   const selectRef = useRef<RefSelectProps>(null);
 
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
@@ -38,27 +40,24 @@ export const RegionSelect: FC = () => {
 
       if (shouldWarnOnRegionChange) {
         Modal.confirm({
-          title: 'Change region?',
+          title: t('visualizer.region.changeConfirmTitle'),
           content: (
             <Flex vertical gap="small">
-              <Typography.Text>
-                All unsaved changes and current dataset will be lost. Are you sure?
-              </Typography.Text>
+              <Typography.Text>{t('visualizer.region.changeConfirmBody')}</Typography.Text>
               <Typography.Text type="secondary" className="text-xs">
-                We recommend saving your current project first, then creating a new one if you need
-                to keep this data.
+                {t('visualizer.region.saveFirstHint')}
               </Typography.Text>
             </Flex>
           ),
-          okText: 'Change region',
-          cancelText: 'Cancel',
+          okText: t('visualizer.region.changeOk'),
+          cancelText: t('nav.cancel'),
           onOk: doChange,
         });
       } else {
         doChange();
       }
     },
-    [selectedRegionId, setVisualizerState, shouldWarnOnRegionChange],
+    [selectedRegionId, setVisualizerState, shouldWarnOnRegionChange, t],
   );
 
   const showSearchConfig = useMemo<SelectProps['showSearch']>(
@@ -71,16 +70,18 @@ export const RegionSelect: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={GlobalOutlined}>Select Region</SectionTitle>
+      <SectionTitle IconComponent={GlobalOutlined}>
+        {t('visualizer.region.sectionTitle')}
+      </SectionTitle>
       <Select
         ref={selectRef}
         value={selectedRegionId}
         onChange={handleRegionChange}
         options={REGION_OPTIONS}
-        placeholder="Select a region..."
+        placeholder={t('visualizer.region.placeholder')}
         className="max-w-64!"
         showSearch={showSearchConfig}
-        aria-label="Select a region"
+        aria-label={t('visualizer.region.ariaLabel')}
       />
     </Flex>
   );

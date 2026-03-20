@@ -12,13 +12,8 @@ export type ParsedRow = { id: string; label: string; value: number; timePeriod?:
 
 export const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
 
-export const IMPORT_OPTIONS: { label: string; value: ImportDataType }[] = [
-  { label: 'CSV', value: 'csv' },
-  { label: 'Excel', value: 'excel' },
-  { label: 'JSON', value: 'json' },
-  { label: 'Sheets', value: 'sheets' },
-  { label: 'Manual', value: 'manual' },
-];
+/** Order of import format tabs in the visualizer; labels come from `visualizer.importData.format.*` in locales. */
+export const IMPORT_FORMAT_ORDER: ImportDataType[] = ['csv', 'excel', 'json', 'sheets', 'manual'];
 
 export const hasTimeColumn = (header: string): boolean => {
   const parts = header.split(/[,;\t]/).map((s) => s.trim());

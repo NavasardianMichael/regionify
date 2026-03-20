@@ -24,9 +24,9 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   }, [plan.id, onUpgrade]);
 
   const priceLabel = useMemo(() => {
-    if (plan.price === 0) return 'Free';
-    return `$${plan.price} one-time`;
-  }, [plan.price]);
+    if (plan.price === 0) return t('billing.priceFree');
+    return t('billing.priceOneTime', { price: `$${plan.price}` });
+  }, [plan.price, t]);
 
   const buttonType = useMemo(() => (plan.popular ? 'primary' : 'default'), [plan.popular]);
 

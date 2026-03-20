@@ -4,6 +4,7 @@ import { Button, Flex } from 'antd';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { randomFloat, randomHexColor, randomInt } from '@/helpers/randomUtils';
 
 // Default styles for reset
@@ -106,13 +107,20 @@ const generateRandomStylePack = () => {
 };
 
 const GeneralStylesPack: FC = () => {
+  const { t } = useTypedTranslation();
   const setMapStylesState = useMapStylesStore((state) => state.setMapStylesState);
   const setLegendStylesState = useLegendStylesStore((state) => state.setLegendStylesState);
 
   const handleResetStyles = useCallback(() => {
     setMapStylesState(DEFAULT_MAP_STYLES);
-    setLegendStylesState(DEFAULT_LEGEND_STYLES);
-  }, [setMapStylesState, setLegendStylesState]);
+    setLegendStylesState({
+      ...DEFAULT_LEGEND_STYLES,
+      title: {
+        ...DEFAULT_LEGEND_STYLES.title,
+        text: t('visualizer.defaultLegendTitle'),
+      },
+    });
+  }, [setMapStylesState, setLegendStylesState, t]);
 
   const handleApplyRandomStyles = useCallback(() => {
     const randomPack = generateRandomStylePack();
@@ -123,10 +131,10 @@ const GeneralStylesPack: FC = () => {
   return (
     <Flex wrap gap="small">
       <Button icon={<UndoOutlined />} onClick={handleResetStyles} className="min-w-40 grow">
-        Reset Styles
+        {t('visualizer.resetStyles')}
       </Button>
       <Button icon={<EditOutlined />} onClick={handleApplyRandomStyles} className="min-w-40 grow">
-        Apply Random Styles Pack
+        {t('visualizer.randomStylesPack')}
       </Button>
     </Flex>
   );

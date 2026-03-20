@@ -4,6 +4,7 @@ import { Button, Card, Divider, Flex, Form, Input, Typography } from 'antd';
 import { register } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
 import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type SignUpFormValues = {
@@ -14,6 +15,7 @@ type SignUpFormValues = {
 };
 
 const SignUpPage: FC = () => {
+  const { t } = useTypedTranslation();
   const [form] = Form.useForm<SignUpFormValues>();
   const [loading, setLoading] = useState(false);
   const [signUpError, setSignUpError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ const SignUpPage: FC = () => {
       });
       setSubmitted(true);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create account';
+      const errorMessage = error instanceof Error ? error.message : t('messages.signUpFailed');
       setSignUpError(errorMessage);
     } finally {
       setLoading(false);
@@ -57,18 +59,17 @@ const SignUpPage: FC = () => {
             </svg>
           </div>
           <Typography.Title level={2} className="text-primary text-xl font-bold">
-            Verify Your Email
+            {t('auth.signUp.verifyTitle')}
           </Typography.Title>
           <Typography.Paragraph className="mt-2 text-gray-500">
-            We&apos;ve sent a verification link to your email address. Please check your inbox and
-            click the link to complete your registration.
+            {t('auth.signUp.verifyBody')}
           </Typography.Paragraph>
           <Typography.Paragraph className="text-sm text-gray-400">
-            Once verified, you&apos;ll be able to log in with your credentials.
+            {t('auth.signUp.verifyNote')}
           </Typography.Paragraph>
           <AppNavLink to={ROUTES.LOGIN}>
             <Button type="primary" className="mt-4">
-              Go to Login
+              {t('auth.signUp.goToLogin')}
             </Button>
           </AppNavLink>
         </div>
@@ -80,10 +81,10 @@ const SignUpPage: FC = () => {
     <Card className="mx-auto! w-full max-w-144! shadow-sm">
       <div className="mb-6 text-center">
         <Typography.Title level={1} className="text-primary mb-0! text-2xl font-bold">
-          Create Account
+          {t('auth.signUp.title')}
         </Typography.Title>
         <Typography.Paragraph className="mt-2 text-gray-500">
-          Sign up to get started with Regionify
+          {t('auth.signUp.subtitle')}
         </Typography.Paragraph>
       </div>
 
@@ -110,11 +111,11 @@ const SignUpPage: FC = () => {
             d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z"
           />
         </svg>
-        Continue with Google
+        {t('auth.signUp.continueGoogle')}
       </Button>
 
       <Divider plain className="text-gray-400!">
-        or sign up with email
+        {t('auth.signUp.dividerEmail')}
       </Divider>
 
       <Form
@@ -128,7 +129,9 @@ const SignUpPage: FC = () => {
           <Form.Item
             name="name"
             label={
-              <Typography.Text className="font-medium text-gray-700">Full Name</Typography.Text>
+              <Typography.Text className="font-medium text-gray-700">
+                {t('auth.signUp.fullName')}
+              </Typography.Text>
             }
             className="mb-0!"
             rules={[
@@ -143,25 +146,31 @@ const SignUpPage: FC = () => {
               },
             ]}
           >
-            <Input placeholder="John Doe" />
+            <Input placeholder={t('auth.signUp.fullNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
             name="email"
-            label={<Typography.Text className="font-medium text-gray-700">Email</Typography.Text>}
+            label={
+              <Typography.Text className="font-medium text-gray-700">
+                {t('account.email')}
+              </Typography.Text>
+            }
             className="mb-0!"
             rules={[
               { required: true, message: AUTH_VALIDATION.email.messages.required },
               { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
             ]}
           >
-            <Input placeholder="email@example.com" autoComplete="username" />
+            <Input placeholder={t('auth.login.emailPlaceholder')} autoComplete="username" />
           </Form.Item>
 
           <Form.Item
             name="password"
             label={
-              <Typography.Text className="font-medium text-gray-700">Password</Typography.Text>
+              <Typography.Text className="font-medium text-gray-700">
+                {t('auth.signUp.password')}
+              </Typography.Text>
             }
             className="mb-0!"
             rules={[
@@ -184,14 +193,17 @@ const SignUpPage: FC = () => {
               },
             ]}
           >
-            <Input.Password placeholder="Create a password" autoComplete="new-password" />
+            <Input.Password
+              placeholder={t('auth.signUp.createPasswordPlaceholder')}
+              autoComplete="new-password"
+            />
           </Form.Item>
 
           <Form.Item
             name="confirmPassword"
             label={
               <Typography.Text className="font-medium text-gray-700">
-                Confirm Password
+                {t('auth.signUp.confirmPassword')}
               </Typography.Text>
             }
             className="mb-0!"
@@ -210,16 +222,23 @@ const SignUpPage: FC = () => {
               }),
             ]}
           >
-            <Input.Password placeholder="Confirm your password" autoComplete="new-password" />
+            <Input.Password
+              placeholder={t('auth.signUp.confirmPasswordPlaceholder')}
+              autoComplete="new-password"
+            />
           </Form.Item>
         </Flex>
 
         {signUpError && (
-          <Flex justify='space-between' align='center' className="mt-4! p-2! rounded-md bg-red-50 text-sm text-red-600">
+          <Flex
+            justify="space-between"
+            align="center"
+            className="mt-4! rounded-md bg-red-50 p-2! text-sm text-red-600"
+          >
             {signUpError}
             {signUpError.toLowerCase().includes('account with this email already exists') && (
               <AppNavLink to={ROUTES.FORGOT_PASSWORD} className="text-sm font-semibold">
-                Forgot password?
+                {t('auth.signUp.forgotPassword')}
               </AppNavLink>
             )}
           </Flex>
@@ -228,14 +247,14 @@ const SignUpPage: FC = () => {
         <Flex gap={8} className="mt-8!" vertical>
           <Form.Item className="mb-0!">
             <Button type="primary" htmlType="submit" block loading={loading}>
-              Create Account
+              {t('auth.signUp.createAccount')}
             </Button>
           </Form.Item>
 
           <div className="text-center text-gray-600">
-            Already have an account?{' '}
+            {t('auth.signUp.alreadyHaveAccount')}{' '}
             <AppNavLink to={ROUTES.LOGIN} className="text-primary font-medium hover:underline">
-              Sign in
+              {t('auth.signUp.signInLink')}
             </AppNavLink>
           </div>
         </Flex>

@@ -16,6 +16,7 @@ import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   MapStylesBackgroundSection,
   MapStylesBorderSection,
@@ -28,6 +29,7 @@ import { SectionTitle } from '@/components/visualizer/SectionTitle';
 const DEBOUNCE_MS = 150;
 
 const MapStylesPanel: FC = () => {
+  const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
   const picture = useMapStylesStore((state) => state.picture);
@@ -126,7 +128,9 @@ const MapStylesPanel: FC = () => {
         key: 'background',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">Background</Typography.Text>
+            <Typography.Text className="font-semibold">
+              {t('visualizer.mapStyles.collapseBackground')}
+            </Typography.Text>
             {plan === PLANS.observer && (
               <InfoCircleOutlined style={{ color: '#888', marginLeft: 4 }} />
             )}
@@ -145,7 +149,9 @@ const MapStylesPanel: FC = () => {
         key: 'border',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">Border</Typography.Text>
+            <Typography.Text className="font-semibold">
+              {t('visualizer.mapStyles.collapseBorder')}
+            </Typography.Text>
           </Flex>
         ),
         children: (
@@ -161,7 +167,9 @@ const MapStylesPanel: FC = () => {
         key: 'shadow',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">Shadow</Typography.Text>
+            <Typography.Text className="font-semibold">
+              {t('visualizer.mapStyles.collapseShadow')}
+            </Typography.Text>
           </Flex>
         ),
         children: (
@@ -181,7 +189,9 @@ const MapStylesPanel: FC = () => {
         key: 'zoom',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">Zoom Controls</Typography.Text>
+            <Typography.Text className="font-semibold">
+              {t('visualizer.mapStyles.collapseZoom')}
+            </Typography.Text>
           </Flex>
         ),
         children: (
@@ -195,7 +205,9 @@ const MapStylesPanel: FC = () => {
         key: 'labels',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">Region Labels</Typography.Text>
+            <Typography.Text className="font-semibold">
+              {t('visualizer.mapStyles.collapseRegionLabels')}
+            </Typography.Text>
           </Flex>
         ),
         children: (
@@ -231,12 +243,15 @@ const MapStylesPanel: FC = () => {
       handleRegionLabelsShowChange,
       handleRegionLabelsColorChange,
       handleRegionLabelsFontSizeChange,
+      t,
     ],
   );
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={BgColorsOutlined}>Map Styles</SectionTitle>
+      <SectionTitle IconComponent={BgColorsOutlined}>
+        {t('visualizer.mapStyles.sectionTitle')}
+      </SectionTitle>
       <Collapse items={items} defaultActiveKey={[]} ghost expandIconPlacement="end" />
     </Flex>
   );

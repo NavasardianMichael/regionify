@@ -8,6 +8,7 @@ import { selectCurrentProjectId } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import { useVisualizerPage } from '@/hooks/useVisualizerPage';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
 import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
@@ -21,6 +22,7 @@ const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 const VisualizerPage: FC = () => {
+  const { t } = useTypedTranslation();
   const navigate = useNavigate();
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
@@ -71,9 +73,15 @@ const VisualizerPage: FC = () => {
 
         <Splitter.Panel>
           <CardLayout className="min-h-md gap-md h-full">
-            <Flex align="center" justify="space-between" className="mb-sm shrink-0" gap="middle">
+            <Flex
+              align="center"
+              justify="space-between"
+              wrap
+              className="mb-sm shrink-0"
+              gap="middle"
+            >
               <Typography.Title level={3} className="text-primary mb-0! text-base font-semibold">
-                Map Visualization
+                {t('visualizer.mapAreaTitle')}
               </Typography.Title>
               <Flex gap="small">
                 <Button
@@ -128,17 +136,17 @@ const VisualizerPage: FC = () => {
       )}
 
       <Modal
-        title="Save Project"
+        title={t('visualizer.saveModalTitle')}
         open={isNameModalOpen}
         onOk={handleCreateProject}
         onCancel={handleNameModalCancel}
-        okText="Create"
+        okText={t('visualizer.saveModalCreate')}
         okButtonProps={{ disabled: !projectName.trim() }}
       >
         <Flex vertical gap="small" className="py-sm">
-          <Typography.Text>Enter a name for your project:</Typography.Text>
+          <Typography.Text>{t('visualizer.saveModalPrompt')}</Typography.Text>
           <Input
-            placeholder="My Map Project"
+            placeholder={t('visualizer.saveModalPlaceholder')}
             value={projectName}
             onChange={handleNameChange}
             onPressEnter={handleCreateProject}

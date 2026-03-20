@@ -42,7 +42,7 @@ import type { ImportDataType } from '@/types/mapData';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   convertToRegionData,
-  IMPORT_OPTIONS,
+  IMPORT_FORMAT_ORDER,
   parseCSV,
   type ParsedRow,
   parseExcel,
@@ -67,6 +67,7 @@ function showMessageWithClose(
   messageApi: ReturnType<typeof App.useApp>['message'],
   type: 'success' | 'info' | 'warning' | 'error',
   content: string,
+  closeAriaLabel: string,
 ): void {
   if (type === 'success') {
     messageApi.success({ content, duration: SUCCESS_MESSAGE_DURATION });
@@ -83,7 +84,7 @@ function showMessageWithClose(
           icon={<CloseOutlined />}
           onClick={() => closeRef.current()}
           style={{ padding: 0 }}
-          aria-label="Close"
+          aria-label={closeAriaLabel}
         />
       </Flex>
     ),
@@ -129,7 +130,12 @@ export const ImportDataPanel: FC = () => {
   /** Download current dataset only (no sample generation). */
   const handleDownloadData = useCallback(async () => {
     if (data.allIds.length === 0) {
-      showMessageWithClose(messageApi, 'warning', t('messages.noDataToDownload'));
+      showMessageWithClose(
+        messageApi,
+        'warning',
+        t('messages.noDataToDownload'),
+        t('messages.close'),
+      );
       return;
     }
 
@@ -228,7 +234,12 @@ export const ImportDataPanel: FC = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download data:', error);
-      showMessageWithClose(messageApi, 'error', t('messages.downloadDataFailed'));
+      showMessageWithClose(
+        messageApi,
+        'error',
+        t('messages.downloadDataFailed'),
+        t('messages.close'),
+      );
     } finally {
       setIsDownloading(false);
     }
@@ -347,6 +358,20 @@ export const ImportDataPanel: FC = () => {
 
   const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
 
+  const importFormatOptions = useMemo(() => {
+    const labelByType: Record<ImportDataType, string> = {
+      csv: t('visualizer.importData.format.csv'),
+      excel: t('visualizer.importData.format.excel'),
+      json: t('visualizer.importData.format.json'),
+      sheets: t('visualizer.importData.format.sheets'),
+      manual: t('visualizer.importData.format.manual'),
+    };
+    return IMPORT_FORMAT_ORDER.map((value) => ({
+      label: labelByType[value],
+      value,
+    }));
+  }, [t]);
+
   /** Apply static mode: clear timeline and set data to sample (or empty if no region). */
   const applySwitchToStatic = useCallback(() => {
     clearTimelineData();
@@ -362,7 +387,12 @@ export const ImportDataPanel: FC = () => {
     } else {
       setVisualizerState({ data: { allIds: [], byId: {} } });
     }
-    showMessageWithClose(messageApi, 'success', t('messages.switchedToStatic'));
+    showMessageWithClose(
+      messageApi,
+      'success',
+      t('messages.switchedToStatic'),
+      t('messages.close'),
+    );
   }, [messageApi, svgTitles, clearTimelineData, setVisualizerState, t]);
 
   /** Apply dynamic mode: set timeline to sample (or empty if no region). */
@@ -386,7 +416,12 @@ export const ImportDataPanel: FC = () => {
     } else {
       setTimelineData({}, []);
     }
-    showMessageWithClose(messageApi, 'success', t('messages.switchedToDynamic'));
+    showMessageWithClose(
+      messageApi,
+      'success',
+      t('messages.switchedToDynamic'),
+      t('messages.close'),
+    );
   }, [messageApi, svgTitles, setTimelineData, t]);
 
   const handleSwitchToStatic = useCallback(() => {
@@ -516,14 +551,25 @@ export const ImportDataPanel: FC = () => {
           messageApi,
           'success',
           t('messages.importedRowsPeriods', { count: parsed.length, periods: periodOrder.length }),
+          t('messages.close'),
         );
         onSuccess?.(timeline);
       } else {
         if (hasTimePeriods && !limits.historicalDataImport) {
-          showMessageWithClose(messageApi, 'info', t('messages.timeSeriesDetected'));
+          showMessageWithClose(
+            messageApi,
+            'info',
+            t('messages.timeSeriesDetected'),
+            t('messages.close'),
+          );
         }
         if (limits.historicalDataImport) {
-          showMessageWithClose(messageApi, 'warning', t('messages.noTimeColumnDetected'));
+          showMessageWithClose(
+            messageApi,
+            'warning',
+            t('messages.noTimeColumnDetected'),
+            t('messages.close'),
+          );
         }
         const regionData = convertToRegionData(parsed, svgTitles);
         clearTimelineData();
@@ -532,6 +578,7 @@ export const ImportDataPanel: FC = () => {
           messageApi,
           'success',
           t('messages.importedRegions', { count: parsed.length }),
+          t('messages.close'),
         );
         onSuccess?.(regionData);
       }
@@ -588,7 +635,12 @@ export const ImportDataPanel: FC = () => {
             const parsed = parseExcel(buffer);
 
             if (parsed.length === 0) {
-              showMessageWithClose(messageApi, 'warning', t('messages.noValidDataExcel'));
+              showMessageWithClose(
+                messageApi,
+                'warning',
+                t('messages.noValidDataExcel'),
+                t('messages.close'),
+              );
               onError?.(new Error('No valid data found'));
               return;
             }
@@ -636,7 +688,12 @@ export const ImportDataPanel: FC = () => {
           }
 
           if (parsed.length === 0) {
-            showMessageWithClose(messageApi, 'warning', t('messages.noValidDataFile'));
+            showMessageWithClose(
+              messageApi,
+              'warning',
+              t('messages.noValidDataFile'),
+              t('messages.close'),
+            );
             onError?.(new Error('No valid data found'));
             return;
           }
@@ -666,7 +723,13 @@ export const ImportDataPanel: FC = () => {
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
       manual: (
-        <Tooltip title={selectedRegionId ? 'Enter data manually' : 'Select a region first'}>
+        <Tooltip
+          title={
+            selectedRegionId
+              ? t('visualizer.importData.manualTooltip')
+              : t('visualizer.importData.manualTooltipNoRegion')
+          }
+        >
           <span>
             <Button
               type="primary"
@@ -674,7 +737,7 @@ export const ImportDataPanel: FC = () => {
               onClick={() => setIsManualModalOpen(true)}
               disabled={!selectedRegionId}
             >
-              Enter Data Manually
+              {t('visualizer.importData.enterManually')}
             </Button>
           </span>
         </Tooltip>
@@ -686,14 +749,14 @@ export const ImportDataPanel: FC = () => {
             icon={<CloudUploadOutlined />}
             onClick={() => setIsSheetsModalOpen(true)}
           >
-            Connect Google Sheets
+            {t('visualizer.importData.connectSheets')}
           </Button>
         </Flex>
       ),
       csv: (
         <Upload accept=".csv" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
           <Button type="primary" icon={<CloudUploadOutlined />}>
-            Choose CSV File
+            {t('visualizer.importData.chooseCsv')}
           </Button>
         </Upload>
       ),
@@ -705,31 +768,33 @@ export const ImportDataPanel: FC = () => {
           maxCount={1}
         >
           <Button type="primary" icon={<CloudUploadOutlined />} block>
-            Choose Excel File
+            {t('visualizer.importData.chooseExcel')}
           </Button>
         </Upload>
       ),
       json: (
         <Upload accept=".json" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
           <Button type="primary" icon={<CloudUploadOutlined />} block>
-            Choose JSON File
+            {t('visualizer.importData.chooseJson')}
           </Button>
         </Upload>
       ),
     }),
-    [handleFileUpload, selectedRegionId],
+    [handleFileUpload, selectedRegionId, t],
   );
 
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
-        <SectionTitle IconComponent={FileExcelOutlined}>Import Data</SectionTitle>
+        <SectionTitle IconComponent={FileExcelOutlined}>
+          {t('visualizer.importData.sectionTitle')}
+        </SectionTitle>
         <Flex gap={4} align="center">
           <Tooltip
             title={
               data.allIds.length === 0
-                ? 'Add or import data to download current dataset'
-                : 'Download current dataset'
+                ? t('visualizer.importData.downloadTooltipEmpty')
+                : t('visualizer.importData.downloadTooltip')
             }
           >
             <Button
@@ -740,11 +805,17 @@ export const ImportDataPanel: FC = () => {
               className="text-gray-500"
               disabled={data.allIds.length === 0 || isDownloading}
               loading={isDownloading}
-              aria-label="Download current dataset"
+              aria-label={t('visualizer.importData.downloadAria')}
             />
           </Tooltip>
 
-          <Tooltip title={selectedRegionId ? 'Enter data manually' : 'Select a region first'}>
+          <Tooltip
+            title={
+              selectedRegionId
+                ? t('visualizer.importData.manualTooltip')
+                : t('visualizer.importData.manualTooltipNoRegion')
+            }
+          >
             <span>
               <Button
                 type="text"
@@ -753,7 +824,7 @@ export const ImportDataPanel: FC = () => {
                 onClick={() => setIsManualModalOpen(true)}
                 className="text-gray-500"
                 disabled={!selectedRegionId}
-                aria-label="Enter data manually"
+                aria-label={t('visualizer.importData.manualAria')}
               />
             </span>
           </Tooltip>
@@ -762,9 +833,9 @@ export const ImportDataPanel: FC = () => {
               title={
                 selectedRegionId
                   ? hasHistoricalFormat
-                    ? 'Switch to static data'
-                    : 'Switch to dynamic data'
-                  : 'Select a region first'
+                    ? t('visualizer.importData.switchToStatic')
+                    : t('visualizer.importData.switchToDynamic')
+                  : t('visualizer.importData.selectRegionFirst')
               }
             >
               <span>
@@ -776,7 +847,9 @@ export const ImportDataPanel: FC = () => {
                   onClick={hasHistoricalFormat ? handleSwitchToStatic : handleSwitchToDynamic}
                   className="text-gray-500"
                   aria-label={
-                    hasHistoricalFormat ? 'Switch to static data' : 'Switch to dynamic data'
+                    hasHistoricalFormat
+                      ? t('visualizer.importData.switchAriaToStatic')
+                      : t('visualizer.importData.switchAriaToDynamic')
                   }
                 />
               </span>
@@ -789,18 +862,18 @@ export const ImportDataPanel: FC = () => {
       </Flex>
 
       <Segmented
-        options={IMPORT_OPTIONS}
+        options={importFormatOptions}
         value={importDataType}
         onChange={(value: string | number) =>
           setVisualizerState({ importDataType: value as ImportDataType })
         }
         block
-        aria-label="Import data format"
+        aria-label={t('visualizer.importData.segmentedAria')}
       />
 
       <Flex gap="small" align="center" wrap="wrap" className="text-sm text-gray-500">
         <Typography.Text className="text-sm text-gray-500">
-          Region IDs must exactly match the expected IDs in the system.
+          {t('visualizer.importData.regionIdsNote')}
           <br />
           <Button
             type="text"
@@ -810,11 +883,11 @@ export const ImportDataPanel: FC = () => {
             disabled={!selectedRegionId || svgTitles.length === 0 || isDownloadingSample}
             loading={isDownloadingSample}
             className="h-auto p-0! font-medium!"
-            aria-label="Download sample data"
+            aria-label={t('messages.downloadSample')}
           >
-            {!isDownloadingSample && 'Download'}
+            {!isDownloadingSample && t('visualizer.importData.downloadLink')}
           </Button>{' '}
-          sample data to get the correct IDs and match your labels.
+          {t('visualizer.importData.sampleNoteSuffix')}
         </Typography.Text>
       </Flex>
 
@@ -822,7 +895,7 @@ export const ImportDataPanel: FC = () => {
 
       <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">
         <Typography.Text className="text-xs font-semibold text-gray-500">
-          EXPECTED FORMAT:
+          {t('visualizer.importData.expectedFormat')}
         </Typography.Text>
         <ImportFormatExamples
           importDataType={importDataType}

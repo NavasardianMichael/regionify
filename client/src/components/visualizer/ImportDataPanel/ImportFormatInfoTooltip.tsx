@@ -1,19 +1,32 @@
 import { type FC } from 'react';
+import { Typography } from 'antd';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
-/**
- * Static content for the "expected format" info tooltip in Import Data panel.
- */
-export const ImportFormatInfoTooltip: FC = () => (
-  <ul className="m-0 list-disc space-y-2 p-3 ps-8 text-sm text-white">
-    <li>
-      <strong>id</strong> — Region ID; must exactly match the expected IDs (e.g. from sample data)
-    </li>
-    <li>
-      <strong>label</strong> — Display label for the region
-    </li>
-    <li>
-      <strong>value</strong> — Numeric value for the region
-    </li>
-    <li>Labels are displayed on the map when &quot;Show Labels&quot; is enabled</li>
-  </ul>
-);
+/** Expected format info tooltip in Import Data panel. */
+export const ImportFormatInfoTooltip: FC = () => {
+  const { t } = useTypedTranslation();
+
+  return (
+    <ul className="m-0 list-disc space-y-2 p-3 ps-8 text-sm text-white">
+      <li>
+        <Typography.Text strong className="text-white">
+          id
+        </Typography.Text>{' '}
+        — {t('visualizer.importFormatTooltip.id')}
+      </li>
+      <li>
+        <Typography.Text strong className="text-white">
+          label
+        </Typography.Text>{' '}
+        — {t('visualizer.importFormatTooltip.label')}
+      </li>
+      <li>
+        <Typography.Text strong className="text-white">
+          value
+        </Typography.Text>{' '}
+        — {t('visualizer.importFormatTooltip.value')}
+      </li>
+      <li>{t('visualizer.importFormatTooltip.labelsOnMap')}</li>
+    </ul>
+  );
+};

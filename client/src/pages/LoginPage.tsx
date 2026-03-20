@@ -92,7 +92,7 @@ const LoginPage: FC = () => {
         navigate(ROUTES.HOME);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to login';
+      const errorMessage = error instanceof Error ? error.message : t('messages.loginFailed');
       setLoginError(errorMessage);
     } finally {
       setLoading(false);
@@ -122,10 +122,10 @@ const LoginPage: FC = () => {
     <Card className="mx-auto! w-full max-w-144! shadow-sm">
       <div className="mb-6 text-center">
         <Typography.Title level={1} className="text-primary text-2xl font-bold">
-          Welcome Back
+          {t('auth.login.title')}
         </Typography.Title>
         <Typography.Paragraph className="mt-2 text-gray-500">
-          Sign in to your account to continue
+          {t('auth.login.subtitle')}
         </Typography.Paragraph>
       </div>
 
@@ -152,11 +152,11 @@ const LoginPage: FC = () => {
             d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z"
           />
         </svg>
-        Continue with Google
+        {t('auth.login.continueGoogle')}
       </Button>
 
       <Divider plain className="text-gray-400!">
-        or sign in with email
+        {t('auth.login.dividerEmail')}
       </Divider>
 
       <Form
@@ -168,21 +168,32 @@ const LoginPage: FC = () => {
       >
         <Form.Item
           name="email"
-          label={<Typography.Text className="font-medium text-gray-700">Email</Typography.Text>}
+          label={
+            <Typography.Text className="font-medium text-gray-700">
+              {t('account.email')}
+            </Typography.Text>
+          }
           rules={[
             { required: true, message: AUTH_VALIDATION.email.messages.required },
             { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
           ]}
         >
-          <Input placeholder="email@example.com" autoComplete="username" />
+          <Input placeholder={t('auth.login.emailPlaceholder')} autoComplete="username" />
         </Form.Item>
 
         <Form.Item
           name="password"
-          label={<Typography.Text className="font-medium text-gray-700">Password</Typography.Text>}
+          label={
+            <Typography.Text className="font-medium text-gray-700">
+              {t('auth.login.password')}
+            </Typography.Text>
+          }
           rules={[{ required: true, message: AUTH_VALIDATION.password.messages.required }]}
         >
-          <Input.Password placeholder="Enter your password" autoComplete="current-password" />
+          <Input.Password
+            placeholder={t('auth.login.passwordPlaceholder')}
+            autoComplete="current-password"
+          />
         </Form.Item>
 
         {loginError && (
@@ -197,7 +208,7 @@ const LoginPage: FC = () => {
                   loading={resendLoading}
                   className="h-auto! p-0!"
                 >
-                  Resend verification email
+                  {t('auth.login.resendVerification')}
                 </Button>
               </div>
             )}
@@ -206,20 +217,20 @@ const LoginPage: FC = () => {
 
         <div className="mb-4 text-right">
           <AppNavLink to={ROUTES.FORGOT_PASSWORD} className="text-sm font-semibold">
-            Forgot password?
+            {t('auth.login.forgotPassword')}
           </AppNavLink>
         </div>
 
         <Form.Item className="mb-4">
           <Button type="primary" htmlType="submit" block loading={loading}>
-            Sign In
+            {t('auth.login.signIn')}
           </Button>
         </Form.Item>
 
         <div className="text-center">
-          Don&apos;t have an account?{' '}
+          {t('auth.login.noAccount')}{' '}
           <AppNavLink to={ROUTES.SIGN_UP} className="font-semibold hover:underline">
-            Sign up
+            {t('auth.login.signUpLink')}
           </AppNavLink>
         </div>
       </Form>

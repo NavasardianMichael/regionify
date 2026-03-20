@@ -5,8 +5,8 @@ import { App, Flex, Typography } from 'antd';
 import { createCheckout } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { useBillingPlans } from '@/hooks/useBillingPlans';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { BILLING_PLANS } from '@/components/billing/constants';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';
 
@@ -18,6 +18,7 @@ const BillingPage: FC = () => {
   const navigate = useNavigate();
   const currentPlan: Plan = useMemo(() => user?.plan ?? PLANS.observer, [user?.plan]);
   const [upgradingPlan, setUpgradingPlan] = useState<PayablePlan | null>(null);
+  const billingPlans = useBillingPlans();
 
   const onUpgrade = useCallback(
     async (plan: PayablePlan) => {
@@ -49,7 +50,7 @@ const BillingPage: FC = () => {
       </Flex>
 
       <Flex gap="large" justify="center" wrap="wrap" className="w-full">
-        {BILLING_PLANS.map((plan) => (
+        {billingPlans.map((plan) => (
           <Flex key={plan.id} className="w-80 shrink-0" vertical>
             <PlanCard
               plan={plan}
