@@ -41,12 +41,16 @@ REDIS_URL=redis://localhost:6379
 # Session secret (generate a secure random string)
 SESSION_SECRET=your-super-secret-key
 
+# CORS: dev client origin (comma-separated if multiple)
+CORS_ORIGINS=http://localhost:7002
+
 # Google OAuth (get from Google Cloud Console)
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+# Must match "Authorized redirect URI" in Google Cloud (Express serves /auth at root — no /api prefix)
+GOOGLE_CALLBACK_URL=http://localhost:9002/auth/google/callback
 
-# Client URL (for OAuth redirects)
+# Client URL (for OAuth redirects — same origin as Vite dev server)
 CLIENT_URL=http://localhost:7002
 ```
 
@@ -76,19 +80,19 @@ The server will start at `http://localhost:3000`.
 
 | Method | Endpoint      | Description  |
 | ------ | ------------- | ------------ |
-| GET    | `/api/health` | Health check |
+| GET    | `/health` | Health check |
 
 ### Authentication
 
 | Method | Endpoint                    | Description            | Auth Required |
 | ------ | --------------------------- | ---------------------- | ------------- |
-| POST   | `/api/auth/register`        | Register new user      | No            |
-| POST   | `/api/auth/login`           | Login with credentials | No            |
-| POST   | `/api/auth/logout`          | Logout current session | No            |
-| GET    | `/api/auth/me`              | Get current user       | Yes           |
-| GET    | `/api/auth/status`          | Check auth status      | No            |
-| GET    | `/api/auth/google`          | Initiate Google OAuth  | No            |
-| GET    | `/api/auth/google/callback` | Google OAuth callback  | No            |
+| POST   | `/auth/register`            | Register new user      | No            |
+| POST   | `/auth/login`               | Login with credentials | No            |
+| POST   | `/auth/logout`              | Logout current session | No            |
+| GET    | `/auth/me`                  | Get current user       | Yes           |
+| GET    | `/auth/status`              | Check auth status      | No            |
+| GET    | `/auth/google`              | Initiate Google OAuth  | No            |
+| GET    | `/auth/google/callback`     | Google OAuth callback  | No            |
 
 ### Request/Response Examples
 
@@ -208,10 +212,17 @@ server/
 ## Google OAuth Setup
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-2. Create a new OAuth 2.0 Client ID
-3. Set authorized JavaScript origins: `http://localhost:3000`
-4. Set authorized redirect URIs: `http://localhost:3000/api/auth/google/callback`
-5. Copy Client ID and Client Secret to `.env`
+2. Create a new OAuth 2.0 Client ID (Web application)
+3. Set **Authorized JavaScript origins** to your client dev origin (e.g. `http://localhost:7002` — Vite port from `client/vite.config.ts`)
+4. Set **Authorized redirect URIs** to `{API_ORIGIN}/auth/google/callback` where `API_ORIGIN` matches your server (`http://localhost:{PORT}` from `.env`, e.g. `http://localhost:9002`). This value must exactly match `GOOGLE_CALLBACK_URL`.
+5. Copy Client ID and Client Secret into `.env.development.local`
+
+### Local development checklist
+
+- **`CLIENT_URL`**: Browser origin where the React app runs (same host/port as Vite, e.g. `http://localhost:7002`). Post-OAuth redirects use this; a stale port (e.g. old `5183`) sends you to the wrong URL even when sign-in succeeds.
+- **`CORS_ORIGINS`**: Comma-separated list of allowed browser origins; include the same origin as the client (e.g. `http://localhost:7002`).
+- **`REDIS_URL`**: If the API runs on your machine (not inside Docker), use `redis://localhost:6379` so sessions work. The Docker-only hostname `redis` does not resolve on the host — broken sessions often surface as Google OAuth failures because Passport stores OAuth state in the session.
+- **`GOOGLE_CALLBACK_URL`**: Must match the redirect URI registered in Google Cloud and your actual API `PORT`.
 
 ## Development
 

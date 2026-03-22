@@ -9,11 +9,10 @@ import {
   MailOutlined,
   SafetyOutlined,
   SettingOutlined,
-  UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import type { Locale } from '@regionify/shared';
-import { App, Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
+import { Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
@@ -21,6 +20,7 @@ import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type NavItem = {
@@ -35,7 +35,7 @@ export const Navigation: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, i18n } = useTypedTranslation();
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
   const logout = useProfileStore(selectLogout);
@@ -96,7 +96,7 @@ export const Navigation: FC = () => {
   };
 
   return (
-    <nav className="border-b border-gray-200 bg-white px-6 py-3">
+    <nav className="shrink-0 border-b border-gray-200 bg-white px-6 py-3">
       <Flex align="center" justify="space-between">
         <Link to={ROUTES.HOME}>
           <img
@@ -129,11 +129,13 @@ export const Navigation: FC = () => {
           {isLoggedIn ? (
             <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
               <button className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100">
-                <Avatar
-                  src={user?.avatarUrl}
-                  icon={!user?.avatarUrl && <UserOutlined />}
-                  size="small"
-                />
+                {user?.avatarUrl ? (
+                  <Avatar
+                    src={user.avatarUrl}
+                    size="small"
+                    alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
+                  />
+                ) : null}
                 <span className="text-sm font-medium text-gray-700">{user?.name}</span>
               </button>
             </Dropdown>

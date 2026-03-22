@@ -2,12 +2,13 @@ import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { App, Button, Card as AntCard, Divider, Form, Input, Typography } from 'antd';
+import { Button, Card as AntCard, Divider, Form, Input, Typography } from 'antd';
 import { changePassword } from '@/api/auth';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { Card } from '@/components/ui/Card';
 
@@ -19,7 +20,7 @@ type PasswordFormValues = {
 
 const SecurityPage: FC = () => {
   const navigate = useNavigate();
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
   const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
@@ -58,7 +59,7 @@ const SecurityPage: FC = () => {
   const canChangePassword = user.provider === 'local';
 
   return (
-    <Card className="mx-auto! w-full max-w-144! bg-white! px-6! py-8! shadow-sm! md:px-10! md:py-10!">
+    <Card className="mx-auto! w-full max-w-144! bg-white shadow-sm">
       <header className="mb-8 text-center">
         <Typography.Title level={1} className="text-primary mb-1! text-2xl font-semibold">
           {t('security.title')}

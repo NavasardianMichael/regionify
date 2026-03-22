@@ -1,7 +1,7 @@
 import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_VALIDATION, type Locale } from '@regionify/shared';
-import { App, Button, Divider, Flex, Form, Input, Typography } from 'antd';
+import { Button, Divider, Flex, Form, Input, Typography } from 'antd';
 import { deleteAccount, updateProfile } from '@/api/auth';
 import {
   selectIsLoggedIn,
@@ -12,6 +12,7 @@ import {
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { Card } from '@/components/ui/Card';
@@ -22,7 +23,7 @@ type ProfileFormValues = {
 
 const AccountPage: FC = () => {
   const navigate = useNavigate();
-  const { message, modal } = App.useApp();
+  const { message, modal } = useAppFeedback();
   const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
@@ -31,6 +32,7 @@ const AccountPage: FC = () => {
 
   const [profileForm] = Form.useForm<ProfileFormValues>();
   const [profileLoading, setProfileLoading] = useState(false);
+  const watchedName = Form.useWatch('name', profileForm);
 
   useEffect(() => {
     if (isLoggedIn === false) {
@@ -98,6 +100,8 @@ const AccountPage: FC = () => {
   if (!isLoggedIn || !user) {
     return null;
   }
+
+  const isProfileDirty = (watchedName ?? '').trim() !== user.name.trim();
 
   return (
     <Card className="mx-auto! w-full max-w-144! bg-white! shadow-sm!">
@@ -179,6 +183,7 @@ const AccountPage: FC = () => {
             htmlType="submit"
             size="large"
             loading={profileLoading}
+            disabled={!isProfileDirty}
             className="w-full rounded-lg font-medium"
           >
             {t('account.saveProfile')}

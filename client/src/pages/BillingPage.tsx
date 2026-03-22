@@ -1,17 +1,19 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type Plan, PLANS } from '@regionify/shared';
-import { App, Flex, Typography } from 'antd';
+import { Flex, Typography } from 'antd';
 import { createCheckout } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { useBillingPlans } from '@/hooks/useBillingPlans';
+import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
 const BillingPage: FC = () => {
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
   const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
@@ -23,7 +25,7 @@ const BillingPage: FC = () => {
   const onUpgrade = useCallback(
     async (plan: PayablePlan) => {
       if (!isLoggedIn) {
-        navigate('/login', { replace: true });
+        navigate(ROUTES.LOGIN, { replace: true });
         return;
       }
       setUpgradingPlan(plan);

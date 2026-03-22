@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import {
-  CloseOutlined,
   CloudUploadOutlined,
   DownloadOutlined,
   EditOutlined,
@@ -20,7 +19,7 @@ import {
 } from '@ant-design/icons';
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
-import { App, Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
+import { Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import {
   selectClearTimelineData,
@@ -52,6 +51,7 @@ import {
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { ImportFormatExamples } from '@/components/visualizer/ImportDataPanel/ImportFormatExamples';
 import { ImportFormatInfoTooltip } from '@/components/visualizer/ImportDataPanel/ImportFormatInfoTooltip';
 import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPanel/SwitchModeConfirmContent';
@@ -62,39 +62,22 @@ const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
 
 const SUCCESS_MESSAGE_DURATION = 5;
 
-/** Show a message. Success auto-hides after 5s; other types have a Close button and no auto-hide. */
+/** Show a message. Success auto-hides after 5s; persistent types use duration 0 (global close control applies). */
 function showMessageWithClose(
-  messageApi: ReturnType<typeof App.useApp>['message'],
+  messageApi: ReturnType<typeof useAppFeedback>['message'],
   type: 'success' | 'info' | 'warning' | 'error',
   content: string,
-  closeAriaLabel: string,
 ): void {
   if (type === 'success') {
     messageApi.success({ content, duration: SUCCESS_MESSAGE_DURATION });
     return;
   }
-  const closeRef = { current: () => {} };
-  closeRef.current = messageApi[type]({
-    content: (
-      <Flex align="center" gap="small" style={{ alignItems: 'center' }}>
-        <span>{content}</span>
-        <Button
-          type="text"
-          size="small"
-          icon={<CloseOutlined />}
-          onClick={() => closeRef.current()}
-          style={{ padding: 0 }}
-          aria-label={closeAriaLabel}
-        />
-      </Flex>
-    ),
-    duration: 0,
-  }) as () => void;
+  messageApi[type]({ content, duration: 0 });
 }
 
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
-  const { modal, message: messageApi } = App.useApp();
+  const { modal, message: messageApi } = useAppFeedback();
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
@@ -130,12 +113,7 @@ export const ImportDataPanel: FC = () => {
   /** Download current dataset only (no sample generation). */
   const handleDownloadData = useCallback(async () => {
     if (data.allIds.length === 0) {
-      showMessageWithClose(
-        messageApi,
-        'warning',
-        t('messages.noDataToDownload'),
-        t('messages.close'),
-      );
+      showMessageWithClose(messageApi, 'warning', t('messages.noDataToDownload'));
       return;
     }
 
@@ -234,12 +212,7 @@ export const ImportDataPanel: FC = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Failed to download data:', error);
-      showMessageWithClose(
-        messageApi,
-        'error',
-        t('messages.downloadDataFailed'),
-        t('messages.close'),
-      );
+      showMessageWithClose(messageApi, 'error', t('messages.downloadDataFailed'));
     } finally {
       setIsDownloading(false);
     }
@@ -341,7 +314,7 @@ export const ImportDataPanel: FC = () => {
         'error',
         t('messages.downloadSampleFailed'),
         handleDownloadSampleOnly,
-        { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
+        { downloadLabel: t('messages.downloadSample') },
       );
     } finally {
       setIsDownloadingSample(false);
@@ -387,12 +360,7 @@ export const ImportDataPanel: FC = () => {
     } else {
       setVisualizerState({ data: { allIds: [], byId: {} } });
     }
-    showMessageWithClose(
-      messageApi,
-      'success',
-      t('messages.switchedToStatic'),
-      t('messages.close'),
-    );
+    showMessageWithClose(messageApi, 'success', t('messages.switchedToStatic'));
   }, [messageApi, svgTitles, clearTimelineData, setVisualizerState, t]);
 
   /** Apply dynamic mode: set timeline to sample (or empty if no region). */
@@ -416,12 +384,7 @@ export const ImportDataPanel: FC = () => {
     } else {
       setTimelineData({}, []);
     }
-    showMessageWithClose(
-      messageApi,
-      'success',
-      t('messages.switchedToDynamic'),
-      t('messages.close'),
-    );
+    showMessageWithClose(messageApi, 'success', t('messages.switchedToDynamic'));
   }, [messageApi, svgTitles, setTimelineData, t]);
 
   const handleSwitchToStatic = useCallback(() => {
@@ -551,25 +514,14 @@ export const ImportDataPanel: FC = () => {
           messageApi,
           'success',
           t('messages.importedRowsPeriods', { count: parsed.length, periods: periodOrder.length }),
-          t('messages.close'),
         );
         onSuccess?.(timeline);
       } else {
         if (hasTimePeriods && !limits.historicalDataImport) {
-          showMessageWithClose(
-            messageApi,
-            'info',
-            t('messages.timeSeriesDetected'),
-            t('messages.close'),
-          );
+          showMessageWithClose(messageApi, 'info', t('messages.timeSeriesDetected'));
         }
         if (limits.historicalDataImport) {
-          showMessageWithClose(
-            messageApi,
-            'warning',
-            t('messages.noTimeColumnDetected'),
-            t('messages.close'),
-          );
+          showMessageWithClose(messageApi, 'warning', t('messages.noTimeColumnDetected'));
         }
         const regionData = convertToRegionData(parsed, svgTitles);
         clearTimelineData();
@@ -578,7 +530,6 @@ export const ImportDataPanel: FC = () => {
           messageApi,
           'success',
           t('messages.importedRegions', { count: parsed.length }),
-          t('messages.close'),
         );
         onSuccess?.(regionData);
       }
@@ -603,7 +554,7 @@ export const ImportDataPanel: FC = () => {
           'error',
           t('messages.datasetMustIncludeId'),
           handleDownloadSampleOnly,
-          { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
+          { downloadLabel: t('messages.downloadSample') },
         );
         return;
       }
@@ -613,7 +564,7 @@ export const ImportDataPanel: FC = () => {
           'error',
           t('messages.dataFormatMismatch'),
           handleDownloadSampleOnly,
-          { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
+          { downloadLabel: t('messages.downloadSample') },
         );
         return;
       }
@@ -635,12 +586,7 @@ export const ImportDataPanel: FC = () => {
             const parsed = parseExcel(buffer);
 
             if (parsed.length === 0) {
-              showMessageWithClose(
-                messageApi,
-                'warning',
-                t('messages.noValidDataExcel'),
-                t('messages.close'),
-              );
+              showMessageWithClose(messageApi, 'warning', t('messages.noValidDataExcel'));
               onError?.(new Error('No valid data found'));
               return;
             }
@@ -652,7 +598,7 @@ export const ImportDataPanel: FC = () => {
               'error',
               t('messages.failedParseExcel'),
               handleDownloadSampleOnly,
-              { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
+              { downloadLabel: t('messages.downloadSample') },
             );
             onError?.(error as Error);
           }
@@ -677,7 +623,7 @@ export const ImportDataPanel: FC = () => {
                 'error',
                 t('messages.datasetMustIncludeId'),
                 handleDownloadSampleOnly,
-                { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
+                { downloadLabel: t('messages.downloadSample') },
               );
               onError?.(new Error('Missing id column'));
               return;
@@ -688,12 +634,7 @@ export const ImportDataPanel: FC = () => {
           }
 
           if (parsed.length === 0) {
-            showMessageWithClose(
-              messageApi,
-              'warning',
-              t('messages.noValidDataFile'),
-              t('messages.close'),
-            );
+            showMessageWithClose(messageApi, 'warning', t('messages.noValidDataFile'));
             onError?.(new Error('No valid data found'));
             return;
           }
@@ -705,7 +646,7 @@ export const ImportDataPanel: FC = () => {
             'error',
             t('messages.failedParseFile'),
             handleDownloadSampleOnly,
-            { downloadLabel: t('messages.downloadSample'), closeLabel: t('messages.close') },
+            { downloadLabel: t('messages.downloadSample') },
           );
           onError?.(error as Error);
         }

@@ -1,9 +1,10 @@
 import { type FC, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { App, Button, Card, Form, Input, Typography } from 'antd';
+import { Button, Card, Form, Input, Typography } from 'antd';
 import { resetPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type ResetPasswordFormValues = {
@@ -16,7 +17,7 @@ const ResetPasswordPage: FC = () => {
   const [form] = Form.useForm<ResetPasswordFormValues>();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
 
   const token = useMemo(() => searchParams.get('token'), [searchParams]);
 

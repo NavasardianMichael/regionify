@@ -1,9 +1,10 @@
 import { type FC, useState } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { App, Button, Card, Form, Input, Typography } from 'antd';
+import { Button, Card, Form, Input, Typography } from 'antd';
 import { forgotPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type ForgotPasswordFormValues = {
@@ -14,7 +15,7 @@ const ForgotPasswordPage: FC = () => {
   const [form] = Form.useForm<ForgotPasswordFormValues>();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
 
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
     setLoading(true);

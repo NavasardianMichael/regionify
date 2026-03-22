@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
 import { EXPORT_TYPES, type ExportType, PLAN_DETAILS, PLANS } from '@regionify/shared';
-import { App } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -30,6 +29,7 @@ import {
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
@@ -59,7 +59,7 @@ export const EXPORT_FPS = 30;
 
 export function useExportMapModal(_open: boolean, onClose: () => void) {
   const { t } = useTypedTranslation();
-  const message = App.useApp().message;
+  const { message } = useAppFeedback();
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const timePeriods = useVisualizerStore(selectTimePeriods);

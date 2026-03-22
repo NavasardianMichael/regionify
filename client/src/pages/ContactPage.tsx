@@ -1,7 +1,8 @@
 import { type FC, useState } from 'react';
-import { App, Button, Flex, Form, Input, Typography } from 'antd';
+import { Button, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processContactFormData } from '@/api/contact/processors';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { Card } from '@/components/ui/Card';
 
@@ -16,7 +17,7 @@ const ContactPage: FC = () => {
   const [form] = Form.useForm<ContactFormValues>();
   const [loading, setLoading] = useState(false);
   const { t } = useTypedTranslation();
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
 
   const handleSubmit = async (values: ContactFormValues) => {
     setLoading(true);

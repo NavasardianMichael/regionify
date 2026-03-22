@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PLANS } from '@regionify/shared';
-import { App } from 'antd';
 import { createProject, updateProject } from '@/api/projects';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
@@ -25,6 +24,7 @@ import {
 } from '@/hooks/useProjectState';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   buildPartialTemporaryState,
@@ -63,7 +63,7 @@ function buildFullTemporaryState(): FullTemporaryProjectState {
 
 export function useVisualizerPage() {
   const { t } = useTypedTranslation();
-  const message = App.useApp().message;
+  const { message } = useAppFeedback();
   const navigate = useNavigate();
   const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);

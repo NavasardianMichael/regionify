@@ -86,12 +86,14 @@ docker compose down
 ### Database Setup
 
 ```bash
-# Push schema to database (development)
+# Push schema to database (development) — required before auth/OAuth will work
 pnpm db:push
 
 # Or create a migration (production)
 pnpm db:migrate
 ```
+
+If Google OAuth redirects with `error=google_auth_failed` and the API logs show Prisma **`P2021` / table does not exist**, the database schema was never applied; run `pnpm db:push` with Docker Postgres running.
 
 ### Development
 

@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { App, Button, Card, Divider, Form, Input, Typography } from 'antd';
+import { Button, Card, Divider, Form, Input, Typography } from 'antd';
 import { login, resendVerificationEmail } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -19,6 +19,7 @@ import {
   getTemporaryProjectState,
   mergeTemporaryStateWithDefaults,
 } from '@/helpers/temporaryProjectState';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type LoginFormValues = {
@@ -32,7 +33,7 @@ const LoginPage: FC = () => {
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
   const navigate = useNavigate();
   const setUser = useProfileStore(selectSetUser);
 

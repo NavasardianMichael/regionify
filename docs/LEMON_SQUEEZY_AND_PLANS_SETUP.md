@@ -76,7 +76,7 @@ Lemon Squeezy redirects the user back to your app after payment. The server uses
 
 - **Redirect URL**: `{CLIENT_URL}/payments/return`
 
-Ensure `CLIENT_URL` in your server env is the real origin of the client (e.g. `https://yourapp.com` or `http://localhost:5183` in dev). No trailing slash.
+Ensure `CLIENT_URL` in your server env is the real origin of the client (e.g. `https://yourapp.com` or `http://localhost:7002` in dev — same port as Vite in `client/vite.config.ts`). No trailing slash.
 
 ---
 

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { App } from 'antd';
 import {
   deleteProject as deleteProjectApi,
   getProjects,
@@ -20,6 +19,7 @@ import {
 import { useProjectsStore } from '@/store/projects/store';
 import { useDebounceValue } from '@/hooks/useDebounce';
 import { ROUTES } from '@/constants/routes';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type UseProjectsReturn = {
@@ -40,7 +40,7 @@ type UseProjectsReturn = {
 
 export function useProjects(): UseProjectsReturn {
   const { t } = useTypedTranslation();
-  const { message, modal } = App.useApp();
+  const { message, modal } = useAppFeedback();
   const navigate = useNavigate();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const logout = useProfileStore(selectLogout);

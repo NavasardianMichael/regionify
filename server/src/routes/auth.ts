@@ -11,6 +11,7 @@ import { type Router as ExpressRouter, Router } from 'express';
 import passport from 'passport';
 
 import { env } from '../config/env.js';
+import { logger } from '../lib/logger.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { validate } from '../middleware/validate.js';
@@ -80,14 +81,14 @@ router.get(
 
 // GET /api/auth/google/callback
 router.get('/google/callback', (req, res, next) => {
-  passport.authenticate('google', { session: false }, async (err, user) => {
+  passport.authenticate('google', { session: false }, async (err, user, info) => {
     if (err) {
-      console.error('Google auth error:', err);
+      logger.error({ err, query: req.query }, 'Google auth error');
       return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
     }
 
     if (!user) {
-      console.error('Google auth: no user returned');
+      logger.error({ info, query: req.query }, 'Google auth: no user returned');
       return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
     }
 
@@ -96,7 +97,7 @@ router.get('/google/callback', (req, res, next) => {
     // Regenerate session and set user ID
     req.session.regenerate(async (sessionErr) => {
       if (sessionErr) {
-        console.error('Session regenerate error:', sessionErr);
+        logger.error({ err: sessionErr }, 'Session regenerate error');
         return res.redirect(`${env.CLIENT_URL}/login?error=session_error`);
       }
 

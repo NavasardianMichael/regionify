@@ -1,7 +1,8 @@
 import { type FC, useState } from 'react';
-import { App, Button, Card, Flex, Form, Input, Typography } from 'antd';
+import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processAccountDeletionFeedback } from '@/api/contact/processors';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type FeedbackFormValues = {
@@ -16,7 +17,7 @@ const AccountDeletedPage: FC = () => {
   const [form] = Form.useForm<FeedbackFormValues>();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const { message } = App.useApp();
+  const { message } = useAppFeedback();
 
   const handleSubmit = async (values: FeedbackFormValues) => {
     setLoading(true);

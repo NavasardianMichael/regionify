@@ -1,7 +1,5 @@
-import type { App } from 'antd';
 import { MessageWithSampleDownload } from '@/components/shared/MessageWithSampleDownload';
-
-export type MessageApi = ReturnType<typeof App.useApp>['message'];
+import type { MessageApi } from '@/components/shared/useAppFeedback';
 
 /**
  * Shows an error/warning/info message with a "Download sample" button.
@@ -12,19 +10,16 @@ export function showMessageWithSampleDownload(
   type: 'error' | 'warning' | 'info',
   message: string,
   onDownloadSample: () => void,
-  options?: { downloadLabel?: string; closeLabel?: string },
+  options?: { downloadLabel?: string },
 ): void {
-  const closeRef = { current: () => {} };
-  closeRef.current = messageApi[type]({
+  messageApi[type]({
     content: (
       <MessageWithSampleDownload
         message={message}
         onDownloadSample={onDownloadSample}
-        onClose={() => closeRef.current()}
         downloadLabel={options?.downloadLabel}
-        closeLabel={options?.closeLabel}
       />
     ),
     duration: 0,
-  }) as () => void;
+  });
 }
