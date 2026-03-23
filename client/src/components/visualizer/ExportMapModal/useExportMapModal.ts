@@ -29,7 +29,6 @@ import {
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
@@ -39,6 +38,7 @@ import {
 } from '@/helpers/animationExport';
 import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
 type ExportTypeOption = { value: ExportType; label: string };
 

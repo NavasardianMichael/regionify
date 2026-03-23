@@ -9,6 +9,7 @@ import type {
   RegionLabelsConfig,
   ShadowConfig,
 } from '@/store/mapStyles/types';
+import { getInterpolatedColorMap, smoothstep01 } from '@/helpers/legendColorInterpolation';
 import { renderStyledSvg } from './svgRenderer';
 
 const LEGEND_REFERENCE_SIZE = 800;
@@ -52,92 +53,38 @@ type AnimationExportOptions = {
   onProgress?: (progress: number) => void;
 };
 
-/** Total frame count for animation (for UI duration estimate). */
+/**
+ * Total frame count for animation (for UI duration estimate).
+ * Smooth mode uses the same budget as instant mode: transitions replace hold frames, not add to them.
+ */
 export const getAnimationTotalFrames = (
   timePeriodCount: number,
   options: {
     secondsPerPeriod?: number;
     fps?: number;
-    smooth?: boolean;
   } = {},
 ): number => {
-  if (timePeriodCount <= 1) return Math.max(1, timePeriodCount);
   const fps = options.fps ?? PREVIEW_FPS;
   const secondsPerPeriod = options.secondsPerPeriod ?? DEFAULT_SECONDS_PER_PERIOD;
-  const smooth = options.smooth ?? true;
   const holdFrames = Math.max(1, Math.round(secondsPerPeriod * fps));
-  const transitionFrames = smooth ? TRANSITION_FRAMES_WHEN_SMOOTH : 0;
-  return timePeriodCount * holdFrames + (timePeriodCount - 1) * transitionFrames;
+  if (timePeriodCount <= 0) return 0;
+  return timePeriodCount * holdFrames;
 };
 
 /** Quality (1–100) maps to a canvas scale multiplier. */
 const qualityToScale = (quality: number): number => Math.max(0.5, quality / 25);
 
-/** Parse hex color to [r, g, b] (0–255). */
-const hexToRgb = (hex: string): [number, number, number] => {
-  const n = parseInt(hex.replace(/^#/, ''), 16);
-  return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
-};
+/** Hold = solid period data; blend = interpolate from fromIndex to fromIndex+1 (t in [0, 1] linear along gap). */
+type FrameSpec =
+  | { type: 'hold'; periodIndex: number; label: string }
+  | { type: 'blend'; fromIndex: number; t: number; label: string };
 
-/** Linear interpolation between two RGB tuples. t in [0, 1]. */
-const lerpRgb = (
-  a: [number, number, number],
-  b: [number, number, number],
-  t: number,
-): [number, number, number] => [
-  Math.round(a[0] + (b[0] - a[0]) * t),
-  Math.round(a[1] + (b[1] - a[1]) * t),
-  Math.round(a[2] + (b[2] - a[2]) * t),
-];
-
-/** Format RGB to hex. */
-const rgbToHex = (r: number, g: number, b: number): string =>
-  '#' + [r, g, b].map((x) => Math.max(0, Math.min(255, x)).toString(16).padStart(2, '0')).join('');
-
-/** Interpolate between two hex colors. t in [0, 1]. */
-const lerpColor = (colorA: string, colorB: string, t: number): string => {
-  const rgb = lerpRgb(hexToRgb(colorA), hexToRgb(colorB), t);
-  return rgbToHex(rgb[0], rgb[1], rgb[2]);
-};
-
-/** Resolve region color from data and legend. */
-const getColorForRegion = (
-  data: DataSet,
-  regionId: string,
-  legendItems: LegendItem[],
-  noDataColor: string,
-): string => {
-  const regionData = data.byId[regionId];
-  if (!regionData) return noDataColor;
-  const item = legendItems.find((i) => regionData.value >= i.min && regionData.value <= i.max);
-  return item ? item.color : noDataColor;
-};
-
-/** Build per-region color map by interpolating between two data sets. t in [0, 1]. */
-const getInterpolatedColorMap = (
-  dataA: DataSet,
-  dataB: DataSet,
-  t: number,
-  legendItems: LegendItem[],
-  noDataColor: string,
-): Record<string, string> => {
-  const regionIds = new Set([...dataA.allIds, ...dataB.allIds]);
-  const map: Record<string, string> = {};
-  for (const id of regionIds) {
-    const colorA = getColorForRegion(dataA, id, legendItems, noDataColor);
-    const colorB = getColorForRegion(dataB, id, legendItems, noDataColor);
-    map[id] = lerpColor(colorA, colorB, t);
-  }
-  return map;
-};
-
-type FrameSpec = {
-  periodIndex: number;
-  t: number;
-  label: string;
-};
-
-/** Build list of frame specs: hold frames per period + optional smooth transition frames between periods. */
+/**
+ * Hold frames per period + optional smooth transitions between periods.
+ * Same total duration as `instant` mode: transition frames are taken from the per-period
+ * seconds budget (shorter holds), not appended.
+ * Blend segments use smoothstep on linear t so easing applies at both ends (leaving A and entering B).
+ */
 const buildFrameList = (
   timePeriods: string[],
   opts: {
@@ -149,26 +96,39 @@ const buildFrameList = (
   const list: FrameSpec[] = [];
   if (timePeriods.length === 0) return list;
 
-  const holdFrames = Math.max(1, Math.round(opts.secondsPerPeriod * opts.fps));
-  const transitionFrames = opts.smooth ? TRANSITION_FRAMES_WHEN_SMOOTH : 0;
+  const n = timePeriods.length;
+  const baseHoldFrames = Math.max(1, Math.round(opts.secondsPerPeriod * opts.fps));
+  const targetTotalFrames = n * baseHoldFrames;
 
-  if (timePeriods.length === 1) {
-    for (let k = 0; k < holdFrames; k++) {
-      list.push({ periodIndex: 0, t: 1, label: timePeriods[0] });
+  if (n === 1) {
+    for (let k = 0; k < baseHoldFrames; k++) {
+      list.push({ type: 'hold', periodIndex: 0, label: timePeriods[0] });
     }
     return list;
   }
 
-  for (let i = 0; i < timePeriods.length; i++) {
-    for (let k = 0; k < holdFrames; k++) {
-      list.push({ periodIndex: i, t: 1, label: timePeriods[i] });
+  const numGaps = n - 1;
+  let transitionFrames = 0;
+  if (opts.smooth) {
+    const maxTransitionByBudget = Math.floor((targetTotalFrames - n) / numGaps);
+    transitionFrames = Math.min(TRANSITION_FRAMES_WHEN_SMOOTH, Math.max(0, maxTransitionByBudget));
+  }
+
+  const totalHoldFrames = targetTotalFrames - numGaps * transitionFrames;
+  const holdBase = Math.floor(totalHoldFrames / n);
+  const remainder = totalHoldFrames % n;
+  const holdsPerPeriod = timePeriods.map((_, i) => holdBase + (i < remainder ? 1 : 0));
+
+  for (let i = 0; i < n; i++) {
+    for (let k = 0; k < holdsPerPeriod[i]; k++) {
+      list.push({ type: 'hold', periodIndex: i, label: timePeriods[i] });
     }
-    if (i < timePeriods.length - 1 && transitionFrames > 0) {
+    if (i < n - 1 && transitionFrames > 0) {
       const steps = Math.max(2, transitionFrames);
       for (let k = 0; k < steps; k++) {
         const t = k / (steps - 1);
         const label = t >= 0.5 ? timePeriods[i + 1] : timePeriods[i];
-        list.push({ periodIndex: i, t, label });
+        list.push({ type: 'blend', fromIndex: i, t, label });
       }
     }
   }
@@ -439,7 +399,7 @@ const renderInterpolatedFrame = async (
   return canvas;
 };
 
-/** Render the frame for a given FrameSpec (interpolated or keyframe). */
+/** Render the frame for a given FrameSpec (solid hold or blend between neighbors). */
 const renderFrameForSpec = async (
   rawSvg: string,
   timelineData: Record<string, DataSet>,
@@ -448,7 +408,7 @@ const renderFrameForSpec = async (
   scale: number,
   options: FrameOptions,
 ): Promise<HTMLCanvasElement> => {
-  if (spec.t === 1 && spec.periodIndex === timePeriods.length - 1) {
+  if (spec.type === 'hold') {
     return renderFrame(
       rawSvg,
       timelineData[timePeriods[spec.periodIndex]],
@@ -457,12 +417,10 @@ const renderFrameForSpec = async (
       options,
     );
   }
-  if (spec.t === 0 && spec.periodIndex === 0) {
-    return renderFrame(rawSvg, timelineData[timePeriods[0]], spec.label, scale, options);
-  }
-  const dataA = timelineData[timePeriods[spec.periodIndex]];
-  const dataB = timelineData[timePeriods[spec.periodIndex + 1]];
-  return renderInterpolatedFrame(rawSvg, dataA, dataB, spec.t, spec.label, scale, options);
+  const dataA = timelineData[timePeriods[spec.fromIndex]];
+  const dataB = timelineData[timePeriods[spec.fromIndex + 1]];
+  const tColor = smoothstep01(spec.t);
+  return renderInterpolatedFrame(rawSvg, dataA, dataB, tColor, spec.label, scale, options);
 };
 
 /** Export animation as GIF using gifenc with smooth color transitions and stable global palette. */

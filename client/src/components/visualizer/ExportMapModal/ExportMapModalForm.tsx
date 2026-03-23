@@ -61,6 +61,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
           onChange={handleExportTypeChange}
           options={exportTypeOptions}
           className="w-full"
+          disabled={isExporting}
         />
         {allowedFormats.length === 1 && (
           <Typography.Text type="secondary" className="text-xs">
@@ -83,6 +84,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
               value={quality}
               onChange={handleQualityChange}
               className="w-20"
+              disabled={isExporting}
             />
           </Flex>
           <Slider
@@ -91,6 +93,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
             value={quality}
             onChange={handleQualityChange}
             aria-label="Export quality"
+            disabled={isExporting}
           />
           {limits.pictureQualityLimit && (
             <Typography.Text type="secondary" className="text-xs">
@@ -119,6 +122,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
                 setSecondsPerPeriod(Math.max(0.5, Math.min(v ?? 2, 10)))
               }
               className="w-20"
+              disabled={isExporting}
             />
           </Flex>
           <Flex align="center" justify="space-between">
@@ -127,20 +131,19 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
               checked={smoothTransitions}
               onChange={setSmoothTransitions}
               aria-label="Smooth transitions between time periods"
+              disabled={isExporting}
             />
           </Flex>
           <Typography.Text type="secondary" className="text-xs">
             {getAnimationTotalFrames(timePeriods.length, {
               secondsPerPeriod,
               fps: EXPORT_FPS,
-              smooth: smoothTransitions,
             })}{' '}
-            frames · {EXPORT_FPS} FPS · ~
+            frames · ~
             {(
               getAnimationTotalFrames(timePeriods.length, {
                 secondsPerPeriod,
                 fps: EXPORT_FPS,
-                smooth: smoothTransitions,
               }) / EXPORT_FPS
             ).toFixed(1)}
             s duration
@@ -157,7 +160,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         icon={<DownloadOutlined />}
         onClick={handleDownload}
         loading={isExporting}
-        disabled={!selectedRegionId || (isAnimationFormat && !hasTimelineData)}
+        disabled={isExporting || !selectedRegionId || (isAnimationFormat && !hasTimelineData)}
       >
         {downloadButtonLabel}
       </Button>

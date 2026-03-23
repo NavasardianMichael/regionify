@@ -10,7 +10,7 @@ import {
 import { DragOutlined, FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
 import DOMPurify from 'dompurify';
-import { selectTransitionType } from '@/store/animation/selectors';
+import { selectPlaybackPreviewBlend, selectTransitionType } from '@/store/animation/selectors';
 import { useAnimationStore } from '@/store/animation/store';
 import { selectLegendItems } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -29,6 +29,7 @@ import {
   selectActiveTimePeriod,
   selectData,
   selectSelectedRegionId,
+  selectTimelineData,
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
@@ -43,6 +44,7 @@ import {
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
+import { smoothstep01 } from '@/helpers/legendColorInterpolation';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { MapLegendContent } from '@/components/visualizer/MapViewer/MapLegendContent';
 import styles from './MapViewer.module.css';
@@ -86,7 +88,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const data = useVisualizerStore(selectData);
   const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
   const timePeriods = useVisualizerStore(selectTimePeriods);
+  const timelineData = useVisualizerStore(selectTimelineData);
   const transitionType = useAnimationStore(selectTransitionType);
+  const playbackPreviewBlend = useAnimationStore(selectPlaybackPreviewBlend);
   const legendItemsData = useLegendDataStore(selectLegendItems);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
@@ -112,6 +116,18 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   // Defer legend items for expensive SVG processing to keep inputs responsive
   const deferredLegendItems = useDeferredValue(legendItems);
 
+  const previewColorBlend = useMemo(() => {
+    if (!playbackPreviewBlend) return undefined;
+    const dataA = timelineData[playbackPreviewBlend.fromPeriod];
+    const dataB = timelineData[playbackPreviewBlend.toPeriod];
+    if (!dataA || !dataB) return undefined;
+    return {
+      dataA,
+      dataB,
+      t: smoothstep01(playbackPreviewBlend.t),
+    };
+  }, [playbackPreviewBlend, timelineData]);
+
   const applyStylesToSvg = useCallback(
     (svg: string) =>
       applySvgMapStyles(svg, {
@@ -123,11 +139,22 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         legendItems: deferredLegendItems,
         noDataColor,
         transitionType,
+        colorBlend: previewColorBlend,
         labelPositions: labelPositionsRef.current,
         pathClass: styles.mapPath,
         pathClassInstant: styles.mapPathInstant,
       }),
-    [border, shadow, picture, regionLabels, data, deferredLegendItems, noDataColor, transitionType],
+    [
+      border,
+      shadow,
+      picture,
+      regionLabels,
+      data,
+      deferredLegendItems,
+      noDataColor,
+      transitionType,
+      previewColorBlend,
+    ],
   );
 
   // Derive styled SVG from raw content + styles (no useEffect, computed value)
@@ -172,9 +199,13 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     }
 
     const loadMap = async () => {
+      const regionAtStart = selectedRegionId;
       setIsLoading(true);
       try {
-        const svg = await loadMapSvg(selectedRegionId);
+        const svg = await loadMapSvg(regionAtStart);
+        if (useVisualizerStore.getState().selectedRegionId !== regionAtStart) {
+          return;
+        }
         if (svg) {
           setRawSvgContent(svg);
         }

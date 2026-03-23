@@ -4,6 +4,7 @@ import type { AnimationState } from './types';
 export const selectIsPlaying = (state: AnimationState) => state.isPlaying;
 export const selectSecondsPerPeriod = (state: AnimationState) => state.secondsPerPeriod;
 export const selectTransitionType = (state: AnimationState) => state.transitionType;
+export const selectPlaybackPreviewBlend = (state: AnimationState) => state.playbackPreviewBlend;
 
 // Action selectors
 export const selectPlay = (state: AnimationState) => state.play;

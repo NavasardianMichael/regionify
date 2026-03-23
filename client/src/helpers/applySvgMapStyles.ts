@@ -3,7 +3,7 @@
  * Used by MapViewer for display. Pure function; no React or refs.
  */
 import type { LegendItem } from '@/store/legendData/types';
-import type { RegionData } from '@/store/mapData/types';
+import type { DataSet, RegionData } from '@/store/mapData/types';
 import type {
   BorderConfig,
   PictureConfig,
@@ -16,6 +16,7 @@ import {
   SVG_PATH_COORD_REGEX,
   SVG_PATH_NUMBERS_REGEX,
 } from '@/constants/svgPath';
+import { getInterpolatedColorMap } from '@/helpers/legendColorInterpolation';
 
 export type ApplySvgMapStylesOptions = {
   border: BorderConfig;
@@ -26,6 +27,8 @@ export type ApplySvgMapStylesOptions = {
   legendItems: LegendItem[];
   noDataColor: string;
   transitionType: 'instant' | 'smooth';
+  /** When set, path fills use blended legend colors (preview / smooth playback). */
+  colorBlend?: { dataA: DataSet; dataB: DataSet; t: number };
   labelPositions: Record<string, { x: number; y: number }>;
   pathClass: string;
   pathClassInstant: string;
@@ -155,6 +158,7 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
     legendItems,
     noDataColor,
     transitionType,
+    colorBlend,
     labelPositions,
     pathClass,
     pathClassInstant,
@@ -206,6 +210,16 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
     styleElement.textContent = cssText;
   }
 
+  const blendColorMap =
+    colorBlend &&
+    getInterpolatedColorMap(
+      colorBlend.dataA,
+      colorBlend.dataB,
+      colorBlend.t,
+      legendItems,
+      noDataColor,
+    );
+
   paths.forEach((path) => {
     path.classList.add(pathClass);
     if (transitionType === 'instant') {
@@ -221,14 +235,18 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
 
     const pathTitle = path.getAttribute('title');
     if (pathTitle) {
-      const regionData = data.byId[pathTitle];
-      if (regionData) {
-        const matchingLegendItem = legendItems.find(
-          (item) => regionData.value >= item.min && regionData.value <= item.max,
-        );
-        path.style.fill = matchingLegendItem ? matchingLegendItem.color : noDataColor;
+      if (blendColorMap) {
+        path.style.fill = blendColorMap[pathTitle] ?? noDataColor;
       } else {
-        path.style.fill = noDataColor;
+        const regionData = data.byId[pathTitle];
+        if (regionData) {
+          const matchingLegendItem = legendItems.find(
+            (item) => regionData.value >= item.min && regionData.value <= item.max,
+          );
+          path.style.fill = matchingLegendItem ? matchingLegendItem.color : noDataColor;
+        } else {
+          path.style.fill = noDataColor;
+        }
       }
     }
   });

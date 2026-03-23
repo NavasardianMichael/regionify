@@ -35,7 +35,7 @@ function AppContent() {
       <Flex vertical className="h-screen min-h-0 overflow-hidden">
         <Navigation />
         <main className={`grow overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`}>
-          <div className="m-auto">
+          <div className="flex h-full flex-col items-center">
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path={ROUTES.HOME} element={<HomePage />} />

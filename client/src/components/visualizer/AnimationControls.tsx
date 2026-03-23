@@ -1,4 +1,4 @@
-import { type FC, startTransition, useCallback, useEffect, useRef } from 'react';
+import { type FC, startTransition, useCallback, useEffect } from 'react';
 import {
   PauseCircleOutlined,
   PlayCircleOutlined,
@@ -45,30 +45,101 @@ const AnimationControls: FC = () => {
   const setSecondsPerPeriod = useAnimationStore(selectSetSecondsPerPeriod);
   const setTransitionType = useAnimationStore(selectSetTransitionType);
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   const currentIndex = timePeriods.indexOf(activeTimePeriod ?? '');
   const isFirstPeriod = currentIndex <= 0;
   const isLastPeriod = currentIndex >= timePeriods.length - 1;
 
-  // Playback: advance to next period every secondsPerPeriod (independent of smooth transition)
+  // Instant: jump each period on an interval. Smooth: hold, then rAF blend + interpolated fills (MapViewer).
   useEffect(() => {
     if (!isPlaying || timePeriods.length < 2) return;
 
-    const intervalMs = secondsPerPeriod * 1000;
-    intervalRef.current = setInterval(() => {
-      const state = useVisualizerStore.getState();
-      const currentPeriod = state.activeTimePeriod;
-      const periods = state.timePeriods;
-      const idx = periods.indexOf(currentPeriod ?? '');
-      const nextIdx = idx >= periods.length - 1 ? 0 : idx + 1;
-      state.setActiveTimePeriod(periods[nextIdx]);
-    }, intervalMs);
+    if (transitionType === 'instant') {
+      const intervalMs = secondsPerPeriod * 1000;
+      const intervalId = setInterval(() => {
+        const state = useVisualizerStore.getState();
+        const currentPeriod = state.activeTimePeriod;
+        const periods = state.timePeriods;
+        const idx = periods.indexOf(currentPeriod ?? '');
+        const nextIdx = idx >= periods.length - 1 ? 0 : idx + 1;
+        state.setActiveTimePeriod(periods[nextIdx]);
+      }, intervalMs);
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+
+    const setBlend = useAnimationStore.getState().setPlaybackPreviewBlend;
+    let cancelled = false;
+
+    const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+    const runCycle = async () => {
+      const periodMs = secondsPerPeriod * 1000;
+      const blendMs = Math.min(900, Math.max(120, periodMs * 0.38));
+      const holdMs = Math.max(40, periodMs - blendMs);
+
+      while (!cancelled && useAnimationStore.getState().isPlaying) {
+        const vs = useVisualizerStore.getState();
+        const periods = vs.timePeriods;
+        if (periods.length < 2) break;
+
+        const current = vs.activeTimePeriod;
+        const idx = periods.indexOf(current ?? '');
+        if (idx < 0) break;
+
+        const nextIdx = (idx + 1) % periods.length;
+        const fromPeriod = periods[idx];
+        const toPeriod = periods[nextIdx];
+        const dataA = vs.timelineData[fromPeriod];
+        const dataB = vs.timelineData[toPeriod];
+
+        if (!dataA || !dataB) {
+          vs.setActiveTimePeriod(toPeriod);
+          await sleep(periodMs);
+          continue;
+        }
+
+        await sleep(holdMs);
+        if (cancelled || !useAnimationStore.getState().isPlaying) break;
+
+        const start = performance.now();
+
+        await new Promise<void>((resolve) => {
+          const tick = () => {
+            if (cancelled) {
+              setBlend(null);
+              resolve();
+              return;
+            }
+            const elapsed = performance.now() - start;
+            const linearT = Math.min(1, elapsed / blendMs);
+            setBlend({ fromPeriod, toPeriod, t: linearT });
+            if (linearT < 1) {
+              requestAnimationFrame(tick);
+            } else {
+              resolve();
+            }
+          };
+          requestAnimationFrame(tick);
+        });
+
+        if (cancelled) break;
+
+        useVisualizerStore.getState().setActiveTimePeriod(toPeriod);
+        setBlend(null);
+
+        if (!useAnimationStore.getState().isPlaying) break;
+      }
+    };
+
+    void runCycle();
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      cancelled = true;
+      useAnimationStore.getState().setPlaybackPreviewBlend(null);
     };
-  }, [isPlaying, secondsPerPeriod, timePeriods.length]);
+  }, [isPlaying, secondsPerPeriod, timePeriods.length, transitionType]);
 
   const handleStepBackward = useCallback(() => {
     pause();

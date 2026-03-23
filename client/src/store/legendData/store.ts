@@ -2,11 +2,14 @@ import { create } from 'zustand';
 import { generateRandomId } from '@/helpers/common';
 import type { LegendDataState, LegendItem } from './types';
 
-const DEFAULT_ITEMS: LegendItem[] = [
-  { id: generateRandomId(), name: 'Low', min: 0, max: 100, color: '#93C5FD' },
-  { id: generateRandomId(), name: 'Medium', min: 101, max: 500, color: '#3B82F6' },
-  { id: generateRandomId(), name: 'High', min: 501, max: 1000, color: '#1E3A5F' },
-];
+/** Fresh default legend ranges (new ids each call). Used for store init and new-project reset. */
+export function createDefaultLegendItems(): LegendItem[] {
+  return [
+    { id: generateRandomId(), name: 'Low', min: 0, max: 100, color: '#93C5FD' },
+    { id: generateRandomId(), name: 'Medium', min: 101, max: 500, color: '#3B82F6' },
+    { id: generateRandomId(), name: 'High', min: 501, max: 1000, color: '#1E3A5F' },
+  ];
+}
 
 const createItemsState = (items: LegendItem[]) => ({
   allIds: items.map((item) => item.id),
@@ -14,7 +17,7 @@ const createItemsState = (items: LegendItem[]) => ({
 });
 
 export const useLegendDataStore = create<LegendDataState>((set) => ({
-  items: createItemsState(DEFAULT_ITEMS),
+  items: createItemsState(createDefaultLegendItems()),
 
   setLegendDataState: (data) => set((state) => ({ ...state, ...data })),
 

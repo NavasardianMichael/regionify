@@ -24,6 +24,10 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       }
       open={open}
       onCancel={onClose}
+      confirmLoading={state.isExporting}
+      maskClosable={false}
+      keyboard={!state.isExporting}
+      closable={{ disabled: state.isExporting }}
       afterOpenChange={state.handleAfterOpenChange}
       footer={null}
       width={400}

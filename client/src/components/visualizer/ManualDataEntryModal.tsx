@@ -186,6 +186,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
       title={t('visualizer.manualEntry.title')}
       open={open}
       onCancel={handleCancel}
+      maskClosable={false}
       afterOpenChange={handleAfterOpenChange}
       footer={
         <Flex justify="end" gap="middle">

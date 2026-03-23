@@ -49,6 +49,7 @@ export const ExportAnimationModalForm: FC<ExportAnimationModalFormProps> = ({
         onChange={onFormatChange}
         options={allowedFormats}
         className="w-full"
+        disabled={isExporting}
       />
     </Flex>
 
@@ -61,9 +62,16 @@ export const ExportAnimationModalForm: FC<ExportAnimationModalFormProps> = ({
           value={quality}
           onChange={onQualityChange}
           className="w-20"
+          disabled={isExporting}
         />
       </Flex>
-      <Slider min={25} max={100} value={quality} onChange={(v: number) => onQualityChange(v)} />
+      <Slider
+        min={25}
+        max={100}
+        value={quality}
+        onChange={(v: number) => onQualityChange(v)}
+        disabled={isExporting}
+      />
     </Flex>
 
     <Flex vertical gap="small">
@@ -78,6 +86,7 @@ export const ExportAnimationModalForm: FC<ExportAnimationModalFormProps> = ({
           value={secondsPerPeriod}
           onChange={onSecondsPerPeriodChange}
           className="w-20"
+          disabled={isExporting}
         />
       </Flex>
       <Flex align="center" justify="space-between">
@@ -86,20 +95,19 @@ export const ExportAnimationModalForm: FC<ExportAnimationModalFormProps> = ({
           checked={smoothTransitions}
           onChange={onSmoothTransitionsChange}
           aria-label="Smooth transitions between time periods"
+          disabled={isExporting}
         />
       </Flex>
       <Typography.Text type="secondary" className="text-xs">
         {getAnimationTotalFrames(timePeriodsCount, {
           secondsPerPeriod,
           fps: EXPORT_FPS,
-          smooth: smoothTransitions,
         })}{' '}
-        frames · {EXPORT_FPS} FPS · ~
+        frames · ~
         {(
           getAnimationTotalFrames(timePeriodsCount, {
             secondsPerPeriod,
             fps: EXPORT_FPS,
-            smooth: smoothTransitions,
           }) / EXPORT_FPS
         ).toFixed(1)}
         s duration
@@ -115,7 +123,7 @@ export const ExportAnimationModalForm: FC<ExportAnimationModalFormProps> = ({
       icon={<DownloadOutlined />}
       onClick={onExport}
       loading={isExporting}
-      disabled={timePeriodsCount < 2}
+      disabled={isExporting || timePeriodsCount < 2}
       block
     >
       {isExporting ? 'Exporting...' : `Export ${format === EXPORT_TYPES.gif ? 'GIF' : 'Video'}`}

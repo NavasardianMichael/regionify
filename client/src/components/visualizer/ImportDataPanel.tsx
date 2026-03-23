@@ -429,7 +429,10 @@ export const ImportDataPanel: FC = () => {
 
       try {
         const svgContent = await loadMapSvg(selectedRegionId);
-        if (svgContent && !cancelled) {
+        if (cancelled || useVisualizerStore.getState().selectedRegionId !== selectedRegionId) {
+          return;
+        }
+        if (svgContent) {
           const titles = extractSvgTitles(svgContent);
           setSvgTitles(titles);
 
@@ -834,7 +837,7 @@ export const ImportDataPanel: FC = () => {
 
       {importActionComponents[importDataType]}
 
-      <Flex vertical gap="small" className="p-sm! rounded-md bg-gray-50">
+      <Flex vertical gap="small" className="p-sm! min-w-0 rounded-md bg-gray-50">
         <Typography.Text className="text-xs font-semibold text-gray-500">
           {t('visualizer.importData.expectedFormat')}
         </Typography.Text>

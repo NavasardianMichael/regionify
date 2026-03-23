@@ -1,14 +1,20 @@
-import { type FC, lazy, Suspense, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { type FC, lazy, Suspense, useEffect, useLayoutEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
 import { selectHasTimelineData } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { selectCurrentProjectId } from '@/store/projects/selectors';
+import {
+  selectCurrentProjectId,
+  selectSetCurrentProjectId,
+  selectSetSavedStateSnapshot,
+} from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { captureStateSnapshot } from '@/hooks/useProjectState';
 import { useVisualizerPage } from '@/hooks/useVisualizerPage';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
 import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
@@ -24,8 +30,11 @@ const AnimationControls = lazy(() => import('@/components/visualizer/AnimationCo
 const VisualizerPage: FC = () => {
   const { t } = useTypedTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
+  const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
+  const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
 
   const {
@@ -46,12 +55,25 @@ const VisualizerPage: FC = () => {
   } = useVisualizerPage();
 
   useEffect(() => {
-    if (currentProjectId && urlProjectId !== currentProjectId) {
+    if (location.pathname === ROUTES.PROJECT_NEW) {
+      return;
+    }
+    if (currentProjectId && urlProjectId !== undefined && urlProjectId !== currentProjectId) {
       navigate(getProjectRoute(currentProjectId), { replace: true });
     } else if (!currentProjectId && urlProjectId && urlProjectId !== 'new') {
       navigate(ROUTES.PROJECT_NEW, { replace: true });
     }
-  }, [currentProjectId, urlProjectId, navigate]);
+  }, [currentProjectId, urlProjectId, navigate, location.pathname]);
+
+  // Run before child useEffects (e.g. ImportDataPanel async region loader) so the store is cleared first.
+  useLayoutEffect(() => {
+    if (location.pathname !== ROUTES.PROJECT_NEW) return;
+    resetVisualizerToDefaultState();
+    setCurrentProjectId(null);
+    requestAnimationFrame(() => {
+      setSavedStateSnapshot(captureStateSnapshot());
+    });
+  }, [location.pathname, setCurrentProjectId, setSavedStateSnapshot]);
 
   return (
     <>

@@ -19,8 +19,8 @@ import {
 import { useProjectsStore } from '@/store/projects/store';
 import { useDebounceValue } from '@/hooks/useDebounce';
 import { ROUTES } from '@/constants/routes';
-import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
 type UseProjectsReturn = {
   projects: Project[];
@@ -38,7 +38,7 @@ type UseProjectsReturn = {
   setNewName: (value: string) => void;
 };
 
-export function useProjects(): UseProjectsReturn {
+export const useProjects = (): UseProjectsReturn => {
   const { t } = useTypedTranslation();
   const { message, modal } = useAppFeedback();
   const navigate = useNavigate();
@@ -93,6 +93,8 @@ export function useProjects(): UseProjectsReturn {
   const handleDelete = useCallback(
     (project: Project) => {
       modal.confirm({
+        centered: true,
+        maskClosable: false,
         title: t('messages.deleteProjectTitle'),
         icon: null,
         content: t('messages.deleteProjectContent', { name: project.name }),
@@ -153,4 +155,4 @@ export function useProjects(): UseProjectsReturn {
     handleRenameCancel,
     setNewName,
   };
-}
+};
