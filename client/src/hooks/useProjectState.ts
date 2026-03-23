@@ -18,7 +18,7 @@ import { useProjectsStore } from '@/store/projects/store';
  * (all stores combined, actions excluded).
  */
 function buildStateSnapshot(): string {
-  const { selectedRegionId, importDataType, data } = useVisualizerStore.getState();
+  const { selectedCountryId, importDataType, data } = useVisualizerStore.getState();
   const { border, shadow, zoomControls, picture, regionLabels } = useMapStylesStore.getState();
   const { labels, title, position, floatingPosition, floatingSize, backgroundColor, noDataColor } =
     useLegendStylesStore.getState();
@@ -53,7 +53,7 @@ function buildStateSnapshot(): string {
   };
 
   return JSON.stringify({
-    selectedRegionId,
+    countryId: selectedCountryId,
     dataset,
     mapStyles,
     legendStyles,
@@ -85,7 +85,7 @@ export function useHasUnsavedChanges(): boolean {
   const savedSnapshot = useProjectsStore(selectSavedStateSnapshot);
 
   // Subscribe to each store slice so the hook re-runs on any change
-  const selectedRegionId = useVisualizerStore((s) => s.selectedRegionId);
+  const selectedCountryId = useVisualizerStore((s) => s.selectedCountryId);
   const importDataType = useVisualizerStore((s) => s.importDataType);
   const data = useVisualizerStore((s) => s.data);
   const border = useMapStylesStore((s) => s.border);
@@ -111,7 +111,7 @@ export function useHasUnsavedChanges(): boolean {
       : null;
 
     const currentSnapshot = JSON.stringify({
-      selectedRegionId,
+      countryId: selectedCountryId,
       dataset,
       mapStyles: { border, shadow, zoomControls, picture, regionLabels },
       legendStyles: {
@@ -129,7 +129,7 @@ export function useHasUnsavedChanges(): boolean {
     return currentSnapshot !== savedSnapshot;
   }, [
     savedSnapshot,
-    selectedRegionId,
+    selectedCountryId,
     importDataType,
     data,
     border,

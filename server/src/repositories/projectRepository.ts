@@ -6,7 +6,7 @@ import { prisma } from '../db/index.js';
 export type ProjectCreate = {
   userId: string;
   name: string;
-  selectedRegionId?: string | null;
+  countryId?: string | null;
   dataset?: object | null;
   mapStyles?: object | null;
   legendStyles?: object | null;

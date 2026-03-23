@@ -15,15 +15,15 @@ import {
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
-  selectSelectedRegionId,
+  selectSelectedCountryId,
   selectTimelineData,
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
+  selectLabelPositionsByRegionId,
   selectPicture,
-  selectRegionLabelPositions,
   selectRegionLabels,
   selectShadow,
 } from '@/store/mapStyles/selectors';
@@ -57,7 +57,7 @@ type Props = {
 };
 
 const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
-  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const timePeriods = useVisualizerStore(selectTimePeriods);
   const timelineData = useVisualizerStore(selectTimelineData);
 
@@ -76,7 +76,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
   const regionLabels = useMapStylesStore(selectRegionLabels);
-  const regionLabelPositions = useMapStylesStore(selectRegionLabelPositions);
+  const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
 
   const [format, setFormat] = useState<AnimationFormat>(EXPORT_TYPES.gif);
   const [quality, setQuality] = useState(60);
@@ -91,13 +91,13 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   );
 
   const handleExport = useCallback(async () => {
-    if (!selectedRegionId || timePeriods.length < 2) return;
+    if (!selectedCountryId || timePeriods.length < 2) return;
 
     setIsExporting(true);
     setProgress(0);
 
     try {
-      const rawSvg = await loadMapSvg(selectedRegionId);
+      const rawSvg = await loadMapSvg(selectedCountryId);
       if (!rawSvg) throw new Error('Failed to load map SVG');
 
       const exportLegendPosition: LegendPositionExport =
@@ -124,7 +124,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         legendPosition: exportLegendPosition,
         floatingPosition,
         regionLabels,
-        labelPositions: regionLabelPositions,
+        labelPositions: labelPositionsByRegionId,
         onProgress: setProgress,
       };
 
@@ -142,7 +142,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
       setProgress(0);
     }
   }, [
-    selectedRegionId,
+    selectedCountryId,
     timePeriods,
     timelineData,
     legendItems,
@@ -153,7 +153,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     legendPosition,
     floatingPosition,
     regionLabels,
-    regionLabelPositions,
+    labelPositionsByRegionId,
     legendLabels,
     legendTitle,
     legendBackgroundColor,

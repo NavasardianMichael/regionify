@@ -25,7 +25,7 @@ import {
   selectClearTimelineData,
   selectData,
   selectImportDataType,
-  selectSelectedRegionId,
+  selectSelectedCountryId,
   selectSetTimelineData,
   selectSetVisualizerState,
   selectTimelineData,
@@ -85,7 +85,7 @@ export const ImportDataPanel: FC = () => {
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
-  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
   const setTimelineData = useVisualizerStore(selectSetTimelineData);
   const clearTimelineData = useVisualizerStore(selectClearTimelineData);
@@ -229,7 +229,7 @@ export const ImportDataPanel: FC = () => {
 
   /** Download sample data only (template with region IDs for matching). */
   const handleDownloadSampleOnly = useCallback(async () => {
-    if (!selectedRegionId || svgTitles.length === 0) return;
+    if (!selectedCountryId || svgTitles.length === 0) return;
 
     setIsDownloadingSample(true);
     try {
@@ -321,7 +321,7 @@ export const ImportDataPanel: FC = () => {
     }
   }, [
     messageApi,
-    selectedRegionId,
+    selectedCountryId,
     svgTitles,
     limits.historicalDataImport,
     importDataType,
@@ -420,7 +420,7 @@ export const ImportDataPanel: FC = () => {
     let cancelled = false;
 
     const loadSvgTitlesAndGenerateSampleData = async () => {
-      if (!selectedRegionId) {
+      if (!selectedCountryId) {
         setSvgTitles([]);
         setVisualizerState({ data: { allIds: [], byId: {} } });
         clearTimelineData();
@@ -428,8 +428,8 @@ export const ImportDataPanel: FC = () => {
       }
 
       try {
-        const svgContent = await loadMapSvg(selectedRegionId);
-        if (cancelled || useVisualizerStore.getState().selectedRegionId !== selectedRegionId) {
+        const svgContent = await loadMapSvg(selectedCountryId);
+        if (cancelled || useVisualizerStore.getState().selectedCountryId !== selectedCountryId) {
           return;
         }
         if (svgContent) {
@@ -481,7 +481,7 @@ export const ImportDataPanel: FC = () => {
       cancelled = true;
     };
   }, [
-    selectedRegionId,
+    selectedCountryId,
     setVisualizerState,
     clearTimelineData,
     setTimelineData,
@@ -669,7 +669,7 @@ export const ImportDataPanel: FC = () => {
       manual: (
         <Tooltip
           title={
-            selectedRegionId
+            selectedCountryId
               ? t('visualizer.importData.manualTooltip')
               : t('visualizer.importData.manualTooltipNoRegion')
           }
@@ -679,7 +679,7 @@ export const ImportDataPanel: FC = () => {
               type="primary"
               icon={<EditOutlined />}
               onClick={() => setIsManualModalOpen(true)}
-              disabled={!selectedRegionId}
+              disabled={!selectedCountryId}
             >
               {t('visualizer.importData.enterManually')}
             </Button>
@@ -724,7 +724,7 @@ export const ImportDataPanel: FC = () => {
         </Upload>
       ),
     }),
-    [handleFileUpload, selectedRegionId, t],
+    [handleFileUpload, selectedCountryId, t],
   );
 
   return (
@@ -755,7 +755,7 @@ export const ImportDataPanel: FC = () => {
 
           <Tooltip
             title={
-              selectedRegionId
+              selectedCountryId
                 ? t('visualizer.importData.manualTooltip')
                 : t('visualizer.importData.manualTooltipNoRegion')
             }
@@ -767,7 +767,7 @@ export const ImportDataPanel: FC = () => {
                 size="small"
                 onClick={() => setIsManualModalOpen(true)}
                 className="text-gray-500"
-                disabled={!selectedRegionId}
+                disabled={!selectedCountryId}
                 aria-label={t('visualizer.importData.manualAria')}
               />
             </span>
@@ -775,7 +775,7 @@ export const ImportDataPanel: FC = () => {
           {limits.historicalDataImport && (
             <Tooltip
               title={
-                selectedRegionId
+                selectedCountryId
                   ? hasHistoricalFormat
                     ? t('visualizer.importData.switchToStatic')
                     : t('visualizer.importData.switchToDynamic')
@@ -787,7 +787,7 @@ export const ImportDataPanel: FC = () => {
                   type="text"
                   icon={<SwapOutlined />}
                   size="small"
-                  disabled={!selectedRegionId}
+                  disabled={!selectedCountryId}
                   onClick={hasHistoricalFormat ? handleSwitchToStatic : handleSwitchToDynamic}
                   className="text-gray-500"
                   aria-label={
@@ -824,7 +824,7 @@ export const ImportDataPanel: FC = () => {
             size="small"
             icon={isDownloadingSample ? <LoadingOutlined /> : null}
             onClick={handleDownloadSampleOnly}
-            disabled={!selectedRegionId || svgTitles.length === 0 || isDownloadingSample}
+            disabled={!selectedCountryId || svgTitles.length === 0 || isDownloadingSample}
             loading={isDownloadingSample}
             className="h-auto p-0! font-medium!"
             aria-label={t('messages.downloadSample')}

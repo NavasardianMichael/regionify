@@ -17,7 +17,12 @@ export type ProjectMapStyles = {
   };
   zoomControls: { show: boolean; position: { x: number; y: number } };
   picture: { transparentBackground: boolean; backgroundColor: string };
-  regionLabels: { show: boolean; color: string; fontSize: number };
+  regionLabels: {
+    show: boolean;
+    color: string;
+    fontSize: number;
+    labelPositionsByRegionId?: Record<string, { x: number; y: number }>;
+  };
 };
 
 export type ProjectLegendStyles = {
@@ -43,7 +48,7 @@ export type ProjectLegendData = {
 export type Project = {
   id: string;
   name: string;
-  selectedRegionId: string | null;
+  countryId: string | null;
   dataset: ProjectDataset | null;
   mapStyles: ProjectMapStyles | null;
   legendStyles: ProjectLegendStyles | null;
@@ -54,7 +59,7 @@ export type Project = {
 
 export type ProjectCreatePayload = {
   name: string;
-  selectedRegionId?: string | null;
+  countryId?: string | null;
   dataset?: ProjectDataset | null;
   mapStyles?: ProjectMapStyles | null;
   legendStyles?: ProjectLegendStyles | null;

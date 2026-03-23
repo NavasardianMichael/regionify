@@ -225,6 +225,15 @@ const es: CommonNs = {
       expandEditAria: 'Ampliar para editar',
       addRange: 'Añadir rango',
       addRangeAria: 'Añadir rango de leyenda',
+      collapseRanges: 'Rangos',
+      collapseTheme: 'Tema',
+      paletteSuggestions: 'Sugerencias de paleta',
+      applyPalette: 'Aplicar paleta {{name}}',
+      paletteGroups: {
+        smooth: 'Suave',
+        creative: 'Creativo',
+        highContrast: 'Alto contraste',
+      },
     },
     legendModal: {
       title: 'Gestionar rangos de leyenda',

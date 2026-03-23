@@ -16,7 +16,6 @@ import {
 } from 'antd';
 import {
   selectLabels,
-  selectNoDataColor,
   selectPosition,
   selectSetLabels,
   selectSetLegendStylesState,
@@ -35,10 +34,9 @@ const LegendStylesPanel: FC = () => {
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
-  const noDataColor = useLegendStylesStore(selectNoDataColor);
   const setLabels = useLegendStylesStore(selectSetLabels);
-  const setTitle = useLegendStylesStore(selectSetTitle);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
+  const setTitle = useLegendStylesStore(selectSetTitle);
 
   // Local state for debounced inputs
   const [localTitleText, setLocalTitleText] = useState(title.text);
@@ -78,11 +76,6 @@ const LegendStylesPanel: FC = () => {
       debouncedSetFontSize(value);
     },
     [debouncedSetFontSize],
-  );
-
-  const handleNoDataColorChange = useCallback<NonNullable<ColorPickerProps['onChangeComplete']>>(
-    (color) => setLegendStylesState({ noDataColor: color.toHexString() }),
-    [setLegendStylesState],
   );
 
   // Position handler
@@ -181,16 +174,6 @@ const LegendStylesPanel: FC = () => {
                 </Typography.Text>
               </Flex>
             </Flex>
-            <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">
-                {t('visualizer.legendStyles.noDataColor')}
-              </Typography.Text>
-              <ColorPicker
-                value={noDataColor}
-                onChangeComplete={handleNoDataColorChange}
-                size="small"
-              />
-            </Flex>
           </Flex>
         ),
       },
@@ -228,13 +211,11 @@ const LegendStylesPanel: FC = () => {
       title.show,
       localTitleText,
       position,
-      noDataColor,
       positionOptions,
       handleTitleShowChange,
       handleTitleTextChange,
       handleLabelsColorChange,
       handleLabelsFontSizeChange,
-      handleNoDataColorChange,
       handlePositionChange,
       t,
     ],

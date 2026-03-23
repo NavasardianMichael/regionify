@@ -28,16 +28,17 @@ import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
   selectActiveTimePeriod,
   selectData,
-  selectSelectedRegionId,
+  selectSelectedCountryId,
   selectTimelineData,
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
+  selectLabelPositionsByRegionId,
   selectPicture,
-  selectRegionLabelPositions,
   selectRegionLabels,
+  selectSetLabelPositionsByRegionId,
   selectShadow,
   selectZoomControls,
 } from '@/store/mapStyles/selectors';
@@ -77,14 +78,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   // Region label drag state
   const labelPositionsRef = useRef<Record<string, { x: number; y: number }>>({});
-  const prevSelectedRegionIdRef = useRef<string | null>(null);
+  const prevSelectedCountryIdRef = useRef<string | null>(null);
   const draggingLabelRef = useRef<{
     element: SVGTextElement;
     svgElement: SVGSVGElement;
     regionId: string;
   } | null>(null);
 
-  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const data = useVisualizerStore(selectData);
   const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
   const timePeriods = useVisualizerStore(selectTimePeriods);
@@ -97,8 +98,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const zoomControls = useMapStylesStore(selectZoomControls);
   const picture = useMapStylesStore(selectPicture);
   const regionLabels = useMapStylesStore(selectRegionLabels);
-  const regionLabelPositions = useMapStylesStore(selectRegionLabelPositions);
-  const setRegionLabelPositions = useMapStylesStore((s) => s.setRegionLabelPositions);
+  const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
+  const setLabelPositionsByRegionId = useMapStylesStore(selectSetLabelPositionsByRegionId);
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
@@ -170,27 +171,23 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   // Clear region label positions only when switching to a different region (not on initial mount)
   useEffect(() => {
-    const prev = prevSelectedRegionIdRef.current;
-    prevSelectedRegionIdRef.current = selectedRegionId;
-    if (prev != null && selectedRegionId != null && prev !== selectedRegionId) {
-      setRegionLabelPositions({});
+    const prev = prevSelectedCountryIdRef.current;
+    prevSelectedCountryIdRef.current = selectedCountryId;
+    if (prev != null && selectedCountryId != null && prev !== selectedCountryId) {
+      setLabelPositionsByRegionId({});
     }
-  }, [selectedRegionId, setRegionLabelPositions]);
+  }, [selectedCountryId, setLabelPositionsByRegionId]);
 
-  // Sync label positions from store when we have content (e.g. after re-open)
+  // Always sync local draft with persisted positions for the active map.
   useEffect(() => {
-    if (
-      rawSvgContent &&
-      Object.keys(labelPositionsRef.current).length === 0 &&
-      Object.keys(regionLabelPositions).length > 0
-    ) {
-      labelPositionsRef.current = { ...regionLabelPositions };
+    if (rawSvgContent) {
+      labelPositionsRef.current = { ...labelPositionsByRegionId };
     }
-  }, [rawSvgContent, regionLabelPositions]);
+  }, [rawSvgContent, labelPositionsByRegionId]);
 
   // Load raw SVG content only when region changes
   useEffect(() => {
-    if (!selectedRegionId) {
+    if (!selectedCountryId) {
       setRawSvgContent('');
       setZoom(1);
       setPan({ x: 0, y: 0 });
@@ -199,11 +196,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     }
 
     const loadMap = async () => {
-      const regionAtStart = selectedRegionId;
+      const countryAtStart = selectedCountryId;
       setIsLoading(true);
       try {
-        const svg = await loadMapSvg(regionAtStart);
-        if (useVisualizerStore.getState().selectedRegionId !== regionAtStart) {
+        const svg = await loadMapSvg(countryAtStart);
+        if (useVisualizerStore.getState().selectedCountryId !== countryAtStart) {
           return;
         }
         if (svg) {
@@ -220,7 +217,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     setPan({ x: 0, y: 0 });
     labelPositionsRef.current = {};
     loadMap();
-  }, [selectedRegionId]);
+  }, [selectedCountryId]);
 
   const handleZoomIn = useCallback(() => {
     setZoom((prev) => Math.min(prev * 1.2, 5));
@@ -315,14 +312,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
       if (svgCoords) {
         labelPositionsRef.current[dragging.regionId] = { x: svgCoords.x, y: svgCoords.y };
-        setRegionLabelPositions({ ...labelPositionsRef.current });
+        setLabelPositionsByRegionId({ ...labelPositionsRef.current });
       }
 
       draggingLabelRef.current = null;
       window.removeEventListener('mousemove', handleLabelDragMove);
       window.removeEventListener('mouseup', handleLabelDragEnd);
     },
-    [screenToSvgCoords, handleLabelDragMove, setRegionLabelPositions],
+    [screenToSvgCoords, handleLabelDragMove, setLabelPositionsByRegionId],
   );
 
   // Attach drag handlers to SVG region label text elements after render
@@ -526,7 +523,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         <button
           type="button"
           ref={containerRef}
-          aria-label={selectedRegionId ? `Map of ${selectedRegionId}` : 'No region selected'}
+          aria-label={selectedCountryId ? `Map of ${selectedCountryId}` : 'No country selected'}
           className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
             labelDragMode ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
           }`}
@@ -563,7 +560,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           ) : (
             <Flex vertical align="center" justify="center" className="text-white/60">
               <Typography.Text className="text-lg text-white/60">
-                Select a region to view the map
+                Select a country to view the map
               </Typography.Text>
             </Flex>
           )}

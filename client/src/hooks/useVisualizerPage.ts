@@ -4,7 +4,7 @@ import { PLANS } from '@regionify/shared';
 import { createProject, updateProject } from '@/api/projects';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { selectSelectedRegionId } from '@/store/mapData/selectors';
+import { selectSelectedCountryId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
@@ -24,7 +24,6 @@ import {
 } from '@/hooks/useProjectState';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
-import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   buildPartialTemporaryState,
@@ -32,6 +31,7 @@ import {
   saveReturnUrl,
   saveTemporaryProjectState,
 } from '@/helpers/temporaryProjectState';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
 function buildFullTemporaryState(): FullTemporaryProjectState {
   const visualizerState = useVisualizerStore.getState();
@@ -39,7 +39,7 @@ function buildFullTemporaryState(): FullTemporaryProjectState {
   const legendStylesState = useLegendStylesStore.getState();
   const legendDataState = useLegendDataStore.getState();
   return {
-    selectedRegionId: visualizerState.selectedRegionId ?? null,
+    selectedCountryId: visualizerState.selectedCountryId ?? null,
     importDataType: visualizerState.importDataType,
     data: visualizerState.data,
     timelineData: visualizerState.timelineData,
@@ -65,7 +65,7 @@ export function useVisualizerPage() {
   const { t } = useTypedTranslation();
   const { message } = useAppFeedback();
   const navigate = useNavigate();
-  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
@@ -106,7 +106,7 @@ export function useVisualizerPage() {
     }
 
     if (!currentProjectId) {
-      const regionLabel = REGION_OPTIONS.find((r) => r.value === selectedRegionId)?.label ?? '';
+      const regionLabel = REGION_OPTIONS.find((r) => r.value === selectedCountryId)?.label ?? '';
       setProjectName(String(regionLabel));
       setIsNameModalOpen(true);
       return;
@@ -128,7 +128,7 @@ export function useVisualizerPage() {
     isFreePlan,
     isLoggedIn,
     currentProjectId,
-    selectedRegionId,
+    selectedCountryId,
     updateProjectInList,
     setSavedStateSnapshot,
     message,
@@ -166,7 +166,7 @@ export function useVisualizerPage() {
     setProjectName(e.target.value);
   }, []);
 
-  const isSaveDisabled = !selectedRegionId || (!!currentProjectId && !hasUnsavedChanges);
+  const isSaveDisabled = !selectedCountryId || (!!currentProjectId && !hasUnsavedChanges);
 
   const saveButtonText = useMemo(() => {
     if (isFreePlan && !isLoggedIn) return t('visualizer.saveLoginToSave');
@@ -179,7 +179,7 @@ export function useVisualizerPage() {
   );
 
   return {
-    selectedRegionId,
+    selectedCountryId,
     hasUnsavedChanges,
     isExportModalOpen,
     isSaving,

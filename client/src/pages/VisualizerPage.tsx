@@ -38,7 +38,7 @@ const VisualizerPage: FC = () => {
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
 
   const {
-    selectedRegionId,
+    selectedCountryId,
     isExportModalOpen,
     isSaving,
     isNameModalOpen,
@@ -118,7 +118,7 @@ const VisualizerPage: FC = () => {
                   type="primary"
                   icon={<DownloadOutlined />}
                   onClick={handleOpenExportModal}
-                  disabled={!selectedRegionId}
+                  disabled={!selectedCountryId}
                 >
                   {exportButtonText}
                 </Button>

@@ -215,6 +215,15 @@ const zh: CommonNs = {
       expandEditAria: '展开编辑',
       addRange: '添加范围',
       addRangeAria: '添加图例范围',
+      collapseRanges: '范围',
+      collapseTheme: '主题',
+      paletteSuggestions: '调色板建议',
+      applyPalette: '应用 {{name}} 调色板',
+      paletteGroups: {
+        smooth: '平滑',
+        creative: '创意',
+        highContrast: '高对比',
+      },
     },
     legendModal: {
       title: '管理图例范围',

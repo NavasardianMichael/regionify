@@ -7,7 +7,7 @@ const EMPTY_DATA_SET = { allIds: [] as string[], byId: {} as Record<string, neve
 export const useVisualizerStore = create<VisualizerState>((set) => ({
   importDataType: IMPORT_DATA_TYPES.csv,
   data: EMPTY_DATA_SET,
-  selectedRegionId: null,
+  selectedCountryId: null,
 
   // Timeline state
   timelineData: {},

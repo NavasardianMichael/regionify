@@ -229,6 +229,15 @@ const fr: CommonNs = {
       expandEditAria: 'Agrandir pour modifier',
       addRange: 'Ajouter une plage',
       addRangeAria: 'Ajouter une plage de légende',
+      collapseRanges: 'Plages',
+      collapseTheme: 'Thème',
+      paletteSuggestions: 'Suggestions de palettes',
+      applyPalette: 'Appliquer la palette {{name}}',
+      paletteGroups: {
+        smooth: 'Doux',
+        creative: 'Créatif',
+        highContrast: 'Haut contraste',
+      },
     },
     legendModal: {
       title: 'Gérer les plages de légende',

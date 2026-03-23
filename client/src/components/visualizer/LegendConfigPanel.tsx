@@ -1,12 +1,22 @@
 import { type FC, lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import {
   BarChartOutlined,
+  BgColorsOutlined,
   EditOutlined,
+  InfoCircleOutlined,
   PlusOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from '@ant-design/icons';
-import { Button, Flex, Tooltip, Typography } from 'antd';
+import {
+  Button,
+  Collapse,
+  ColorPicker,
+  type ColorPickerProps,
+  Flex,
+  Tooltip,
+  Typography,
+} from 'antd';
 import {
   selectAddItem,
   selectLegendItems,
@@ -18,6 +28,8 @@ import {
 } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
+import { selectNoDataColor, selectSetLegendStylesState } from '@/store/legendStyles/selectors';
+import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
@@ -25,6 +37,126 @@ import { SectionTitle } from '@/components/visualizer/SectionTitle';
 const EditLegendModal = lazy(() => import('./EditLegendModal'));
 
 const GRID_COLS = 'grid-cols-[24px_minmax(80px,1fr)_60px_60px_36px_32px]';
+
+type PaletteSuggestion = {
+  id: string;
+  name: string;
+  colors: string[];
+};
+
+type PaletteGroup = {
+  id: string;
+  titleKey:
+    | 'visualizer.legendConfig.paletteGroups.smooth'
+    | 'visualizer.legendConfig.paletteGroups.creative'
+    | 'visualizer.legendConfig.paletteGroups.highContrast';
+  suggestions: PaletteSuggestion[];
+};
+
+const PALETTE_GROUPS: PaletteGroup[] = [
+  {
+    id: 'smooth',
+    titleKey: 'visualizer.legendConfig.paletteGroups.smooth',
+    suggestions: [
+      {
+        id: 'tailwind-blue',
+        name: 'Blue',
+        colors: ['#DBEAFE', '#93C5FD', '#3B82F6', '#1D4ED8', '#1E3A8A'],
+      },
+      {
+        id: 'tailwind-amber',
+        name: 'Amber',
+        colors: ['#FEF3C7', '#FCD34D', '#F59E0B', '#B45309', '#78350F'],
+      },
+      {
+        id: 'tailwind-teal',
+        name: 'Teal',
+        colors: ['#CCFBF1', '#5EEAD4', '#14B8A6', '#0F766E', '#134E4A'],
+      },
+      {
+        id: 'antd-lime',
+        name: 'Lime',
+        colors: ['#FCFFE6', '#D3F261', '#A0D911', '#5B8C00', '#254000'],
+      },
+      {
+        id: 'tailwind-rose',
+        name: 'Rose',
+        colors: ['#FFE4E6', '#FDA4AF', '#F43F5E', '#BE123C', '#881337'],
+      },
+    ],
+  },
+  {
+    id: 'creative',
+    titleKey: 'visualizer.legendConfig.paletteGroups.creative',
+    suggestions: [
+      {
+        id: 'cyberpunk',
+        name: 'Cyberpunk',
+        colors: ['#00F5D4', '#00BBF9', '#9B5DE5', '#F15BB5', '#FEE440'],
+      },
+      {
+        id: 'retro-pop',
+        name: 'Retro Pop',
+        colors: ['#FF6B6B', '#FFD166', '#06D6A0', '#118AB2', '#8338EC'],
+      },
+      {
+        id: 'cosmic',
+        name: 'Cosmic',
+        colors: ['#2B2D42', '#5A189A', '#9D4EDD', '#F72585', '#4CC9F0'],
+      },
+      {
+        id: 'neon-pop',
+        name: 'Neon Pop',
+        colors: ['#00F5FF', '#00FF85', '#E9FF70', '#FF9E00', '#FF4D6D'],
+      },
+      {
+        id: 'rainbow',
+        name: 'Rainbow',
+        colors: ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#06B6D4', '#3B82F6', '#A855F7'],
+      },
+    ],
+  },
+  {
+    id: 'high-contrast',
+    titleKey: 'visualizer.legendConfig.paletteGroups.highContrast',
+    suggestions: [
+      // Category-like high contrast colors for clearly separated ranges.
+      {
+        id: 'hc-danger',
+        name: 'Danger Stripe',
+        colors: ['#000000', '#FDE047', '#DC2626', '#2563EB', '#16A34A'],
+      },
+      {
+        id: 'hc-vivid',
+        name: 'Vivid',
+        colors: ['#0038FF', '#FF005C', '#00C853', '#FF9800', '#6200EA'],
+      },
+      {
+        id: 'hc-accessible',
+        name: 'Accessible',
+        colors: ['#0072B2', '#D55E00', '#009E73', '#CC79A7', '#F0E442'],
+      },
+      {
+        id: 'hc-dark-light',
+        name: 'Dark / Light',
+        colors: ['#111827', '#FFFFFF', '#B91C1C', '#1D4ED8', '#065F46'],
+      },
+      {
+        id: 'hc-signal',
+        name: 'Signal',
+        colors: ['#B91C1C', '#F59E0B', '#15803D', '#2563EB', '#6D28D9'],
+      },
+    ],
+  },
+];
+
+const samplePaletteColor = (palette: string[], index: number, total: number): string => {
+  if (palette.length === 0) return '#6B7280';
+  if (total <= 1) return palette[palette.length - 1];
+  const ratio = index / (total - 1);
+  const paletteIndex = Math.round(ratio * (palette.length - 1));
+  return palette[paletteIndex] ?? palette[palette.length - 1];
+};
 
 const LegendConfigPanel: FC = () => {
   const { t } = useTypedTranslation();
@@ -39,6 +171,8 @@ const LegendConfigPanel: FC = () => {
   const sortItems = useLegendDataStore(selectSortItems);
   const setItems = useLegendDataStore(selectSetItems);
   const reorderItems = useLegendDataStore(selectReorderItems);
+  const noDataColor = useLegendStylesStore(selectNoDataColor);
+  const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
   const legendItems = useMemo(
     () => items.allIds.map((id) => items.byId[id]),
@@ -69,6 +203,17 @@ const LegendConfigPanel: FC = () => {
   const handleAddLegendRange = useCallback(() => {
     addItem({ name: 'New Range', min: 0, max: 100, color: '#6B7280' });
   }, [addItem]);
+
+  const handleApplyPalette = useCallback(
+    (palette: string[]) => {
+      const coloredItems = legendItems.map((item, index) => ({
+        ...item,
+        color: samplePaletteColor(palette, index, legendItems.length),
+      }));
+      setItems(coloredItems);
+    },
+    [legendItems, setItems],
+  );
 
   const handleRemoveLegendRange = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -106,12 +251,14 @@ const LegendConfigPanel: FC = () => {
     setDraggedIndex(null);
   }, []);
 
-  return (
-    <Flex vertical gap="middle">
+  const handleNoDataColorChange = useCallback<NonNullable<ColorPickerProps['onChangeComplete']>>(
+    (color) => setLegendStylesState({ noDataColor: color.toHexString() }),
+    [setLegendStylesState],
+  );
+
+  const rangesContent = (
+    <Flex vertical gap="small">
       <Flex align="center" justify="space-between">
-        <SectionTitle IconComponent={BarChartOutlined}>
-          {t('visualizer.legendConfig.sectionTitle')}
-        </SectionTitle>
         <Flex gap={4}>
           <Tooltip
             title={
@@ -148,40 +295,44 @@ const LegendConfigPanel: FC = () => {
         </Flex>
       </Flex>
 
-      {/* Legend Items */}
-      <Flex vertical gap="small">
-        {/* Header Row */}
-        <div className={`grid ${GRID_COLS} gap-2 text-xs font-medium text-gray-500`}>
-          <span />
-          <Typography.Text className="text-xs text-gray-500">Name</Typography.Text>
-          <Typography.Text className="text-xs text-gray-500">Min</Typography.Text>
-          <Typography.Text className="text-xs text-gray-500">Max</Typography.Text>
-          <Typography.Text className="text-xs text-gray-500">Color</Typography.Text>
-          <span />
-        </div>
-        <Flex vertical>
-          {legendItems.map((item, index) => (
-            <LegendItemRow
-              key={item.id}
-              item={item}
-              index={index}
-              isDragged={draggedIndex === index}
-              isRemoveDisabled={legendItems.length <= 1}
-              gridCols={GRID_COLS}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDragEnd={handleDragEnd}
-              onNameChange={(e) => {
-                const id = e.currentTarget.dataset.id;
-                if (id) updateItem(id, { name: e.target.value });
-              }}
-              onMinChange={(v) => updateItem(item.id, { min: v ?? 0 })}
-              onMaxChange={(v) => updateItem(item.id, { max: v ?? 0 })}
-              onColorChange={(c) => updateItem(item.id, { color: c.toHexString() })}
-              onRemove={handleRemoveLegendRange}
-            />
-          ))}
-        </Flex>
+      <div className={`grid ${GRID_COLS} gap-2 text-xs font-medium text-gray-500`}>
+        <span />
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.legendColumns.name')}
+        </Typography.Text>
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.legendColumns.min')}
+        </Typography.Text>
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.legendColumns.max')}
+        </Typography.Text>
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.legendColumns.color')}
+        </Typography.Text>
+        <span />
+      </div>
+      <Flex vertical>
+        {legendItems.map((item, index) => (
+          <LegendItemRow
+            key={item.id}
+            item={item}
+            index={index}
+            isDragged={draggedIndex === index}
+            isRemoveDisabled={legendItems.length <= 1}
+            gridCols={GRID_COLS}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+            onNameChange={(e) => {
+              const id = e.currentTarget.dataset.id;
+              if (id) updateItem(id, { name: e.target.value });
+            }}
+            onMinChange={(v) => updateItem(item.id, { min: v ?? 0 })}
+            onMaxChange={(v) => updateItem(item.id, { max: v ?? 0 })}
+            onColorChange={(c) => updateItem(item.id, { color: c.toHexString() })}
+            onRemove={handleRemoveLegendRange}
+          />
+        ))}
       </Flex>
 
       <Tooltip title={t('visualizer.legendConfig.addRange')}>
@@ -194,6 +345,90 @@ const LegendConfigPanel: FC = () => {
           aria-label={t('visualizer.legendConfig.addRangeAria')}
         />
       </Tooltip>
+    </Flex>
+  );
+
+  const palettesContent = (
+    <Flex vertical gap="small">
+      <Flex align="center" gap={6}>
+        <BgColorsOutlined className="text-gray-500" />
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.legendConfig.paletteSuggestions')}
+        </Typography.Text>
+      </Flex>
+      <Flex vertical gap={8}>
+        {PALETTE_GROUPS.map((group) => (
+          <Flex key={group.id} vertical gap={4}>
+            <Typography.Text className="text-xs font-medium text-gray-500">
+              {t(group.titleKey)}
+            </Typography.Text>
+            <Flex gap={6} wrap>
+              {group.suggestions.map((palette) => (
+                <Tooltip
+                  key={palette.id}
+                  title={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
+                >
+                  <button
+                    type="button"
+                    className="m-0 h-6 w-10 cursor-pointer overflow-hidden rounded border border-gray-200 p-0"
+                    onClick={() => handleApplyPalette(palette.colors)}
+                    aria-label={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
+                  >
+                    <span className="flex h-full w-full">
+                      {palette.colors.map((color) => (
+                        <span
+                          key={color}
+                          className="h-full flex-1"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </span>
+                  </button>
+                </Tooltip>
+              ))}
+            </Flex>
+          </Flex>
+        ))}
+      </Flex>
+      <Flex align="center" justify="space-between">
+        <Flex align="center" gap={6}>
+          <InfoCircleOutlined className="text-gray-400" />
+          <Typography.Text className="text-xs text-gray-500">
+            {t('visualizer.legendStyles.noDataColor')}
+          </Typography.Text>
+        </Flex>
+        <ColorPicker value={noDataColor} onChangeComplete={handleNoDataColorChange} size="small" />
+      </Flex>
+    </Flex>
+  );
+
+  const collapseItems = [
+    {
+      key: 'ranges',
+      label: (
+        <Typography.Text className="font-semibold">
+          {t('visualizer.legendConfig.collapseRanges')}
+        </Typography.Text>
+      ),
+      children: rangesContent,
+    },
+    {
+      key: 'palettes',
+      label: (
+        <Typography.Text className="font-semibold">
+          {t('visualizer.legendConfig.collapseTheme')}
+        </Typography.Text>
+      ),
+      children: palettesContent,
+    },
+  ];
+
+  return (
+    <Flex vertical gap="middle">
+      <SectionTitle IconComponent={BarChartOutlined}>
+        {t('visualizer.legendConfig.sectionTitle')}
+      </SectionTitle>
+      <Collapse items={collapseItems} defaultActiveKey={[]} ghost expandIconPlacement="end" />
 
       {/* Edit Modal */}
       <Suspense fallback={null}>

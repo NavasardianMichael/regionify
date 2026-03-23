@@ -26,6 +26,8 @@ export type RegionLabelsConfig = {
   show: boolean;
   color: string;
   fontSize: number;
+  /** Only mutated labels are stored; missing keys use default SVG positions. */
+  labelPositionsByRegionId: RegionLabelPositions;
 };
 
 /** SVG-space positions for region labels (path title → { x, y }). Used for export and persistence. */
@@ -38,8 +40,6 @@ export type MapStylesState = {
   zoomControls: ZoomControlsConfig;
   picture: PictureConfig;
   regionLabels: RegionLabelsConfig;
-  /** Dragged region label positions (current map only). Cleared when region changes. */
-  regionLabelPositions: RegionLabelPositions;
 
   // Actions
   setMapStylesState: (data: Partial<MapStylesState>) => void;
@@ -48,5 +48,5 @@ export type MapStylesState = {
   setZoomControls: (data: Partial<ZoomControlsConfig>) => void;
   setPicture: (data: Partial<PictureConfig>) => void;
   setRegionLabels: (data: Partial<RegionLabelsConfig>) => void;
-  setRegionLabelPositions: (positions: RegionLabelPositions) => void;
+  setLabelPositionsByRegionId: (positions: RegionLabelPositions) => void;
 };

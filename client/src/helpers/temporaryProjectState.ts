@@ -16,7 +16,7 @@ const RETURN_URL_KEY = 'regionify-return-url';
 export type TemporaryProjectState = Partial<
   Pick<
     VisualizerState,
-    | 'selectedRegionId'
+    | 'selectedCountryId'
     | 'importDataType'
     | 'data'
     | 'timelineData'
@@ -47,7 +47,7 @@ const EMPTY_DATA = {
 
 function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
   return {
-    selectedRegionId: null,
+    selectedCountryId: null,
     importDataType: IMPORT_DATA_TYPES.csv,
     data: EMPTY_DATA,
     timelineData: {},
@@ -77,6 +77,7 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
       show: true,
       color: '#333333',
       fontSize: 10,
+      labelPositionsByRegionId: {},
     },
     labels: {
       color: '#18294D',

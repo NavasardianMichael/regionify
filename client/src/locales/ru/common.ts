@@ -224,6 +224,15 @@ const ru: CommonNs = {
       expandEditAria: 'Развернуть для редактирования',
       addRange: 'Добавить диапазон',
       addRangeAria: 'Добавить диапазон легенды',
+      collapseRanges: 'Диапазоны',
+      collapseTheme: 'Тема',
+      paletteSuggestions: 'Предложенные палитры',
+      applyPalette: 'Применить палитру {{name}}',
+      paletteGroups: {
+        smooth: 'Плавные',
+        creative: 'Креативные',
+        highContrast: 'Высокий контраст',
+      },
     },
     legendModal: {
       title: 'Управление диапазонами легенды',

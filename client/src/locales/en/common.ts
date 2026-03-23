@@ -219,6 +219,15 @@ const en: CommonNs = {
       expandEditAria: 'Expand to edit',
       addRange: 'Add range',
       addRangeAria: 'Add legend range',
+      collapseRanges: 'Ranges',
+      collapseTheme: 'Theme',
+      paletteSuggestions: 'Palette suggestions',
+      applyPalette: 'Apply {{name}} palette',
+      paletteGroups: {
+        smooth: 'Smooth',
+        creative: 'Creative',
+        highContrast: 'High Contrast',
+      },
     },
     legendModal: {
       title: 'Manage Legend Ranges',

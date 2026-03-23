@@ -229,6 +229,15 @@ const de: CommonNs = {
       expandEditAria: 'Zum Bearbeiten erweitern',
       addRange: 'Bereich hinzufügen',
       addRangeAria: 'Legendenbereich hinzufügen',
+      collapseRanges: 'Bereiche',
+      collapseTheme: 'Thema',
+      paletteSuggestions: 'Palettenvorschläge',
+      applyPalette: 'Palette {{name}} anwenden',
+      paletteGroups: {
+        smooth: 'Sanft',
+        creative: 'Kreativ',
+        highContrast: 'Hoher Kontrast',
+      },
     },
     legendModal: {
       title: 'Legendenbereiche verwalten',

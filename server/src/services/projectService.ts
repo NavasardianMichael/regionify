@@ -11,7 +11,7 @@ import {
 export type ProjectPublic = {
   id: string;
   name: string;
-  selectedRegionId: string | null;
+  countryId: string | null;
   dataset: unknown;
   mapStyles: unknown;
   legendStyles: unknown;
@@ -24,7 +24,7 @@ function toPublicProject(project: Project): ProjectPublic {
   return {
     id: project.id,
     name: project.name,
-    selectedRegionId: project.selectedRegionId,
+    countryId: project.countryId,
     dataset: project.dataset,
     mapStyles: project.mapStyles,
     legendStyles: project.legendStyles,

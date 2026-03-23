@@ -56,7 +56,7 @@ model Project {
   id               String   @id @default(uuid())
   userId           String   @map("user_id")
   name             String
-  selectedRegionId String?  @map("selected_region_id")
+  countryId        String?  @map("country_id")
   dataset          Json?
   mapStyles        Json?    @map("map_styles")
   legendStyles     Json?    @map("legend_styles")

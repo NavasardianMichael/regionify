@@ -6,7 +6,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { useProjectsStore } from '@/store/projects/store';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
-import type { ImportDataType, RegionId } from '@/types/mapData';
+import type { CountryId, ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
 
 /**
@@ -20,9 +20,9 @@ export function useLoadProject(): (project: Project) => void {
     const { setItems } = useLegendDataStore.getState();
     const { setCurrentProjectId, setSavedStateSnapshot } = useProjectsStore.getState();
 
-    // Load region + dataset
+    // Load country + dataset
     setVisualizerState({
-      selectedRegionId: (project.selectedRegionId as RegionId) ?? null,
+      selectedCountryId: (project.countryId as CountryId) ?? null,
       importDataType: (project.dataset?.importDataType as ImportDataType) ?? IMPORT_DATA_TYPES.csv,
       data: project.dataset
         ? { allIds: project.dataset.allIds, byId: project.dataset.byId }
@@ -31,12 +31,19 @@ export function useLoadProject(): (project: Project) => void {
 
     // Load map styles (merge with current defaults for safety)
     if (project.mapStyles) {
+      const legacyPositions =
+        (project.mapStyles as { regionLabelPositions?: Record<string, { x: number; y: number }> })
+          .regionLabelPositions ?? {};
       setMapStylesState({
         border: project.mapStyles.border,
         shadow: project.mapStyles.shadow,
         zoomControls: project.mapStyles.zoomControls,
         picture: project.mapStyles.picture,
-        regionLabels: project.mapStyles.regionLabels,
+        regionLabels: {
+          ...project.mapStyles.regionLabels,
+          labelPositionsByRegionId:
+            project.mapStyles.regionLabels.labelPositionsByRegionId ?? legacyPositions,
+        },
       });
     }
 

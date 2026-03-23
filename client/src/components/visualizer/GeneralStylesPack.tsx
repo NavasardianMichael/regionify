@@ -33,6 +33,7 @@ const DEFAULT_MAP_STYLES = {
     show: true,
     color: '#333333',
     fontSize: 10,
+    labelPositionsByRegionId: {},
   },
 };
 
@@ -93,6 +94,7 @@ const generateRandomStylePack = () => {
         show: Math.random() > 0.3,
         color: labelColor,
         fontSize: randomInt(7, 14),
+        labelPositionsByRegionId: {},
       },
     },
     legend: {

@@ -42,11 +42,11 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const userId = req.session.userId!;
-    const { name, selectedRegionId, dataset, mapStyles, legendStyles, legendData } = req.body;
+    const { name, countryId, dataset, mapStyles, legendStyles, legendData } = req.body;
 
     const project = await projectService.createProject(userId, {
       name,
-      selectedRegionId: selectedRegionId ?? null,
+      countryId: countryId ?? null,
       dataset: dataset ?? null,
       mapStyles: mapStyles ?? null,
       legendStyles: legendStyles ?? null,
@@ -66,11 +66,11 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
   try {
     const userId = req.session.userId!;
-    const { name, selectedRegionId, dataset, mapStyles, legendStyles, legendData } = req.body;
+    const { name, countryId, dataset, mapStyles, legendStyles, legendData } = req.body;
 
     const project = await projectService.updateProject(userId, req.params.id, {
       ...(name !== undefined && { name }),
-      ...(selectedRegionId !== undefined && { selectedRegionId }),
+      ...(countryId !== undefined && { countryId }),
       ...(dataset !== undefined && { dataset }),
       ...(mapStyles !== undefined && { mapStyles }),
       ...(legendStyles !== undefined && { legendStyles }),

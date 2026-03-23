@@ -18,7 +18,7 @@ export function applyFullTemporaryProjectState(merged: FullTemporaryProjectState
   const { setItems } = useLegendDataStore.getState();
 
   setVisualizerState({
-    selectedRegionId: merged.selectedRegionId,
+    selectedCountryId: merged.selectedCountryId,
     importDataType: merged.importDataType,
     data: merged.data,
     timelineData: merged.timelineData,

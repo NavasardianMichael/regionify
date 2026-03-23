@@ -31,7 +31,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
     progress,
     isAnimationFormat,
     hasTimelineData,
-    selectedRegionId,
+    selectedCountryId,
     allowedFormats,
     limits,
     maxQuality,
@@ -160,7 +160,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         icon={<DownloadOutlined />}
         onClick={handleDownload}
         loading={isExporting}
-        disabled={isExporting || !selectedRegionId || (isAnimationFormat && !hasTimelineData)}
+        disabled={isExporting || !selectedCountryId || (isAnimationFormat && !hasTimelineData)}
       >
         {downloadButtonLabel}
       </Button>

@@ -85,8 +85,7 @@ export const useProjects = (): UseProjectsReturn => {
     if (!debouncedSearch.trim()) return projects;
     const query = debouncedSearch.toLowerCase();
     return projects.filter(
-      (p) =>
-        p.name.toLowerCase().includes(query) || p.selectedRegionId?.toLowerCase().includes(query),
+      (p) => p.name.toLowerCase().includes(query) || p.countryId?.toLowerCase().includes(query),
     );
   }, [projects, debouncedSearch]);
 

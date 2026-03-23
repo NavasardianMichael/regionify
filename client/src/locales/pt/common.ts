@@ -227,6 +227,15 @@ const pt: CommonNs = {
       expandEditAria: 'Expandir para editar',
       addRange: 'Adicionar intervalo',
       addRangeAria: 'Adicionar intervalo da legenda',
+      collapseRanges: 'Intervalos',
+      collapseTheme: 'Tema',
+      paletteSuggestions: 'Sugestões de paleta',
+      applyPalette: 'Aplicar paleta {{name}}',
+      paletteGroups: {
+        smooth: 'Suave',
+        creative: 'Criativo',
+        highContrast: 'Alto contraste',
+      },
     },
     legendModal: {
       title: 'Gerir intervalos da legenda',

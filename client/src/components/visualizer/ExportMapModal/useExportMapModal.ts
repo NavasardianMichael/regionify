@@ -14,15 +14,15 @@ import {
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
   selectHasTimelineData,
-  selectSelectedRegionId,
+  selectSelectedCountryId,
   selectTimelineData,
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import {
   selectBorder,
+  selectLabelPositionsByRegionId,
   selectPicture,
-  selectRegionLabelPositions,
   selectRegionLabels,
   selectShadow,
 } from '@/store/mapStyles/selectors';
@@ -60,7 +60,7 @@ export const EXPORT_FPS = 30;
 export function useExportMapModal(_open: boolean, onClose: () => void) {
   const { t } = useTypedTranslation();
   const { message } = useAppFeedback();
-  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
   const timelineData = useVisualizerStore(selectTimelineData);
@@ -80,7 +80,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
   const regionLabels = useMapStylesStore(selectRegionLabels);
-  const regionLabelPositions = useMapStylesStore(selectRegionLabelPositions);
+  const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
 
   const maxQuality = limits.maxExportQuality;
   const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
@@ -162,7 +162,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   );
 
   const handleDownload = useCallback(async () => {
-    const fileName = selectedRegionId ? `regionify-${selectedRegionId}` : 'regionify-map';
+    const fileName = selectedCountryId ? `regionify-${selectedCountryId}` : 'regionify-map';
 
     setIsExporting(true);
     setProgress(0);
@@ -172,7 +172,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
           message.warning(t('messages.importHistoricalFirst'), 0);
           return;
         }
-        const rawSvg = await loadMapSvg(selectedRegionId!);
+        const rawSvg = await loadMapSvg(selectedCountryId!);
         if (!rawSvg) throw new Error('Failed to load map SVG');
 
         const exportLegendPosition: LegendPositionExport =
@@ -199,7 +199,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
           legendPosition: exportLegendPosition,
           floatingPosition,
           regionLabels,
-          labelPositions: regionLabelPositions,
+          labelPositions: labelPositionsByRegionId,
           onProgress: setProgress,
         };
 
@@ -225,7 +225,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     exportType,
     isAnimationFormat,
     hasTimelineData,
-    selectedRegionId,
+    selectedCountryId,
     exportHandlers,
     message,
     timePeriods,
@@ -241,7 +241,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     legendPosition,
     floatingPosition,
     regionLabels,
-    regionLabelPositions,
+    labelPositionsByRegionId,
     quality,
     secondsPerPeriod,
     smoothTransitions,
@@ -273,7 +273,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     progress,
     isAnimationFormat,
     hasTimelineData,
-    selectedRegionId,
+    selectedCountryId,
     allowedFormats,
     limits,
     maxQuality,

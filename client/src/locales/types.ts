@@ -203,6 +203,15 @@ export type CommonNs = {
       expandEditAria: string;
       addRange: string;
       addRangeAria: string;
+      collapseRanges: string;
+      collapseTheme: string;
+      paletteSuggestions: string;
+      applyPalette: string;
+      paletteGroups: {
+        smooth: string;
+        creative: string;
+        highContrast: string;
+      };
     };
     legendModal: {
       title: string;

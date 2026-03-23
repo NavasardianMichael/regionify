@@ -25,7 +25,8 @@ export const selectRegionLabels = (state: MapStylesState) => state.regionLabels;
 export const selectRegionLabelsShow = (state: MapStylesState) => state.regionLabels.show;
 export const selectRegionLabelsColor = (state: MapStylesState) => state.regionLabels.color;
 export const selectRegionLabelsFontSize = (state: MapStylesState) => state.regionLabels.fontSize;
-export const selectRegionLabelPositions = (state: MapStylesState) => state.regionLabelPositions;
+export const selectLabelPositionsByRegionId = (state: MapStylesState) =>
+  state.regionLabels.labelPositionsByRegionId;
 
 // Action selectors
 export const selectSetMapStylesState = (state: MapStylesState) => state.setMapStylesState;
@@ -34,3 +35,5 @@ export const selectSetShadow = (state: MapStylesState) => state.setShadow;
 export const selectSetZoomControls = (state: MapStylesState) => state.setZoomControls;
 export const selectSetPicture = (state: MapStylesState) => state.setPicture;
 export const selectSetRegionLabels = (state: MapStylesState) => state.setRegionLabels;
+export const selectSetLabelPositionsByRegionId = (state: MapStylesState) =>
+  state.setLabelPositionsByRegionId;

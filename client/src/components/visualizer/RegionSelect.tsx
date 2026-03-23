@@ -1,9 +1,9 @@
 import { type FC, startTransition, useCallback, useMemo, useRef } from 'react';
 import { GlobalOutlined } from '@ant-design/icons';
-import { Flex, Modal, type RefSelectProps, Select, type SelectProps, Typography } from 'antd';
+import { Flex, type RefSelectProps, Select, type SelectProps, Typography } from 'antd';
 import {
   selectData,
-  selectSelectedRegionId,
+  selectSelectedCountryId,
   selectSetVisualizerState,
   selectTimePeriods,
 } from '@/store/mapData/selectors';
@@ -12,13 +12,15 @@ import { useHasUnsavedChanges } from '@/hooks/useProjectState';
 import type { RegionId } from '@/types/mapData';
 import { REGION_OPTIONS } from '@/constants/regions';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 export const RegionSelect: FC = () => {
   const { t } = useTypedTranslation();
+  const { modal } = useAppFeedback();
   const selectRef = useRef<RefSelectProps>(null);
 
-  const selectedRegionId = useVisualizerStore(selectSelectedRegionId);
+  const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
   const data = useVisualizerStore(selectData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
@@ -29,17 +31,17 @@ export const RegionSelect: FC = () => {
 
   const handleRegionChange: SelectProps['onChange'] = useCallback(
     (newRegionId: RegionId) => {
-      if (newRegionId === selectedRegionId) return;
+      if (newRegionId === selectedCountryId) return;
 
       const doChange = () => {
         startTransition(() => {
-          setVisualizerState({ selectedRegionId: newRegionId });
+          setVisualizerState({ selectedCountryId: newRegionId });
         });
         selectRef.current?.blur();
       };
 
       if (shouldWarnOnRegionChange) {
-        Modal.confirm({
+        modal.confirm({
           title: t('visualizer.region.changeConfirmTitle'),
           content: (
             <Flex vertical gap="small">
@@ -57,7 +59,7 @@ export const RegionSelect: FC = () => {
         doChange();
       }
     },
-    [selectedRegionId, setVisualizerState, shouldWarnOnRegionChange, t],
+    [modal, selectedCountryId, setVisualizerState, shouldWarnOnRegionChange, t],
   );
 
   const showSearchConfig = useMemo<SelectProps['showSearch']>(
@@ -75,7 +77,7 @@ export const RegionSelect: FC = () => {
       </SectionTitle>
       <Select
         ref={selectRef}
-        value={selectedRegionId}
+        value={selectedCountryId}
         onChange={handleRegionChange}
         options={REGION_OPTIONS}
         placeholder={t('visualizer.region.placeholder')}

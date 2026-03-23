@@ -26,8 +26,8 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
     show: true,
     color: '#333333',
     fontSize: 10,
+    labelPositionsByRegionId: {},
   },
-  regionLabelPositions: {},
 
   setMapStylesState: (data) => set((state) => ({ ...state, ...data })),
   setBorder: (data) => set((state) => ({ ...state, border: { ...state.border, ...data } })),
@@ -37,5 +37,11 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
   setPicture: (data) => set((state) => ({ ...state, picture: { ...state.picture, ...data } })),
   setRegionLabels: (data) =>
     set((state) => ({ ...state, regionLabels: { ...state.regionLabels, ...data } })),
-  setRegionLabelPositions: (regionLabelPositions) => set({ regionLabelPositions }),
+  setLabelPositionsByRegionId: (labelPositionsByRegionId) =>
+    set((state) => ({
+      regionLabels: {
+        ...state.regionLabels,
+        labelPositionsByRegionId,
+      },
+    })),
 }));

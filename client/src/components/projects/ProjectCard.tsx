@@ -36,9 +36,9 @@ const ProjectCard = memo<Props>(({ project, onOpen, onDelete, onRename }) => {
     [onRename, project],
   );
 
-  const regionLabel = project.selectedRegionId
-    ? project.selectedRegionId.replace(/([A-Z])/g, ' $1').trim()
-    : 'No region';
+  const countryLabel = project.countryId
+    ? project.countryId.replace(/([A-Z])/g, ' $1').trim()
+    : 'No country';
 
   const updatedAt = new Date(project.updatedAt).toLocaleDateString('en-US', {
     month: 'short',
@@ -76,7 +76,7 @@ const ProjectCard = memo<Props>(({ project, onOpen, onDelete, onRename }) => {
         <Flex align="center" gap="small">
           <GlobalOutlined className="shrink-0 text-gray-400" />
           <Typography.Text type="secondary" className="truncate text-xs capitalize">
-            {regionLabel}
+            {countryLabel}
           </Typography.Text>
         </Flex>
 

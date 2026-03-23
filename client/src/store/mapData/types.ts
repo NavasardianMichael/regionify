@@ -1,4 +1,4 @@
-import type { ImportDataType, RegionId } from '@/types/mapData';
+import type { CountryId, ImportDataType } from '@/types/mapData';
 
 export type RegionData = {
   id: string;
@@ -20,7 +20,7 @@ export type RegionOption = {
 export type VisualizerState = {
   // State
   importDataType: ImportDataType;
-  selectedRegionId: RegionId | null;
+  selectedCountryId: CountryId | null;
   data: DataSet;
 
   // Timeline state
