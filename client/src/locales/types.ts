@@ -8,7 +8,7 @@ export type CommonNs = {
     home: string;
     projects: string;
     contact: string;
-    billing: string;
+    plans: string;
     about: string;
     login: string;
     account: string;
@@ -32,7 +32,7 @@ export type CommonNs = {
     title: string;
     description: string;
   };
-  billing: {
+  plans: {
     title: string;
     subtitle: string;
     paymentNote: string;
@@ -41,7 +41,11 @@ export type CommonNs = {
     bestChoice: string;
     priceFree: string;
     priceOneTime: string;
-    plans: {
+    paymentPendingNote: string;
+    verifyErrorNote: string;
+    backToPlans: string;
+    goToPlans: string;
+    items: {
       observer: {
         name: string;
         description: string;

@@ -6,7 +6,7 @@ const pt: CommonNs = {
     home: 'Início',
     projects: 'Projetos',
     contact: 'Contacto',
-    billing: 'Faturação',
+    plans: 'Planos',
     about: 'Sobre',
     login: 'Entrar',
     account: 'Conta',
@@ -31,7 +31,7 @@ const pt: CommonNs = {
     title: 'Sobre',
     description: 'Saiba mais sobre esta aplicação.',
   },
-  billing: {
+  plans: {
     title: 'Escolha o seu plano',
     subtitle: 'Selecione o plano ideal para as suas necessidades de mapeamento',
     paymentNote:
@@ -41,7 +41,12 @@ const pt: CommonNs = {
     bestChoice: 'Melhor escolha',
     priceFree: 'Grátis',
     priceOneTime: '{{price}} pagamento único',
-    plans: {
+    paymentPendingNote:
+      'Pagamento recebido. O seu plano pode demorar um momento a atualizar. Atualize a página ou veja Planos.',
+    verifyErrorNote: 'Não foi possível verificar o seu plano. Atualize ou veja Planos.',
+    backToPlans: 'Voltar a Planos',
+    goToPlans: 'Ir para Planos',
+    items: {
       observer: {
         name: 'Observador (grátis)',
         description: 'Perfeito para começar',

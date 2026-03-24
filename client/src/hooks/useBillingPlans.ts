@@ -20,7 +20,7 @@ export function useBillingPlans(): BillingPlan[] {
   return useMemo(
     () =>
       BILLING_PLAN_DEFINITIONS.map((def) => {
-        const base = `billing.plans.${def.planLocaleKey}` as const;
+        const base = `plans.items.${def.planLocaleKey}` as const;
         const featuresRaw = t(`${base}.features`, { returnObjects: true });
         return {
           id: def.id,

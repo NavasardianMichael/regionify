@@ -7,11 +7,13 @@ import { getMe } from '@/api/auth';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 const POLL_INTERVAL_MS = 2000;
 const POLL_TIMEOUT_MS = 60000;
 
 const PaymentReturnPage: FC = () => {
+  const { t } = useTypedTranslation();
   const navigate = useNavigate();
   const setUser = useProfileStore(selectSetUser);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -35,9 +37,7 @@ const PaymentReturnPage: FC = () => {
       if (Date.now() - start > POLL_TIMEOUT_MS) {
         if (intervalIdRef.current) clearInterval(intervalIdRef.current);
         setStatus('success');
-        setMessageText(
-          'Payment received. Your plan may take a moment to update. Refresh the page or check Billing.',
-        );
+        setMessageText(t('plans.paymentPendingNote'));
         return;
       }
       try {
@@ -55,7 +55,7 @@ const PaymentReturnPage: FC = () => {
         if (!cancelled) {
           if (intervalIdRef.current) clearInterval(intervalIdRef.current);
           setStatus('error');
-          setMessageText('Could not verify your plan. Please refresh or check Billing.');
+          setMessageText(t('plans.verifyErrorNote'));
         }
       }
     };
@@ -67,7 +67,7 @@ const PaymentReturnPage: FC = () => {
       cancelled = true;
       if (intervalIdRef.current) clearInterval(intervalIdRef.current);
     };
-  }, [setUser]);
+  }, [setUser, t]);
 
   if (status === 'loading') {
     return (
@@ -83,7 +83,7 @@ const PaymentReturnPage: FC = () => {
       <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
         <Typography.Text type="danger">{messageText}</Typography.Text>
         <Button type="primary" onClick={() => navigate(ROUTES.BILLING)}>
-          Back to Billing
+          {t('plans.backToPlans')}
         </Button>
       </Flex>
     );
@@ -99,7 +99,7 @@ const PaymentReturnPage: FC = () => {
       </Button>
       {!upgradedPlan && (
         <Button type="link" onClick={() => navigate(ROUTES.BILLING)}>
-          Go to Billing
+          {t('plans.goToPlans')}
         </Button>
       )}
     </Flex>

@@ -2,8 +2,10 @@ import { type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Typography } from 'antd';
 import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 const PaymentCancelPage: FC = () => {
+  const { t } = useTypedTranslation();
   const navigate = useNavigate();
 
   return (
@@ -13,7 +15,7 @@ const PaymentCancelPage: FC = () => {
         You cancelled the payment. No charges were made.
       </Typography.Text>
       <Button type="primary" onClick={() => navigate(ROUTES.BILLING)}>
-        Back to Billing
+        {t('plans.backToPlans')}
       </Button>
     </Flex>
   );

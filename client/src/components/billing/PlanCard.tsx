@@ -24,8 +24,8 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   }, [plan.id, onUpgrade]);
 
   const priceLabel = useMemo(() => {
-    if (plan.price === 0) return t('billing.priceFree');
-    return t('billing.priceOneTime', { price: `$${plan.price}` });
+    if (plan.price === 0) return t('plans.priceFree');
+    return t('plans.priceOneTime', { price: `$${plan.price}` });
   }, [plan.price, t]);
 
   const buttonType = useMemo(() => (plan.popular ? 'primary' : 'default'), [plan.popular]);
@@ -49,7 +49,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
     <Card className={cardClassName} styles={{ body: cardBodyStyles }}>
       {plan.popular && (
         <div className="bg-primary absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-medium text-white">
-          {t('billing.bestChoice')}
+          {t('plans.bestChoice')}
         </div>
       )}
 
@@ -90,7 +90,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           icon={isUpgrading ? <LoadingOutlined /> : undefined}
           onClick={handleClick}
         >
-          {isCurrentPlan ? t('billing.currentPlan') : plan.buttonText}
+          {isCurrentPlan ? t('plans.currentPlan') : plan.buttonText}
         </Button>
       </Flex>
     </Card>

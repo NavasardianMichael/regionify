@@ -6,7 +6,7 @@ const de: CommonNs = {
     home: 'Start',
     projects: 'Projekte',
     contact: 'Kontakt',
-    billing: 'Abrechnung',
+    plans: 'Pläne',
     about: 'Über uns',
     login: 'Anmelden',
     account: 'Konto',
@@ -31,7 +31,7 @@ const de: CommonNs = {
     title: 'Über uns',
     description: 'Erfahren Sie mehr über diese Anwendung.',
   },
-  billing: {
+  plans: {
     title: 'Wählen Sie Ihren Plan',
     subtitle: 'Wählen Sie den passenden Plan für Ihre Kartierungsbedürfnisse',
     paymentNote:
@@ -41,7 +41,13 @@ const de: CommonNs = {
     bestChoice: 'Beste Wahl',
     priceFree: 'Kostenlos',
     priceOneTime: '{{price}} einmalig',
-    plans: {
+    paymentPendingNote:
+      'Zahlung eingegangen. Die Aktualisierung Ihres Plans kann einen Moment dauern. Laden Sie die Seite neu oder prüfen Sie unter Pläne.',
+    verifyErrorNote:
+      'Plan konnte nicht verifiziert werden. Bitte aktualisieren Sie die Seite oder prüfen Sie unter Pläne.',
+    backToPlans: 'Zurück zu Plänen',
+    goToPlans: 'Zu Plänen',
+    items: {
       observer: {
         name: 'Beobachter (kostenlos)',
         description: 'Ideal für den Einstieg',

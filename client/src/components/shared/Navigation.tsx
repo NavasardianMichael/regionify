@@ -45,7 +45,7 @@ export const Navigation: FC = () => {
       { path: ROUTES.HOME, label: t('nav.home'), icon: HomeOutlined },
       { path: ROUTES.PROJECTS, label: t('nav.projects'), icon: FolderOutlined },
       { path: ROUTES.CONTACT, label: t('nav.contact'), icon: MailOutlined },
-      { path: ROUTES.BILLING, label: t('nav.billing'), icon: CreditCardOutlined },
+      { path: ROUTES.BILLING, label: t('nav.plans'), icon: CreditCardOutlined },
     ],
     [t],
   );

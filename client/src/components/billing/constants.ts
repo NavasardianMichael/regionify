@@ -1,6 +1,6 @@
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 
-/** Structural billing data; copy comes from `billing.plans.*` in locales via `useBillingPlans`. */
+/** Structural billing data; copy comes from `plans.items.*` in locales via `useBillingPlans`. */
 export const BILLING_PLAN_DEFINITIONS = [
   {
     id: PLANS.observer,

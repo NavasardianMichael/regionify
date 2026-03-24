@@ -33,7 +33,7 @@ const BillingPage: FC = () => {
         const { checkoutUrl } = await createCheckout({ plan });
         window.location.href = checkoutUrl;
       } catch {
-        message.error(t('billing.checkoutError'), 0);
+        message.error(t('plans.checkoutError'), 0);
         setUpgradingPlan(null);
       }
     },
@@ -44,10 +44,10 @@ const BillingPage: FC = () => {
     <Flex vertical align="center" gap="large" className="mx-auto! w-full max-w-5xl">
       <Flex vertical align="center" gap="small">
         <Typography.Title level={1} className="text-primary mb-0! text-3xl font-bold">
-          {t('billing.title')}
+          {t('plans.title')}
         </Typography.Title>
         <Typography.Paragraph className="mb-0! text-gray-500">
-          {t('billing.subtitle')}
+          {t('plans.subtitle')}
         </Typography.Paragraph>
       </Flex>
 
@@ -64,7 +64,7 @@ const BillingPage: FC = () => {
         ))}
       </Flex>
 
-      <Typography.Text type="secondary">{t('billing.paymentNote')}</Typography.Text>
+      <Typography.Text type="secondary">{t('plans.paymentNote')}</Typography.Text>
     </Flex>
   );
 };

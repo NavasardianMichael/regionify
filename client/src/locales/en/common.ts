@@ -6,7 +6,7 @@ const en: CommonNs = {
     home: 'Home',
     projects: 'Projects',
     contact: 'Contact',
-    billing: 'Billing',
+    plans: 'Plans',
     about: 'About',
     login: 'Login',
     account: 'Account',
@@ -31,7 +31,7 @@ const en: CommonNs = {
     title: 'About',
     description: 'Learn more about this application.',
   },
-  billing: {
+  plans: {
     title: 'Choose Your Plan',
     subtitle: 'Select the perfect plan for your mapping needs',
     paymentNote: 'Payments are secure via Lemon Squeezy. No card data is stored on our servers.',
@@ -40,7 +40,12 @@ const en: CommonNs = {
     bestChoice: 'Best Choice',
     priceFree: 'Free',
     priceOneTime: '{{price}} one-time',
-    plans: {
+    paymentPendingNote:
+      'Payment received. Your plan may take a moment to update. Refresh the page or check Plans.',
+    verifyErrorNote: 'Could not verify your plan. Please refresh or check Plans.',
+    backToPlans: 'Back to Plans',
+    goToPlans: 'Go to Plans',
+    items: {
       observer: {
         name: 'Observer (free)',
         description: 'Perfect for getting started',

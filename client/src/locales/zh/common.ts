@@ -6,7 +6,7 @@ const zh: CommonNs = {
     home: '首页',
     projects: '项目',
     contact: '联系我们',
-    billing: '账单',
+    plans: '计划',
     about: '关于',
     login: '登录',
     account: '账户',
@@ -30,7 +30,7 @@ const zh: CommonNs = {
     title: '关于',
     description: '了解更多关于本应用的信息。',
   },
-  billing: {
+  plans: {
     title: '选择您的计划',
     subtitle: '选择最适合您的地图制作需求的计划',
     paymentNote: '通过 Lemon Squeezy 安全支付。我们的服务器不存储卡数据。',
@@ -39,7 +39,11 @@ const zh: CommonNs = {
     bestChoice: '最佳选择',
     priceFree: '免费',
     priceOneTime: '{{price}} 一次性',
-    plans: {
+    paymentPendingNote: '支付已收到。计划更新可能需要一点时间。请刷新页面或前往「计划」页面查看。',
+    verifyErrorNote: '无法验证您的计划。请刷新页面或前往「计划」页面查看。',
+    backToPlans: '返回计划',
+    goToPlans: '前往计划',
+    items: {
       observer: {
         name: '观察者（免费）',
         description: '适合入门使用',

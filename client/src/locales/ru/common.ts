@@ -6,7 +6,7 @@ const ru: CommonNs = {
     home: 'Главная',
     projects: 'Проекты',
     contact: 'Контакты',
-    billing: 'Оплата',
+    plans: 'Планы',
     about: 'О приложении',
     login: 'Войти',
     account: 'Аккаунт',
@@ -31,7 +31,7 @@ const ru: CommonNs = {
     title: 'О приложении',
     description: 'Подробнее об этом приложении.',
   },
-  billing: {
+  plans: {
     title: 'Выберите план',
     subtitle: 'Выберите идеальный план для ваших потребностей в картографии',
     paymentNote: 'Платежи защищены через Lemon Squeezy. Данные карт не хранятся на наших серверах.',
@@ -40,7 +40,12 @@ const ru: CommonNs = {
     bestChoice: 'Лучший выбор',
     priceFree: 'Бесплатно',
     priceOneTime: '{{price}} единоразово',
-    plans: {
+    paymentPendingNote:
+      'Платёж получен. Обновление плана может занять некоторое время. Обновите страницу или откройте раздел «Планы».',
+    verifyErrorNote: 'Не удалось подтвердить план. Обновите страницу или откройте раздел «Планы».',
+    backToPlans: 'Назад к планам',
+    goToPlans: 'К планам',
+    items: {
       observer: {
         name: 'Наблюдатель (бесплатно)',
         description: 'Идеально для начала',
