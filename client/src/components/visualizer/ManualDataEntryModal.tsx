@@ -43,7 +43,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
   const [isTimelineMode, setIsTimelineMode] = useState(false);
 
   const gridCols = isTimelineMode
-    ? 'grid-cols-[40px_1fr_1fr_120px_1fr_40px]'
+    ? 'grid-cols-[40px_1fr_1fr_1fr_1fr_40px]'
     : 'grid-cols-[40px_1fr_1fr_120px_40px]';
 
   const handleAfterOpenChange: ModalProps['afterOpenChange'] = useCallback(

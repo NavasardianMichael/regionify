@@ -32,7 +32,7 @@ export const ManualDataEntryRow = memo<ManualDataEntryRowProps>(function ManualD
       <Input
         value={row.id}
         data-rowkey={row.key}
-        readOnly
+        disabled
         placeholder="Region ID"
         className="bg-gray-50"
       />

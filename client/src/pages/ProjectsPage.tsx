@@ -52,22 +52,24 @@ const ProjectsPage: FC = () => {
   return (
     <>
       <Flex vertical className="mx-auto h-full w-full" gap="middle">
-        <Flex align="center" justify="space-between">
+        <Flex align="center" justify="space-between" wrap="wrap" gap="small">
           <Typography.Title level={2} className="text-primary mb-0! text-xl font-bold">
             {t('projects.title')}
           </Typography.Title>
-          <Flex gap="small">
-            <Input.Search
-              placeholder={t('projects.searchPlaceholder')}
-              className="w-64"
-              value={search}
-              onChange={handleSearchChange}
-              allowClear
-            />
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleNewProject}>
-              {t('projects.newProject')}
-            </Button>
-          </Flex>
+          {projects.length > 0 && (
+            <Flex gap="small">
+              <Input.Search
+                placeholder={t('projects.searchPlaceholder')}
+                className="w-64"
+                value={search}
+                onChange={handleSearchChange}
+                allowClear
+              />
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleNewProject}>
+                {t('projects.newProject')}
+              </Button>
+            </Flex>
+          )}
         </Flex>
 
         {isLoading ? (

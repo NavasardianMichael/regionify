@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 
 /**
- * Post-install setup script for local development and CI build.
- * - Generates Prisma client (required for the app to run).
- * - Optionally runs migrations only in local dev (not in CI or production).
+ * Post-install: Prisma client + pending migrations (local dev only).
  *
- * Production: This script is not run in production Docker (install uses --ignore-scripts).
- * Prisma client is generated explicitly in the Dockerfile. Migrations should be run as a
- * separate deploy step (e.g. db:migrate:prod), not during install.
+ * - Always runs `prisma generate` (required for TypeScript/build).
+ * - Runs `prisma migrate deploy` when DATABASE_URL is set after loading server env
+ *   files (.env → .env.local → .env.development.local). Applies only pending migrations.
+ *
+ * Skips migrations when CI=true / GITHUB_ACTIONS=true or NODE_ENV=production so
+ * `pnpm install` in CI/Docker build does not require a database.
+ *
+ * Production runtime: run `prisma migrate deploy` in your deploy step (this repo’s
+ * deploy workflow runs it via docker compose before `up` the server).
  */
 
 import { execSync } from 'child_process';
@@ -15,28 +19,32 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
-// Calculate paths relative to this script location
-// Script is at: server/scripts/postinstall-setup.js
-// Server root is: server/
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const serverRoot = join(__dirname, '..'); // server/scripts/ -> server/
-const envFile = join(serverRoot, '.env.development.local'); // server/.env.development.local
+import dotenv from 'dotenv';
 
-// Detect environment
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const serverRoot = join(__dirname, '..');
+
 const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
 const isProduction = process.env.NODE_ENV === 'production';
-const hasDatabaseUrl = !!process.env.DATABASE_URL;
-const hasEnvFile = existsSync(envFile);
 
-// Only run migrations in local development (not CI/CD or production)
-const shouldRunMigrations = !isCI && !isProduction && hasEnvFile && !hasDatabaseUrl;
+/** Load server env files in order; later files override earlier (local dev convention). */
+function loadServerEnvFiles() {
+  const files = ['.env', '.env.local', '.env.development.local'];
+  for (const name of files) {
+    const path = join(serverRoot, name);
+    if (existsSync(path)) {
+      dotenv.config({ path, override: true });
+    }
+  }
+}
+
+const shouldTryMigrations = !isCI && !isProduction;
 
 console.log('🔧 Running post-install setup...\n');
 
-// Step 1: Generate Prisma client (always needed)
 console.log('📦 Generating Prisma client...');
 try {
-  execSync('pnpm prisma generate', {
+  execSync('pnpm exec prisma generate', {
     cwd: serverRoot,
     stdio: 'inherit',
   });
@@ -46,39 +54,38 @@ try {
   process.exit(1);
 }
 
-// Step 2: Try to deploy migrations only in local development
-if (shouldRunMigrations) {
-  console.log('🗄️  Checking database migrations (local development)...');
-  try {
-    // Try to deploy migrations (this will apply pending migrations)
-    execSync('npx dotenv-cli -e .env.development.local -- prisma migrate deploy', {
-      cwd: serverRoot,
-      stdio: 'inherit',
-    });
-    console.log('✅ Database migrations applied successfully\n');
-  } catch (error) {
-    console.warn('\n⚠️  Migration deployment encountered issues.');
-    console.warn('This is normal if:');
-    console.warn('  - Database is not running');
-    console.warn('  - Migration history is out of sync');
-    console.warn('  - You need to resolve migration conflicts manually\n');
-    console.warn('To resolve migration issues:');
-    console.warn('  1. Ensure your database is running');
-    console.warn('  2. Run: pnpm db:migrate:deploy');
-    console.warn('  3. If migrations are already applied, use: pnpm db:migrate:resolve --applied <migration-name>\n');
-  }
-} else {
+if (!shouldTryMigrations) {
   if (isCI) {
-    console.log('ℹ️  CI environment detected. Skipping migrations (run separately in deployment).\n');
-  } else if (isProduction) {
-    console.log('ℹ️  Production environment detected. Skipping migrations (run separately in deployment).\n');
-  } else if (hasDatabaseUrl) {
-    console.log('ℹ️  DATABASE_URL environment variable detected. Skipping local migrations.\n');
-  } else if (!hasEnvFile) {
-    console.log(`ℹ️  No .env.development.local file found at: ${envFile}`);
-    console.log('   Skipping database migrations.');
-    console.log('   Create server/.env.development.local to enable automatic migration deployment.\n');
+    console.log('ℹ️  CI detected — skipping `prisma migrate deploy` (no DB on install).\n');
+  } else {
+    console.log('ℹ️  NODE_ENV=production — skipping `prisma migrate deploy` on install.\n');
   }
+  console.log('✅ Post-install setup complete!\n');
+  process.exit(0);
+}
+
+loadServerEnvFiles();
+
+if (!process.env.DATABASE_URL) {
+  console.log('ℹ️  No DATABASE_URL — skipping `prisma migrate deploy`.');
+  console.log('   Add server/.env (or .env.local / .env.development.local) to auto-apply migrations after install.\n');
+  console.log('✅ Post-install setup complete!\n');
+  process.exit(0);
+}
+
+console.log('🗄️  Applying pending migrations (`prisma migrate deploy`)...');
+try {
+  execSync('pnpm exec prisma migrate deploy', {
+    cwd: serverRoot,
+    stdio: 'inherit',
+    env: { ...process.env },
+  });
+  console.log('✅ Migrations up to date\n');
+} catch (error) {
+  console.warn('\n⚠️  `prisma migrate deploy` failed.');
+  console.warn('Common causes: database not running, wrong DATABASE_URL, or drift (baseline/resolve).');
+  console.warn('Fix locally, then re-run: pnpm --filter @regionify/server exec prisma migrate deploy\n');
+  // Do not fail install: clones without DB should still get a working Prisma client.
 }
 
 console.log('✅ Post-install setup complete!\n');
