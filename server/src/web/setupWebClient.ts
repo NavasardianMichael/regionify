@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import type { Application, Request, Response } from 'express';
 import express from 'express';
 
-import { env } from '../config/env.js';
+import { env, isProd } from '../config/env.js';
 import { escapeHtml } from '../lib/htmlEscape.js';
 import { logger } from '../lib/logger.js';
 import { projectEmbedService } from '../services/projectEmbedService.js';
@@ -52,6 +52,12 @@ function homeRootInnerHtml(): string {
 export function setupWebClient(app: Application): void {
   const staticDir = env.CLIENT_STATIC_DIR;
   if (!staticDir || !existsSync(staticDir)) {
+    if (staticDir && isProd) {
+      throw new Error(
+        `CLIENT_STATIC_DIR is set but path does not exist: ${staticDir}. ` +
+          'Ensure client/dist is baked into the image or remove CLIENT_STATIC_DIR in production.',
+      );
+    }
     if (staticDir) {
       logger.warn(
         { staticDir },
@@ -65,6 +71,13 @@ export function setupWebClient(app: Application): void {
   try {
     assets = readClientEntryAssets(staticDir);
   } catch (e) {
+    if (isProd) {
+      throw new Error(
+        `Failed to read Vite client manifest under ${staticDir}. ` +
+          'Rebuild the client with manifest enabled and include .vite/manifest.json in the image.',
+        { cause: e },
+      );
+    }
     logger.error({ err: e }, 'Failed to read Vite client manifest; skipping web static');
     return;
   }
