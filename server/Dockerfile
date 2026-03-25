@@ -27,11 +27,12 @@ RUN pnpm install --frozen-lockfile
 COPY tsconfig.json ./
 COPY shared ./shared
 COPY server ./server
+# Client app is built in CI with VITE_* env; context must include client/dist (see deploy workflow).
 COPY client ./client
 
-# Build shared, client (for Express static + HTML shells), then server
-RUN pnpm --filter @regionify/shared build && \
-    pnpm --filter @regionify/client build && \
+# Build shared and server (client bundle is client/dist from CI or local `pnpm build`)
+RUN test -f client/dist/client/index.html || (echo 'Missing client/dist: run pnpm build before docker build, or deploy via CI tarball.' >&2 && exit 1) && \
+    pnpm --filter @regionify/shared build && \
     pnpm --filter @regionify/server build
 
 # -----------------------------------------------------------------------------
