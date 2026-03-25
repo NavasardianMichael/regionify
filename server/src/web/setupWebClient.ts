@@ -20,6 +20,7 @@ function visibleEmbedIntro(description: string): string {
 }
 
 const API_PATH_PREFIXES = [
+  '/api',
   '/health',
   '/auth',
   '/contact',
