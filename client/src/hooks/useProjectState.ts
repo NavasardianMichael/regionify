@@ -12,13 +12,14 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectSavedStateSnapshot } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
 
 /**
  * Builds a serializable snapshot of the current visualizer state
  * (all stores combined, actions excluded).
  */
 function buildStateSnapshot(): string {
-  const { selectedCountryId, importDataType, data } = useVisualizerStore.getState();
+  const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
   const { border, shadow, zoomControls, picture, regionLabels } = useMapStylesStore.getState();
   const { labels, title, position, floatingPosition, floatingSize, backgroundColor, noDataColor } =
     useLegendStylesStore.getState();
@@ -27,7 +28,14 @@ function buildStateSnapshot(): string {
   const hasData = data.allIds.length > 0;
 
   const dataset: ProjectDataset | null = hasData
-    ? { allIds: data.allIds, byId: data.byId, importDataType }
+    ? {
+        allIds: data.allIds,
+        byId: data.byId,
+        importDataType,
+        ...(importDataType === IMPORT_DATA_TYPES.sheets && google.url
+          ? { google: { url: google.url, gid: google.gid } }
+          : {}),
+      }
     : null;
 
   const mapStyles: ProjectMapStyles = {
@@ -88,6 +96,7 @@ export function useHasUnsavedChanges(): boolean {
   const selectedCountryId = useVisualizerStore((s) => s.selectedCountryId);
   const importDataType = useVisualizerStore((s) => s.importDataType);
   const data = useVisualizerStore((s) => s.data);
+  const google = useVisualizerStore((s) => s.google);
   const border = useMapStylesStore((s) => s.border);
   const shadow = useMapStylesStore((s) => s.shadow);
   const zoomControls = useMapStylesStore((s) => s.zoomControls);
@@ -107,7 +116,14 @@ export function useHasUnsavedChanges(): boolean {
 
     const hasData = data.allIds.length > 0;
     const dataset: ProjectDataset | null = hasData
-      ? { allIds: data.allIds, byId: data.byId, importDataType }
+      ? {
+          allIds: data.allIds,
+          byId: data.byId,
+          importDataType,
+          ...(importDataType === IMPORT_DATA_TYPES.sheets && google.url
+            ? { google: { url: google.url, gid: google.gid } }
+            : {}),
+        }
       : null;
 
     const currentSnapshot = JSON.stringify({
@@ -132,6 +148,7 @@ export function useHasUnsavedChanges(): boolean {
     selectedCountryId,
     importDataType,
     data,
+    google,
     border,
     shadow,
     zoomControls,

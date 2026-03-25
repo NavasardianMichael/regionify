@@ -21,6 +21,6 @@ export const BILLING_PLAN_DEFINITIONS = [
     planLocaleKey: 'chronographer' as const,
     price: PLAN_DETAILS.chronographer.price,
     popular: true as const,
-    included: [true, true, true] as const,
+    included: [true, true, true, true] as const,
   },
 ] as const;

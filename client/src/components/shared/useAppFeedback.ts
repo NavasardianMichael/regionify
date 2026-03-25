@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-
 import { type AppFeedback, FeedbackContext } from '@/components/shared/feedbackContext';
 
 export function useAppFeedback(): AppFeedback {

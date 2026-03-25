@@ -17,11 +17,19 @@ export type RegionOption = {
   mapFile: string;
 };
 
+/** Google Sheets tab id from the URL is a string (e.g. hash `gid=0`). */
+export type GoogleSheetSource = {
+  url: string | null;
+  gid: string | null;
+};
+
 export type VisualizerState = {
   // State
   importDataType: ImportDataType;
   selectedCountryId: CountryId | null;
   data: DataSet;
+  /** When import is Google Sheets, the public sheet URL and tab id. */
+  google: GoogleSheetSource;
 
   // Timeline state
   timelineData: Record<string, DataSet>;

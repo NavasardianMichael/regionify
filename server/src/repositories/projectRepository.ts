@@ -1,4 +1,4 @@
-import { Prisma, type Project } from '@prisma/client';
+import { type Plan, Prisma, type Project } from '@prisma/client';
 import type { InputJsonValue } from '@prisma/client/runtime/library';
 
 import { prisma } from '../db/index.js';
@@ -13,9 +13,21 @@ export type ProjectCreate = {
   legendData?: object | null;
 };
 
-export type ProjectUpdate = Partial<Omit<ProjectCreate, 'userId'>>;
+export type ProjectUpdate = Partial<Omit<ProjectCreate, 'userId'>> & {
+  embedToken?: string | null;
+  embedEnabled?: boolean;
+  embedSeoTitle?: string | null;
+  embedSeoDescription?: string | null;
+  embedSeoKeywords?: object | null;
+};
 
-const JSON_FIELDS = ['dataset', 'mapStyles', 'legendStyles', 'legendData'] as const;
+const JSON_FIELDS = [
+  'dataset',
+  'mapStyles',
+  'legendStyles',
+  'legendData',
+  'embedSeoKeywords',
+] as const;
 
 /** Converts plain `null` to `Prisma.JsonNull` for nullable JSON columns */
 function normalizeJsonFields<T extends Record<string, unknown>>(data: T): T {
@@ -35,6 +47,13 @@ export const projectRepository = {
   async findById(id: string): Promise<Project | null> {
     return prisma.project.findUnique({
       where: { id },
+    });
+  },
+
+  async findByEmbedToken(token: string): Promise<(Project & { user: { plan: Plan } }) | null> {
+    return prisma.project.findFirst({
+      where: { embedToken: token, embedEnabled: true },
+      include: { user: { select: { plan: true } } },
     });
   },
 

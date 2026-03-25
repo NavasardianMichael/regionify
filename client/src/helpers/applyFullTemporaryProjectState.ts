@@ -21,6 +21,7 @@ export function applyFullTemporaryProjectState(merged: FullTemporaryProjectState
     selectedCountryId: merged.selectedCountryId,
     importDataType: merged.importDataType,
     data: merged.data,
+    google: merged.google,
     timelineData: merged.timelineData,
     timePeriods: merged.timePeriods,
     activeTimePeriod: merged.activeTimePeriod,

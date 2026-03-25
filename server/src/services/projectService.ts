@@ -16,6 +16,11 @@ export type ProjectPublic = {
   mapStyles: unknown;
   legendStyles: unknown;
   legendData: unknown;
+  embedEnabled: boolean;
+  embedToken: string | null;
+  embedSeoTitle: string | null;
+  embedSeoDescription: string | null;
+  embedSeoKeywords: unknown;
   createdAt: string;
   updatedAt: string;
 };
@@ -29,6 +34,11 @@ function toPublicProject(project: Project): ProjectPublic {
     mapStyles: project.mapStyles,
     legendStyles: project.legendStyles,
     legendData: project.legendData,
+    embedEnabled: project.embedEnabled,
+    embedToken: project.embedToken,
+    embedSeoTitle: project.embedSeoTitle,
+    embedSeoDescription: project.embedSeoDescription,
+    embedSeoKeywords: project.embedSeoKeywords,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
   };

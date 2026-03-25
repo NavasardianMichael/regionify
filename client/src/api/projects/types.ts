@@ -4,6 +4,11 @@ export type ProjectDataset = {
   allIds: string[];
   byId: Record<string, RegionData>;
   importDataType: string;
+  /** Present when data was imported from Google Sheets. */
+  google?: {
+    url: string;
+    gid: string | null;
+  } | null;
 };
 
 export type ProjectMapStyles = {
@@ -53,8 +58,28 @@ export type Project = {
   mapStyles: ProjectMapStyles | null;
   legendStyles: ProjectLegendStyles | null;
   legendData: ProjectLegendData | null;
+  embedEnabled: boolean;
+  embedToken: string | null;
+  embedSeoTitle: string | null;
+  embedSeoDescription: string | null;
+  embedSeoKeywords: string[] | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type ProjectEmbedUpdatePayload = {
+  enabled: boolean;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  seoKeywords?: string[] | null;
+};
+
+export type ProjectEmbedSettingsResponse = {
+  embedEnabled: boolean;
+  embedToken: string | null;
+  embedSeoTitle: string | null;
+  embedSeoDescription: string | null;
+  embedSeoKeywords: unknown;
 };
 
 export type ProjectCreatePayload = {

@@ -17,7 +17,7 @@ import {
   LoadingOutlined,
   SwapOutlined,
 } from '@ant-design/icons';
-import { PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
 import { Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
@@ -38,6 +38,7 @@ import { useProfileStore } from '@/store/profile/store';
 import { selectCurrentProject } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   convertToRegionData,
@@ -549,7 +550,12 @@ export const ImportDataPanel: FC = () => {
   );
 
   const handleSheetCsvFetched = useCallback(
-    (csv: string) => {
+    (payload: { csv: string; url: string }) => {
+      const { csv, url } = payload;
+      const gid = extractGid(url);
+      setVisualizerState({
+        google: { url, gid: gid ?? null },
+      });
       const result = parseCSV(csv);
       if (typeof result === 'object' && 'error' in result) {
         showMessageWithSampleDownload(
@@ -573,7 +579,7 @@ export const ImportDataPanel: FC = () => {
       }
       processImportedData(result);
     },
-    [messageApi, processImportedData, handleDownloadSampleOnly, t],
+    [messageApi, processImportedData, handleDownloadSampleOnly, setVisualizerState, t],
   );
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
@@ -808,9 +814,13 @@ export const ImportDataPanel: FC = () => {
       <Segmented
         options={importFormatOptions}
         value={importDataType}
-        onChange={(value: string | number) =>
-          setVisualizerState({ importDataType: value as ImportDataType })
-        }
+        onChange={(value: string | number) => {
+          const next = value as ImportDataType;
+          setVisualizerState({
+            importDataType: next,
+            ...(next !== IMPORT_DATA_TYPES.sheets ? { google: { url: null, gid: null } } : {}),
+          });
+        }}
         block
         aria-label={t('visualizer.importData.segmentedAria')}
       />

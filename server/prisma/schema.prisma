@@ -53,16 +53,21 @@ model User {
 }
 
 model Project {
-  id               String   @id @default(uuid())
-  userId           String   @map("user_id")
-  name             String
-  countryId        String?  @map("country_id")
-  dataset          Json?
-  mapStyles        Json?    @map("map_styles")
-  legendStyles     Json?    @map("legend_styles")
-  legendData       Json?    @map("legend_data")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id                    String   @id @default(uuid())
+  userId                String   @map("user_id")
+  name                  String
+  countryId             String?  @map("country_id")
+  dataset               Json?
+  mapStyles             Json?    @map("map_styles")
+  legendStyles          Json?    @map("legend_styles")
+  legendData            Json?    @map("legend_data")
+  embedToken            String?  @unique @map("embed_token")
+  embedEnabled          Boolean  @default(false) @map("embed_enabled")
+  embedSeoTitle         String?  @map("embed_seo_title") @db.VarChar(200)
+  embedSeoDescription   String?  @map("embed_seo_description") @db.VarChar(500)
+  embedSeoKeywords      Json?    @map("embed_seo_keywords")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

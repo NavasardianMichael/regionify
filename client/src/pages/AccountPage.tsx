@@ -12,8 +12,8 @@ import {
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { Card } from '@/components/ui/Card';
 

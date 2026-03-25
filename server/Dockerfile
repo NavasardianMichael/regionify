@@ -27,9 +27,12 @@ RUN pnpm install --frozen-lockfile
 COPY tsconfig.json ./
 COPY shared ./shared
 COPY server ./server
+COPY client ./client
 
-# Build shared first, then server
-RUN pnpm --filter @regionify/shared build && pnpm --filter @regionify/server build
+# Build shared, client (for Express static + HTML shells), then server
+RUN pnpm --filter @regionify/shared build && \
+    pnpm --filter @regionify/client build && \
+    pnpm --filter @regionify/server build
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
@@ -37,6 +40,7 @@ RUN pnpm --filter @regionify/shared build && pnpm --filter @regionify/server bui
 FROM node:22-alpine AS runtime
 
 ENV NODE_ENV=production
+ENV CLIENT_STATIC_DIR=/app/client/dist/client
 
 RUN apk add --no-cache libc6-compat && \
     corepack enable && corepack prepare pnpm@latest --activate
@@ -61,6 +65,7 @@ WORKDIR /app
 
 COPY --from=builder /app/shared/dist ./shared/dist
 COPY --from=builder /app/server/dist ./server/dist
+COPY --from=builder /app/client/dist/client ./client/dist/client
 
 # Create non-root user and set ownership
 RUN addgroup -g 1001 -S nodejs && \

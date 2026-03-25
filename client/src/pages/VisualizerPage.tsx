@@ -1,10 +1,11 @@
 import { type FC, lazy, Suspense, useEffect, useLayoutEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { DownloadOutlined, SaveOutlined } from '@ant-design/icons';
+import { DownloadOutlined, SaveOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
 import { selectHasTimelineData } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import {
+  selectCurrentProject,
   selectCurrentProjectId,
   selectSetCurrentProjectId,
   selectSetSavedStateSnapshot,
@@ -25,6 +26,7 @@ import MapViewer from '@/components/visualizer/MapViewer';
 import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
 const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
+const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal'));
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 const VisualizerPage: FC = () => {
@@ -33,6 +35,7 @@ const VisualizerPage: FC = () => {
   const location = useLocation();
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
+  const currentProject = useProjectsStore(selectCurrentProject);
   const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
@@ -40,14 +43,19 @@ const VisualizerPage: FC = () => {
   const {
     selectedCountryId,
     isExportModalOpen,
+    isEmbedModalOpen,
+    canUseEmbed,
     isSaving,
     isNameModalOpen,
     projectName,
     isSaveDisabled,
     saveButtonText,
     exportButtonText,
+    embedButtonText,
     handleOpenExportModal,
     handleCloseExportModal,
+    handleOpenEmbedModal,
+    handleCloseEmbedModal,
     handleSave,
     handleCreateProject,
     handleNameModalCancel,
@@ -122,6 +130,15 @@ const VisualizerPage: FC = () => {
                 >
                   {exportButtonText}
                 </Button>
+                {canUseEmbed ? (
+                  <Button
+                    icon={<ShareAltOutlined />}
+                    onClick={handleOpenEmbedModal}
+                    disabled={!selectedCountryId || !currentProject}
+                  >
+                    {embedButtonText}
+                  </Button>
+                ) : null}
               </Flex>
             </Flex>
             {hasTimelineData && (
@@ -154,6 +171,16 @@ const VisualizerPage: FC = () => {
       {isExportModalOpen && (
         <Suspense>
           <ExportMapModal open={isExportModalOpen} onClose={handleCloseExportModal} />
+        </Suspense>
+      )}
+
+      {isEmbedModalOpen && currentProject && canUseEmbed && (
+        <Suspense>
+          <ProjectEmbedModal
+            open={isEmbedModalOpen}
+            onClose={handleCloseEmbedModal}
+            project={currentProject}
+          />
         </Suspense>
       )}
 

@@ -2,8 +2,8 @@ import { type FC, useState } from 'react';
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processAccountDeletionFeedback } from '@/api/contact/processors';
-import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
 type FeedbackFormValues = {
   firstName: string;

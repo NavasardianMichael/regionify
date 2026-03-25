@@ -4,11 +4,14 @@ import type { FetchSheetPayload, FetchSheetResponse } from './types';
 /**
  * Fetches a public Google Sheet as CSV via the server proxy.
  */
-export const fetchGoogleSheet = async (payload: FetchSheetPayload): Promise<string> => {
+export const fetchGoogleSheet = async (
+  payload: FetchSheetPayload,
+  options?: { credentials?: RequestCredentials },
+): Promise<string> => {
   const response = await fetch(SHEETS_ENDPOINTS.fetch, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+    credentials: options?.credentials ?? 'include',
     body: JSON.stringify(payload),
   });
 

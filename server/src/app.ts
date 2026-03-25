@@ -14,6 +14,7 @@ import { redis } from './lib/redis.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
 import { apiRoutes } from './routes/index.js';
+import { setupWebClient } from './web/setupWebClient.js';
 
 export function createApp(): express.Application {
   const app = express();
@@ -95,6 +96,8 @@ export function createApp(): express.Application {
 
   // API routes (mounted at root since we use api. subdomain)
   app.use(apiRoutes);
+
+  setupWebClient(app);
 
   // 404 handler
   app.use((_req, res) => {

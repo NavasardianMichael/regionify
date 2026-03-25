@@ -1,4 +1,4 @@
-import { type FC, type ReactNode, useMemo } from 'react';
+import { type FC, type PropsWithChildren, useMemo } from 'react';
 import { App } from 'antd';
 import { wrapMessageWithCloseButton } from '@/helpers/wrapMessageWithCloseButton';
 import { FeedbackContext } from '@/components/shared/feedbackContext';
@@ -7,7 +7,7 @@ import { FeedbackContext } from '@/components/shared/feedbackContext';
  * Provides {@link App.useApp} APIs with message notices that include an inline close control.
  * Must be used as a descendant of antd {@link App}.
  */
-export const FeedbackProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const FeedbackProvider: FC<PropsWithChildren> = ({ children }) => {
   const app = App.useApp();
   const value = useMemo(
     () => ({

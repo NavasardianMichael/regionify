@@ -2,6 +2,7 @@ import { type Router as ExpressRouter, Router } from 'express';
 
 import { authRoutes } from './auth.js';
 import { contactRoutes } from './contact.js';
+import { embedDataRoutes } from './embedData.js';
 import { paymentRoutes } from './payments.js';
 import { projectRoutes } from './projects.js';
 import { sheetsRoutes } from './sheets.js';
@@ -18,6 +19,9 @@ router.get('/health', (_req, res) => {
     },
   });
 });
+
+// Public embed JSON (CORS-enabled)
+router.use(embedDataRoutes);
 
 // Auth routes
 router.use('/auth', authRoutes);

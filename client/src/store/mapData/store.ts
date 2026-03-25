@@ -8,6 +8,7 @@ export const useVisualizerStore = create<VisualizerState>((set) => ({
   importDataType: IMPORT_DATA_TYPES.csv,
   data: EMPTY_DATA_SET,
   selectedCountryId: null,
+  google: { url: null, gid: null },
 
   // Timeline state
   timelineData: {},

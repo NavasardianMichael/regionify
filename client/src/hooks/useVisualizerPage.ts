@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PLANS } from '@regionify/shared';
+import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import { createProject, updateProject } from '@/api/projects';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
@@ -42,6 +42,7 @@ function buildFullTemporaryState(): FullTemporaryProjectState {
     selectedCountryId: visualizerState.selectedCountryId ?? null,
     importDataType: visualizerState.importDataType,
     data: visualizerState.data,
+    google: visualizerState.google,
     timelineData: visualizerState.timelineData,
     timePeriods: visualizerState.timePeriods,
     activeTimePeriod: visualizerState.activeTimePeriod,
@@ -76,11 +77,17 @@ export function useVisualizerPage() {
   const hasUnsavedChanges = useHasUnsavedChanges();
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [projectName, setProjectName] = useState('');
 
   const isFreePlan = useMemo(() => !user || user.plan === PLANS.observer, [user]);
+
+  const canUseEmbed = useMemo(() => {
+    const plan = user?.plan ?? PLANS.observer;
+    return PLAN_DETAILS[plan].limits.publicEmbed;
+  }, [user?.plan]);
 
   const handleOpenExportModal = useCallback(() => {
     if (!isLoggedIn) {
@@ -95,6 +102,22 @@ export function useVisualizerPage() {
 
   const handleCloseExportModal = useCallback(() => {
     setIsExportModalOpen(false);
+  }, []);
+
+  const handleOpenEmbedModal = useCallback(() => {
+    if (!isLoggedIn) {
+      const fullCurrent = buildFullTemporaryState();
+      saveTemporaryProjectState(buildPartialTemporaryState(fullCurrent));
+      saveReturnUrl(window.location.pathname);
+      navigate(ROUTES.LOGIN);
+      return;
+    }
+    if (!currentProjectId) return;
+    setIsEmbedModalOpen(true);
+  }, [isLoggedIn, currentProjectId, navigate]);
+
+  const handleCloseEmbedModal = useCallback(() => {
+    setIsEmbedModalOpen(false);
   }, []);
 
   const handleSave = useCallback(async () => {
@@ -178,18 +201,28 @@ export function useVisualizerPage() {
     [isLoggedIn, t],
   );
 
+  const embedButtonText = useMemo(
+    () => (isLoggedIn ? t('visualizer.embed.openButton') : t('visualizer.loginToExport')),
+    [isLoggedIn, t],
+  );
+
   return {
     selectedCountryId,
     hasUnsavedChanges,
+    canUseEmbed,
     isExportModalOpen,
+    isEmbedModalOpen,
     isSaving,
     isNameModalOpen,
     projectName,
     isSaveDisabled,
     saveButtonText,
     exportButtonText,
+    embedButtonText,
     handleOpenExportModal,
     handleCloseExportModal,
+    handleOpenEmbedModal,
+    handleCloseEmbedModal,
     handleSave,
     handleCreateProject,
     handleNameModalCancel,

@@ -7,7 +7,7 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 type Props = {
   open: boolean;
   onClose: () => void;
-  onCsvFetched: (csv: string) => void;
+  onCsvFetched: (payload: { csv: string; url: string }) => void;
 };
 
 const GOOGLE_SHEETS_URL_REGEX = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/[a-zA-Z0-9_-]+/;
@@ -27,8 +27,9 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
     setError(null);
 
     try {
-      const csv = await fetchGoogleSheet({ url: url.trim() });
-      onCsvFetched(csv);
+      const trimmed = url.trim();
+      const csv = await fetchGoogleSheet({ url: trimmed });
+      onCsvFetched({ csv, url: trimmed });
       setUrl('');
       onClose();
     } catch (err) {

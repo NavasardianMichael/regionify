@@ -1,6 +1,9 @@
+import { projectEmbedUpdateSchema } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
+import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/requireAuth.js';
+import { projectEmbedService } from '../services/projectEmbedService.js';
 import { projectService } from '../services/projectService.js';
 
 const router: ExpressRouter = Router();
@@ -62,7 +65,24 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-// PUT /api/projects/:id - Update a project
+// PUT /projects/:id/embed - Update public embed settings (Chronographer)
+router.put('/:id/embed', validate(projectEmbedUpdateSchema), async (req, res, next) => {
+  try {
+    const userId = req.session.userId!;
+    const rawId = req.params.id;
+    const projectId = Array.isArray(rawId) ? rawId[0] : rawId;
+    const data = await projectEmbedService.updateEmbedSettings(userId, projectId, req.body);
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// PUT /projects/:id - Update a project
 router.put('/:id', async (req, res, next) => {
   try {
     const userId = req.session.userId!;

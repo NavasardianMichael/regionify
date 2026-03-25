@@ -8,12 +8,21 @@ import { useProjectsStore } from '@/store/projects/store';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import type { CountryId, ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
+import { readGoogleFromDataset } from '@/helpers/readGoogleFromDataset';
+
+export type LoadProjectOptions = {
+  /**
+   * When false, skips setting current project id and saved snapshot (e.g. public embed view).
+   * Default true.
+   */
+  associateWithProjectsStore?: boolean;
+};
 
 /**
  * Returns a callback that loads a project's data into all stores.
  */
-export function useLoadProject(): (project: Project) => void {
-  return useCallback((project: Project) => {
+export function useLoadProject(): (project: Project, options?: LoadProjectOptions) => void {
+  return useCallback((project: Project, options?: LoadProjectOptions) => {
     const { setVisualizerState } = useVisualizerStore.getState();
     const { setMapStylesState } = useMapStylesStore.getState();
     const { setLegendStylesState } = useLegendStylesStore.getState();
@@ -27,6 +36,7 @@ export function useLoadProject(): (project: Project) => void {
       data: project.dataset
         ? { allIds: project.dataset.allIds, byId: project.dataset.byId }
         : { allIds: [], byId: {} },
+      google: readGoogleFromDataset(project.dataset ?? null),
     });
 
     // Load map styles (merge with current defaults for safety)
@@ -67,12 +77,11 @@ export function useLoadProject(): (project: Project) => void {
       setItems(project.legendData.items);
     }
 
-    // Set current project and capture baseline snapshot
-    setCurrentProjectId(project.id);
-
-    // Use requestAnimationFrame to capture snapshot after stores settle
-    requestAnimationFrame(() => {
-      setSavedStateSnapshot(captureStateSnapshot());
-    });
+    if (options?.associateWithProjectsStore !== false) {
+      setCurrentProjectId(project.id);
+      requestAnimationFrame(() => {
+        setSavedStateSnapshot(captureStateSnapshot());
+      });
+    }
   }, []);
 }

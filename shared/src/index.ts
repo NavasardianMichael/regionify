@@ -10,6 +10,7 @@ export * from './types/exportTypes.js';
 export * from './schemas/auth.js';
 export * from './schemas/contact.js';
 export * from './schemas/sheets.js';
+export * from './schemas/projectEmbed.js';
 
 // Constants
 export * from './constants/plans.js';

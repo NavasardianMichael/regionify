@@ -24,6 +24,8 @@ export type PlanDetails = {
     animationExport: boolean;
     /** Allowed animation export formats. Atlas only: GIF, MP4. */
     allowedAnimationFormats: readonly ExportType[];
+    /** Chronographer: public embed URL / iframe for a project map. */
+    publicEmbed: boolean;
   };
 };
 
@@ -39,6 +41,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       advancedStylesEnabled: false,
       historicalDataImport: false,
       animationExport: false,
+      publicEmbed: false,
     },
   },
   [PLANS.explorer]: {
@@ -52,6 +55,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       advancedStylesEnabled: true,
       historicalDataImport: false,
       animationExport: false,
+      publicEmbed: false,
     },
   },
   [PLANS.chronographer]: {
@@ -71,6 +75,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       advancedStylesEnabled: true,
       historicalDataImport: true,
       animationExport: true,
+      publicEmbed: true,
     },
   },
 };

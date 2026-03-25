@@ -19,6 +19,7 @@ export type TemporaryProjectState = Partial<
     | 'selectedCountryId'
     | 'importDataType'
     | 'data'
+    | 'google'
     | 'timelineData'
     | 'timePeriods'
     | 'activeTimePeriod'
@@ -50,6 +51,7 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
     selectedCountryId: null,
     importDataType: IMPORT_DATA_TYPES.csv,
     data: EMPTY_DATA,
+    google: { url: null, gid: null },
     timelineData: {},
     timePeriods: [],
     activeTimePeriod: null,

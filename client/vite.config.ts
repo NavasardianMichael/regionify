@@ -15,4 +15,9 @@ export default defineConfig({
     port: 7002,
     open: true,
   },
+  build: {
+    outDir: 'dist/client',
+    manifest: true,
+    emptyOutDir: true,
+  },
 });

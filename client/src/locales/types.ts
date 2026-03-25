@@ -189,6 +189,31 @@ export type CommonNs = {
       fetching: string;
       fetchFailed: string;
     };
+    embed: {
+      title: string;
+      modalTitle: string;
+      openButton: string;
+      intro: string;
+      publicToggle: string;
+      seoTitle: string;
+      titleMax: string;
+      titleRequired: string;
+      titleInitialHint: string;
+      seoDescription: string;
+      descriptionMax: string;
+      descriptionRequired: string;
+      keywordsHint: string;
+      keywordPlaceholder: string;
+      save: string;
+      saveSuccess: string;
+      saveFailed: string;
+      shareUrl: string;
+      copyUrl: string;
+      iframe: string;
+      copyIframe: string;
+      copied: string;
+      copyFailed: string;
+    };
     manualEntry: {
       title: string;
       clearAll: string;

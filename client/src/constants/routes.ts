@@ -4,6 +4,8 @@ export const ROUTES = {
   PROJECT_EDITOR: '/projects/edit',
   PROJECT_NEW: '/projects/new',
   PROJECT_BY_ID: '/projects/:projectId',
+  /** Public map embed (standalone URL or iframe). */
+  EMBED_BY_TOKEN: '/embed/:token',
   CONTACT: '/contact',
   ABOUT: '/about',
   BILLING: '/billing',
@@ -29,6 +31,10 @@ export const ROUTES = {
  */
 export function getProjectRoute(projectId: string): string {
   return `/projects/${projectId}`;
+}
+
+export function getEmbedRoute(embedToken: string): string {
+  return `/embed/${encodeURIComponent(embedToken)}`;
 }
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

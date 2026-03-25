@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { App } from 'antd';
+import { type App } from 'antd';
 
 export type AppFeedback = ReturnType<typeof App.useApp>;
 
