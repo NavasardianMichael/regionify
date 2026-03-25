@@ -151,28 +151,50 @@ Runs on pull requests to `master`:
 
 Automated deployment on push to `master`:
 
-1. **Build** — Install dependencies, build client and server
-2. **Deploy Client** — Static files to `$APP_DIR/client/releases/`
-3. **Deploy Server** — Node.js app to `$APP_DIR/server/releases/`
-4. **Migrate** — Run Prisma database migrations
-5. **Restart** — Reload PM2 application
+1. **Build** — In Actions: install deps, build client + server, create archives
+2. **Deploy client** — Static assets to `$APP_DIR/client/releases/<sha>` and `current` symlink
+3. **Deploy server** — Extract `server-build.tar.gz` into **`$APP_DIR/docker`**, then **`docker compose -f docker-compose.prod.yml build`** and **`up`**
+4. **Migrate** — `docker compose … run --rm server pnpm exec prisma migrate deploy`
+5. **Runtime** — API container (e.g. port **9002**), Postgres, Redis
 
-### Server Directory Structure
+### Server directory structure (production)
+
+`APP_DIR` is the secret you set in GitHub (e.g. `/home/michael/apps/regionify`). All Docker commands run from **`$APP_DIR/docker`** (that directory contains `docker-compose.prod.yml` after each deploy).
 
 ```
 $APP_DIR/
 ├── client/
-│   ├── releases/           # Versioned client builds
-│   └── current -> releases/abc123
-├── server/
-│   ├── releases/           # Versioned server builds
-│   └── current -> releases/abc123
-├── shared/
-│   ├── .env                # Environment variables
-│   └── ecosystem.config.cjs # PM2 configuration
-└── logs/
-    ├── error.log
-    └── out.log
+│   ├── releases/<git-sha>/   # Static files (index.html, assets/)
+│   └── current -> releases/<git-sha>
+└── docker/                     # Extracted server bundle + compose
+    ├── docker-compose.prod.yml
+    ├── package.json            # workspace root from tarball
+    ├── server/
+    │   ├── .env.production     # copied from /tmp during deploy
+    │   ├── prisma/
+    │   └── …
+    ├── shared/
+    └── client/                  # package.json + dist for the image build
+        ├── package.json
+        └── dist/
+```
+
+Useful checks (SSH in, then):
+
+```bash
+cd "$APP_DIR/docker"
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml exec server printenv CLIENT_STATIC_DIR
+curl -sS http://127.0.0.1:9002/health
+```
+
+**`printenv CLIENT_STATIC_DIR` must print `/app/client/dist/client`** after `docker compose` picks up the repo’s `environment:` block (redeploy or `docker compose up -d server` with the updated compose file). **`/health` = 200 but `/` = 404** usually means this variable was unset — the API runs, HTML/static routes are not mounted.
+
+**Browser shows 500 and nginx error log says** _rewrite or internal redirection cycle … `/index.html`_ — that is **nginx static config** (bad `try_files` / `error_page` combo, wrong `root`, or missing `index.html` under `client/current`). Fix nginx, then verify:
+
+```bash
+ls -la "$APP_DIR/client/current/index.html"
+sudo tail -20 /var/log/nginx/error.log
 ```
 
 ### Required GitHub Secrets
@@ -186,23 +208,17 @@ $APP_DIR/
 | `APP_DIR`         | Deployment directory (e.g., `/home/user/apps/regionify`) |
 | `ENV_FILE_BASE64` | Base64-encoded server .env file                          |
 
-### Server Setup
+### Server setup
 
-1. Install Node.js 24+, PM2, and Nginx
-2. Create app directory: `mkdir -p $APP_DIR/{client,server,shared,logs}`
-3. Copy `server/ecosystem.config.cjs` to `$APP_DIR/shared/` and update paths
-4. Configure Nginx to serve from `$APP_DIR/client/current` and proxy `/api` to `localhost:3000`
-5. Set up GitHub secrets and push to master
+1. Install Docker with Compose plugin, and Nginx (for TLS + static SPA + reverse proxy to the API).
+2. Create layout: `mkdir -p $APP_DIR/client/releases $APP_DIR/docker` (the first deploy extracts into `docker/`).
+3. Configure Nginx to serve the SPA from `$APP_DIR/client/current` and proxy API traffic to **`127.0.0.1:9002`** (see `deployment/nginx-spa-and-api.example.conf`; adjust if `PORT` or paths differ). Avoid combining `error_page 404 = /index.html` with `try_files … /index.html` in a way that internally loops on `/index.html`.
+4. Set GitHub secrets (`APP_DIR`, `SSH_*`, `ENV_FILE_BASE64`, `VITE_API_BASE_URL`, …) and push to `master`.
 
 ### Rollback
 
-Keep last 5 releases. To rollback manually:
-
-```bash
-cd $APP_DIR/server
-ln -sfn releases/<previous-sha> current
-pm2 reload regionify
-```
+Client static files: repoint `current` to a previous release under `$APP_DIR/client/releases/`.  
+Server: rebuild/redeploy a previous git SHA from CI, or restore a known-good image/tag on the VPS and `docker compose up -d server` from `$APP_DIR/docker`.
 
 ## Project Structure
 

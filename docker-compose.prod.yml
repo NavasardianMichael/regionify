@@ -40,6 +40,10 @@ services:
       - '9002:9002'
     env_file:
       - ./server/.env.production
+    # Must override any empty/missing value from .env.production — without this, Express
+    # skips setupWebClient() and /. Also preserves correct path on images built before Dockerfile ENV.
+    environment:
+      CLIENT_STATIC_DIR: /app/client/dist/client
     depends_on:
       postgres:
         condition: service_healthy
