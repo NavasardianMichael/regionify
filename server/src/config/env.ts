@@ -38,7 +38,7 @@ const envSchema = z.object({
   // Client URL
   CLIENT_URL: z.string().url(),
 
-  /** Built Vite client output (e.g. `../client/dist/client`). When set, Express serves static assets and SSR HTML shells. */
+  // Static client directory (set in Docker image for SSR HTML shells)
   CLIENT_STATIC_DIR: z.string().optional(),
 
   // Rate limiting

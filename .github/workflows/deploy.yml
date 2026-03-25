@@ -58,12 +58,10 @@ jobs:
           echo "✅ shared/dist/index.js exists and is non-empty."
 
       - name: Create client archive
-        run: tar -czf client-build.tar.gz -C client/dist .
+        run: tar -czf client-build.tar.gz -C client/dist/client .
 
       - name: Create server archive
         run: |
-          # Docker builder needs the client bundle from CI (VITE_* secrets) — not client sources.
-          # The tarball is the full Docker build context on the VPS (not a git checkout).
           tar -czf server-build.tar.gz \
             --exclude='node_modules' \
             --exclude='.git' \

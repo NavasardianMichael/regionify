@@ -1,5 +1,6 @@
 **/node_modules
 **/dist
+!client/dist
 **/*.log
 .git
 .gitignore
@@ -10,9 +11,8 @@
 coverage
 .nyc_output
 
-# Client source must be in the build context: server/Dockerfile builder runs
-# `pnpm --filter @regionify/client build`. The runtime stage only copies
-# `client/dist` from the builder image, not full client sources.
+# Client dist (pre-built in CI) must reach the Docker context.
+# The Dockerfile copies client/dist/client into the runtime image for Express SSR.
 
 # Env files (passed separately)
 **/.env*
