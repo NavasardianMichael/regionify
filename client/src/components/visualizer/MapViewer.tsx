@@ -630,6 +630,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 type="default"
                 icon={<PlusOutlined />}
                 onClick={handleZoomIn}
+                disabled={!selectedCountryId}
                 className="shadow-md"
                 aria-label={t('visualizer.mapStyles.tooltipZoomIn')}
               />
@@ -639,6 +640,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 type="default"
                 icon={<MinusOutlined />}
                 onClick={handleZoomOut}
+                disabled={!selectedCountryId}
                 className="shadow-md"
                 aria-label={t('visualizer.mapStyles.tooltipZoomOut')}
               />
@@ -648,6 +650,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 type="default"
                 icon={<FullscreenOutlined />}
                 onClick={handleResetView}
+                disabled={!selectedCountryId}
                 className="shadow-md"
                 aria-label={t('visualizer.mapStyles.tooltipResetMapAndLabels')}
               />
@@ -664,6 +667,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 type={labelDragMode ? 'primary' : 'default'}
                 icon={<DragOutlined />}
                 onClick={handleToggleLabelDragMode}
+                disabled={!selectedCountryId}
                 className="shadow-md"
                 aria-label={
                   labelDragMode
