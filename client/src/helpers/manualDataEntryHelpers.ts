@@ -17,6 +17,14 @@ export type MissingDataSlot =
   | { kind: 'static'; id: string }
   | { kind: 'timeline'; id: string; timePeriod: string };
 
+/** Whether manual entry should show the time column and save as timeline data. */
+export const isTimelineManualEntryMode = (
+  timelineData: Record<string, DataSet>,
+  timePeriods: string[],
+  historicalDataImport: boolean,
+): boolean =>
+  historicalDataImport && timePeriods.length > 0 && Object.keys(timelineData).length > 0;
+
 export const createEmptyStaticRow = (): DataRow => ({
   key: generateRandomId(),
   id: '',
@@ -48,6 +56,28 @@ export function findFirstMissingDataSlot(
     if (!exists) return { kind: 'static', id };
   }
   return null;
+}
+
+/** True when two or more valid rows share the same region (and time period in timeline mode). */
+export function hasDuplicateManualEntryRows(
+  validRows: DataRow[],
+  isTimelineMode: boolean,
+): boolean {
+  const seen = new Set<string>();
+  if (isTimelineMode) {
+    for (const r of validRows) {
+      const key = `${(r.timePeriod ?? '').trim()}\0${r.id.trim()}`;
+      if (seen.has(key)) return true;
+      seen.add(key);
+    }
+  } else {
+    for (const r of validRows) {
+      const id = r.id.trim();
+      if (seen.has(id)) return true;
+      seen.add(id);
+    }
+  }
+  return false;
 }
 
 /** Flatten timeline data into rows (ID, Label, Time, Value) for display/editing. */
@@ -99,9 +129,7 @@ export const buildInitialRows = (
   timePeriods: string[],
   historicalDataImport: boolean,
 ): DataRow[] => {
-  const hasTimeline =
-    historicalDataImport && timePeriods.length > 0 && Object.keys(timelineData).length > 0;
-  if (hasTimeline) {
+  if (isTimelineManualEntryMode(timelineData, timePeriods, historicalDataImport)) {
     const rows = rowsFromTimeline(timelineData, timePeriods);
     return rows.length > 0 ? rows : [createEmptyStaticRow()];
   }

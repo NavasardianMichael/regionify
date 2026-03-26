@@ -256,6 +256,12 @@ const pt: CommonNs = {
       addMissingRow: 'Adicionar linha em falta',
       showOnChart: 'Mostrar no mapa',
       hideFromChart: 'Ocultar no mapa',
+      duplicateRowsStatic:
+        'Cada ID de região só pode aparecer uma vez. Remova linhas duplicadas antes de guardar.',
+      duplicateRowsTimeline:
+        'Cada região só pode aparecer uma vez por período. Remova linhas duplicadas antes de guardar.',
+      placeholderRegionId: 'ID da região',
+      placeholderLabel: 'Rótulo',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Etiqueta',

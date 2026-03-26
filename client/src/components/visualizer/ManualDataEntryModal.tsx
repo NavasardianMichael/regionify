@@ -1,4 +1,4 @@
-import { type FC, startTransition, useCallback, useMemo, useState } from 'react';
+import { type FC, useCallback, useMemo, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, type InputProps, Modal, type ModalProps, Tooltip, Typography } from 'antd';
 import {
@@ -18,7 +18,10 @@ import {
   createEmptyStaticRow,
   type DataRow,
   findFirstMissingDataSlot,
+  hasDuplicateManualEntryRows,
+  isTimelineManualEntryMode,
 } from '@/helpers/manualDataEntryHelpers';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { ManualDataEntryRow } from '@/components/visualizer/ManualDataEntryModal/ManualDataEntryRow';
 
 type Props = {
@@ -37,6 +40,7 @@ const ManualDataEntryModal: FC<Props> = ({
   historicalDataImport,
 }) => {
   const { t } = useTypedTranslation();
+  const { message: messageApi } = useAppFeedback();
   const storeData = useVisualizerStore(selectData);
   const timelineData = useVisualizerStore(selectTimelineData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
@@ -48,8 +52,9 @@ const ManualDataEntryModal: FC<Props> = ({
     buildInitialRows(storeData, timelineData, timePeriods, historicalDataImport),
   );
 
-  /** Timeline column and save mode when store has timeline and plan allows time series. */
-  const [isTimelineMode, setIsTimelineMode] = useState(false);
+  const [isTimelineMode, setIsTimelineMode] = useState(() =>
+    isTimelineManualEntryMode(timelineData, timePeriods, historicalDataImport),
+  );
 
   const gridCols = isTimelineMode
     ? 'grid-cols-[40px_1fr_1fr_1fr_1fr_40px]'
@@ -62,12 +67,15 @@ const ManualDataEntryModal: FC<Props> = ({
     [rows, mapRegionIds, isTimelineMode, timePeriods],
   );
 
+  const placeholderRegionId = t('visualizer.manualEntry.placeholderRegionId');
+  const placeholderLabel = t('visualizer.manualEntry.placeholderLabel');
+
   const handleAfterOpenChange: ModalProps['afterOpenChange'] = useCallback(
     (visible: boolean) => {
       if (visible) {
-        const hasTimeline =
-          historicalDataImport && timePeriods.length > 0 && Object.keys(timelineData).length > 0;
-        setIsTimelineMode(hasTimeline);
+        setIsTimelineMode(
+          isTimelineManualEntryMode(timelineData, timePeriods, historicalDataImport),
+        );
         setRows(buildInitialRows(storeData, timelineData, timePeriods, historicalDataImport));
       }
     },
@@ -96,9 +104,7 @@ const ManualDataEntryModal: FC<Props> = ({
   const handleToggleChartVisibility = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const key = e.currentTarget.dataset.rowkey;
     if (!key) return;
-    startTransition(() => {
-      setRows((prev) => prev.map((r) => (r.key === key ? { ...r, hidden: r.hidden !== true } : r)));
-    });
+    setRows((prev) => prev.map((r) => (r.key === key ? { ...r, hidden: r.hidden !== true } : r)));
   }, []);
 
   const handleLabelChange: InputProps['onChange'] = useCallback(
@@ -106,17 +112,13 @@ const ManualDataEntryModal: FC<Props> = ({
       const key = e.currentTarget.dataset.rowkey;
       if (!key) return;
       const nextLabel = e.target.value;
-      startTransition(() => {
-        setRows((prev) => prev.map((r) => (r.key === key ? { ...r, label: nextLabel } : r)));
-      });
+      setRows((prev) => prev.map((r) => (r.key === key ? { ...r, label: nextLabel } : r)));
     },
     [],
   );
 
   const handleValueChange = useCallback((rowKey: string, value: number | null) => {
-    startTransition(() => {
-      setRows((prev) => prev.map((r) => (r.key === rowKey ? { ...r, value: value ?? 0 } : r)));
-    });
+    setRows((prev) => prev.map((r) => (r.key === rowKey ? { ...r, value: value ?? 0 } : r)));
   }, []);
 
   const handleClearAll = useCallback(() => {
@@ -151,6 +153,15 @@ const ManualDataEntryModal: FC<Props> = ({
       setVisualizerState({ data: { allIds: [], byId: {} } });
       onSave?.();
       onClose();
+      return;
+    }
+
+    if (hasDuplicateManualEntryRows(valid, isTimelineMode)) {
+      messageApi.warning(
+        isTimelineMode
+          ? t('visualizer.manualEntry.duplicateRowsTimeline')
+          : t('visualizer.manualEntry.duplicateRowsStatic'),
+      );
       return;
     }
 
@@ -190,6 +201,8 @@ const ManualDataEntryModal: FC<Props> = ({
     setVisualizerState,
     setTimelineData,
     regionEntryFromRow,
+    messageApi,
+    t,
     onSave,
     onClose,
   ]);
@@ -265,6 +278,8 @@ const ManualDataEntryModal: FC<Props> = ({
                 index={index}
                 isTimelineMode={isTimelineMode}
                 gridCols={gridCols}
+                placeholderRegionId={placeholderRegionId}
+                placeholderLabel={placeholderLabel}
                 onLabelChange={handleLabelChange}
                 onValueChange={handleValueChange}
                 onToggleChartVisibility={handleToggleChartVisibility}

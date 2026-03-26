@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Input, InputNumber, Tooltip, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
@@ -9,6 +9,8 @@ type ManualDataEntryRowProps = {
   index: number;
   isTimelineMode: boolean;
   gridCols: string;
+  placeholderRegionId: string;
+  placeholderLabel: string;
   onLabelChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onValueChange: (rowKey: string, value: number | null) => void;
   onToggleChartVisibility: (e: React.MouseEvent<HTMLElement>) => void;
@@ -19,6 +21,8 @@ export const ManualDataEntryRow = memo<ManualDataEntryRowProps>(function ManualD
   index,
   isTimelineMode,
   gridCols,
+  placeholderRegionId,
+  placeholderLabel,
   onLabelChange,
   onValueChange,
   onToggleChartVisibility,
@@ -30,6 +34,13 @@ export const ManualDataEntryRow = memo<ManualDataEntryRowProps>(function ManualD
       ? Number(row.timePeriod)
       : null;
 
+  const handleNumberChange = useCallback(
+    (value: number | null) => {
+      onValueChange(row.key, value);
+    },
+    [onValueChange, row.key],
+  );
+
   return (
     <div data-rowkey={row.key} className={`gap-sm grid ${gridCols} items-center`}>
       <Typography.Text className="text-center text-sm text-gray-500">{index + 1}</Typography.Text>
@@ -37,16 +48,16 @@ export const ManualDataEntryRow = memo<ManualDataEntryRowProps>(function ManualD
         value={row.id}
         data-rowkey={row.key}
         disabled
-        placeholder="Region ID"
+        placeholder={placeholderRegionId}
         className="bg-gray-50"
       />
-      <Input value={row.label} data-rowkey={row.key} onChange={onLabelChange} placeholder="Label" />
-      <InputNumber
-        value={row.value}
-        onChange={(value: number | null) => onValueChange(row.key, value)}
-        min={0}
-        className="w-full"
+      <Input
+        value={row.label}
+        data-rowkey={row.key}
+        onChange={onLabelChange}
+        placeholder={placeholderLabel}
       />
+      <InputNumber value={row.value} onChange={handleNumberChange} min={0} className="w-full" />
       {isTimelineMode && (
         <InputNumber value={timeValue} disabled controls={false} className="w-full" />
       )}

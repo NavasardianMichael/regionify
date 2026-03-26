@@ -261,6 +261,12 @@ const fr: CommonNs = {
       addMissingRow: 'Ajouter la ligne manquante',
       showOnChart: 'Afficher sur la carte',
       hideFromChart: 'Masquer sur la carte',
+      duplicateRowsStatic:
+        'Chaque identifiant de région ne peut apparaître qu’une fois. Supprimez les doublons avant d’enregistrer.',
+      duplicateRowsTimeline:
+        'Chaque région ne peut apparaître qu’une fois par période. Supprimez les doublons avant d’enregistrer.',
+      placeholderRegionId: 'ID région',
+      placeholderLabel: 'Libellé',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Libellé',

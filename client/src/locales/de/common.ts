@@ -262,6 +262,12 @@ const de: CommonNs = {
       addMissingRow: 'Fehlende Zeile hinzufügen',
       showOnChart: 'Auf Karte anzeigen',
       hideFromChart: 'Auf Karte ausblenden',
+      duplicateRowsStatic:
+        'Jede Regions-ID darf nur einmal vorkommen. Entfernen Sie doppelte Zeilen vor dem Speichern.',
+      duplicateRowsTimeline:
+        'Jede Region darf pro Zeitpunkt nur einmal vorkommen. Entfernen Sie doppelte Zeilen vor dem Speichern.',
+      placeholderRegionId: 'Regions-ID',
+      placeholderLabel: 'Beschriftung',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Beschriftung',

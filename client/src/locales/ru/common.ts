@@ -254,6 +254,12 @@ const ru: CommonNs = {
       addMissingRow: 'Добавить недостающую строку',
       showOnChart: 'Показать на карте',
       hideFromChart: 'Скрыть с карты',
+      duplicateRowsStatic:
+        'Каждый ID региона должен быть уникальным. Удалите дубликаты строк перед сохранением.',
+      duplicateRowsTimeline:
+        'Каждый регион должен быть уникален в пределах периода. Удалите дубликаты строк перед сохранением.',
+      placeholderRegionId: 'ID региона',
+      placeholderLabel: 'Подпись',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Подпись',

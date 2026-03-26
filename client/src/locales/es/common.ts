@@ -259,6 +259,12 @@ const es: CommonNs = {
       addMissingRow: 'Añadir fila faltante',
       showOnChart: 'Mostrar en el mapa',
       hideFromChart: 'Ocultar en el mapa',
+      duplicateRowsStatic:
+        'Cada ID de región solo puede aparecer una vez. Elimine filas duplicadas antes de guardar.',
+      duplicateRowsTimeline:
+        'Cada región solo puede aparecer una vez por periodo. Elimine filas duplicadas antes de guardar.',
+      placeholderRegionId: 'ID de región',
+      placeholderLabel: 'Etiqueta',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Etiqueta',

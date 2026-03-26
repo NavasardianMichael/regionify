@@ -245,6 +245,10 @@ export type CommonNs = {
       addMissingRow: string;
       showOnChart: string;
       hideFromChart: string;
+      duplicateRowsStatic: string;
+      duplicateRowsTimeline: string;
+      placeholderRegionId: string;
+      placeholderLabel: string;
       colIndex: string;
       colId: string;
       colLabel: string;

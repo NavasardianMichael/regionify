@@ -252,6 +252,12 @@ const en: CommonNs = {
       addMissingRow: 'Add missing row',
       showOnChart: 'Show on map',
       hideFromChart: 'Hide from map',
+      duplicateRowsStatic:
+        'Each region ID can appear only once. Remove duplicate rows before saving.',
+      duplicateRowsTimeline:
+        'Each region can appear only once per time period. Remove duplicate rows before saving.',
+      placeholderRegionId: 'Region ID',
+      placeholderLabel: 'Label',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Label',
