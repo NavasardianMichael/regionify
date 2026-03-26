@@ -149,6 +149,7 @@ export type CommonNs = {
       segmentedAria: string;
       regionIdsNote: string;
       downloadLink: string;
+      downloadTooltipNoRegion: string;
       sampleNoteSuffix: string;
       expectedFormat: string;
       enterManually: string;

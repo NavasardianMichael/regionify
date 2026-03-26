@@ -158,6 +158,7 @@ const de: CommonNs = {
       segmentedAria: 'Importformat',
       regionIdsNote: 'Regions-IDs müssen exakt den erwarteten IDs im System entsprechen.',
       downloadLink: 'Herunterladen',
+      downloadTooltipNoRegion: 'Wählen Sie zuerst eine Region, um Beispieldaten herunterzuladen',
       sampleNoteSuffix:
         'Beispieldaten, um die richtigen IDs zu erhalten und Ihre Beschriftungen anzupassen.',
       expectedFormat: 'ERWARTETES FORMAT:',

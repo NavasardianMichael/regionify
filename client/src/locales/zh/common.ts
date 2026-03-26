@@ -147,6 +147,7 @@ const zh: CommonNs = {
       segmentedAria: '数据导入格式',
       regionIdsNote: '区域 ID 必须与系统中的预期 ID 完全一致。',
       downloadLink: '下载',
+      downloadTooltipNoRegion: '请先选择区域以下载示例数据',
       sampleNoteSuffix: '示例数据以获取正确 ID 并对齐标签。',
       expectedFormat: '预期格式：',
       enterManually: '手动输入数据',

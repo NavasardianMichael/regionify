@@ -156,6 +156,7 @@ const es: CommonNs = {
       regionIdsNote:
         'Los ID de región deben coincidir exactamente con los ID esperados en el sistema.',
       downloadLink: 'Descargar',
+      downloadTooltipNoRegion: 'Selecciona una región primero para descargar datos de ejemplo',
       sampleNoteSuffix: 'datos de ejemplo para obtener los ID correctos y alinear tus etiquetas.',
       expectedFormat: 'FORMATO ESPERADO:',
       enterManually: 'Introducir datos manualmente',

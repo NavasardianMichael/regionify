@@ -829,18 +829,26 @@ export const ImportDataPanel: FC = () => {
         <Typography.Text className="text-sm text-gray-500">
           {t('visualizer.importData.regionIdsNote')}
           <br />
-          <Button
-            type="text"
-            size="small"
-            icon={isDownloadingSample ? <LoadingOutlined /> : null}
-            onClick={handleDownloadSampleOnly}
-            disabled={!selectedCountryId || svgTitles.length === 0 || isDownloadingSample}
-            loading={isDownloadingSample}
-            className="h-auto p-0! font-medium!"
-            aria-label={t('messages.downloadSample')}
+          <Tooltip
+            title={
+              !selectedCountryId ? t('visualizer.importData.downloadTooltipNoRegion') : undefined
+            }
           >
-            {!isDownloadingSample && t('visualizer.importData.downloadLink')}
-          </Button>{' '}
+            <span>
+              <Button
+                type="text"
+                size="small"
+                icon={isDownloadingSample ? <LoadingOutlined /> : null}
+                onClick={handleDownloadSampleOnly}
+                disabled={!selectedCountryId || svgTitles.length === 0 || isDownloadingSample}
+                loading={isDownloadingSample}
+                className="h-auto p-0! font-medium!"
+                aria-label={t('messages.downloadSample')}
+              >
+                {!isDownloadingSample && t('visualizer.importData.downloadLink')}
+              </Button>
+            </span>
+          </Tooltip>{' '}
           {t('visualizer.importData.sampleNoteSuffix')}
         </Typography.Text>
       </Flex>

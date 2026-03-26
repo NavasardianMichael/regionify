@@ -154,6 +154,7 @@ const pt: CommonNs = {
       segmentedAria: 'Formato de importação de dados',
       regionIdsNote: 'Os IDs de região devem corresponder exatamente aos IDs esperados no sistema.',
       downloadLink: 'Transferir',
+      downloadTooltipNoRegion: 'Selecione primeiro uma região para transferir dados de exemplo',
       sampleNoteSuffix: 'dados de exemplo para obter os IDs corretos e alinhar as suas etiquetas.',
       expectedFormat: 'FORMATO ESPERADO:',
       enterManually: 'Introduzir dados manualmente',

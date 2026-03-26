@@ -153,6 +153,7 @@ const ru: CommonNs = {
       segmentedAria: 'Формат импорта данных',
       regionIdsNote: 'ID регионов должны точно совпадать с ожидаемыми ID в системе.',
       downloadLink: 'Скачать',
+      downloadTooltipNoRegion: 'Сначала выберите регион, чтобы скачать пример данных',
       sampleNoteSuffix: 'пример данных, чтобы получить правильные ID и сопоставить подписи.',
       expectedFormat: 'ОЖИДАЕМЫЙ ФОРМАТ:',
       enterManually: 'Ввести данные вручную',

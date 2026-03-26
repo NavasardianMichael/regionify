@@ -153,6 +153,7 @@ const en: CommonNs = {
       segmentedAria: 'Import data format',
       regionIdsNote: 'Region IDs must exactly match the expected IDs in the system.',
       downloadLink: 'Download',
+      downloadTooltipNoRegion: 'Select a region first to download sample data',
       sampleNoteSuffix: 'sample data to get the correct IDs and match your labels.',
       expectedFormat: 'EXPECTED FORMAT:',
       enterManually: 'Enter Data Manually',
