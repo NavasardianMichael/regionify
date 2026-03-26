@@ -151,7 +151,7 @@ export function setupWebClient(app: Application): void {
 
   app.use(express.static(staticDir, { index: false, fallthrough: true }));
 
-  app.get('*', (req: Request, res: Response, next) => {
+  app.get('/{*path}', (req: Request, res: Response, next) => {
     if (req.method !== 'GET') {
       next();
       return;
