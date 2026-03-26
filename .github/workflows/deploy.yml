@@ -50,7 +50,7 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
       - name: Create client archive
-        run: tar -czf client-build.tar.gz -C client/dist .
+        run: tar -czf client-build.tar.gz -C client/dist/client .
 
       - name: Create server archive
         run: |
