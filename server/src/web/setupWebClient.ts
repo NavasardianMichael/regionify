@@ -151,7 +151,8 @@ export function setupWebClient(app: Application): void {
 
   app.use(express.static(staticDir, { index: false, fallthrough: true }));
 
-  app.get('*', (req: Request, res: Response, next) => {
+  // Express 5 / path-to-regexp v8: bare `*` is invalid; use a named wildcard (see expressjs/express#6038).
+  app.get('/{*spaPath}', (req: Request, res: Response, next) => {
     if (req.method !== 'GET') {
       next();
       return;
