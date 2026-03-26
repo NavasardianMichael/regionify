@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import type { Application, NextFunction, Request, Response } from 'express';
+import type { Application, Request, Response } from 'express';
 import express from 'express';
 
 import { env, isProd } from '../config/env.js';
@@ -31,15 +31,7 @@ const API_PATH_PREFIXES = [
   '/embed-data',
 ] as const;
 
-/**
- * Paths that must fall through to the REST API (or 404 JSON), not the SPA HTML shell.
- * /auth/* would include the client-only OAuth return route /auth/callback — exclude it so
- * a mistyped CLIENT_URL or single-host setups still serve the SPA for that path.
- */
 function isApiPath(path: string): boolean {
-  if (path === '/auth/callback' || path.startsWith('/auth/callback/')) {
-    return false;
-  }
   return API_PATH_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
 }
 
@@ -159,8 +151,8 @@ export function setupWebClient(app: Application): void {
 
   app.use(express.static(staticDir, { index: false, fallthrough: true }));
 
-  // SPA shell for client-side routes (no path-to-regexp `*` / `{*x}` — avoids Express 5 matcher quirks).
-  const spaShellFallback = (req: Request, res: Response, next: NextFunction): void => {
+  // Express 5 / path-to-regexp v8: bare `*` is invalid; use a named wildcard (see expressjs/express#6038).
+  app.get('/{*spaPath}', (req: Request, res: Response, next) => {
     if (req.method !== 'GET') {
       next();
       return;
@@ -183,7 +175,5 @@ export function setupWebClient(app: Application): void {
       entryCss: assets.css,
     });
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
-  };
-
-  app.use(spaShellFallback);
+  });
 }
