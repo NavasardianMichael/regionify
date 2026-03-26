@@ -1,7 +1,26 @@
-import { type FC, lazy, Suspense, useEffect, useLayoutEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  type CSSProperties,
+  type FC,
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { DownloadOutlined, SaveOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { Button, Divider, Flex, Input, Modal, Spin, Splitter, Typography } from 'antd';
+import {
+  Button,
+  Divider,
+  Flex,
+  Input,
+  Modal,
+  Spin,
+  Splitter,
+  theme,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { selectHasTimelineData } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import {
@@ -30,6 +49,7 @@ const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbe
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 const VisualizerPage: FC = () => {
+  const { token } = theme.useToken();
   const { t } = useTypedTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,6 +64,7 @@ const VisualizerPage: FC = () => {
     selectedCountryId,
     isExportModalOpen,
     isEmbedModalOpen,
+    isLoggedIn,
     canUseEmbed,
     isSaving,
     isNameModalOpen,
@@ -61,6 +82,56 @@ const VisualizerPage: FC = () => {
     handleNameModalCancel,
     handleNameChange,
   } = useVisualizerPage();
+
+  const embedButtonDisabled = !canUseEmbed || !selectedCountryId || !currentProject;
+
+  const embedTooltipTitle = useMemo(() => {
+    if (!embedButtonDisabled) return undefined;
+    if (!canUseEmbed) {
+      const onTooltip = token.colorTextLightSolid;
+      const linkStyle: CSSProperties = {
+        color: onTooltip,
+        textDecoration: 'underline',
+        textDecorationThickness: 'from-font',
+        textUnderlineOffset: 4,
+        fontWeight: 600,
+      };
+      return (
+        <Flex vertical gap="small">
+          <Typography.Text
+            className="text-sm text-balance"
+            style={{ color: onTooltip, textWrap: 'balance' }}
+          >
+            {t('visualizer.embed.tooltipChronographerBody')}
+          </Typography.Text>
+          <Link to={ROUTES.BILLING} className="text-sm" style={linkStyle}>
+            {t('visualizer.embed.upgradePlansLink')}
+          </Link>
+        </Flex>
+      );
+    }
+    if (!currentProject) return t('visualizer.embed.tooltipNeedSavedProject');
+    if (!selectedCountryId) return t('visualizer.embed.tooltipSelectRegion');
+    return undefined;
+  }, [
+    embedButtonDisabled,
+    canUseEmbed,
+    currentProject,
+    selectedCountryId,
+    t,
+    token.colorTextLightSolid,
+  ]);
+
+  const embedButton = (
+    <Button
+      icon={<ShareAltOutlined />}
+      type="primary"
+      onClick={handleOpenEmbedModal}
+      disabled={embedButtonDisabled}
+    >
+      {embedButtonText}
+    </Button>
+  );
 
   useEffect(() => {
     if (location.pathname === ROUTES.PROJECT_NEW) {
@@ -130,14 +201,14 @@ const VisualizerPage: FC = () => {
                 >
                   {exportButtonText}
                 </Button>
-                {canUseEmbed ? (
-                  <Button
-                    icon={<ShareAltOutlined />}
-                    onClick={handleOpenEmbedModal}
-                    disabled={!selectedCountryId || !currentProject}
-                  >
-                    {embedButtonText}
-                  </Button>
+                {isLoggedIn ? (
+                  embedButtonDisabled ? (
+                    <Tooltip title={embedTooltipTitle}>
+                      <span className="inline-flex">{embedButton}</span>
+                    </Tooltip>
+                  ) : (
+                    embedButton
+                  )
                 ) : null}
               </Flex>
             </Flex>

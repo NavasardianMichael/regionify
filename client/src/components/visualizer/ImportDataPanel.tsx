@@ -862,6 +862,8 @@ export const ImportDataPanel: FC = () => {
           <ManualDataEntryModal
             open={isManualModalOpen}
             onClose={() => setIsManualModalOpen(false)}
+            mapRegionIds={svgTitles}
+            historicalDataImport={limits.historicalDataImport}
           />
         </Suspense>
       )}

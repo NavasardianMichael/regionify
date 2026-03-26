@@ -33,7 +33,7 @@ const de: CommonNs = {
   },
   plans: {
     title: 'Wählen Sie Ihren Plan',
-    subtitle: 'Wählen Sie den passenden Plan für Ihre Kartierungsbedürfnisse',
+    subtitle: 'Funktionen pro Plan – wie in der App und bei Ihren Kontolimits.',
     paymentNote:
       'Zahlungen sind sicher über Lemon Squeezy. Keine Kartendaten werden auf unseren Servern gespeichert.',
     checkoutError: 'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
@@ -47,43 +47,33 @@ const de: CommonNs = {
       'Plan konnte nicht verifiziert werden. Bitte aktualisieren Sie die Seite oder prüfen Sie unter Pläne.',
     backToPlans: 'Zurück zu Plänen',
     goToPlans: 'Zu Plänen',
+    rows: {
+      projectsLimited: 'Bis zu {{count}} gespeicherte Projekte',
+      projectsUnlimited: 'Unbegrenzt gespeicherte Projekte',
+      imageExport: '{{formats}}-Export, bis zu {{quality}} % Qualität',
+      advancedStyles: 'Erweiterte Karten- und Legendenstile',
+      timeSeries: 'Zeitreihen-Daten & Zeitstrahl auf der Karte',
+      animationExport: 'Animierter Export (GIF & MP4)',
+      publicEmbed: 'Öffentliche Kartenseite (Link & iframe)',
+    },
     items: {
       observer: {
         name: 'Beobachter (kostenlos)',
-        description: 'Ideal für den Einstieg',
+        description:
+          'JPEG-Export, Kernfunktionen für Karten und Legenden, begrenzte Projektanzahl.',
         buttonText: 'Kostenloser Plan',
-        features: [
-          'Bis zu 5 Projekte',
-          'Grundlegende Kartenstile',
-          'Exportqualität bis zu 50%',
-          'Community-Support',
-          'Erweiterte Legenden',
-          'Prioritäts-Support',
-        ],
       },
       explorer: {
         name: 'Entdecker',
-        description: 'Für Profis und Teams. Einmalzahlung, lebenslanger Zugang.',
-        buttonText: 'Entdecker kaufen (lebenslang)',
-        features: [
-          'Unbegrenzte Projekte',
-          'Alle Kartenstile',
-          'Volle Exportqualität (PNG, SVG, JPEG)',
-          'E-Mail-Support',
-          'Erweiterte Legenden',
-          'Prioritäts-Support',
-        ],
+        description:
+          'PNG, SVG und JPEG in voller Qualität, unbegrenzte Projekte, erweiterte Stile.',
+        buttonText: 'Entdecker kaufen (einmalig, dauerhaft)',
       },
       chronographer: {
-        name: 'Chronograph',
-        description: 'Für Power-User. Einmalzahlung, lebenslanger Zugang.',
-        buttonText: 'Chronograph kaufen (lebenslang)',
-        features: [
-          'Alles aus Entdecker',
-          'Prioritäts-Support',
-          'Früher Zugang zu neuen Funktionen',
-          'Öffentliches Karten-Embed (URL + iframe) mit SEO',
-        ],
+        name: 'Chronographer',
+        description:
+          'Zusätzlich: Zeitreihen-Import, animierte Timeline-Exports, optionales öffentliches Embed pro Projekt.',
+        buttonText: 'Chronographer kaufen (einmalig, dauerhaft)',
       },
     },
   },
@@ -233,9 +223,22 @@ const de: CommonNs = {
       descriptionMax: 'Höchstens 150 Zeichen',
       descriptionRequired:
         'Meta-Beschreibung ist erforderlich, wenn das öffentliche Embed aktiv ist',
+      seoKeywords: 'Meta-Schlüsselwörter (optional)',
       keywordsHint: 'Optional. Bis zu 5 Schlüsselwörter (Eingabe und Enter oder Komma).',
-      keywordPlaceholder: 'Schlüsselwort hinzufügen',
-      save: 'Embed-Einstellungen speichern',
+      keywordPlaceholder: 'Schlüsselwort eingeben und Enter drücken.',
+      titlePlaceholder: 'z. B. {{example}}',
+      descriptionPlaceholder: 'z. B. Interaktive Regionskarte von {{projectName}} auf Regionify.',
+      defaultMetaDescription: 'Interaktive Regionskarte von {{projectName}} auf Regionify.',
+      shareLinkHint:
+        'Öffentliches Embed aktivieren und auf Speichern tippen, um Freigabe-Link, Seite und iframe-Code zu erhalten.',
+      openInNewTab: 'Embed-Seite öffnen',
+      planRequired: 'Öffentliches Embed erfordert den Chronographer-Tarif.',
+      tooltipChronographerBody:
+        'Öffentliches Karten-Embed (Freigabe-Link und iframe) ist im Chronographer-Tarif enthalten.',
+      upgradePlansLink: 'Tarife ansehen und upgraden',
+      tooltipNeedSavedProject: 'Speichern Sie die Karte zuerst als Projekt, um Embed einzurichten.',
+      tooltipSelectRegion: 'Wählen Sie zuerst eine Region, bevor Sie Embed nutzen.',
+      tagSelectNoData: 'Keine Treffer. Schlüsselwort eingeben und Enter drücken.',
       saveSuccess: 'Embed-Einstellungen gespeichert',
       saveFailed: 'Embed-Einstellungen konnten nicht gespeichert werden',
       shareUrl: 'Freigabe-URL',
@@ -245,10 +248,20 @@ const de: CommonNs = {
       copied: '{{label}} in die Zwischenablage kopiert',
       copyFailed: 'Kopieren fehlgeschlagen',
     },
+    exportModal: {
+      upgradeToExplorer: 'Zu Explorer wechseln',
+      singleFormatHintAfterLink:
+        ' für PNG, SVG, Stillbild-Export in voller Qualität und ohne Wasserzeichen.',
+      qualityLimited: 'Qualität auf {{max}}% begrenzt.',
+      qualityFullHint: ' für 100%.',
+    },
     manualEntry: {
       title: 'Manuelle Dateneingabe',
       clearAll: 'Alles löschen',
       addRow: 'Zeile hinzufügen',
+      addMissingRow: 'Fehlende Zeile hinzufügen',
+      showOnChart: 'Auf Karte anzeigen',
+      hideFromChart: 'Auf Karte ausblenden',
       colIndex: '#',
       colId: 'ID',
       colLabel: 'Beschriftung',

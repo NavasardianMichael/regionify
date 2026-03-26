@@ -85,8 +85,9 @@ export function useVisualizerPage() {
   const isFreePlan = useMemo(() => !user || user.plan === PLANS.observer, [user]);
 
   const canUseEmbed = useMemo(() => {
-    const plan = user?.plan ?? PLANS.observer;
-    return PLAN_DETAILS[plan].limits.publicEmbed;
+    const plan = user?.plan;
+    if (!plan) return false;
+    return PLAN_DETAILS[plan]?.limits.publicEmbed === true;
   }, [user?.plan]);
 
   const handleOpenExportModal = useCallback(() => {
@@ -105,6 +106,7 @@ export function useVisualizerPage() {
   }, []);
 
   const handleOpenEmbedModal = useCallback(() => {
+    if (!canUseEmbed) return;
     if (!isLoggedIn) {
       const fullCurrent = buildFullTemporaryState();
       saveTemporaryProjectState(buildPartialTemporaryState(fullCurrent));
@@ -114,7 +116,7 @@ export function useVisualizerPage() {
     }
     if (!currentProjectId) return;
     setIsEmbedModalOpen(true);
-  }, [isLoggedIn, currentProjectId, navigate]);
+  }, [canUseEmbed, isLoggedIn, currentProjectId, navigate]);
 
   const handleCloseEmbedModal = useCallback(() => {
     setIsEmbedModalOpen(false);
@@ -209,6 +211,7 @@ export function useVisualizerPage() {
   return {
     selectedCountryId,
     hasUnsavedChanges,
+    isLoggedIn,
     canUseEmbed,
     isExportModalOpen,
     isEmbedModalOpen,

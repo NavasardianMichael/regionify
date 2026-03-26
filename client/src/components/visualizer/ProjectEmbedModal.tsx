@@ -1,6 +1,6 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { CopyOutlined, LinkOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { CopyOutlined, ExportOutlined, LinkOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { PLAN_DETAILS } from '@regionify/shared';
 import { Button, Flex, Form, Input, Modal, Select, Switch, Typography } from 'antd';
 import { getProject, updateProjectEmbed } from '@/api/projects';
 import type { Project } from '@/api/projects/types';
@@ -11,6 +11,8 @@ import { useProjectsStore } from '@/store/projects/store';
 import { getEmbedRoute } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+
+const EMBED_PLAN_ERROR_EN = 'Public embed requires Chronographer plan';
 
 type FormValues = {
   enabled: boolean;
@@ -50,13 +52,32 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
   const [submitting, setSubmitting] = useState(false);
 
   const canUseEmbed = useMemo(() => {
-    const plan = user?.plan ?? PLANS.observer;
-    return PLAN_DETAILS[plan].limits.publicEmbed;
+    const plan = user?.plan;
+    if (!plan) return false;
+    return PLAN_DETAILS[plan]?.limits.publicEmbed === true;
   }, [user?.plan]);
 
   const autoEmbedTitle = useMemo(
     () => `${project.name} — Regionify`.trim().slice(0, 200),
     [project.name],
+  );
+
+  const defaultSeoDescription = useMemo(
+    () =>
+      t('visualizer.embed.defaultMetaDescription', { projectName: project.name })
+        .trim()
+        .slice(0, 150),
+    [t, project.name],
+  );
+
+  const titleFieldPlaceholder = useMemo(
+    () => t('visualizer.embed.titlePlaceholder', { example: autoEmbedTitle }),
+    [t, autoEmbedTitle],
+  );
+
+  const descriptionFieldPlaceholder = useMemo(
+    () => t('visualizer.embed.descriptionPlaceholder', { projectName: project.name }),
+    [t, project.name],
   );
 
   const initialKeywords = useMemo(
@@ -67,10 +88,11 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
   useEffect(() => {
     if (!open) return;
     const storedTitle = project.embedSeoTitle?.trim() ?? '';
+    const storedDescription = project.embedSeoDescription?.trim() ?? '';
     form.setFieldsValue({
       enabled: project.embedEnabled,
       seoTitle: storedTitle || autoEmbedTitle,
-      seoDescription: project.embedSeoDescription ?? '',
+      seoDescription: storedDescription || defaultSeoDescription,
       keywords: initialKeywords,
     });
   }, [
@@ -81,6 +103,7 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
     project.embedSeoTitle,
     project.embedSeoDescription,
     autoEmbedTitle,
+    defaultSeoDescription,
     initialKeywords,
   ]);
 
@@ -93,6 +116,9 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
     if (!embedPageUrl) return '';
     return `<iframe src="${embedPageUrl}" width="100%" height="560" style="border:0" title="Regionify map"></iframe>`;
   }, [embedPageUrl]);
+
+  const copyLabelUrl = t('visualizer.embed.copyUrl');
+  const copyLabelIframe = t('visualizer.embed.copyIframe');
 
   const copyText = useCallback(
     async (label: string, text: string) => {
@@ -123,7 +149,12 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
         updateProjectInList(fresh);
         message.success(t('visualizer.embed.saveSuccess'));
       } catch (e) {
-        message.error(e instanceof Error ? e.message : t('visualizer.embed.saveFailed'));
+        const raw = e instanceof Error ? e.message : '';
+        if (raw === EMBED_PLAN_ERROR_EN) {
+          message.error(t('visualizer.embed.planRequired'));
+        } else {
+          message.error(raw || t('visualizer.embed.saveFailed'));
+        }
       } finally {
         setSubmitting(false);
       }
@@ -134,6 +165,12 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
   if (!canUseEmbed) {
     return null;
   }
+
+  const tagSelectNoData = (
+    <Typography.Text type="secondary" className="text-xs">
+      {t('visualizer.embed.tagSelectNoData')}
+    </Typography.Text>
+  );
 
   return (
     <Modal
@@ -159,7 +196,7 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             {t('nav.cancel')}
           </Button>
           <Button type="primary" loading={submitting} onClick={() => form.submit()}>
-            {t('visualizer.embed.save')}
+            {t('visualizer.save')}
           </Button>
         </Flex>
       }
@@ -168,7 +205,7 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
       styles={{ body: { maxHeight: 'min(70vh, 640px)', overflowY: 'auto' } }}
     >
       <Form form={form} layout="vertical" onFinish={onFinish} className="min-w-0">
-        <Flex align="flex-start" justify="space-between" gap="middle" wrap="wrap" className="mb-4">
+        <Flex align="flex-start" justify="space-between" gap="middle" wrap="wrap" className="mb-6">
           <Typography.Paragraph
             type="secondary"
             className="mb-0! max-w-[min(100%,20rem)] flex-1 text-xs"
@@ -212,7 +249,12 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             }),
           ]}
         >
-          <Input maxLength={200} showCount disabled={submitting} placeholder={autoEmbedTitle} />
+          <Input
+            maxLength={200}
+            showCount
+            disabled={submitting}
+            placeholder={titleFieldPlaceholder}
+          />
         </Form.Item>
 
         <Form.Item
@@ -238,15 +280,20 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             showCount
             disabled={submitting}
             styles={{ textarea: { resize: 'none' } }}
-            placeholder={t('visualizer.embed.seoDescription')}
+            placeholder={descriptionFieldPlaceholder}
           />
         </Form.Item>
 
-        <Typography.Text type="secondary" className="mb-2 block text-xs">
-          {t('visualizer.embed.keywordsHint')}
-        </Typography.Text>
-
-        <Form.Item name="keywords" className="mb-0!">
+        <Form.Item
+          name="keywords"
+          label={t('visualizer.embed.seoKeywords')}
+          extra={
+            <Typography.Text type="secondary" className="text-xs">
+              {t('visualizer.embed.keywordsHint')}
+            </Typography.Text>
+          }
+          className="mb-0!"
+        >
           <Select
             mode="tags"
             placeholder={t('visualizer.embed.keywordPlaceholder')}
@@ -254,6 +301,7 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             maxCount={5}
             tokenSeparators={[',']}
             className="w-full"
+            notFoundContent={tagSelectNoData}
             onChange={(tags: string[]) => {
               form.setFieldValue('keywords', sanitizeKeywords(tags));
             }}
@@ -267,15 +315,28 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             {t('visualizer.embed.shareUrl')}
           </Typography.Text>
           <Typography.Text className="text-xs break-all">{embedPageUrl}</Typography.Text>
-          <Button
-            type="default"
-            size="small"
-            icon={<LinkOutlined />}
-            disabled={submitting}
-            onClick={() => void copyText('URL', embedPageUrl)}
-          >
-            {t('visualizer.embed.copyUrl')}
-          </Button>
+          <Flex wrap gap="small">
+            <Button
+              type="default"
+              size="small"
+              icon={<ExportOutlined />}
+              disabled={submitting}
+              href={embedPageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('visualizer.embed.openInNewTab')}
+            </Button>
+            <Button
+              type="default"
+              size="small"
+              icon={<LinkOutlined />}
+              disabled={submitting}
+              onClick={() => void copyText(copyLabelUrl, embedPageUrl)}
+            >
+              {copyLabelUrl}
+            </Button>
+          </Flex>
 
           <Typography.Text className="mt-2 text-xs font-semibold text-gray-600">
             {t('visualizer.embed.iframe')}
@@ -288,12 +349,16 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             size="small"
             icon={<CopyOutlined />}
             disabled={submitting}
-            onClick={() => void copyText('iframe', iframeSnippet)}
+            onClick={() => void copyText(copyLabelIframe, iframeSnippet)}
           >
-            {t('visualizer.embed.copyIframe')}
+            {copyLabelIframe}
           </Button>
         </Flex>
-      ) : null}
+      ) : (
+        <Typography.Paragraph type="secondary" className="mt-4 mb-0! text-xs">
+          {t('visualizer.embed.shareLinkHint')}
+        </Typography.Paragraph>
+      )}
     </Modal>
   );
 };

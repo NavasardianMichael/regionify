@@ -1,4 +1,4 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, startTransition, useCallback, useMemo, useState } from 'react';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, type InputProps, Modal, type ModalProps, Tooltip, Typography } from 'antd';
 import {
@@ -17,6 +17,7 @@ import {
   buildInitialRows,
   createEmptyStaticRow,
   type DataRow,
+  findFirstMissingDataSlot,
 } from '@/helpers/manualDataEntryHelpers';
 import { ManualDataEntryRow } from '@/components/visualizer/ManualDataEntryModal/ManualDataEntryRow';
 
@@ -24,9 +25,17 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSave?: () => void;
+  mapRegionIds: string[];
+  historicalDataImport: boolean;
 };
 
-const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
+const ManualDataEntryModal: FC<Props> = ({
+  open,
+  onClose,
+  onSave,
+  mapRegionIds,
+  historicalDataImport,
+}) => {
   const { t } = useTypedTranslation();
   const storeData = useVisualizerStore(selectData);
   const timelineData = useVisualizerStore(selectTimelineData);
@@ -36,76 +45,79 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
   const clearTimelineData = useVisualizerStore(selectClearTimelineData);
 
   const [rows, setRows] = useState<DataRow[]>(() =>
-    buildInitialRows(storeData, timelineData, timePeriods),
+    buildInitialRows(storeData, timelineData, timePeriods, historicalDataImport),
   );
 
-  /** True when modal was opened with timeline data; keeps Time column visible and save as timeline. */
+  /** Timeline column and save mode when store has timeline and plan allows time series. */
   const [isTimelineMode, setIsTimelineMode] = useState(false);
 
   const gridCols = isTimelineMode
     ? 'grid-cols-[40px_1fr_1fr_1fr_1fr_40px]'
     : 'grid-cols-[40px_1fr_1fr_120px_40px]';
 
+  const canAddMissing = useMemo(
+    () =>
+      mapRegionIds.length > 0 &&
+      findFirstMissingDataSlot(rows, mapRegionIds, isTimelineMode, timePeriods) !== null,
+    [rows, mapRegionIds, isTimelineMode, timePeriods],
+  );
+
   const handleAfterOpenChange: ModalProps['afterOpenChange'] = useCallback(
     (visible: boolean) => {
       if (visible) {
-        const hasTimeline = timePeriods.length > 0 && Object.keys(timelineData).length > 0;
+        const hasTimeline =
+          historicalDataImport && timePeriods.length > 0 && Object.keys(timelineData).length > 0;
         setIsTimelineMode(hasTimeline);
-        setRows(buildInitialRows(storeData, timelineData, timePeriods));
+        setRows(buildInitialRows(storeData, timelineData, timePeriods, historicalDataImport));
       }
     },
-    [storeData, timelineData, timePeriods],
+    [storeData, timelineData, timePeriods, historicalDataImport],
   );
 
-  const handleAddRow = useCallback(() => {
-    const defaultTime = timePeriods.length > 0 ? timePeriods[0] : undefined;
-    setRows((prev) => [
-      ...prev,
-      {
+  const handleAddMissingRow = useCallback(() => {
+    setRows((prev) => {
+      const slot = findFirstMissingDataSlot(prev, mapRegionIds, isTimelineMode, timePeriods);
+      if (!slot) return prev;
+      const existing = prev.find((r) => r.id === slot.id);
+      const labelReuse =
+        existing?.label != null && existing.label.trim() !== '' ? existing.label : slot.id;
+      const base: DataRow = {
         key: generateRandomId(),
-        id: '',
-        label: '',
+        id: slot.id,
+        label: labelReuse,
         value: 0,
-        ...(isTimelineMode ? { timePeriod: defaultTime ?? '' } : {}),
-      },
-    ]);
-  }, [timePeriods, isTimelineMode]);
+      };
+      const nextRow: DataRow =
+        slot.kind === 'timeline' ? { ...base, timePeriod: slot.timePeriod } : base;
+      return [...prev, nextRow];
+    });
+  }, [mapRegionIds, isTimelineMode, timePeriods]);
 
-  const handleRemoveRow = useCallback((e: React.MouseEvent<HTMLElement>) => {
+  const handleToggleChartVisibility = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const key = e.currentTarget.dataset.rowkey;
-    if (key) {
-      setRows((prev) => {
-        const next = prev.filter((r) => r.key !== key);
-        return next.length > 0 ? next : [createEmptyStaticRow()];
-      });
-    }
+    if (!key) return;
+    startTransition(() => {
+      setRows((prev) => prev.map((r) => (r.key === key ? { ...r, hidden: r.hidden !== true } : r)));
+    });
   }, []);
 
   const handleLabelChange: InputProps['onChange'] = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const key = e.currentTarget.dataset.rowkey;
-      if (key) {
-        setRows((prev) => prev.map((r) => (r.key === key ? { ...r, label: e.target.value } : r)));
-      }
+      if (!key) return;
+      const nextLabel = e.target.value;
+      startTransition(() => {
+        setRows((prev) => prev.map((r) => (r.key === key ? { ...r, label: nextLabel } : r)));
+      });
     },
     [],
   );
 
   const handleValueChange = useCallback((rowKey: string, value: number | null) => {
-    setRows((prev) => prev.map((r) => (r.key === rowKey ? { ...r, value: value ?? 0 } : r)));
+    startTransition(() => {
+      setRows((prev) => prev.map((r) => (r.key === rowKey ? { ...r, value: value ?? 0 } : r)));
+    });
   }, []);
-
-  const handleTimePeriodChange: InputProps['onChange'] = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const key = e.currentTarget.dataset.rowkey;
-      if (key) {
-        setRows((prev) =>
-          prev.map((r) => (r.key === key ? { ...r, timePeriod: e.target.value } : r)),
-        );
-      }
-    },
-    [],
-  );
 
   const handleClearAll = useCallback(() => {
     const defaultTime = timePeriods.length > 0 ? timePeriods[0] : undefined;
@@ -116,6 +128,15 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
       },
     ]);
   }, [timePeriods, isTimelineMode]);
+
+  const regionEntryFromRow = useCallback((r: DataRow): RegionData => {
+    const id = r.id.trim();
+    const label = r.label.trim();
+    if (r.hidden === true) {
+      return { id, label, value: r.value, hidden: true };
+    }
+    return { id, label, value: r.value };
+  }, []);
 
   const handleApplyData = useCallback(() => {
     const valid = rows.filter(
@@ -134,24 +155,21 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
     }
 
     if (isTimelineMode) {
-      const byPeriod = new Map<string, { id: string; label: string; value: number }[]>();
+      const byPeriod = new Map<string, DataRow[]>();
       for (const r of valid) {
         const period = (r.timePeriod ?? '').trim();
         if (!byPeriod.has(period)) byPeriod.set(period, []);
-        byPeriod.get(period)!.push({
-          id: r.id.trim(),
-          label: r.label.trim(),
-          value: r.value,
-        });
+        byPeriod.get(period)!.push(r);
       }
       const periods = Array.from(byPeriod.keys()).sort();
       const newTimelineData: Record<string, DataSet> = {};
       for (const period of periods) {
         const entries = byPeriod.get(period)!;
-        const allIds = entries.map((e) => e.id);
+        const allIds = entries.map((e) => e.id.trim());
         const byId: Record<string, RegionData> = {};
         for (const e of entries) {
-          byId[e.id] = { id: e.id, label: e.label, value: e.value };
+          const rd = regionEntryFromRow(e);
+          byId[rd.id] = rd;
         }
         newTimelineData[period] = { allIds, byId };
       }
@@ -159,9 +177,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
     } else {
       clearTimelineData();
       const allIds = valid.map((r) => r.id.trim());
-      const byId = Object.fromEntries(
-        valid.map((r) => [r.id.trim(), { id: r.id.trim(), label: r.label.trim(), value: r.value }]),
-      );
+      const byId = Object.fromEntries(valid.map((r) => [r.id.trim(), regionEntryFromRow(r)]));
       setVisualizerState({ data: { allIds, byId } });
     }
 
@@ -173,6 +189,7 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
     clearTimelineData,
     setVisualizerState,
     setTimelineData,
+    regionEntryFromRow,
     onSave,
     onClose,
   ]);
@@ -189,10 +206,10 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
       maskClosable={false}
       afterOpenChange={handleAfterOpenChange}
       footer={
-        <Flex justify="end" gap="middle">
+        <Flex justify="flex-end" gap="small">
           <Button onClick={handleCancel}>{t('nav.cancel')}</Button>
           <Button type="primary" onClick={handleApplyData}>
-            {t('visualizer.done')}
+            {t('visualizer.save')}
           </Button>
         </Flex>
       }
@@ -211,13 +228,15 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
               onClick={handleClearAll}
             />
           </Tooltip>
-          <Tooltip title={t('visualizer.manualEntry.addRow')}>
+          <Tooltip title={t('visualizer.manualEntry.addMissingRow')}>
             <Button
               type="text"
               icon={<PlusOutlined />}
               size="small"
-              onClick={handleAddRow}
+              onClick={handleAddMissingRow}
+              disabled={!canAddMissing}
               className="text-gray-500"
+              aria-label={t('visualizer.manualEntry.addMissingRow')}
             />
           </Tooltip>
         </Flex>
@@ -248,17 +267,22 @@ const ManualDataEntryModal: FC<Props> = ({ open, onClose, onSave }) => {
                 gridCols={gridCols}
                 onLabelChange={handleLabelChange}
                 onValueChange={handleValueChange}
-                onTimePeriodChange={handleTimePeriodChange}
-                onRemove={handleRemoveRow}
-                canRemove={rows.length > 1}
+                onToggleChartVisibility={handleToggleChartVisibility}
               />
             ))}
           </Flex>
         </div>
 
-        <Tooltip title={t('visualizer.manualEntry.addRow')}>
-          <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddRow} className="w-full" />
-        </Tooltip>
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          onClick={handleAddMissingRow}
+          disabled={!canAddMissing}
+          className="w-full"
+          aria-label={t('visualizer.manualEntry.addMissingRow')}
+        >
+          {t('visualizer.manualEntry.addMissingRow')}
+        </Button>
       </Flex>
     </Modal>
   );

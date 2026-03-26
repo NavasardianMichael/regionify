@@ -10,7 +10,12 @@ export type DataRow = {
   label: string;
   value: number;
   timePeriod?: string;
+  hidden?: boolean;
 };
+
+export type MissingDataSlot =
+  | { kind: 'static'; id: string }
+  | { kind: 'timeline'; id: string; timePeriod: string };
 
 export const createEmptyStaticRow = (): DataRow => ({
   key: generateRandomId(),
@@ -18,6 +23,32 @@ export const createEmptyStaticRow = (): DataRow => ({
   label: '',
   value: 0,
 });
+
+/** First map region (× period in timeline mode) with no matching row; deterministic order. */
+export function findFirstMissingDataSlot(
+  rows: DataRow[],
+  mapRegionIds: string[],
+  timelineMode: boolean,
+  timePeriods: string[],
+): MissingDataSlot | null {
+  if (mapRegionIds.length === 0) return null;
+
+  if (timelineMode && timePeriods.length > 0) {
+    for (const period of timePeriods) {
+      for (const id of mapRegionIds) {
+        const exists = rows.some((r) => r.id === id && r.timePeriod === period);
+        if (!exists) return { kind: 'timeline', id, timePeriod: period };
+      }
+    }
+    return null;
+  }
+
+  for (const id of mapRegionIds) {
+    const exists = rows.some((r) => r.id.trim() === id);
+    if (!exists) return { kind: 'static', id };
+  }
+  return null;
+}
 
 /** Flatten timeline data into rows (ID, Label, Time, Value) for display/editing. */
 export const rowsFromTimeline = (
@@ -37,6 +68,7 @@ export const rowsFromTimeline = (
         label: r.label,
         value: r.value,
         timePeriod: period,
+        ...(r.hidden ? { hidden: true } : {}),
       });
     }
   }
@@ -55,17 +87,20 @@ export const rowsFromStaticData = (storeData: LocalDataState): DataRow[] => {
       id: r.id,
       label: r.label,
       value: r.value,
+      ...(r.hidden ? { hidden: true } : {}),
     };
   });
 };
 
-/** Build initial rows when modal opens: use timeline if present, else static data. */
+/** Build initial rows when modal opens: use timeline if present and plan allows, else static data. */
 export const buildInitialRows = (
   storeData: LocalDataState,
   timelineData: Record<string, DataSet>,
   timePeriods: string[],
+  historicalDataImport: boolean,
 ): DataRow[] => {
-  const hasTimeline = timePeriods.length > 0 && Object.keys(timelineData).length > 0;
+  const hasTimeline =
+    historicalDataImport && timePeriods.length > 0 && Object.keys(timelineData).length > 0;
   if (hasTimeline) {
     const rows = rowsFromTimeline(timelineData, timePeriods);
     return rows.length > 0 ? rows : [createEmptyStaticRow()];

@@ -3,26 +3,27 @@ import { Plan, PLANS } from '../types/plan.js';
 import { EXPORT_TYPES } from './exportTypes.js';
 
 /**
- * Feature limits per plan. Each plan includes all features of the previous one.
- * Free: PNG only, 50% quality. Explorer: all formats, 100%. Atlas: + historical data + animation.
+ * Feature limits per plan. Each tier includes the previous tier’s capabilities.
+ * Observer: JPEG only (capped quality), project cap. Explorer+: PNG, SVG, JPEG; full quality; advanced styles.
+ * Chronographer: time-series, GIF/MP4 animation export, public embed.
  */
 export type PlanDetails = {
   price: number; // Monthly price in USD (0 for free)
   limits: {
     maxExportQuality: number;
-    /** Allowed export formats. Free = PNG only; explorer/atlas = PNG, SVG, JPEG. */
+    /** Allowed export formats (still + animated, by plan). */
     allowedExportFormats: readonly ExportType[];
-    /** Whether picture/export quality is limited (free only). */
+    /** Whether picture/export quality is limited (Observer only). */
     pictureQualityLimit: boolean;
-    /** Max projects count (free = 5; explorer/atlas = unlimited). */
+    /** Max projects count (Observer = 5; paid = unlimited). */
     maxProjectsCount: number | null;
-    /** Advanced styles (explorer/atlas). */
+    /** Advanced map/legend styling (Explorer+). */
     advancedStylesEnabled: boolean;
-    /** Atlas only: import historical data (same format + time dimension). */
+    /** Time-series import & timeline (Chronographer). */
     historicalDataImport: boolean;
-    /** Atlas only: generate animated GIF/video from historical data. */
+    /** Animated timeline export (Chronographer). */
     animationExport: boolean;
-    /** Allowed animation export formats. Atlas only: GIF, MP4. */
+    /** Formats allowed for animation export (Chronographer: GIF, MP4). */
     allowedAnimationFormats: readonly ExportType[];
     /** Chronographer: public embed URL / iframe for a project map. */
     publicEmbed: boolean;
@@ -34,7 +35,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
     price: 0,
     limits: {
       maxExportQuality: 50,
-      allowedExportFormats: [EXPORT_TYPES.png],
+      allowedExportFormats: [EXPORT_TYPES.jpeg],
       allowedAnimationFormats: [],
       pictureQualityLimit: true,
       maxProjectsCount: 5,

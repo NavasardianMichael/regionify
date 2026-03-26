@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+# Production Node server serves /robots.txt and /sitemap.xml with the canonical Sitemap URL from CLIENT_URL.

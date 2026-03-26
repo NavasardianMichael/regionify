@@ -9,8 +9,17 @@ import {
 } from '@regionify/shared';
 
 import { AppError } from '../middleware/errorHandler.js';
+import { localeToHtmlAndOg } from '../lib/localeSeo.js';
 import { projectRepository } from '../repositories/projectRepository.js';
 import { prisma } from '../db/index.js';
+
+const EMBED_DESCRIPTION_MAX = 160;
+
+function defaultEmbedDescription(projectName: string): string {
+  const base = `Interactive regional map of ${projectName} on Regionify.`;
+  if (base.length <= EMBED_DESCRIPTION_MAX) return base;
+  return `${base.slice(0, EMBED_DESCRIPTION_MAX - 1).trimEnd()}…`;
+}
 
 export type PublicEmbedPayload = {
   countryId: string | null;
@@ -58,6 +67,8 @@ export const projectEmbedService = {
     description: string;
     keywords: string | null;
     projectName: string;
+    htmlLang: string;
+    ogLocale: string;
   }> {
     const project = await projectRepository.findByEmbedToken(token);
 
@@ -66,13 +77,17 @@ export const projectEmbedService = {
     }
 
     const title = project.embedSeoTitle?.trim() || `${project.name} — Regionify`;
-    const description =
-      project.embedSeoDescription?.trim() ||
-      'Interactive regional map visualization powered by Regionify.';
+    const stored = project.embedSeoDescription?.trim();
+    const description = stored
+      ? stored.length > EMBED_DESCRIPTION_MAX
+        ? `${stored.slice(0, EMBED_DESCRIPTION_MAX - 1).trimEnd()}…`
+        : stored
+      : defaultEmbedDescription(project.name);
     const kw = toKeywordArray(project.embedSeoKeywords);
     const keywords = kw && kw.length > 0 ? kw.join(', ') : null;
+    const { htmlLang, ogLocale } = localeToHtmlAndOg(project.user.locale);
 
-    return { title, description, keywords, projectName: project.name };
+    return { title, description, keywords, projectName: project.name, htmlLang, ogLocale };
   },
 
   async updateEmbedSettings(

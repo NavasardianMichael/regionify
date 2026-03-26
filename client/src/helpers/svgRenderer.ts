@@ -310,7 +310,7 @@ export function renderStyledSvg({
         path.style.fill = colorMap[pathTitle];
       } else {
         const regionData = data.byId[pathTitle];
-        if (regionData) {
+        if (regionData && !regionData.hidden) {
           const matchingItem = legendItems.find(
             (item) => regionData.value >= item.min && regionData.value <= item.max,
           );
@@ -372,7 +372,7 @@ export function renderStyledSvg({
       if (!pathTitle) return;
 
       const regionData = data.byId[pathTitle];
-      if (!regionData) return;
+      if (!regionData || regionData.hidden) return;
 
       const stored = labelPositions?.[pathTitle];
       let labelX: number;

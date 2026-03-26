@@ -45,24 +45,30 @@ export type CommonNs = {
     verifyErrorNote: string;
     backToPlans: string;
     goToPlans: string;
+    rows: {
+      projectsLimited: string;
+      projectsUnlimited: string;
+      imageExport: string;
+      advancedStyles: string;
+      timeSeries: string;
+      animationExport: string;
+      publicEmbed: string;
+    };
     items: {
       observer: {
         name: string;
         description: string;
         buttonText: string;
-        features: string[];
       };
       explorer: {
         name: string;
         description: string;
         buttonText: string;
-        features: string[];
       };
       chronographer: {
         name: string;
         description: string;
         buttonText: string;
-        features: string[];
       };
     };
   };
@@ -202,22 +208,43 @@ export type CommonNs = {
       seoDescription: string;
       descriptionMax: string;
       descriptionRequired: string;
+      seoKeywords: string;
       keywordsHint: string;
       keywordPlaceholder: string;
-      save: string;
+      titlePlaceholder: string;
+      descriptionPlaceholder: string;
+      defaultMetaDescription: string;
       saveSuccess: string;
       saveFailed: string;
       shareUrl: string;
+      shareLinkHint: string;
+      openInNewTab: string;
       copyUrl: string;
       iframe: string;
       copyIframe: string;
       copied: string;
       copyFailed: string;
+      planRequired: string;
+      tagSelectNoData: string;
+      /** Map block: embed is Chronographer-only; shown with upgrade link */
+      tooltipChronographerBody: string;
+      upgradePlansLink: string;
+      tooltipNeedSavedProject: string;
+      tooltipSelectRegion: string;
+    };
+    exportModal: {
+      upgradeToExplorer: string;
+      singleFormatHintAfterLink: string;
+      qualityLimited: string;
+      qualityFullHint: string;
     };
     manualEntry: {
       title: string;
       clearAll: string;
       addRow: string;
+      addMissingRow: string;
+      showOnChart: string;
+      hideFromChart: string;
       colIndex: string;
       colId: string;
       colLabel: string;

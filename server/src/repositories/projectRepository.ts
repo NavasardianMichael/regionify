@@ -50,10 +50,12 @@ export const projectRepository = {
     });
   },
 
-  async findByEmbedToken(token: string): Promise<(Project & { user: { plan: Plan } }) | null> {
+  async findByEmbedToken(
+    token: string,
+  ): Promise<(Project & { user: { plan: Plan; locale: string } }) | null> {
     return prisma.project.findFirst({
       where: { embedToken: token, embedEnabled: true },
-      include: { user: { select: { plan: true } } },
+      include: { user: { select: { plan: true, locale: true } } },
     });
   },
 

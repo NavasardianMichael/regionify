@@ -12,11 +12,13 @@ import {
   Typography,
 } from 'antd';
 import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { getAnimationTotalFrames } from '@/helpers/animationExport';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { EXPORT_FPS, type ExportMapModalFormProps } from './useExportMapModal';
 
 export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
+  const { t } = useTypedTranslation();
   const {
     exportType,
     defaultExportType,
@@ -65,11 +67,10 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         />
         {allowedFormats.length === 1 && (
           <Typography.Text type="secondary" className="text-xs">
-            Free plan: PNG only. <br />
             <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
-              Upgrade
-            </AppNavLink>{' '}
-            for SVG, JPEG, GIF and MP4.
+              {t('visualizer.exportModal.upgradeToExplorer')}
+            </AppNavLink>
+            {t('visualizer.exportModal.singleFormatHintAfterLink')}
           </Typography.Text>
         )}
       </Flex>
@@ -97,11 +98,11 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
           />
           {limits.pictureQualityLimit && (
             <Typography.Text type="secondary" className="text-xs">
-              Free plan: quality limited to {maxQuality}%.{' '}
-              <AppNavLink to="/billing" className="text-primary! font-semibold">
-                Upgrade
-              </AppNavLink>{' '}
-              for 100%.
+              {t('visualizer.exportModal.qualityLimited', { max: maxQuality })}{' '}
+              <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
+                {t('visualizer.exportModal.upgradeToExplorer')}
+              </AppNavLink>
+              {t('visualizer.exportModal.qualityFullHint')}
             </Typography.Text>
           )}
         </Flex>

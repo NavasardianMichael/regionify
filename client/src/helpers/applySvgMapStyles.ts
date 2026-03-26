@@ -239,7 +239,7 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
         path.style.fill = blendColorMap[pathTitle] ?? noDataColor;
       } else {
         const regionData = data.byId[pathTitle];
-        if (regionData) {
+        if (regionData && !regionData.hidden) {
           const matchingLegendItem = legendItems.find(
             (item) => regionData.value >= item.min && regionData.value <= item.max,
           );
@@ -293,7 +293,7 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
       if (!pathTitle) return;
 
       const regionData = data.byId[pathTitle];
-      if (!regionData) return;
+      if (!regionData || regionData.hidden) return;
 
       const storedPos = labelPositions[pathTitle];
       let labelX: number;

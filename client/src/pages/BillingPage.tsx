@@ -51,9 +51,9 @@ const BillingPage: FC = () => {
         </Typography.Paragraph>
       </Flex>
 
-      <Flex gap="large" justify="center" wrap="wrap" className="w-full">
+      <Flex gap="large" justify="center" align="stretch" wrap="wrap" className="w-full">
         {billingPlans.map((plan) => (
-          <Flex key={plan.id} className="w-80 shrink-0" vertical>
+          <Flex key={plan.id} className="h-full w-80 max-w-full min-w-0 shrink-0" vertical>
             <PlanCard
               plan={plan}
               currentPlan={currentPlan}

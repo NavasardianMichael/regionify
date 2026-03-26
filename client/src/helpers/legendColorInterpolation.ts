@@ -1,5 +1,5 @@
 import type { LegendItem } from '@/store/legendData/types';
-import type { DataSet } from '@/store/mapData/types';
+import type { DataSet, RegionData } from '@/store/mapData/types';
 
 /** Hermite smoothstep: zero derivative at 0 and 1 so blends ease out of A and into B. */
 export const smoothstep01 = (t: number): number => {
@@ -36,8 +36,8 @@ const getColorForRegion = (
   legendItems: LegendItem[],
   noDataColor: string,
 ): string => {
-  const regionData = data.byId[regionId];
-  if (!regionData) return noDataColor;
+  const regionData: RegionData | undefined = data.byId[regionId];
+  if (!regionData || regionData.hidden) return noDataColor;
   const item = legendItems.find((i) => regionData.value >= i.min && regionData.value <= i.max);
   return item ? item.color : noDataColor;
 };

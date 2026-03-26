@@ -31,7 +31,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   const buttonType = useMemo(() => (plan.popular ? 'primary' : 'default'), [plan.popular]);
 
   const cardClassName = useMemo(
-    () => `relative h-full shadow-sm ${plan.popular ? 'border-primary border-2' : ''}`,
+    () => `relative h-full min-h-0 shadow-sm ${plan.popular ? 'border-primary border-2' : ''}`,
     [plan.popular],
   );
 
@@ -54,30 +54,28 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
       )}
 
       <Flex vertical gap="middle" style={{ height: '100%', minHeight: 0 }}>
-        <Flex vertical align="center" gap="small">
-          <Typography.Title level={3} className="text-primary mb-0! text-xl font-bold">
+        <Flex vertical align="center" gap="small" className="w-full items-center text-center">
+          <Typography.Title
+            level={3}
+            className="text-primary mb-0! w-full text-center text-xl font-bold"
+          >
             {plan.name}
           </Typography.Title>
-          <Typography.Paragraph className="mb-0! text-center text-gray-500">
+          <Typography.Paragraph className="mb-0! w-full max-w-full text-center text-gray-500">
             {plan.description}
           </Typography.Paragraph>
-          <Flex align="baseline" gap={4}>
+          <Flex align="baseline" justify="center" gap={4} className="w-full">
             <Typography.Text className="text-primary text-4xl font-bold">
               {priceLabel}
             </Typography.Text>
           </Flex>
         </Flex>
 
-        <Flex vertical gap="small" flex={1} style={{ minHeight: 0 }}>
+        <Flex vertical gap="small" flex={1} style={{ minHeight: 0 }} className="w-full">
           {plan.features.map((feature, index) => (
-            <Flex key={index} align="center" gap="small">
-              <CheckOutlined className={feature.included ? 'text-green-500' : 'text-gray-300'} />
-              <Typography.Text
-                type={feature.included ? undefined : 'secondary'}
-                className={feature.included ? 'text-gray-700' : 'text-gray-400'}
-              >
-                {feature.text}
-              </Typography.Text>
+            <Flex key={index} align="flex-start" gap="small" className="w-full">
+              <CheckOutlined className="mt-0.5 shrink-0 text-green-500" />
+              <Typography.Text className="text-left text-gray-700">{feature.text}</Typography.Text>
             </Flex>
           ))}
         </Flex>

@@ -3,12 +3,28 @@ import type { Project } from '@/api/projects/types';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useVisualizerStore } from '@/store/mapData/store';
+import type { RegionData } from '@/store/mapData/types';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { useProjectsStore } from '@/store/projects/store';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import type { CountryId, ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { readGoogleFromDataset } from '@/helpers/readGoogleFromDataset';
+
+type LegacyRegionRow = RegionData & { hiddenFromChart?: boolean };
+
+function migrateDatasetById(byId: Record<string, RegionData>): Record<string, RegionData> {
+  return Object.fromEntries(
+    Object.entries(byId).map(([id, r]) => {
+      const row = r as LegacyRegionRow;
+      if (row.hiddenFromChart === true && row.hidden !== true) {
+        const { hiddenFromChart: _, ...rest } = row;
+        return [id, { ...rest, hidden: true } satisfies RegionData];
+      }
+      return [id, r];
+    }),
+  );
+}
 
 export type LoadProjectOptions = {
   /**
@@ -34,7 +50,10 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
       selectedCountryId: (project.countryId as CountryId) ?? null,
       importDataType: (project.dataset?.importDataType as ImportDataType) ?? IMPORT_DATA_TYPES.csv,
       data: project.dataset
-        ? { allIds: project.dataset.allIds, byId: project.dataset.byId }
+        ? {
+            allIds: project.dataset.allIds,
+            byId: migrateDatasetById(project.dataset.byId),
+          }
         : { allIds: [], byId: {} },
       google: readGoogleFromDataset(project.dataset ?? null),
     });

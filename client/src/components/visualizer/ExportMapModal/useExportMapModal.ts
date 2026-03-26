@@ -95,7 +95,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     return allowed.filter((o) => STATIC_EXPORT_TYPES.includes(o.value));
   }, [allowedFormats, hasTimelineData]);
 
-  const defaultExportType = exportTypeOptions[0]?.value ?? allowedFormats[0] ?? EXPORT_TYPES.png;
+  const defaultExportType = exportTypeOptions[0]?.value ?? allowedFormats[0] ?? EXPORT_TYPES.jpeg;
 
   const exportTypeInfoTooltip = useMemo(() => {
     if (!planSupportsDynamic) return null;
@@ -139,20 +139,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const exportHandlers = useMemo(
     () => ({
       [EXPORT_TYPES.svg]: (fileName: string) => exportMapAsSvg(fileName),
-      [EXPORT_TYPES.png]: (fileName: string) => {
-        if (plan === PLANS.observer) {
-          return exportMapAsPng(quality, fileName, {
-            backgroundColor: '#f5f5f5',
-            watermark: 'Regionify',
-          });
-        }
-        return exportMapAsPng(quality, fileName);
-      },
+      [EXPORT_TYPES.png]: (fileName: string) => exportMapAsPng(quality, fileName),
       [EXPORT_TYPES.jpeg]: (fileName: string) => {
         if (plan === PLANS.observer) {
           return exportMapAsJpeg(quality, fileName, {
             backgroundColor: '#f5f5f5',
-            watermark: 'Regionify',
+            watermark: { text: 'Regionify', showTrademark: true },
           });
         }
         return exportMapAsJpeg(quality, fileName);

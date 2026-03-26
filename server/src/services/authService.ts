@@ -33,7 +33,7 @@ function toPublicUser(user: User): UserPublic {
     provider: user.provider as AuthProvider,
     // plan: user.plan as UserPublic['plan'],
     // TODO - remove hardcoded plan after implementing real subscription management
-    plan: PLANS.chronographer as UserPublic['plan'],
+    plan: PLANS.observer as UserPublic['plan'],
     locale: (user.locale ?? 'en') as UserPublic['locale'],
     createdAt: user.createdAt.toISOString(),
   };

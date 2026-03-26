@@ -9,6 +9,7 @@ import { projectEmbedService } from '../services/projectEmbedService.js';
 import { HOME_PAGE_DEFAULT } from './homeCopy.js';
 import { readClientEntryAssets } from './readClientManifest.js';
 import { renderHtmlDocument } from './renderHtmlDocument.js';
+import { buildRobotsTxt, buildSitemapXml } from './sitemap.js';
 
 /** Visible `<header>` intro; full copy remains in meta tags. */
 const EMBED_VISIBLE_INTRO_MAX_CHARS = 360;
@@ -119,6 +120,9 @@ export function setupWebClient(app: Application): void {
         rootInnerHtml: '',
         entryJs: assets.js,
         entryCss: assets.css,
+        htmlLang: meta.htmlLang,
+        ogLocale: meta.ogLocale,
+        includeEmbedJsonLd: true,
         embedSemantic: {
           heading: meta.title,
           intro: visibleEmbedIntro(meta.description),
@@ -128,6 +132,22 @@ export function setupWebClient(app: Application): void {
     } catch (e) {
       next(e);
     }
+  });
+
+  app.get('/sitemap.xml', async (_req: Request, res: Response, next) => {
+    try {
+      const xml = await buildSitemapXml(siteUrl);
+      res.status(200).setHeader('Content-Type', 'application/xml; charset=utf-8').send(xml);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.get('/robots.txt', (_req: Request, res: Response) => {
+    res
+      .status(200)
+      .setHeader('Content-Type', 'text/plain; charset=utf-8')
+      .send(buildRobotsTxt(siteUrl));
   });
 
   app.use(express.static(staticDir, { index: false, fallthrough: true }));

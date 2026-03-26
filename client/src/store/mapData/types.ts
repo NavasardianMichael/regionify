@@ -4,6 +4,8 @@ export type RegionData = {
   id: string;
   label: string;
   value: number;
+  /** When true, region is omitted from map fill and region labels (like no data on the map). */
+  hidden?: boolean;
 };
 
 export type DataSet = {

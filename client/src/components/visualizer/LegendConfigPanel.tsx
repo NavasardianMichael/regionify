@@ -390,7 +390,7 @@ const LegendConfigPanel: FC = () => {
           </Flex>
         ))}
       </Flex>
-      <Flex align="center" justify="space-between">
+      <Flex align="center" justify="space-between" className="mt-4">
         <Flex align="center" gap={6}>
           <InfoCircleOutlined className="text-gray-400" />
           <Typography.Text className="text-xs text-gray-500">
