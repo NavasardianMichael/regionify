@@ -677,7 +677,7 @@ export const ImportDataPanel: FC = () => {
           title={
             selectedCountryId
               ? t('visualizer.importData.manualTooltip')
-              : t('visualizer.importData.manualTooltipNoRegion')
+              : t('visualizer.importData.manualTooltipNoCountry')
           }
         >
           <span>
@@ -763,7 +763,7 @@ export const ImportDataPanel: FC = () => {
             title={
               selectedCountryId
                 ? t('visualizer.importData.manualTooltip')
-                : t('visualizer.importData.manualTooltipNoRegion')
+                : t('visualizer.importData.manualTooltipNoCountry')
             }
           >
             <span>
@@ -785,7 +785,7 @@ export const ImportDataPanel: FC = () => {
                   ? hasHistoricalFormat
                     ? t('visualizer.importData.switchToStatic')
                     : t('visualizer.importData.switchToDynamic')
-                  : t('visualizer.importData.selectRegionFirst')
+                  : t('visualizer.importData.selectCountryFirst')
               }
             >
               <span>
@@ -831,7 +831,7 @@ export const ImportDataPanel: FC = () => {
           <br />
           <Tooltip
             title={
-              !selectedCountryId ? t('visualizer.importData.downloadTooltipNoRegion') : undefined
+              !selectedCountryId ? t('visualizer.importData.downloadTooltipNoCountry') : undefined
             }
           >
             <span>

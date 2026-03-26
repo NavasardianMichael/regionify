@@ -139,17 +139,17 @@ export type CommonNs = {
       downloadTooltip: string;
       downloadAria: string;
       manualTooltip: string;
-      manualTooltipNoRegion: string;
+      manualTooltipNoCountry: string;
       manualAria: string;
       switchToStatic: string;
       switchToDynamic: string;
-      selectRegionFirst: string;
+      selectCountryFirst: string;
       switchAriaToStatic: string;
       switchAriaToDynamic: string;
       segmentedAria: string;
       regionIdsNote: string;
       downloadLink: string;
-      downloadTooltipNoRegion: string;
+      downloadTooltipNoCountry: string;
       sampleNoteSuffix: string;
       expectedFormat: string;
       enterManually: string;
@@ -231,7 +231,7 @@ export type CommonNs = {
       tooltipChronographerBody: string;
       upgradePlansLink: string;
       tooltipNeedSavedProject: string;
-      tooltipSelectRegion: string;
+      tooltipSelectCountry: string;
     };
     exportModal: {
       upgradeToExplorer: string;

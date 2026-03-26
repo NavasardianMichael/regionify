@@ -27,20 +27,20 @@ export const RegionSelect: FC = () => {
   const hasUnsavedChanges = useHasUnsavedChanges();
 
   const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
-  const shouldWarnOnRegionChange = hasUnsavedChanges || hasDataOrTimeline;
+  const shouldWarnOnCountryChange = hasUnsavedChanges || hasDataOrTimeline;
 
-  const handleRegionChange: SelectProps['onChange'] = useCallback(
-    (newRegionId: RegionId) => {
-      if (newRegionId === selectedCountryId) return;
+  const handleCountryChange: SelectProps['onChange'] = useCallback(
+    (newCountryId: RegionId) => {
+      if (newCountryId === selectedCountryId) return;
 
       const doChange = () => {
         startTransition(() => {
-          setVisualizerState({ selectedCountryId: newRegionId });
+          setVisualizerState({ selectedCountryId: newCountryId });
         });
         selectRef.current?.blur();
       };
 
-      if (shouldWarnOnRegionChange) {
+      if (shouldWarnOnCountryChange) {
         modal.confirm({
           title: t('visualizer.region.changeConfirmTitle'),
           content: (
@@ -59,7 +59,7 @@ export const RegionSelect: FC = () => {
         doChange();
       }
     },
-    [modal, selectedCountryId, setVisualizerState, shouldWarnOnRegionChange, t],
+    [modal, selectedCountryId, setVisualizerState, shouldWarnOnCountryChange, t],
   );
 
   const showSearchConfig = useMemo<SelectProps['showSearch']>(
@@ -78,7 +78,7 @@ export const RegionSelect: FC = () => {
       <Select
         ref={selectRef}
         value={selectedCountryId}
-        onChange={handleRegionChange}
+        onChange={handleCountryChange}
         options={REGION_OPTIONS}
         placeholder={t('visualizer.region.placeholder')}
         className="max-w-64!"

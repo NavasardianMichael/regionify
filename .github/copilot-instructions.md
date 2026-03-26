@@ -44,6 +44,7 @@ This is a pnpm monorepo with three packages:
 
 ## Git Commits
 
+- **Never commit or push automatically.** Always ask for explicit permission before running `git commit` or `git push`.
 - Clear, descriptive commit messages.
 - Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 - Keep commits atomic and focused.

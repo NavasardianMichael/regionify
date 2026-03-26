@@ -128,15 +128,15 @@ const fr: CommonNs = {
     done: 'Terminé',
     newLegendRangeName: 'Nouvelle plage',
     region: {
-      sectionTitle: 'Sélectionner une région',
-      placeholder: 'Sélectionnez une région...',
-      ariaLabel: 'Sélectionner une région',
-      changeConfirmTitle: 'Changer de région ?',
+      sectionTitle: 'Sélectionner un pays',
+      placeholder: 'Sélectionnez un pays...',
+      ariaLabel: 'Sélectionner un pays',
+      changeConfirmTitle: 'Changer de pays ?',
       changeConfirmBody:
         'Toutes les modifications non enregistrées et le jeu de données actuel seront perdus. Continuer ?',
       saveFirstHint:
         'Enregistrez d’abord le projet en cours, puis créez-en un nouveau si vous devez conserver ces données.',
-      changeOk: 'Changer de région',
+      changeOk: 'Changer de pays',
     },
     importData: {
       sectionTitle: 'Importer des données',
@@ -144,19 +144,19 @@ const fr: CommonNs = {
       downloadTooltip: 'Télécharger le jeu de données actuel',
       downloadAria: 'Télécharger le jeu de données actuel',
       manualTooltip: 'Saisir les données manuellement',
-      manualTooltipNoRegion: 'Sélectionnez d’abord une région',
+      manualTooltipNoCountry: 'Sélectionnez d’abord un pays',
       manualAria: 'Saisir les données manuellement',
       switchToStatic: 'Passer aux données statiques',
       switchToDynamic: 'Passer aux données dynamiques',
-      selectRegionFirst: 'Sélectionnez d’abord une région',
+      selectCountryFirst: 'Sélectionnez d’abord un pays',
       switchAriaToStatic: 'Passer aux données statiques',
       switchAriaToDynamic: 'Passer aux données dynamiques',
       segmentedAria: 'Format d’import des données',
       regionIdsNote:
         'Les ID de région doivent correspondre exactement aux ID attendus dans le système.',
       downloadLink: 'Télécharger',
-      downloadTooltipNoRegion:
-        "Sélectionnez d'abord une région pour télécharger les données d'exemple",
+      downloadTooltipNoCountry:
+        "Sélectionnez d'abord un pays pour télécharger les données d'exemple",
       sampleNoteSuffix:
         'un exemple de données pour obtenir les bons ID et faire correspondre vos libellés.',
       expectedFormat: 'FORMAT ATTENDU :',
@@ -238,7 +238,7 @@ const fr: CommonNs = {
       upgradePlansLink: 'Voir les forfaits et passer à l’offre supérieure',
       tooltipNeedSavedProject:
         'Enregistrez d’abord votre carte en tant que projet pour configurer l’intégration.',
-      tooltipSelectRegion: 'Sélectionnez une région avant d’utiliser l’intégration.',
+      tooltipSelectCountry: 'Sélectionnez un pays avant d’utiliser l’intégration.',
       tagSelectNoData: 'Aucun résultat. Saisissez un mot-clé et appuyez sur Entrée.',
       saveSuccess: 'Paramètres d’intégration enregistrés',
       saveFailed: 'Impossible d’enregistrer les paramètres d’intégration',

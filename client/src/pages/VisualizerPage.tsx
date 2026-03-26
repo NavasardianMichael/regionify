@@ -111,7 +111,7 @@ const VisualizerPage: FC = () => {
       );
     }
     if (!currentProject) return t('visualizer.embed.tooltipNeedSavedProject');
-    if (!selectedCountryId) return t('visualizer.embed.tooltipSelectRegion');
+    if (!selectedCountryId) return t('visualizer.embed.tooltipSelectCountry');
     return undefined;
   }, [
     embedButtonDisabled,
