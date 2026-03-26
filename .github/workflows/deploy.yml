@@ -15,8 +15,6 @@ on:
     branches: [master]
 
 env:
-  # Quiets GitHub’s Node 20 deprecation warning for built-in actions until their defaults switch.
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NODE_VERSION: '24'
   PNPM_VERSION: '10'
   KEEP_RELEASES: 5
@@ -51,24 +49,16 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
-      - name: Check shared build output
-        run: |
-          if [ ! -s shared/dist/index.js ]; then
-            echo "❌ shared/dist/index.js is missing or empty! Build failed."
-            exit 1
-          fi
-          echo "✅ shared/dist/index.js exists and is non-empty."
-
       - name: Create client archive
-        run: tar -czf client-build.tar.gz -C client/dist/client .
+        run: tar -czf client-build.tar.gz -C client/dist .
 
       - name: Create server archive
         run: |
           tar -czf server-build.tar.gz \
             --exclude='node_modules' \
+            --exclude='client' \
             --exclude='.git' \
-            server shared client/package.json client/dist \
-            docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
+            server shared docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -163,38 +153,9 @@ jobs:
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
 
-          # Build new server image
+          # Deploy with Docker (entrypoint.sh runs prisma migrate deploy before starting the server)
           docker compose -f docker-compose.prod.yml build --no-cache server
-
-          # Ensure postgres and redis are running (needed for migrations)
-          docker compose -f docker-compose.prod.yml up -d postgres redis
-
-          # Wait for postgres to accept connections
-          echo "⏳ Waiting for postgres to accept connections..."
-          for i in $(seq 1 15); do
-            if docker compose -f docker-compose.prod.yml exec -T postgres pg_isready -U regionify -d regionify > /dev/null 2>&1; then
-              echo "✅ Postgres is ready"
-              break
-            fi
-            if [ "$i" -eq 15 ]; then
-              echo "❌ Postgres failed to become ready"
-              exit 1
-            fi
-            echo "  Attempt $i/15..."
-            sleep 2
-          done
-
-          # Run database migrations BEFORE starting the server
-          echo "🗄️ Running migrations..."
-          docker compose -f docker-compose.prod.yml run --rm -T --no-deps server pnpm exec prisma migrate deploy
-
-          # Recreate API container so CREATED time / image always match this deploy (plain `up -d`
-          # can leave an old container if Compose thinks nothing changed).
-          docker compose -f docker-compose.prod.yml up -d --force-recreate server
-
-          echo "📌 regionify-server after deploy:"
-          docker ps -a --filter name=regionify-server
-          docker inspect -f 'image={{.Image}} created={{.Created}}' regionify-server
+          docker compose -f docker-compose.prod.yml up -d
 
           # Cleanup
           docker image prune -f

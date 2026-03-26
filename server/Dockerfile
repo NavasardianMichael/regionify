@@ -68,6 +68,10 @@ COPY --from=builder /app/shared/dist ./shared/dist
 COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/client/dist/client ./client/dist/client
 
+# Copy entrypoint script (runs migrations then starts server)
+COPY server/entrypoint.sh ./server/entrypoint.sh
+RUN chmod +x server/entrypoint.sh
+
 # Create non-root user and set ownership
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S regionify -u 1001 && \
@@ -81,4 +85,4 @@ EXPOSE 9002
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD node -e "require('http').get('http://localhost:9002/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
 
-CMD ["node", "dist/index.js"]
+ENTRYPOINT ["./entrypoint.sh"]
