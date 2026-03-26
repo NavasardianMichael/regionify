@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import { DragOutlined, FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Spin, Typography } from 'antd';
+import { Button, Flex, Spin, Tooltip, Typography } from 'antd';
 import DOMPurify from 'dompurify';
 import { selectPlaybackPreviewBlend, selectTransitionType } from '@/store/animation/selectors';
 import { useAnimationStore } from '@/store/animation/store';
@@ -44,6 +44,7 @@ import {
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
 import { smoothstep01 } from '@/helpers/legendColorInterpolation';
 import { loadMapSvg } from '@/helpers/mapLoader';
@@ -55,6 +56,7 @@ type MapViewerProps = {
 };
 
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
+  const { t } = useTypedTranslation();
   const containerRef = useRef<HTMLButtonElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
   const [rawSvgContent, setRawSvgContent] = useState<string>('');
@@ -230,7 +232,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const handleResetView = useCallback(() => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  }, []);
+    setLabelPositionsByRegionId({});
+  }, [setLabelPositionsByRegionId]);
 
   const handleToggleLabelDragMode = useCallback(() => {
     setLabelDragMode((prev) => !prev);
@@ -614,7 +617,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           </div>
         )}
 
-        {/* Zoom Controls */}
+        {/* Controls */}
         {zoomControls.show && (
           <Flex
             vertical
@@ -622,35 +625,53 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             className="absolute"
             style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
           >
-            <Button
-              type="default"
-              icon={<PlusOutlined />}
-              onClick={handleZoomIn}
-              className="shadow-md"
-              aria-label="Zoom in"
-            />
-            <Button
-              type="default"
-              icon={<MinusOutlined />}
-              onClick={handleZoomOut}
-              className="shadow-md"
-              aria-label="Zoom out"
-            />
-            <Button
-              type="default"
-              icon={<FullscreenOutlined />}
-              onClick={handleResetView}
-              className="shadow-md"
-              aria-label="Reset view"
-            />
-            <Button
-              type={labelDragMode ? 'primary' : 'default'}
-              icon={<DragOutlined />}
-              onClick={handleToggleLabelDragMode}
-              className="shadow-md"
-              aria-label={labelDragMode ? 'Disable label dragging' : 'Enable label dragging'}
-              title={labelDragMode ? 'Disable label dragging' : 'Drag region labels'}
-            />
+            <Tooltip title={t('visualizer.mapStyles.tooltipZoomIn')} placement="left">
+              <Button
+                type="default"
+                icon={<PlusOutlined />}
+                onClick={handleZoomIn}
+                className="shadow-md"
+                aria-label={t('visualizer.mapStyles.tooltipZoomIn')}
+              />
+            </Tooltip>
+            <Tooltip title={t('visualizer.mapStyles.tooltipZoomOut')} placement="left">
+              <Button
+                type="default"
+                icon={<MinusOutlined />}
+                onClick={handleZoomOut}
+                className="shadow-md"
+                aria-label={t('visualizer.mapStyles.tooltipZoomOut')}
+              />
+            </Tooltip>
+            <Tooltip title={t('visualizer.mapStyles.tooltipResetMapAndLabels')} placement="left">
+              <Button
+                type="default"
+                icon={<FullscreenOutlined />}
+                onClick={handleResetView}
+                className="shadow-md"
+                aria-label={t('visualizer.mapStyles.tooltipResetMapAndLabels')}
+              />
+            </Tooltip>
+            <Tooltip
+              title={
+                labelDragMode
+                  ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
+                  : t('visualizer.mapStyles.tooltipEnableLabelDragging')
+              }
+              placement="left"
+            >
+              <Button
+                type={labelDragMode ? 'primary' : 'default'}
+                icon={<DragOutlined />}
+                onClick={handleToggleLabelDragMode}
+                className="shadow-md"
+                aria-label={
+                  labelDragMode
+                    ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
+                    : t('visualizer.mapStyles.tooltipEnableLabelDragging')
+                }
+              />
+            </Tooltip>
           </Flex>
         )}
       </div>

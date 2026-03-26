@@ -190,7 +190,7 @@ const MapStylesPanel: FC = () => {
         label: (
           <Flex align="center" gap="small">
             <Typography.Text className="font-semibold">
-              {t('visualizer.mapStyles.collapseZoom')}
+              {t('visualizer.mapStyles.collapseControls')}
             </Typography.Text>
           </Flex>
         ),

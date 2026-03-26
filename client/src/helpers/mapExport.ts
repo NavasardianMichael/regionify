@@ -61,13 +61,13 @@ const normalizeWatermark = (
   if (typeof watermark === 'string') {
     return {
       text: watermark,
-      showTrademark: true,
+      showTrademark: false,
       logoSrc: DEFAULT_WATERMARK_LOGO_SRC,
     };
   }
   return {
     text: watermark.text,
-    showTrademark: watermark.showTrademark ?? true,
+    showTrademark: watermark.showTrademark ?? false,
     logoSrc: watermark.logoSrc === undefined ? DEFAULT_WATERMARK_LOGO_SRC : watermark.logoSrc,
   };
 };
@@ -96,7 +96,7 @@ const drawWatermark = async (
   ctx.globalAlpha = 0.76;
   ctx.textAlign = 'right';
   ctx.textBaseline = 'bottom';
-  ctx.font = `600 ${fontSize}px Montserrat, Arial, sans-serif`;
+  ctx.font = `400 ${fontSize}px Montserrat, Arial, sans-serif`;
   ctx.fillStyle = 'rgb(180, 180, 180)';
 
   const textWidth = ctx.measureText(line).width;

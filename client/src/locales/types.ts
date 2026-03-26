@@ -292,7 +292,7 @@ export type CommonNs = {
       collapseBackground: string;
       collapseBorder: string;
       collapseShadow: string;
-      collapseZoom: string;
+      collapseControls: string;
       collapseRegionLabels: string;
       freePlanNote: string;
       upgradePlanLink: string;
@@ -305,6 +305,11 @@ export type CommonNs = {
       offsetX: string;
       offsetY: string;
       showControls: string;
+      tooltipZoomIn: string;
+      tooltipZoomOut: string;
+      tooltipResetMapAndLabels: string;
+      tooltipEnableLabelDragging: string;
+      tooltipDisableLabelDragging: string;
       showLabels: string;
       fontSize: string;
     };
