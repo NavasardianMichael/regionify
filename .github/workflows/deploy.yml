@@ -188,8 +188,13 @@ jobs:
           echo "🗄️ Running migrations..."
           docker compose -f docker-compose.prod.yml run --rm -T --no-deps server pnpm exec prisma migrate deploy
 
-          # Now start the server with the migrated database
-          docker compose -f docker-compose.prod.yml up -d server
+          # Recreate API container so CREATED time / image always match this deploy (plain `up -d`
+          # can leave an old container if Compose thinks nothing changed).
+          docker compose -f docker-compose.prod.yml up -d --force-recreate server
+
+          echo "📌 regionify-server after deploy:"
+          docker ps -a --filter name=regionify-server
+          docker inspect -f 'image={{.Image}} created={{.Created}}' regionify-server
 
           # Cleanup
           docker image prune -f
