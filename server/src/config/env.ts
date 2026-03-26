@@ -41,9 +41,6 @@ const envSchema = z.object({
   // Static client directory (set in Docker image for SSR HTML shells)
   CLIENT_STATIC_DIR: z.string().optional(),
 
-  /** Set to "true" temporarily to expose GET /debug/proxy (and /api/debug/proxy) for reverse-proxy debugging */
-  HTTP_DEBUG: z.string().optional(),
-
   // Rate limiting
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
