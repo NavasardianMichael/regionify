@@ -23,8 +23,30 @@ const zh: CommonNs = {
     error: '删除账户失败',
   },
   home: {
-    title: '首页',
-    welcome: '欢迎使用区域地图应用。',
+    title: 'Regionify',
+    welcome: '创建精美的交互式区域地图可视化。',
+    heroHeadline: '将数据转化为精美的区域地图',
+    heroSubheadline:
+      '从 CSV、Excel、JSON 或 Google Sheets 导入数据，自定义颜色、图例和样式，然后导出可发布的地图图形。',
+    ctaStart: '开始创建',
+    ctaPlans: '查看方案',
+    featuresTitle: '可视化区域数据所需的一切',
+    featureImportTitle: '灵活的数据导入',
+    featureImportDesc:
+      '从 CSV、Excel、JSON 文件加载数据，或直接连接 Google Sheets。',
+    featureCustomizeTitle: '高级样式',
+    featureCustomizeDesc:
+      '色阶、自定义图例、标签格式和完整的地图外观控制。',
+    featureExportTitle: '高质量导出',
+    featureExportDesc: '以最高 100% 质量下载 PNG、SVG 或 JPEG 格式的地图。',
+    featureTimeSeriesTitle: '时间序列与动画',
+    featureTimeSeriesDesc:
+      '导入历史数据、浏览时间线，并导出 GIF 或 MP4 动画时间轴。',
+    mapsTitle: '包含 200+ 张地图',
+    mapsSubtitle:
+      '国家、大洲、美国各州、欧盟区域等——开箱即用。',
+    ctaBottomTitle: '准备好绘制数据地图了吗？',
+    ctaBottomSubtitle: '几分钟内创建您的第一个可视化——无需信用卡。',
   },
   about: {
     title: '关于',
@@ -48,6 +70,8 @@ const zh: CommonNs = {
       projectsUnlimited: '不限已保存项目',
       imageExport: '{{formats}} 导出，质量最高 {{quality}}%',
       advancedStyles: '高级地图与图例样式',
+      watermark: '图片导出带水印',
+      noWatermark: '图片导出无水印',
       timeSeries: '时间序列数据与地图时间轴',
       animationExport: '动画导出（GIF 与 MP4）',
       publicEmbed: '公开地图页（分享链接与 iframe）',

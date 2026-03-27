@@ -24,8 +24,30 @@ const de: CommonNs = {
     error: 'Konto konnte nicht gelöscht werden',
   },
   home: {
-    title: 'Start',
-    welcome: 'Willkommen bei der Regionskarten-Anwendung.',
+    title: 'Regionify',
+    welcome: 'Erstellen Sie schöne interaktive Regionalkarten-Visualisierungen.',
+    heroHeadline: 'Verwandeln Sie Daten in schöne Regionalkarten',
+    heroSubheadline:
+      'Importieren Sie Daten aus CSV, Excel, JSON oder Google Sheets, passen Sie Farben, Legenden und Stile an und exportieren Sie druckfertige Kartengrafiken.',
+    ctaStart: 'Jetzt erstellen',
+    ctaPlans: 'Pläne ansehen',
+    featuresTitle: 'Alles, was Sie zur Visualisierung regionaler Daten brauchen',
+    featureImportTitle: 'Flexibler Datenimport',
+    featureImportDesc:
+      'Laden Sie Daten aus CSV-, Excel-, JSON-Dateien oder direkt aus Google Sheets.',
+    featureCustomizeTitle: 'Erweiterte Gestaltung',
+    featureCustomizeDesc:
+      'Farbskalen, benutzerdefinierte Legenden, Beschriftungsformate und volle Kontrolle über das Kartendesign.',
+    featureExportTitle: 'Hochwertiger Export',
+    featureExportDesc: 'Laden Sie Ihre Karten als PNG, SVG oder JPEG in bis zu 100 % Qualität herunter.',
+    featureTimeSeriesTitle: 'Zeitreihen & Animation',
+    featureTimeSeriesDesc:
+      'Importieren Sie historische Daten, navigieren Sie durch die Zeit und exportieren Sie animierte GIF- oder MP4-Zeitachsen.',
+    mapsTitle: 'Über 200 Karten enthalten',
+    mapsSubtitle:
+      'Länder, Kontinente, US-Bundesstaaten, EU-Regionen und mehr — sofort einsatzbereit.',
+    ctaBottomTitle: 'Bereit, Ihre Daten zu kartieren?',
+    ctaBottomSubtitle: 'Erstellen Sie Ihre erste Visualisierung in Minuten — keine Kreditkarte erforderlich.',
   },
   about: {
     title: 'Über uns',
@@ -52,6 +74,8 @@ const de: CommonNs = {
       projectsUnlimited: 'Unbegrenzt gespeicherte Projekte',
       imageExport: '{{formats}}-Export, bis zu {{quality}} % Qualität',
       advancedStyles: 'Erweiterte Karten- und Legendenstile',
+      watermark: 'Wasserzeichen auf Bildexporten',
+      noWatermark: 'Kein Wasserzeichen auf Bildexporten',
       timeSeries: 'Zeitreihen-Daten & Zeitstrahl auf der Karte',
       animationExport: 'Animierter Export (GIF & MP4)',
       publicEmbed: 'Öffentliche Kartenseite (Link & iframe)',

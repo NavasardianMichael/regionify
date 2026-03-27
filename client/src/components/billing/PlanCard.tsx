@@ -40,7 +40,6 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
       display: 'flex' as const,
       flexDirection: 'column' as const,
       height: '100%',
-      minHeight: 0,
     }),
     [],
   );
@@ -53,7 +52,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
         </div>
       )}
 
-      <Flex vertical gap="middle" style={{ height: '100%', minHeight: 0 }}>
+      <Flex vertical gap="middle" className="h-full w-full">
         <Flex vertical align="center" gap="small" className="w-full items-center text-center">
           <Typography.Title
             level={3}
@@ -71,7 +70,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           </Flex>
         </Flex>
 
-        <Flex vertical gap="small" flex={1} style={{ minHeight: 0 }} className="w-full">
+        <Flex vertical gap="small" className="w-full">
           {plan.features.map((feature, index) => (
             <Flex key={index} align="flex-start" gap="small" className="w-full">
               <CheckOutlined className="mt-0.5 shrink-0 text-green-500" />
@@ -83,6 +82,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
         <Button
           type={buttonType}
           block
+          className="mt-auto"
           disabled={isCurrentPlan}
           loading={isUpgrading}
           icon={isUpgrading ? <LoadingOutlined /> : undefined}

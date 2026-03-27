@@ -24,8 +24,30 @@ const en: CommonNs = {
     error: 'Failed to delete account',
   },
   home: {
-    title: 'Home',
-    welcome: 'Welcome to the Region Map application.',
+    title: 'Regionify',
+    welcome: 'Create beautiful interactive regional map visualizations.',
+    heroHeadline: 'Turn data into beautiful regional maps',
+    heroSubheadline:
+      'Import your data from CSV, Excel, JSON or Google Sheets, customize colors, legends and styles, then export publication-ready map graphics.',
+    ctaStart: 'Start creating',
+    ctaPlans: 'See plans',
+    featuresTitle: 'Everything you need to visualize regional data',
+    featureImportTitle: 'Flexible data import',
+    featureImportDesc:
+      'Load data from CSV, Excel, JSON files or connect directly to Google Sheets.',
+    featureCustomizeTitle: 'Advanced styling',
+    featureCustomizeDesc:
+      'Color scales, custom legends, label formatting and full map appearance control.',
+    featureExportTitle: 'High-quality export',
+    featureExportDesc: 'Download your maps as PNG, SVG or JPEG at up to 100 % quality.',
+    featureTimeSeriesTitle: 'Time-series & animation',
+    featureTimeSeriesDesc:
+      'Import historical data, scrub through time, and export animated GIF or MP4 timelines.',
+    mapsTitle: '200+ maps included',
+    mapsSubtitle:
+      'Countries, continents, US states, EU regions and more — ready to use out of the box.',
+    ctaBottomTitle: 'Ready to map your data?',
+    ctaBottomSubtitle: 'Create your first visualization in minutes — no credit card required.',
   },
   about: {
     title: 'About',
@@ -50,6 +72,8 @@ const en: CommonNs = {
       projectsUnlimited: 'Unlimited saved projects',
       imageExport: '{{formats}} export, up to {{quality}}% quality',
       advancedStyles: 'Advanced map & legend styling',
+      watermark: 'Watermark on image exports',
+      noWatermark: 'No watermark on image exports',
       timeSeries: 'Time-series data & timeline on the map',
       animationExport: 'Animated export (GIF & MP4)',
       publicEmbed: 'Public map page (share link & iframe)',

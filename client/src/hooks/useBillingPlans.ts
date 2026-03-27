@@ -30,10 +30,15 @@ function buildPlanFeatures(planId: Plan, t: TypedT): BillingPlan['features'] {
     quality: l.maxExportQuality,
   });
 
+  const watermarkText = l.advancedStylesEnabled
+    ? t('plans.rows.noWatermark')
+    : t('plans.rows.watermark');
+
   const rows: BillingPlan['features'] = [
     { text: projectText, included: true },
     { text: imageExportText, included: true },
-    { text: t('plans.rows.advancedStyles'), included: l.advancedStylesEnabled },
+    { text: t('plans.rows.advancedStyles'), included: true },
+    { text: watermarkText, included: true },
     { text: t('plans.rows.timeSeries'), included: l.historicalDataImport },
     { text: t('plans.rows.animationExport'), included: l.animationExport },
     { text: t('plans.rows.publicEmbed'), included: l.publicEmbed },

@@ -27,6 +27,23 @@ export type CommonNs = {
   home: {
     title: string;
     welcome: string;
+    heroHeadline: string;
+    heroSubheadline: string;
+    ctaStart: string;
+    ctaPlans: string;
+    featuresTitle: string;
+    featureImportTitle: string;
+    featureImportDesc: string;
+    featureCustomizeTitle: string;
+    featureCustomizeDesc: string;
+    featureExportTitle: string;
+    featureExportDesc: string;
+    featureTimeSeriesTitle: string;
+    featureTimeSeriesDesc: string;
+    mapsTitle: string;
+    mapsSubtitle: string;
+    ctaBottomTitle: string;
+    ctaBottomSubtitle: string;
   };
   about: {
     title: string;
@@ -50,6 +67,8 @@ export type CommonNs = {
       projectsUnlimited: string;
       imageExport: string;
       advancedStyles: string;
+      watermark: string;
+      noWatermark: string;
       timeSeries: string;
       animationExport: string;
       publicEmbed: string;

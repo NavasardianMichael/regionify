@@ -24,8 +24,30 @@ const pt: CommonNs = {
     error: 'Falha ao eliminar a conta',
   },
   home: {
-    title: 'Início',
-    welcome: 'Bem-vindo à aplicação Mapa de Regiões.',
+    title: 'Regionify',
+    welcome: 'Crie belas visualizações interativas de mapas regionais.',
+    heroHeadline: 'Transforme dados em belos mapas regionais',
+    heroSubheadline:
+      'Importe dados de CSV, Excel, JSON ou Google Sheets, personalize cores, legendas e estilos e exporte gráficos de mapas prontos para publicação.',
+    ctaStart: 'Começar a criar',
+    ctaPlans: 'Ver planos',
+    featuresTitle: 'Tudo o que precisa para visualizar dados regionais',
+    featureImportTitle: 'Importação flexível',
+    featureImportDesc:
+      'Carregue dados de ficheiros CSV, Excel, JSON ou ligue-se diretamente ao Google Sheets.',
+    featureCustomizeTitle: 'Estilos avançados',
+    featureCustomizeDesc:
+      'Escalas de cores, legendas personalizadas, formatação de rótulos e controlo total da aparência do mapa.',
+    featureExportTitle: 'Exportação de alta qualidade',
+    featureExportDesc: 'Descarregue os seus mapas em PNG, SVG ou JPEG com até 100 % de qualidade.',
+    featureTimeSeriesTitle: 'Séries temporais e animação',
+    featureTimeSeriesDesc:
+      'Importe dados históricos, percorra o tempo e exporte cronologias animadas em GIF ou MP4.',
+    mapsTitle: 'Mais de 200 mapas incluídos',
+    mapsSubtitle:
+      'Países, continentes, estados dos EUA, regiões da UE e mais — prontos a usar.',
+    ctaBottomTitle: 'Pronto para mapear os seus dados?',
+    ctaBottomSubtitle: 'Crie a sua primeira visualização em minutos — sem cartão de crédito.',
   },
   about: {
     title: 'Sobre',
@@ -51,6 +73,8 @@ const pt: CommonNs = {
       projectsUnlimited: 'Projetos guardados ilimitados',
       imageExport: 'Exportação {{formats}}, qualidade até {{quality}}%',
       advancedStyles: 'Estilos avançados de mapa e legenda',
+      watermark: 'Marca de água nas exportações de imagem',
+      noWatermark: 'Sem marca de água nas exportações de imagem',
       timeSeries: 'Dados temporais e linha do tempo no mapa',
       animationExport: 'Exportação animada (GIF e MP4)',
       publicEmbed: 'Página pública do mapa (ligação e iframe)',

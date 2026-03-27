@@ -24,8 +24,30 @@ const fr: CommonNs = {
     error: 'Échec de la suppression du compte',
   },
   home: {
-    title: 'Accueil',
-    welcome: "Bienvenue sur l'application Carte des régions.",
+    title: 'Regionify',
+    welcome: 'Créez de belles visualisations de cartes régionales interactives.',
+    heroHeadline: 'Transformez vos données en belles cartes régionales',
+    heroSubheadline:
+      "Importez vos données depuis CSV, Excel, JSON ou Google Sheets, personnalisez couleurs, légendes et styles, puis exportez des cartes prêtes à publier.",
+    ctaStart: 'Commencer à créer',
+    ctaPlans: 'Voir les plans',
+    featuresTitle: 'Tout ce dont vous avez besoin pour visualiser des données régionales',
+    featureImportTitle: 'Import flexible',
+    featureImportDesc:
+      'Chargez des données depuis des fichiers CSV, Excel, JSON ou connectez-vous directement à Google Sheets.',
+    featureCustomizeTitle: 'Styles avancés',
+    featureCustomizeDesc:
+      "Échelles de couleurs, légendes personnalisées, mise en forme des étiquettes et contrôle total de l'apparence de la carte.",
+    featureExportTitle: 'Export haute qualité',
+    featureExportDesc: 'Téléchargez vos cartes en PNG, SVG ou JPEG à 100 % de qualité.',
+    featureTimeSeriesTitle: 'Séries temporelles et animation',
+    featureTimeSeriesDesc:
+      'Importez des données historiques, parcourez le temps et exportez des chronologies animées en GIF ou MP4.',
+    mapsTitle: 'Plus de 200 cartes incluses',
+    mapsSubtitle:
+      'Pays, continents, états américains, régions européennes et plus — prêts à utiliser.',
+    ctaBottomTitle: 'Prêt à cartographier vos données ?',
+    ctaBottomSubtitle: 'Créez votre première visualisation en quelques minutes — sans carte de crédit.',
   },
   about: {
     title: 'À propos',
@@ -51,6 +73,8 @@ const fr: CommonNs = {
       projectsUnlimited: 'Projets enregistrés illimités',
       imageExport: "Export {{formats}}, qualité jusqu'à {{quality}} %",
       advancedStyles: 'Styles avancés carte et légende',
+      watermark: "Filigrane sur les exports d'images",
+      noWatermark: "Pas de filigrane sur les exports d'images",
       timeSeries: 'Données temporelles et frise chronologique sur la carte',
       animationExport: 'Export animé (GIF et MP4)',
       publicEmbed: 'Page carte publique (lien et iframe)',
