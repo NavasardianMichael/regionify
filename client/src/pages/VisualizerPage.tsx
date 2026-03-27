@@ -94,7 +94,8 @@ const VisualizerPage: FC = () => {
     handleNameChange,
   } = useVisualizerPage();
 
-  const embedButtonDisabled = !canUseEmbed || !selectedCountryId || !currentProject;
+  const embedButtonDisabled =
+    !canUseEmbed || !selectedCountryId || !currentProject || isResolvingProjectFromUrl;
 
   const embedTooltipTitle = useMemo(() => {
     if (!embedButtonDisabled) return undefined;
@@ -212,14 +213,6 @@ const VisualizerPage: FC = () => {
     });
   }, [location.pathname, setCurrentProjectId, setSavedStateSnapshot]);
 
-  if (isResolvingProjectFromUrl) {
-    return (
-      <Flex align="center" justify="center" className="h-full min-h-0 w-full flex-1">
-        <Spin size="large" />
-      </Flex>
-    );
-  }
-
   return (
     <>
       <Splitter className="h-full min-h-0 w-full">
@@ -254,7 +247,7 @@ const VisualizerPage: FC = () => {
                 <Button
                   icon={<SaveOutlined />}
                   onClick={handleSave}
-                  disabled={isSaveDisabled}
+                  disabled={isSaveDisabled || isResolvingProjectFromUrl}
                   loading={isSaving}
                 >
                   {saveButtonText}
@@ -263,7 +256,7 @@ const VisualizerPage: FC = () => {
                   type="primary"
                   icon={<DownloadOutlined />}
                   onClick={handleOpenExportModal}
-                  disabled={!selectedCountryId}
+                  disabled={!selectedCountryId || isResolvingProjectFromUrl}
                 >
                   {exportButtonText}
                 </Button>
@@ -278,14 +271,20 @@ const VisualizerPage: FC = () => {
                 ) : null}
               </Flex>
             </Flex>
-            {hasTimelineData && (
+            {!isResolvingProjectFromUrl && hasTimelineData && (
               <Suspense>
                 <AnimationControls />
               </Suspense>
             )}
-            <Suspense fallback={<Spin className="m-auto flex-1" />}>
-              <MapViewer className="min-h-0 flex-1" />
-            </Suspense>
+            {isResolvingProjectFromUrl ? (
+              <Flex align="center" justify="center" className="min-h-0 flex-1">
+                <Spin size="large" />
+              </Flex>
+            ) : (
+              <Suspense fallback={<Spin className="m-auto flex-1" />}>
+                <MapViewer className="min-h-0 flex-1" />
+              </Suspense>
+            )}
           </CardLayout>
         </Splitter.Panel>
 

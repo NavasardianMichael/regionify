@@ -15,6 +15,7 @@ const de: CommonNs = {
     deleteAccount: 'Konto löschen',
     cancel: 'Abbrechen',
     logoutError: 'Abmeldung fehlgeschlagen. Bitte erneut versuchen.',
+    languageSelectAriaLabel: 'Oberflächensprache',
   },
   deleteAccountModal: {
     title: 'Konto löschen',
@@ -161,10 +162,7 @@ const de: CommonNs = {
       placeholder: 'Land auswählen...',
       ariaLabel: 'Land auswählen',
       changeConfirmTitle: 'Land wechseln?',
-      changeConfirmBody:
-        'Alle nicht gespeicherten Änderungen und der aktuelle Datensatz gehen verloren. Fortfahren?',
-      saveFirstHint:
-        'Speichern Sie zuerst das aktuelle Projekt und legen Sie bei Bedarf ein neues an, um diese Daten zu behalten.',
+      changeConfirmBody: 'Alle nicht gespeicherten Änderungen gehen verloren. Sind Sie sicher?',
       changeOk: 'Land wechseln',
     },
     importData: {

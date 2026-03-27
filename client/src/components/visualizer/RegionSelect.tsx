@@ -1,6 +1,6 @@
 import { type FC, startTransition, useCallback, useMemo, useRef } from 'react';
 import { GlobalOutlined } from '@ant-design/icons';
-import { Flex, type RefSelectProps, Select, type SelectProps, Typography } from 'antd';
+import { Flex, type RefSelectProps, Select, type SelectProps } from 'antd';
 import {
   selectData,
   selectSelectedCountryId,
@@ -43,14 +43,7 @@ export const RegionSelect: FC = () => {
       if (shouldWarnOnCountryChange) {
         modal.confirm({
           title: t('visualizer.region.changeConfirmTitle'),
-          content: (
-            <Flex vertical gap="small">
-              <Typography.Text>{t('visualizer.region.changeConfirmBody')}</Typography.Text>
-              <Typography.Text type="secondary" className="text-xs">
-                {t('visualizer.region.saveFirstHint')}
-              </Typography.Text>
-            </Flex>
-          ),
+          content: t('visualizer.region.changeConfirmBody'),
           okText: t('visualizer.region.changeOk'),
           cancelText: t('nav.cancel'),
           onOk: doChange,

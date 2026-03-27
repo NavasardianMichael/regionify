@@ -17,6 +17,8 @@ export type CommonNs = {
     deleteAccount: string;
     cancel: string;
     logoutError: string;
+    /** Accessible name for the locale combobox in the nav */
+    languageSelectAriaLabel: string;
   };
   deleteAccountModal: {
     title: string;
@@ -149,7 +151,6 @@ export type CommonNs = {
       ariaLabel: string;
       changeConfirmTitle: string;
       changeConfirmBody: string;
-      saveFirstHint: string;
       changeOk: string;
     };
     importData: {

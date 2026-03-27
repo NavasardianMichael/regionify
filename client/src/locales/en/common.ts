@@ -15,6 +15,7 @@ const en: CommonNs = {
     deleteAccount: 'Delete Account',
     cancel: 'Cancel',
     logoutError: 'Logout failed. Please try again.',
+    languageSelectAriaLabel: 'Interface language',
   },
   deleteAccountModal: {
     title: 'Delete Account',
@@ -156,9 +157,7 @@ const en: CommonNs = {
       placeholder: 'Select a country...',
       ariaLabel: 'Select a country',
       changeConfirmTitle: 'Change country?',
-      changeConfirmBody: 'All unsaved changes and the current dataset will be lost. Are you sure?',
-      saveFirstHint:
-        'We recommend saving your current project first, then creating a new one if you need to keep this data.',
+      changeConfirmBody: 'All unsaved changes will be lost. Are you sure?',
       changeOk: 'Change country',
     },
     importData: {

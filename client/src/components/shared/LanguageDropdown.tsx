@@ -31,7 +31,7 @@ type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'
 };
 
 export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) => {
-  const { i18n } = useTypedTranslation();
+  const { i18n, t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const setUser = useProfileStore(selectSetUser);
 
@@ -76,6 +76,7 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) =
     <Select<Locale>
       value={currentLocale}
       role="combobox"
+      aria-label={t('nav.languageSelectAriaLabel')}
       onChange={handleLocaleChange}
       options={options}
       // className={

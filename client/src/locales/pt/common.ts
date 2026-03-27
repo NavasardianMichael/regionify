@@ -15,6 +15,7 @@ const pt: CommonNs = {
     deleteAccount: 'Eliminar conta',
     cancel: 'Cancelar',
     logoutError: 'Falha ao sair. Tente novamente.',
+    languageSelectAriaLabel: 'Idioma da interface',
   },
   deleteAccountModal: {
     title: 'Eliminar conta',
@@ -155,10 +156,7 @@ const pt: CommonNs = {
       placeholder: 'Selecione um país...',
       ariaLabel: 'Selecionar um país',
       changeConfirmTitle: 'Alterar país?',
-      changeConfirmBody:
-        'Todas as alterações não guardadas e o conjunto de dados atual serão perdidos. Continuar?',
-      saveFirstHint:
-        'Recomendamos guardar o projeto atual e criar um novo se precisar manter estes dados.',
+      changeConfirmBody: 'Todas as alterações não guardadas serão perdidas. Tem a certeza?',
       changeOk: 'Alterar país',
     },
     importData: {

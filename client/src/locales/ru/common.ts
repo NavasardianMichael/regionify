@@ -15,6 +15,7 @@ const ru: CommonNs = {
     deleteAccount: 'Удалить аккаунт',
     cancel: 'Отмена',
     logoutError: 'Не удалось выйти. Попробуйте ещё раз.',
+    languageSelectAriaLabel: 'Язык интерфейса',
   },
   deleteAccountModal: {
     title: 'Удалить аккаунт',
@@ -155,10 +156,7 @@ const ru: CommonNs = {
       placeholder: 'Выберите страну...',
       ariaLabel: 'Выбор страны',
       changeConfirmTitle: 'Сменить страну?',
-      changeConfirmBody:
-        'Все несохранённые изменения и текущий набор данных будут потеряны. Продолжить?',
-      saveFirstHint:
-        'Сначала сохраните текущий проект и при необходимости создайте новый, чтобы сохранить эти данные.',
+      changeConfirmBody: 'Все несохранённые изменения будут потеряны. Продолжить?',
       changeOk: 'Сменить страну',
     },
     importData: {

@@ -15,6 +15,7 @@ const fr: CommonNs = {
     deleteAccount: 'Supprimer le compte',
     cancel: 'Annuler',
     logoutError: 'Échec de la déconnexion. Veuillez réessayer.',
+    languageSelectAriaLabel: "Langue de l'interface",
   },
   deleteAccountModal: {
     title: 'Supprimer le compte',
@@ -157,10 +158,7 @@ const fr: CommonNs = {
       placeholder: 'Sélectionnez un pays...',
       ariaLabel: 'Sélectionner un pays',
       changeConfirmTitle: 'Changer de pays ?',
-      changeConfirmBody:
-        'Toutes les modifications non enregistrées et le jeu de données actuel seront perdus. Continuer ?',
-      saveFirstHint:
-        'Enregistrez d’abord le projet en cours, puis créez-en un nouveau si vous devez conserver ces données.',
+      changeConfirmBody: 'Toutes les modifications non enregistrées seront perdues. Continuer ?',
       changeOk: 'Changer de pays',
     },
     importData: {

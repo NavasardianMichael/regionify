@@ -15,6 +15,7 @@ const zh: CommonNs = {
     deleteAccount: '删除账户',
     cancel: '取消',
     logoutError: '退出登录失败，请重试。',
+    languageSelectAriaLabel: '界面语言',
   },
   deleteAccountModal: {
     title: '删除账户',
@@ -147,8 +148,7 @@ const zh: CommonNs = {
       placeholder: '请选择国家...',
       ariaLabel: '选择国家',
       changeConfirmTitle: '更换国家？',
-      changeConfirmBody: '未保存的更改和当前数据集将丢失。确定继续吗？',
-      saveFirstHint: '建议先保存当前项目，如需保留数据再新建项目。',
+      changeConfirmBody: '所有未保存的更改将丢失。确定吗？',
       changeOk: '更换国家',
     },
     importData: {
