@@ -28,7 +28,7 @@ const fr: CommonNs = {
     welcome: 'Créez de belles visualisations de cartes régionales interactives.',
     heroHeadline: 'Transformez vos données en belles cartes régionales',
     heroSubheadline:
-      "Importez vos données depuis CSV, Excel, JSON ou Google Sheets, personnalisez couleurs, légendes et styles, puis exportez des cartes prêtes à publier.",
+      'Importez vos données depuis CSV, Excel, JSON ou Google Sheets, personnalisez couleurs, légendes et styles, puis exportez des cartes prêtes à publier.',
     ctaStart: 'Commencer à créer',
     ctaPlans: 'Voir les plans',
     featuresTitle: 'Tout ce dont vous avez besoin pour visualiser des données régionales',
@@ -47,7 +47,8 @@ const fr: CommonNs = {
     mapsSubtitle:
       'Pays, continents, états américains, régions européennes et plus — prêts à utiliser.',
     ctaBottomTitle: 'Prêt à cartographier vos données ?',
-    ctaBottomSubtitle: 'Créez votre première visualisation en quelques minutes — sans carte de crédit.',
+    ctaBottomSubtitle:
+      'Créez votre première visualisation en quelques minutes — sans carte de crédit.',
   },
   about: {
     title: 'À propos',
@@ -450,6 +451,7 @@ const fr: CommonNs = {
     projectRenamed: 'Projet renommé',
     projectRenameFailed: 'Échec du renommage du projet',
     projectsLoadFailed: 'Échec du chargement des projets',
+    projectLoadFailed: 'Échec du chargement du projet',
     mapExportedAs: 'Carte exportée en {{format}}',
     exportFailed: "Échec de l'export. Veuillez réessayer.",
     importHistoricalFirst:

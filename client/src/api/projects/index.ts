@@ -53,13 +53,21 @@ export const getProject = async (id: string): Promise<Project> => {
     credentials: 'include',
   });
 
-  const data = (await response.json()) as ApiResponse<Project>;
+  const data = (await response.json()) as ApiResponse<Project> | ApiErrorResponse;
+
+  if (response.status === 401) {
+    const error = new Error(getErrorMessage(data, 'Unauthorized')) as Error & {
+      code?: string;
+    };
+    error.code = 'UNAUTHORIZED';
+    throw error;
+  }
 
   if (!response.ok) {
     throw new Error(getErrorMessage(data, 'Failed to fetch project'));
   }
 
-  return data.data;
+  return (data as ApiResponse<Project>).data;
 };
 
 export const createProject = async (payload: ProjectCreatePayload): Promise<Project> => {

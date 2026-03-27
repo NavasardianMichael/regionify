@@ -6,6 +6,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useState,
 } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { DownloadOutlined, SaveOutlined, ShareAltOutlined } from '@ant-design/icons';
@@ -21,8 +22,11 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import { getProject } from '@/api/projects';
 import { selectHasTimelineData } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
+import { selectLogout } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import {
   selectCurrentProject,
   selectCurrentProjectId,
@@ -30,11 +34,14 @@ import {
   selectSetSavedStateSnapshot,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { useLoadProject } from '@/hooks/useLoadProject';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import { useVisualizerPage } from '@/hooks/useVisualizerPage';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
+import { saveReturnUrl } from '@/helpers/temporaryProjectState';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
 import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
@@ -51,14 +58,18 @@ const AnimationControls = lazy(() => import('@/components/visualizer/AnimationCo
 const VisualizerPage: FC = () => {
   const { token } = theme.useToken();
   const { t } = useTypedTranslation();
+  const { message } = useAppFeedback();
   const navigate = useNavigate();
   const location = useLocation();
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
+  const logout = useProfileStore(selectLogout);
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
   const currentProject = useProjectsStore(selectCurrentProject);
   const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
+  const loadProject = useLoadProject();
+  const [isResolvingProjectFromUrl, setIsResolvingProjectFromUrl] = useState(false);
 
   const {
     selectedCountryId,
@@ -139,10 +150,57 @@ const VisualizerPage: FC = () => {
     }
     if (currentProjectId && urlProjectId !== undefined && urlProjectId !== currentProjectId) {
       navigate(getProjectRoute(currentProjectId), { replace: true });
-    } else if (!currentProjectId && urlProjectId && urlProjectId !== 'new') {
-      navigate(ROUTES.PROJECT_NEW, { replace: true });
     }
   }, [currentProjectId, urlProjectId, navigate, location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname === ROUTES.PROJECT_NEW) return;
+    if (!urlProjectId || urlProjectId === 'new') return;
+    if (currentProjectId !== null) return;
+
+    let cancelled = false;
+    setIsResolvingProjectFromUrl(true);
+
+    const run = async () => {
+      try {
+        const project = await getProject(urlProjectId);
+        if (cancelled) return;
+        loadProject(project);
+      } catch (error) {
+        if (cancelled) return;
+        const err = error as Error & { code?: string };
+        if (err.code === 'UNAUTHORIZED') {
+          saveReturnUrl(`${location.pathname}${location.search}`);
+          logout();
+          message.error('Session expired. Please log in again.', 0);
+          navigate(ROUTES.LOGIN);
+        } else {
+          message.error(t('messages.projectLoadFailed'), 0);
+          navigate(ROUTES.PROJECTS);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsResolvingProjectFromUrl(false);
+        }
+      }
+    };
+
+    void run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    urlProjectId,
+    currentProjectId,
+    location.pathname,
+    location.search,
+    loadProject,
+    logout,
+    message,
+    navigate,
+    t,
+  ]);
 
   // Run before child useEffects (e.g. ImportDataPanel async region loader) so the store is cleared first.
   useLayoutEffect(() => {
@@ -153,6 +211,14 @@ const VisualizerPage: FC = () => {
       setSavedStateSnapshot(captureStateSnapshot());
     });
   }, [location.pathname, setCurrentProjectId, setSavedStateSnapshot]);
+
+  if (isResolvingProjectFromUrl) {
+    return (
+      <Flex align="center" justify="center" className="h-full min-h-0 w-full flex-1">
+        <Spin size="large" />
+      </Flex>
+    );
+  }
 
   return (
     <>

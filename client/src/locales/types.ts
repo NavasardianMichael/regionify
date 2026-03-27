@@ -422,6 +422,7 @@ export type CommonNs = {
     projectRenamed: string;
     projectRenameFailed: string;
     projectsLoadFailed: string;
+    projectLoadFailed: string;
     mapExportedAs: string;
     exportFailed: string;
     importHistoricalFirst: string;

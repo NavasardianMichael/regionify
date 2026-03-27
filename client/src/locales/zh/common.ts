@@ -32,19 +32,15 @@ const zh: CommonNs = {
     ctaPlans: '查看方案',
     featuresTitle: '可视化区域数据所需的一切',
     featureImportTitle: '灵活的数据导入',
-    featureImportDesc:
-      '从 CSV、Excel、JSON 文件加载数据，或直接连接 Google Sheets。',
+    featureImportDesc: '从 CSV、Excel、JSON 文件加载数据，或直接连接 Google Sheets。',
     featureCustomizeTitle: '高级样式',
-    featureCustomizeDesc:
-      '色阶、自定义图例、标签格式和完整的地图外观控制。',
+    featureCustomizeDesc: '色阶、自定义图例、标签格式和完整的地图外观控制。',
     featureExportTitle: '高质量导出',
     featureExportDesc: '以最高 100% 质量下载 PNG、SVG 或 JPEG 格式的地图。',
     featureTimeSeriesTitle: '时间序列与动画',
-    featureTimeSeriesDesc:
-      '导入历史数据、浏览时间线，并导出 GIF 或 MP4 动画时间轴。',
+    featureTimeSeriesDesc: '导入历史数据、浏览时间线，并导出 GIF 或 MP4 动画时间轴。',
     mapsTitle: '包含 200+ 张地图',
-    mapsSubtitle:
-      '国家、大洲、美国各州、欧盟区域等——开箱即用。',
+    mapsSubtitle: '国家、大洲、美国各州、欧盟区域等——开箱即用。',
     ctaBottomTitle: '准备好绘制数据地图了吗？',
     ctaBottomSubtitle: '几分钟内创建您的第一个可视化——无需信用卡。',
   },
@@ -424,6 +420,7 @@ const zh: CommonNs = {
     projectRenamed: '项目已重命名',
     projectRenameFailed: '重命名项目失败',
     projectsLoadFailed: '加载项目失败',
+    projectLoadFailed: '无法加载项目',
     mapExportedAs: '地图已导出为 {{format}}',
     exportFailed: '导出失败，请重试。',
     importHistoricalFirst: '请先导入带时间列的历史数据以导出动画。',

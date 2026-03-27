@@ -39,7 +39,8 @@ const de: CommonNs = {
     featureCustomizeDesc:
       'Farbskalen, benutzerdefinierte Legenden, Beschriftungsformate und volle Kontrolle über das Kartendesign.',
     featureExportTitle: 'Hochwertiger Export',
-    featureExportDesc: 'Laden Sie Ihre Karten als PNG, SVG oder JPEG in bis zu 100 % Qualität herunter.',
+    featureExportDesc:
+      'Laden Sie Ihre Karten als PNG, SVG oder JPEG in bis zu 100 % Qualität herunter.',
     featureTimeSeriesTitle: 'Zeitreihen & Animation',
     featureTimeSeriesDesc:
       'Importieren Sie historische Daten, navigieren Sie durch die Zeit und exportieren Sie animierte GIF- oder MP4-Zeitachsen.',
@@ -47,7 +48,8 @@ const de: CommonNs = {
     mapsSubtitle:
       'Länder, Kontinente, US-Bundesstaaten, EU-Regionen und mehr — sofort einsatzbereit.',
     ctaBottomTitle: 'Bereit, Ihre Daten zu kartieren?',
-    ctaBottomSubtitle: 'Erstellen Sie Ihre erste Visualisierung in Minuten — keine Kreditkarte erforderlich.',
+    ctaBottomSubtitle:
+      'Erstellen Sie Ihre erste Visualisierung in Minuten — keine Kreditkarte erforderlich.',
   },
   about: {
     title: 'Über uns',
@@ -448,6 +450,7 @@ const de: CommonNs = {
     projectRenamed: 'Projekt umbenannt',
     projectRenameFailed: 'Projekt konnte nicht umbenannt werden',
     projectsLoadFailed: 'Projekte konnten nicht geladen werden',
+    projectLoadFailed: 'Projekt konnte nicht geladen werden',
     mapExportedAs: 'Karte exportiert als {{format}}',
     exportFailed: 'Export fehlgeschlagen. Bitte erneut versuchen.',
     importHistoricalFirst: 'Importieren Sie zuerst Zeitreihendaten, um Animationen zu exportieren.',

@@ -439,6 +439,7 @@ const ru: CommonNs = {
     projectRenamed: 'Проект переименован',
     projectRenameFailed: 'Не удалось переименовать проект',
     projectsLoadFailed: 'Не удалось загрузить проекты',
+    projectLoadFailed: 'Не удалось загрузить проект',
     mapExportedAs: 'Карта экспортирована в {{format}}',
     exportFailed: 'Ошибка экспорта. Попробуйте снова.',
     importHistoricalFirst:

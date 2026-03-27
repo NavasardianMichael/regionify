@@ -44,8 +44,7 @@ const pt: CommonNs = {
     featureTimeSeriesDesc:
       'Importe dados históricos, percorra o tempo e exporte cronologias animadas em GIF ou MP4.',
     mapsTitle: 'Mais de 200 mapas incluídos',
-    mapsSubtitle:
-      'Países, continentes, estados dos EUA, regiões da UE e mais — prontos a usar.',
+    mapsSubtitle: 'Países, continentes, estados dos EUA, regiões da UE e mais — prontos a usar.',
     ctaBottomTitle: 'Pronto para mapear os seus dados?',
     ctaBottomSubtitle: 'Crie a sua primeira visualização em minutos — sem cartão de crédito.',
   },
@@ -443,6 +442,7 @@ const pt: CommonNs = {
     projectRenamed: 'Projeto renomeado',
     projectRenameFailed: 'Falha ao renomear o projeto',
     projectsLoadFailed: 'Falha ao carregar os projetos',
+    projectLoadFailed: 'Falha ao carregar o projeto',
     mapExportedAs: 'Mapa exportado como {{format}}',
     exportFailed: 'Falha na exportação. Tente novamente.',
     importHistoricalFirst:

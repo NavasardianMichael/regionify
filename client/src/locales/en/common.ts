@@ -437,6 +437,7 @@ const en: CommonNs = {
     projectRenamed: 'Project renamed',
     projectRenameFailed: 'Failed to rename project',
     projectsLoadFailed: 'Failed to load projects',
+    projectLoadFailed: 'Failed to load project',
     mapExportedAs: 'Map exported as {{format}}',
     exportFailed: 'Failed to export. Please try again.',
     importHistoricalFirst: 'Import historical data with a time column first to export animations.',

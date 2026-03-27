@@ -446,6 +446,7 @@ const es: CommonNs = {
     projectRenamed: 'Proyecto renombrado',
     projectRenameFailed: 'Error al renombrar el proyecto',
     projectsLoadFailed: 'Error al cargar los proyectos',
+    projectLoadFailed: 'Error al cargar el proyecto',
     mapExportedAs: 'Mapa exportado como {{format}}',
     exportFailed: 'Error al exportar. Inténtalo de nuevo.',
     importHistoricalFirst:
