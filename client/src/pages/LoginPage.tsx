@@ -61,6 +61,7 @@ const LoginPage: FC = () => {
           timelineData: merged.timelineData,
           timePeriods: merged.timePeriods,
           activeTimePeriod: merged.activeTimePeriod,
+          isGoogleSheetSyncLoading: false,
         });
         setMapStylesState({
           border: merged.border,

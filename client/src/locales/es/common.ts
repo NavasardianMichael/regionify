@@ -218,14 +218,15 @@ const es: CommonNs = {
     googleSheets: {
       title: 'Importar desde Google Sheets',
       intro:
-        'Pega la URL de una hoja de Google pública. La hoja debe compartirse como «Cualquiera con el enlace».',
+        'Pega la URL de una hoja de Google pública compartida como «Cualquiera con el enlace».',
       placeholder: 'https://docs.google.com/spreadsheets/d/...',
       howToShare: 'CÓMO COMPARTIR:',
       stepOpen: 'Abre tu hoja de Google',
       stepShare: 'Clic en Compartir → Acceso general',
       stepAnyone: 'Cambiar a «Cualquiera con el enlace»',
       stepPaste: 'Copia la URL y pégala arriba',
-      importButton: 'Importar hoja',
+      syncButton: 'Vincular y sincronizar',
+      importOnceButton: 'Importar una vez',
       fetching: 'Obteniendo...',
       fetchFailed: 'No se pudo obtener la hoja de Google',
     },
@@ -348,8 +349,10 @@ const es: CommonNs = {
       tooltipZoomIn: 'Ampliar',
       tooltipZoomOut: 'Reducir',
       tooltipResetMapAndLabels: 'Restablecer mapa y etiquetas',
-      tooltipEnableLabelDragging: 'Activar arrastre de etiquetas de región',
-      tooltipDisableLabelDragging: 'Desactivar arrastre de etiquetas de región',
+      tooltipEnableLabelDragging:
+        'Activar arrastre de etiquetas de región (se desactiva el arrastre del mapa)',
+      tooltipDisableLabelDragging:
+        'Desactivar arrastre de etiquetas de región (se reactiva el arrastre del mapa)',
       showLabels: 'Mostrar etiquetas',
       fontSize: 'Tamaño de fuente',
     },

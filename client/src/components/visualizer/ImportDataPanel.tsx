@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -21,6 +22,7 @@ import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
 import { Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
+import { fetchGoogleSheet } from '@/api/sheets';
 import {
   selectClearTimelineData,
   selectData,
@@ -35,7 +37,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import type { DataSet, RegionData } from '@/store/mapData/types';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { selectCurrentProject } from '@/store/projects/selectors';
+import { selectCurrentProject, selectCurrentProjectId } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
@@ -53,6 +55,7 @@ import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import type { GoogleSheetImportMode } from '@/components/visualizer/GoogleSheetsModal';
 import { ImportFormatExamples } from '@/components/visualizer/ImportDataPanel/ImportFormatExamples';
 import { ImportFormatInfoTooltip } from '@/components/visualizer/ImportDataPanel/ImportFormatInfoTooltip';
 import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPanel/SwitchModeConfirmContent';
@@ -62,6 +65,28 @@ const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
 const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
 
 const SUCCESS_MESSAGE_DURATION = 5;
+
+/**
+ * When every stored region id exists on the loaded map SVG, keep the current dataset
+ * (e.g. project just loaded). Otherwise sample data would overwrite saved imports.
+ */
+function storeDataMatchesMapTitles(
+  titles: string[],
+  data: DataSet,
+  timePeriods: string[],
+  timelineData: Record<string, DataSet>,
+): boolean {
+  if (titles.length === 0) return false;
+  const titleSet = new Set(titles);
+  if (timePeriods.length > 0) {
+    return timePeriods.every((p) => {
+      const ds = timelineData[p];
+      return ds && ds.allIds.length > 0 && ds.allIds.every((id) => titleSet.has(id));
+    });
+  }
+  if (data.allIds.length === 0) return false;
+  return data.allIds.every((id) => titleSet.has(id));
+}
 
 /** Show a message. Success auto-hides after 5s; persistent types use duration 0 (global close control applies). */
 function showMessageWithClose(
@@ -84,6 +109,7 @@ export const ImportDataPanel: FC = () => {
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
+  const skipSheetsRefetchOnceRef = useRef(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
@@ -98,6 +124,8 @@ export const ImportDataPanel: FC = () => {
   const plan = user?.plan ?? PLANS.observer;
   const { limits } = PLAN_DETAILS[plan];
   const currentProject = useProjectsStore(selectCurrentProject);
+  const currentProjectId = useProjectsStore(selectCurrentProjectId);
+  const googleUrl = useVisualizerStore((s) => s.google.url);
 
   /** Auto-detected: current data is panel/dynamic (has time dimension). */
   const hasHistoricalFormat = useMemo(() => {
@@ -437,6 +465,14 @@ export const ImportDataPanel: FC = () => {
           const titles = extractSvgTitles(svgContent);
           setSvgTitles(titles);
 
+          if (titles.length > 0) {
+            const viz = useVisualizerStore.getState();
+            if (viz.selectedCountryId !== selectedCountryId) return;
+            if (storeDataMatchesMapTitles(titles, viz.data, viz.timePeriods, viz.timelineData)) {
+              return;
+            }
+          }
+
           // Generate sample: panel/dynamic if plan supports it, else static
           if (titles.length > 0) {
             if (limits.historicalDataImport) {
@@ -549,13 +585,8 @@ export const ImportDataPanel: FC = () => {
     ],
   );
 
-  const handleSheetCsvFetched = useCallback(
-    (payload: { csv: string; url: string }) => {
-      const { csv, url } = payload;
-      const gid = extractGid(url);
-      setVisualizerState({
-        google: { url, gid: gid ?? null },
-      });
+  const afterSheetCsvParsed = useCallback(
+    (csv: string) => {
       const result = parseCSV(csv);
       if (typeof result === 'object' && 'error' in result) {
         showMessageWithSampleDownload(
@@ -579,8 +610,85 @@ export const ImportDataPanel: FC = () => {
       }
       processImportedData(result);
     },
-    [messageApi, processImportedData, handleDownloadSampleOnly, setVisualizerState, t],
+    [handleDownloadSampleOnly, messageApi, processImportedData, t],
   );
+
+  const handleSheetImport = useCallback(
+    (payload: { csv: string; url: string; mode: GoogleSheetImportMode }) => {
+      const { csv, url, mode } = payload;
+      const gid = extractGid(url);
+      if (mode === 'sync') {
+        skipSheetsRefetchOnceRef.current = true;
+        setVisualizerState({
+          google: { url, gid: gid ?? null },
+          importDataType: IMPORT_DATA_TYPES.sheets,
+        });
+      } else {
+        setVisualizerState({
+          google: { url: null, gid: null },
+          importDataType: IMPORT_DATA_TYPES.csv,
+        });
+      }
+      afterSheetCsvParsed(csv);
+    },
+    [afterSheetCsvParsed, setVisualizerState],
+  );
+
+  useEffect(() => {
+    if (importDataType !== IMPORT_DATA_TYPES.sheets) {
+      setVisualizerState({ isGoogleSheetSyncLoading: false });
+      return;
+    }
+
+    const canRun =
+      Boolean(googleUrl) &&
+      Boolean(selectedCountryId) &&
+      Boolean(currentProjectId) &&
+      svgTitles.length > 0;
+
+    if (skipSheetsRefetchOnceRef.current) {
+      skipSheetsRefetchOnceRef.current = false;
+      if (!canRun) return;
+      return;
+    }
+
+    if (!canRun || !googleUrl) return;
+
+    const sheetUrl = googleUrl;
+
+    setVisualizerState({ isGoogleSheetSyncLoading: true });
+    let cancelled = false;
+    void (async () => {
+      try {
+        const csv = await fetchGoogleSheet({ url: sheetUrl });
+        if (cancelled) return;
+        afterSheetCsvParsed(csv);
+      } catch {
+        if (!cancelled) {
+          showMessageWithClose(messageApi, 'error', t('visualizer.googleSheets.fetchFailed'));
+        }
+      } finally {
+        if (!cancelled) {
+          setVisualizerState({ isGoogleSheetSyncLoading: false });
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      setVisualizerState({ isGoogleSheetSyncLoading: false });
+    };
+  }, [
+    afterSheetCsvParsed,
+    currentProjectId,
+    googleUrl,
+    importDataType,
+    messageApi,
+    selectedCountryId,
+    setVisualizerState,
+    svgTitles,
+    t,
+  ]);
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options: Parameters<NonNullable<UploadProps['customRequest']>>[0]) => {
@@ -881,7 +989,7 @@ export const ImportDataPanel: FC = () => {
           <GoogleSheetsModal
             open={isSheetsModalOpen}
             onClose={() => setIsSheetsModalOpen(false)}
-            onCsvFetched={handleSheetCsvFetched}
+            onImport={handleSheetImport}
           />
         </Suspense>
       )}

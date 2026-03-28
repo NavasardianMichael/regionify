@@ -106,19 +106,35 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   }, [planSupportsDynamic, hasTimelineData]);
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
-  const [quality, setQuality] = useState(initialQuality);
-  const [secondsPerPeriod, setSecondsPerPeriod] = useState(DEFAULT_SECONDS_PER_PERIOD);
+  /** `null` while the user clears the field to type a new value; export uses `resolvedQuality`. */
+  const [quality, setQuality] = useState<number | null>(initialQuality);
+  const [secondsPerPeriod, setSecondsPerPeriod] = useState<number | null>(
+    DEFAULT_SECONDS_PER_PERIOD,
+  );
   const [smoothTransitions, setSmoothTransitions] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const isAnimationFormat = exportType === EXPORT_TYPES.gif || exportType === EXPORT_TYPES.mp4;
 
+  const resolvedQuality = useMemo(() => {
+    const q = quality;
+    if (q === null) return Math.min(DEFAULT_QUALITY, maxQuality);
+    return Math.min(Math.max(q, 1), maxQuality);
+  }, [quality, maxQuality]);
+
+  const resolvedSecondsPerPeriod = useMemo(() => {
+    const s = secondsPerPeriod;
+    if (s === null) return DEFAULT_SECONDS_PER_PERIOD;
+    return Math.max(0.5, Math.min(s, 10));
+  }, [secondsPerPeriod]);
+
   const handleAfterOpenChange = useCallback(
     (visible: boolean) => {
       if (visible) {
         setExportType(defaultExportType);
         setQuality(Math.min(DEFAULT_QUALITY, maxQuality));
+        setSecondsPerPeriod(DEFAULT_SECONDS_PER_PERIOD);
       }
     },
     [defaultExportType, maxQuality],
@@ -128,29 +144,78 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     setExportType(value);
   }, []);
 
-  const handleQualityChange = useCallback(
-    (value: number | null) => {
-      const v = value ?? initialQuality;
-      setQuality(Math.min(v, maxQuality));
-    },
-    [initialQuality, maxQuality],
+  const handleQualityInputChange = useCallback((value: number | null) => {
+    setQuality(value);
+  }, []);
+
+  const handleQualitySliderChange = useCallback((value: number) => {
+    setQuality(value);
+  }, []);
+
+  const handleQualityBlur = useCallback(() => {
+    setQuality((q) => {
+      if (q === null) return Math.min(DEFAULT_QUALITY, maxQuality);
+      return Math.min(Math.max(q, 1), maxQuality);
+    });
+  }, [maxQuality]);
+
+  const handleSecondsInputChange = useCallback((value: number | null) => {
+    setSecondsPerPeriod(value);
+  }, []);
+
+  const handleSecondsBlur = useCallback(() => {
+    setSecondsPerPeriod((s) => {
+      if (s === null) return DEFAULT_SECONDS_PER_PERIOD;
+      return Math.max(0.5, Math.min(s, 10));
+    });
+  }, []);
+
+  const staticStillOpts = useMemo(
+    () => ({
+      backgroundColor: picture.transparentBackground ? undefined : picture.backgroundColor,
+      legendDraw:
+        legendPosition !== LEGEND_POSITIONS.hidden && legendItems.length > 0
+          ? {
+              title: legendTitle,
+              labels: legendLabels,
+              items: legendItems,
+              noDataColor,
+              backgroundColor: legendBackgroundColor,
+            }
+          : null,
+    }),
+    [
+      picture.transparentBackground,
+      picture.backgroundColor,
+      legendPosition,
+      legendItems,
+      legendTitle,
+      legendLabels,
+      noDataColor,
+      legendBackgroundColor,
+    ],
   );
 
   const exportHandlers = useMemo(
     () => ({
       [EXPORT_TYPES.svg]: (fileName: string) => exportMapAsSvg(fileName),
-      [EXPORT_TYPES.png]: (fileName: string) => exportMapAsPng(quality, fileName),
+      [EXPORT_TYPES.png]: (fileName: string) =>
+        exportMapAsPng(resolvedQuality, fileName, staticStillOpts),
       [EXPORT_TYPES.jpeg]: (fileName: string) => {
         if (plan === PLANS.observer) {
-          return exportMapAsJpeg(quality, fileName, {
+          return exportMapAsJpeg(resolvedQuality, fileName, {
+            ...staticStillOpts,
             backgroundColor: '#f5f5f5',
             watermark: { text: 'Regionify', showTrademark: true },
           });
         }
-        return exportMapAsJpeg(quality, fileName);
+        return exportMapAsJpeg(resolvedQuality, fileName, {
+          ...staticStillOpts,
+          backgroundColor: staticStillOpts.backgroundColor ?? '#ffffff',
+        });
       },
     }),
-    [quality, plan],
+    [resolvedQuality, plan, staticStillOpts],
   );
 
   const handleDownload = useCallback(async () => {
@@ -184,9 +249,9 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
             labels: legendLabels,
             backgroundColor: legendBackgroundColor,
           },
-          quality,
+          quality: resolvedQuality,
           fps: EXPORT_FPS,
-          secondsPerPeriod,
+          secondsPerPeriod: resolvedSecondsPerPeriod,
           smooth: smoothTransitions,
           legendPosition: exportLegendPosition,
           floatingPosition,
@@ -234,8 +299,8 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     floatingPosition,
     regionLabels,
     labelPositionsByRegionId,
-    quality,
-    secondsPerPeriod,
+    resolvedQuality,
+    resolvedSecondsPerPeriod,
     smoothTransitions,
     onClose,
     t,
@@ -257,9 +322,10 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     exportTypeOptions,
     exportTypeInfoTooltip,
     quality,
+    resolvedQuality,
     secondsPerPeriod,
+    resolvedSecondsPerPeriod,
     smoothTransitions,
-    setSecondsPerPeriod,
     setSmoothTransitions,
     isExporting,
     progress,
@@ -272,7 +338,11 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     timePeriods,
     handleAfterOpenChange,
     handleExportTypeChange,
-    handleQualityChange,
+    handleQualityInputChange,
+    handleQualitySliderChange,
+    handleQualityBlur,
+    handleSecondsInputChange,
+    handleSecondsBlur,
     handleDownload,
     showQualityControl,
     downloadButtonLabel,

@@ -6,6 +6,8 @@ export const selectSelectedCountryId = (state: VisualizerState) => state.selecte
 export const selectData = (state: VisualizerState) => state.data;
 export const selectDataAllIds = (state: VisualizerState) => state.data.allIds;
 export const selectDataById = (state: VisualizerState) => state.data.byId;
+export const selectIsGoogleSheetSyncLoading = (state: VisualizerState) =>
+  state.isGoogleSheetSyncLoading;
 
 // Timeline selectors
 export const selectTimelineData = (state: VisualizerState) => state.timelineData;

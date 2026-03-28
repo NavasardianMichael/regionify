@@ -9,6 +9,7 @@ export const useVisualizerStore = create<VisualizerState>((set) => ({
   data: EMPTY_DATA_SET,
   selectedCountryId: null,
   google: { url: null, gid: null },
+  isGoogleSheetSyncLoading: false,
 
   // Timeline state
   timelineData: {},

@@ -212,7 +212,8 @@ export type CommonNs = {
       stepShare: string;
       stepAnyone: string;
       stepPaste: string;
-      importButton: string;
+      syncButton: string;
+      importOnceButton: string;
       fetching: string;
       fetchFailed: string;
     };

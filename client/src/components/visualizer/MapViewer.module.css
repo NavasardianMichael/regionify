@@ -6,10 +6,37 @@
   stroke: white;
   stroke-opacity: 1;
   stroke-width: 0.5;
-  cursor: pointer;
+  cursor: inherit;
   transition: fill 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/** Pan mode: whole map (paths + empty space) uses move; toggled from MapViewer when label-drag is off. */
+.mapPanCursor {
+  cursor: move;
+}
+
+.mapPanCursor :global(svg path) {
+  cursor: move;
 }
 
 .mapPathInstant {
   transition: none !important;
+}
+
+/**
+ * When label-drag mode is on, labels show a clear hover affordance (map pan is off).
+ */
+.labelDragHoverTarget :global(svg text[data-region-id]) {
+  cursor: grab;
+  transition:
+    filter 0.15s ease,
+    outline-color 0.15s ease;
+}
+
+/** Dashed box around the `<text>` fragment (not per-glyph stroke). */
+.labelDragHoverTarget :global(svg text[data-region-id]:hover) {
+  filter: drop-shadow(0 0 5px rgba(24, 41, 77, 0.55)) brightness(1.08);
+  outline: 1px dashed #18294d;
+  outline-offset: 4px;
+  transition: outline-color 0.15s ease;
 }

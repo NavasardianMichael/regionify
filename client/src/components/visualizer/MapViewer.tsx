@@ -28,6 +28,7 @@ import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
   selectActiveTimePeriod,
   selectData,
+  selectIsGoogleSheetSyncLoading,
   selectSelectedCountryId,
   selectTimelineData,
   selectTimePeriods,
@@ -88,6 +89,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   } | null>(null);
 
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
+  const isGoogleSheetSyncLoading = useVisualizerStore(selectIsGoogleSheetSyncLoading);
   const data = useVisualizerStore(selectData);
   const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
   const timePeriods = useVisualizerStore(selectTimePeriods);
@@ -143,7 +145,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         noDataColor,
         transitionType,
         colorBlend: previewColorBlend,
-        labelPositions: labelPositionsRef.current,
+        labelPositions: labelPositionsByRegionId,
         pathClass: styles.mapPath,
         pathClassInstant: styles.mapPathInstant,
       }),
@@ -157,6 +159,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       noDataColor,
       transitionType,
       previewColorBlend,
+      labelPositionsByRegionId,
     ],
   );
 
@@ -180,7 +183,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     }
   }, [selectedCountryId, setLabelPositionsByRegionId]);
 
-  // Always sync local draft with persisted positions for the active map.
+  /**
+   * Keep ref in sync for label-drag mouseup (batch into store). During drag, DOM x/y lead until
+   * release; svgContent uses labelPositionsByRegionId from the store directly.
+   */
   useEffect(() => {
     if (rawSvgContent) {
       labelPositionsRef.current = { ...labelPositionsByRegionId };
@@ -232,6 +238,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const handleResetView = useCallback(() => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
+    labelPositionsRef.current = {};
     setLabelPositionsByRegionId({});
   }, [setLabelPositionsByRegionId]);
 
@@ -330,12 +337,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     const container = containerRef.current;
     if (!container || !svgContent || !regionLabels.show || !labelDragMode) return;
 
-    const svgEl = container.querySelector('svg');
-    if (!svgEl) return;
+    const textElements = container.querySelectorAll<SVGTextElement>('text[data-region-id]');
 
-    const textElements = svgEl.querySelectorAll<SVGTextElement>('text[data-region-id]');
-
-    const handleMouseDown = (e: MouseEvent) => {
+    const handleLabelMouseDown = (e: MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -343,9 +347,12 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       const regionId = target.getAttribute('data-region-id');
       if (!regionId) return;
 
+      const svgRoot = target.ownerSVGElement;
+      if (!svgRoot) return;
+
       draggingLabelRef.current = {
         element: target,
-        svgElement: svgEl,
+        svgElement: svgRoot,
         regionId,
       };
 
@@ -354,15 +361,23 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     };
 
     textElements.forEach((el) => {
-      el.addEventListener('mousedown', handleMouseDown);
+      el.addEventListener('mousedown', handleLabelMouseDown);
     });
 
     return () => {
       textElements.forEach((el) => {
-        el.removeEventListener('mousedown', handleMouseDown);
+        el.removeEventListener('mousedown', handleLabelMouseDown);
       });
     };
-  }, [svgContent, regionLabels.show, labelDragMode, handleLabelDragMove, handleLabelDragEnd]);
+  }, [
+    svgContent,
+    regionLabels.show,
+    labelDragMode,
+    handleLabelDragMove,
+    handleLabelDragEnd,
+    zoom,
+    pan,
+  ]);
 
   // Legend drag handlers - optimized with CSS transforms and requestAnimationFrame
   const handleLegendMouseDown = useCallback(
@@ -514,184 +529,210 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   const isBottomLegend = position === LEGEND_POSITIONS.bottom;
 
+  const showSheetSyncOnMap =
+    isGoogleSheetSyncLoading && Boolean(selectedCountryId) && Boolean(svgContent) && !isLoading;
+
   return (
-    <Flex vertical className={`h-full ${className}`}>
-      {/* Map Container */}
-      <div
-        className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg"
-        style={{
-          backgroundColor: picture.transparentBackground ? 'transparent' : picture.backgroundColor,
-        }}
-      >
-        <button
-          type="button"
-          ref={containerRef}
-          aria-label={selectedCountryId ? `Map of ${selectedCountryId}` : 'No country selected'}
-          className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
-            labelDragMode ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'
-          }`}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+    <div className={`flex min-h-0 flex-1 flex-col ${className}`} data-map-export-root>
+      <Flex vertical className="h-full min-h-0 flex-1">
+        {/* Map Container */}
+        <div
+          className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg"
+          data-map-export-map-area
+          style={{
+            backgroundColor: picture.transparentBackground
+              ? 'transparent'
+              : picture.backgroundColor,
+          }}
         >
-          {isLoading ? (
-            <Spin size="large" />
-          ) : svgContent ? (
-            <>
-              <div
-                style={{
-                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-                  transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-                  width: '80%',
-                  height: '80%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                className="map-svg-container [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
-                dangerouslySetInnerHTML={{ __html: svgContent }}
-              />
-              {activeTimePeriod && timePeriods.length > 1 && (
-                <div className="pointer-events-none absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1.5 shadow-md">
-                  <Typography.Text className="text-sm font-semibold">
-                    {activeTimePeriod}
-                  </Typography.Text>
+          <button
+            type="button"
+            ref={containerRef}
+            aria-label={selectedCountryId ? `Map of ${selectedCountryId}` : 'No country selected'}
+            className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
+              labelDragMode ? 'cursor-default' : 'cursor-move'
+            }`}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {isLoading ? (
+              <Spin size="large" />
+            ) : svgContent ? (
+              <>
+                <div
+                  className="relative flex h-[80%] w-[80%] items-center justify-center"
+                  data-map-export-map-transform
+                  style={{
+                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                  }}
+                >
+                  <div
+                    className={`map-svg-container h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain ${
+                      labelDragMode && regionLabels.show ? styles.labelDragHoverTarget : ''
+                    } ${!labelDragMode ? styles.mapPanCursor : ''} ${
+                      showSheetSyncOnMap ? 'blur-[3px]' : ''
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: svgContent }}
+                  />
+                  {showSheetSyncOnMap && (
+                    <div
+                      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                      aria-busy
+                      aria-live="polite"
+                    >
+                      <Spin size="large" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </>
-          ) : (
-            <Flex vertical align="center" justify="center" className="text-white/60">
-              <Typography.Text className="text-lg text-white/60">
-                Select a country to view the map
-              </Typography.Text>
-            </Flex>
-          )}
-        </button>
+                {activeTimePeriod && timePeriods.length > 1 && (
+                  <div className="pointer-events-none absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1.5 shadow-md">
+                    <Typography.Text className="text-sm font-semibold">
+                      {activeTimePeriod}
+                    </Typography.Text>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Flex vertical align="center" justify="center" className="text-white/60">
+                <Typography.Text className="text-lg text-white/60">
+                  Select a country to view the map
+                </Typography.Text>
+              </Flex>
+            )}
+          </button>
 
-        {/* Floating Legend (inside map container) */}
-        {position === LEGEND_POSITIONS.floating && legendItems.length > 0 && (
-          <div
-            ref={legendRef}
-            role="region"
-            aria-label="Map legend"
-            className={`absolute ${legendPositionClasses} p-sm cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]`}
-            style={{
-              left: floatingPosition.x,
-              top: floatingPosition.y,
-              width: floatingSize.width,
-              backgroundColor,
-            }}
-          >
-            {/* Invisible drag handle overlay */}
-            <button
-              type="button"
-              aria-label="Drag to reposition legend"
-              className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
-              onMouseDown={handleLegendMouseDown}
-            />
-            <div className="pointer-events-none relative z-20">
-              <MapLegendContent
-                title={title}
-                labels={labels}
-                legendItems={legendItems}
-                noDataColor={noDataColor}
-              />
-            </div>
-            {/* Resize handle for floating legend */}
-            <button
-              type="button"
-              aria-label="Resize legend width"
-              className="absolute -right-1 -bottom-1 z-20 h-6 w-6 cursor-se-resize rounded-bl-lg border-none bg-transparent p-0 transition-colors hover:bg-gray-100"
-              onMouseDown={handleResizeMouseDown}
+          {/* Floating Legend (inside map container) */}
+          {position === LEGEND_POSITIONS.floating && legendItems.length > 0 && (
+            <div
+              ref={legendRef}
+              role="region"
+              aria-label="Map legend"
+              data-map-export-floating-legend
+              className={`absolute ${legendPositionClasses} p-sm cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]`}
+              style={{
+                left: floatingPosition.x,
+                top: floatingPosition.y,
+                width: floatingSize.width,
+                backgroundColor,
+              }}
             >
-              <svg
-                className="h-full w-full p-1 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
+              {/* Invisible drag handle overlay */}
+              <button
+                type="button"
+                aria-label="Drag to reposition legend"
+                className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
+                onMouseDown={handleLegendMouseDown}
+              />
+              <div className="pointer-events-none relative z-20">
+                <MapLegendContent
+                  title={title}
+                  labels={labels}
+                  legendItems={legendItems}
+                  noDataColor={noDataColor}
+                />
+              </div>
+              {/* Resize handle for floating legend */}
+              <button
+                type="button"
+                aria-label="Resize legend width"
+                className="absolute -right-1 -bottom-1 z-20 h-6 w-6 cursor-se-resize rounded-bl-lg border-none bg-transparent p-0 transition-colors hover:bg-gray-100"
+                onMouseDown={handleResizeMouseDown}
               >
-                <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22Z" />
-              </svg>
-            </button>
-          </div>
-        )}
+                <svg
+                  className="h-full w-full p-1 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22Z" />
+                </svg>
+              </button>
+            </div>
+          )}
 
-        {/* Controls */}
-        {zoomControls.show && (
-          <Flex
-            vertical
-            gap={4}
-            className="absolute"
-            style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
-          >
-            <Tooltip title={t('visualizer.mapStyles.tooltipZoomIn')} placement="left">
-              <Button
-                type="default"
-                icon={<PlusOutlined />}
-                onClick={handleZoomIn}
-                disabled={!selectedCountryId}
-                className="shadow-md"
-                aria-label={t('visualizer.mapStyles.tooltipZoomIn')}
-              />
-            </Tooltip>
-            <Tooltip title={t('visualizer.mapStyles.tooltipZoomOut')} placement="left">
-              <Button
-                type="default"
-                icon={<MinusOutlined />}
-                onClick={handleZoomOut}
-                disabled={!selectedCountryId}
-                className="shadow-md"
-                aria-label={t('visualizer.mapStyles.tooltipZoomOut')}
-              />
-            </Tooltip>
-            <Tooltip title={t('visualizer.mapStyles.tooltipResetMapAndLabels')} placement="left">
-              <Button
-                type="default"
-                icon={<FullscreenOutlined />}
-                onClick={handleResetView}
-                disabled={!selectedCountryId}
-                className="shadow-md"
-                aria-label={t('visualizer.mapStyles.tooltipResetMapAndLabels')}
-              />
-            </Tooltip>
-            <Tooltip
-              title={
-                labelDragMode
-                  ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
-                  : t('visualizer.mapStyles.tooltipEnableLabelDragging')
-              }
-              placement="left"
+          {/* Controls */}
+          {zoomControls.show && (
+            <Flex
+              vertical
+              gap={4}
+              className="absolute"
+              style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
             >
-              <Button
-                type={labelDragMode ? 'primary' : 'default'}
-                icon={<DragOutlined />}
-                onClick={handleToggleLabelDragMode}
-                disabled={!selectedCountryId}
-                className="shadow-md"
-                aria-label={
+              <Tooltip title={t('visualizer.mapStyles.tooltipZoomIn')} placement="left">
+                <Button
+                  type="default"
+                  icon={<PlusOutlined />}
+                  onClick={handleZoomIn}
+                  disabled={!selectedCountryId}
+                  className="shadow-md"
+                  aria-label={t('visualizer.mapStyles.tooltipZoomIn')}
+                />
+              </Tooltip>
+              <Tooltip title={t('visualizer.mapStyles.tooltipZoomOut')} placement="left">
+                <Button
+                  type="default"
+                  icon={<MinusOutlined />}
+                  onClick={handleZoomOut}
+                  disabled={!selectedCountryId}
+                  className="shadow-md"
+                  aria-label={t('visualizer.mapStyles.tooltipZoomOut')}
+                />
+              </Tooltip>
+              <Tooltip title={t('visualizer.mapStyles.tooltipResetMapAndLabels')} placement="left">
+                <Button
+                  type="default"
+                  icon={<FullscreenOutlined />}
+                  onClick={handleResetView}
+                  disabled={!selectedCountryId}
+                  className="shadow-md"
+                  aria-label={t('visualizer.mapStyles.tooltipResetMapAndLabels')}
+                />
+              </Tooltip>
+              <Tooltip
+                title={
                   labelDragMode
                     ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
                     : t('visualizer.mapStyles.tooltipEnableLabelDragging')
                 }
-              />
-            </Tooltip>
-          </Flex>
-        )}
-      </div>
-
-      {/* Bottom Legend (outside map container, with border separator) */}
-      {isBottomLegend && legendItems.length > 0 && (
-        <div className="p-md pt-md shrink-0 border-t border-gray-200" style={{ backgroundColor }}>
-          <MapLegendContent
-            title={title}
-            labels={labels}
-            legendItems={legendItems}
-            noDataColor={noDataColor}
-          />
+                placement="left"
+              >
+                <Button
+                  type={labelDragMode ? 'primary' : 'default'}
+                  icon={<DragOutlined />}
+                  onClick={handleToggleLabelDragMode}
+                  disabled={!selectedCountryId}
+                  className="shadow-md"
+                  aria-label={
+                    labelDragMode
+                      ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
+                      : t('visualizer.mapStyles.tooltipEnableLabelDragging')
+                  }
+                />
+              </Tooltip>
+            </Flex>
+          )}
         </div>
-      )}
-    </Flex>
+
+        {/* Bottom Legend (outside map container, with border separator) */}
+        {isBottomLegend && legendItems.length > 0 && (
+          <div
+            className="p-md pt-md shrink-0 border-t border-gray-200"
+            data-map-export-bottom-legend
+            style={{ backgroundColor }}
+          >
+            <MapLegendContent
+              title={title}
+              labels={labels}
+              legendItems={legendItems}
+              noDataColor={noDataColor}
+            />
+          </div>
+        )}
+      </Flex>
+    </div>
   );
 };
 

@@ -81,16 +81,16 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
   );
 
   const initialKeywords = useMemo(
-    () => normalizeKeywords(project.embedSeoKeywords),
-    [project.embedSeoKeywords],
+    () => normalizeKeywords(project.embed.seo.keywords),
+    [project.embed.seo.keywords],
   );
 
   useEffect(() => {
     if (!open) return;
-    const storedTitle = project.embedSeoTitle?.trim() ?? '';
-    const storedDescription = project.embedSeoDescription?.trim() ?? '';
+    const storedTitle = project.embed.seo.title?.trim() ?? '';
+    const storedDescription = project.embed.seo.description?.trim() ?? '';
     form.setFieldsValue({
-      enabled: project.embedEnabled,
+      enabled: project.embed.enabled,
       seoTitle: storedTitle || autoEmbedTitle,
       seoDescription: storedDescription || defaultSeoDescription,
       keywords: initialKeywords,
@@ -99,18 +99,18 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
     form,
     open,
     project.id,
-    project.embedEnabled,
-    project.embedSeoTitle,
-    project.embedSeoDescription,
+    project.embed.enabled,
+    project.embed.seo.title,
+    project.embed.seo.description,
     autoEmbedTitle,
     defaultSeoDescription,
     initialKeywords,
   ]);
 
   const embedPageUrl = useMemo(() => {
-    if (!project.embedToken || !project.embedEnabled) return '';
-    return `${window.location.origin}${getEmbedRoute(project.embedToken)}`;
-  }, [project.embedToken, project.embedEnabled]);
+    if (!project.embed.token || !project.embed.enabled) return '';
+    return `${window.location.origin}${getEmbedRoute(project.embed.token)}`;
+  }, [project.embed.token, project.embed.enabled]);
 
   const iframeSnippet = useMemo(() => {
     if (!embedPageUrl) return '';
@@ -139,11 +139,13 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
         const kw = sanitizeKeywords(values.keywords);
         await updateProjectEmbed(project.id, {
           enabled: values.enabled,
-          seoTitle: values.enabled ? values.seoTitle.trim().slice(0, 200) : null,
-          seoDescription: values.enabled
-            ? values.seoDescription.trim()
-            : values.seoDescription.trim() || null,
-          seoKeywords: kw.length > 0 ? kw : null,
+          seo: {
+            title: values.enabled ? values.seoTitle.trim().slice(0, 200) : null,
+            description: values.enabled
+              ? values.seoDescription.trim()
+              : values.seoDescription.trim() || null,
+            keywords: kw.length > 0 ? kw : null,
+          },
         });
         const fresh = await getProject(project.id);
         updateProjectInList(fresh);

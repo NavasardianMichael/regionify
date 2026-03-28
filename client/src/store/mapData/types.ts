@@ -33,6 +33,9 @@ export type VisualizerState = {
   /** When import is Google Sheets, the public sheet URL and tab id. */
   google: GoogleSheetSource;
 
+  /** True while re-fetching a linked sheet after load (not the in-modal fetch). */
+  isGoogleSheetSyncLoading: boolean;
+
   // Timeline state
   timelineData: Record<string, DataSet>;
   timePeriods: string[];

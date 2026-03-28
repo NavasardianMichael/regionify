@@ -25,6 +25,7 @@ export function applyFullTemporaryProjectState(merged: FullTemporaryProjectState
     timelineData: merged.timelineData,
     timePeriods: merged.timePeriods,
     activeTimePeriod: merged.activeTimePeriod,
+    isGoogleSheetSyncLoading: false,
   });
   setMapStylesState({
     border: merged.border,

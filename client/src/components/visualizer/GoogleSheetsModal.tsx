@@ -1,49 +1,59 @@
 import { type ChangeEvent, type FC, useCallback, useState } from 'react';
-import { LinkOutlined } from '@ant-design/icons';
+import { DownloadOutlined, LinkOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, Modal, Typography } from 'antd';
 import { fetchGoogleSheet } from '@/api/sheets';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
+export type GoogleSheetImportMode = 'sync' | 'snapshot';
+
 type Props = {
   open: boolean;
   onClose: () => void;
-  onCsvFetched: (payload: { csv: string; url: string }) => void;
+  onImport: (payload: { csv: string; url: string; mode: GoogleSheetImportMode }) => void;
 };
 
 const GOOGLE_SHEETS_URL_REGEX = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/[a-zA-Z0-9_-]+/;
 
-const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
+const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport }) => {
   const { t } = useTypedTranslation();
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMode, setLoadingMode] = useState<GoogleSheetImportMode | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isValidUrl = GOOGLE_SHEETS_URL_REGEX.test(url.trim());
+  const busy = isLoading;
 
-  const handleFetch = useCallback(async () => {
-    if (!isValidUrl) return;
+  const runImport = useCallback(
+    async (mode: GoogleSheetImportMode) => {
+      if (!isValidUrl) return;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setLoadingMode(mode);
+      setError(null);
 
-    try {
-      const trimmed = url.trim();
-      const csv = await fetchGoogleSheet({ url: trimmed });
-      onCsvFetched({ csv, url: trimmed });
-      setUrl('');
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('visualizer.googleSheets.fetchFailed'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [url, isValidUrl, onCsvFetched, onClose, t]);
+      try {
+        const trimmed = url.trim();
+        const csv = await fetchGoogleSheet({ url: trimmed });
+        onImport({ csv, url: trimmed, mode });
+        setUrl('');
+        onClose();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t('visualizer.googleSheets.fetchFailed'));
+      } finally {
+        setIsLoading(false);
+        setLoadingMode(null);
+      }
+    },
+    [isValidUrl, onImport, onClose, t, url],
+  );
 
   const handleCancel = useCallback(() => {
+    if (busy) return;
     setUrl('');
     setError(null);
     onClose();
-  }, [onClose]);
+  }, [busy, onClose]);
 
   return (
     <Modal
@@ -51,7 +61,7 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
         <Flex align="center" gap="small" className="mb-4!">
           <LinkOutlined className="text-primary" />
           <Typography.Title level={4} className="mb-0!">
-            Import from Google Sheets
+            {t('visualizer.googleSheets.title')}
           </Typography.Title>
         </Flex>
       }
@@ -60,6 +70,9 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
       footer={null}
       width={500}
       destroyOnHidden
+      maskClosable={false}
+      keyboard={!busy}
+      closable={{ disabled: busy }}
     >
       <Flex vertical gap="middle" className="py-2">
         <Typography.Text className="text-sm text-gray-600">
@@ -73,7 +86,7 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
             setUrl(e.target.value);
             setError(null);
           }}
-          onPressEnter={handleFetch}
+          disabled={busy}
           status={error ? 'error' : undefined}
           allowClear
         />
@@ -96,18 +109,32 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onCsvFetched }) => {
           </ol>
         </Flex>
 
-        <Button
-          type="primary"
-          icon={<LinkOutlined />}
-          onClick={handleFetch}
-          loading={isLoading}
-          disabled={!isValidUrl}
-          block
-        >
-          {isLoading
-            ? t('visualizer.googleSheets.fetching')
-            : t('visualizer.googleSheets.importButton')}
-        </Button>
+        <Flex gap="small" wrap="wrap" className="w-full">
+          <Button
+            type="default"
+            icon={<LinkOutlined />}
+            onClick={() => void runImport('sync')}
+            loading={busy && loadingMode === 'sync'}
+            disabled={!isValidUrl || busy}
+            className="min-w-[160px] grow"
+          >
+            {busy && loadingMode === 'sync'
+              ? t('visualizer.googleSheets.fetching')
+              : t('visualizer.googleSheets.syncButton')}
+          </Button>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={() => void runImport('snapshot')}
+            loading={busy && loadingMode === 'snapshot'}
+            disabled={!isValidUrl || busy}
+            className="min-w-[160px] grow"
+          >
+            {busy && loadingMode === 'snapshot'
+              ? t('visualizer.googleSheets.fetching')
+              : t('visualizer.googleSheets.importOnceButton')}
+          </Button>
+        </Flex>
       </Flex>
     </Modal>
   );

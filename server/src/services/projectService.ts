@@ -8,6 +8,18 @@ import {
   type ProjectUpdate,
 } from '../repositories/projectRepository.js';
 
+export type ProjectEmbedSeoPublic = {
+  title: string | null;
+  description: string | null;
+  keywords: string[] | null;
+};
+
+export type ProjectEmbedPublic = {
+  enabled: boolean;
+  token: string | null;
+  seo: ProjectEmbedSeoPublic;
+};
+
 export type ProjectPublic = {
   id: string;
   name: string;
@@ -16,14 +28,28 @@ export type ProjectPublic = {
   mapStyles: unknown;
   legendStyles: unknown;
   legendData: unknown;
-  embedEnabled: boolean;
-  embedToken: string | null;
-  embedSeoTitle: string | null;
-  embedSeoDescription: string | null;
-  embedSeoKeywords: unknown;
+  embed: ProjectEmbedPublic;
   createdAt: string;
   updatedAt: string;
 };
+
+function embedKeywordsFromDb(value: unknown): string[] | null {
+  if (value == null) return null;
+  if (!Array.isArray(value)) return null;
+  return value.filter((k): k is string => typeof k === 'string');
+}
+
+function toEmbedPublic(project: Project): ProjectEmbedPublic {
+  return {
+    enabled: project.embedEnabled,
+    token: project.embedToken,
+    seo: {
+      title: project.embedSeoTitle,
+      description: project.embedSeoDescription,
+      keywords: embedKeywordsFromDb(project.embedSeoKeywords),
+    },
+  };
+}
 
 function toPublicProject(project: Project): ProjectPublic {
   return {
@@ -34,11 +60,7 @@ function toPublicProject(project: Project): ProjectPublic {
     mapStyles: project.mapStyles,
     legendStyles: project.legendStyles,
     legendData: project.legendData,
-    embedEnabled: project.embedEnabled,
-    embedToken: project.embedToken,
-    embedSeoTitle: project.embedSeoTitle,
-    embedSeoDescription: project.embedSeoDescription,
-    embedSeoKeywords: project.embedSeoKeywords,
+    embed: toEmbedPublic(project),
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
   };

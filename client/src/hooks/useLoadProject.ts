@@ -39,7 +39,8 @@ export type LoadProjectOptions = {
  */
 export function useLoadProject(): (project: Project, options?: LoadProjectOptions) => void {
   return useCallback((project: Project, options?: LoadProjectOptions) => {
-    const { setVisualizerState } = useVisualizerStore.getState();
+    const { setVisualizerState, clearTimelineData } = useVisualizerStore.getState();
+    clearTimelineData();
     const { setMapStylesState } = useMapStylesStore.getState();
     const { setLegendStylesState } = useLegendStylesStore.getState();
     const { setItems } = useLegendDataStore.getState();
@@ -56,6 +57,7 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
           }
         : { allIds: [], byId: {} },
       google: readGoogleFromDataset(project.dataset ?? null),
+      isGoogleSheetSyncLoading: false,
     });
 
     // Load map styles (merge with current defaults for safety)

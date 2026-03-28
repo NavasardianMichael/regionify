@@ -219,14 +219,15 @@ const fr: CommonNs = {
     googleSheets: {
       title: 'Importer depuis Google Sheets',
       intro:
-        'Collez l’URL d’une feuille Google publique. La feuille doit être partagée en « Toute personne disposant du lien ».',
+        'Collez l’URL d’une feuille Google publique partagée en « Toute personne disposant du lien ».',
       placeholder: 'https://docs.google.com/spreadsheets/d/...',
       howToShare: 'COMMENT PARTAGER :',
       stepOpen: 'Ouvrez votre feuille Google',
       stepShare: 'Cliquez sur Partager → Accès général',
       stepAnyone: 'Réglez sur « Toute personne disposant du lien »',
       stepPaste: 'Copiez l’URL et collez-la ci-dessus',
-      importButton: 'Importer la feuille',
+      syncButton: 'Lier et synchroniser',
+      importOnceButton: 'Importer une fois',
       fetching: 'Récupération...',
       fetchFailed: 'Échec du chargement de la feuille Google',
     },
@@ -352,8 +353,10 @@ const fr: CommonNs = {
       tooltipZoomIn: 'Agrandir',
       tooltipZoomOut: 'Réduire',
       tooltipResetMapAndLabels: 'Réinitialiser la carte et les étiquettes',
-      tooltipEnableLabelDragging: 'Activer le déplacement des étiquettes',
-      tooltipDisableLabelDragging: 'Désactiver le déplacement des étiquettes',
+      tooltipEnableLabelDragging:
+        'Activer le déplacement des étiquettes de région (désactive le déplacement de la carte)',
+      tooltipDisableLabelDragging:
+        'Désactiver le déplacement des étiquettes de région (réactive le déplacement de la carte)',
       showLabels: 'Afficher les libellés',
       fontSize: 'Taille de police',
     },

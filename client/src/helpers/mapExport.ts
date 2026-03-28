@@ -1,14 +1,32 @@
 import { EXPORT_TYPES } from '@regionify/shared';
+import type { LegendItem } from '@/store/legendData/types';
+import type { LegendLabelsConfig, LegendTitleConfig } from '@/store/legendStyles/types';
 
 const MAP_SVG_SELECTOR = '.map-svg-container svg';
+const MAP_EXPORT_ROOT = '[data-map-export-root]';
 const DEFAULT_EXPORT_NAME = 'regionify-map';
 const DEFAULT_WATERMARK_LOGO_SRC = '/favicon-32x32.png';
+
+export type MapExportLegendDrawOptions = {
+  title: LegendTitleConfig;
+  labels: LegendLabelsConfig;
+  items: LegendItem[];
+  noDataColor: string;
+  backgroundColor: string;
+};
 
 export type MapExportWatermarkOptions = {
   text: string;
   showTrademark?: boolean;
   /** Omit or undefined: use default favicon. `null`: text only. */
   logoSrc?: string | null;
+};
+
+type StillExportOpts = {
+  backgroundColor?: string;
+  watermark?: string | MapExportWatermarkOptions;
+  /** Draw legend in export to match on-screen layout when legend markers exist. */
+  legendDraw?: MapExportLegendDrawOptions | null;
 };
 
 const getMapSvgElement = (): SVGSVGElement => {
@@ -19,18 +37,36 @@ const getMapSvgElement = (): SVGSVGElement => {
 
 /**
  * Clones the SVG and prepares it for standalone export
- * by setting namespaces and explicit dimensions from the viewBox.
+ * by setting namespaces and explicit dimensions from the viewBox
+ * or optional CSS-pixel width/height (for raster matching on-screen size).
  */
-const prepareSvgForExport = (svgElement: SVGSVGElement): SVGSVGElement => {
+const prepareSvgForExport = (
+  svgElement: SVGSVGElement,
+  exportCssWidth?: number,
+  exportCssHeight?: number,
+): SVGSVGElement => {
   const clone = svgElement.cloneNode(true) as SVGSVGElement;
   clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
   clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
-  const viewBox = clone.getAttribute('viewBox');
-  if (viewBox) {
-    const [, , width, height] = viewBox.split(/\s+/).map(Number);
-    clone.setAttribute('width', String(width));
-    clone.setAttribute('height', String(height));
+  const useExplicitSize =
+    exportCssWidth != null &&
+    exportCssHeight != null &&
+    Number.isFinite(exportCssWidth) &&
+    Number.isFinite(exportCssHeight) &&
+    exportCssWidth > 0 &&
+    exportCssHeight > 0;
+
+  if (useExplicitSize) {
+    clone.setAttribute('width', String(Math.round(exportCssWidth)));
+    clone.setAttribute('height', String(Math.round(exportCssHeight)));
+  } else {
+    const viewBox = clone.getAttribute('viewBox');
+    if (viewBox) {
+      const [, , width, height] = viewBox.split(/\s+/).map(Number);
+      clone.setAttribute('width', String(width));
+      clone.setAttribute('height', String(height));
+    }
   }
 
   return clone;
@@ -178,9 +214,156 @@ const canvasToBlob = (
  */
 const qualityToScale = (quality: number): number => Math.max(0.5, quality / 25);
 
-type StillExportOpts = {
-  backgroundColor?: string;
-  watermark?: string | MapExportWatermarkOptions;
+const drawRoundedRectPath = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): void => {
+  const rad = Math.min(r, w / 2, h / 2);
+  ctx.moveTo(x + rad, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rad);
+  ctx.arcTo(x + w, y + h, x, y + h, rad);
+  ctx.arcTo(x, y + h, x, y, rad);
+  ctx.arcTo(x, y, x + w, y, rad);
+  ctx.closePath();
+};
+
+const drawLegendOnCanvas = (
+  ctx: CanvasRenderingContext2D,
+  bounds: { x: number; y: number; w: number; h: number },
+  legend: MapExportLegendDrawOptions,
+): void => {
+  const { x, y, w, h } = bounds;
+  const pad = 8;
+  const radius = 8;
+
+  ctx.save();
+  ctx.beginPath();
+  drawRoundedRectPath(ctx, x, y, w, h, radius);
+  ctx.clip();
+
+  ctx.beginPath();
+  drawRoundedRectPath(ctx, x, y, w, h, radius);
+  ctx.fillStyle = legend.backgroundColor;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(24, 41, 77, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  let cy = y + pad + 2;
+  ctx.textAlign = 'left';
+
+  if (legend.title.show && legend.title.text.trim()) {
+    ctx.font = `600 ${legend.labels.fontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.fillStyle = legend.labels.color;
+    ctx.textBaseline = 'top';
+    ctx.fillText(legend.title.text, x + pad, cy);
+    cy += legend.labels.fontSize + 12;
+  }
+
+  const swatch = 12;
+  ctx.textBaseline = 'middle';
+
+  for (const item of legend.items) {
+    ctx.fillStyle = item.color;
+    ctx.fillRect(x + pad, cy - swatch / 2, swatch, swatch);
+    ctx.font = `${legend.labels.fontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.fillStyle = legend.labels.color;
+    ctx.fillText(item.name, x + pad + swatch + 8, cy);
+    cy += Math.max(swatch, legend.labels.fontSize) + 8;
+  }
+
+  ctx.strokeStyle = '#d1d5db';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + pad, cy - swatch / 2, swatch, swatch);
+  ctx.fillStyle = legend.noDataColor;
+  ctx.fillRect(x + pad + 0.5, cy - swatch / 2 + 0.5, swatch - 1, swatch - 1);
+  ctx.font = `${legend.labels.fontSize}px system-ui, -apple-system, sans-serif`;
+  ctx.fillStyle = legend.labels.color;
+  ctx.fillText('No Data', x + pad + swatch + 8, cy);
+
+  ctx.restore();
+};
+
+/**
+ * Exports map + optional legend using the same layout as the visualizer (zoom/pan/legend position).
+ * @returns true if composite export ran, false if markers were missing (caller may fall back).
+ */
+const tryExportCompositeStill = async (
+  quality: number,
+  fileName: string,
+  format: 'png' | 'jpeg',
+  opts?: StillExportOpts,
+): Promise<boolean> => {
+  const root = document.querySelector<HTMLElement>(MAP_EXPORT_ROOT);
+  if (!root) return false;
+
+  // Ensure flex children have finished layout before measuring (export runs while modal is open).
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+
+  const svgEl = root.querySelector<SVGSVGElement>(MAP_SVG_SELECTOR);
+  if (!svgEl) return false;
+
+  const qs = qualityToScale(quality);
+  const rootRect = root.getBoundingClientRect();
+  const w = Math.max(1, Math.round(rootRect.width * qs));
+  const h = Math.max(1, Math.round(rootRect.height * qs));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Failed to get canvas context');
+
+  if (format === 'jpeg') {
+    ctx.fillStyle = opts?.backgroundColor || '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+  } else if (opts?.backgroundColor) {
+    ctx.fillStyle = opts.backgroundColor;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  const svgRect = svgEl.getBoundingClientRect();
+  const sw = Math.max(1, Math.round(svgRect.width * qs));
+  const sh = Math.max(1, Math.round(svgRect.height * qs));
+  const sx = (svgRect.left - rootRect.left) * qs;
+  const sy = (svgRect.top - rootRect.top) * qs;
+
+  const clone = prepareSvgForExport(svgEl, sw, sh);
+  const svgString = new XMLSerializer().serializeToString(clone);
+  const mapCanvas = await svgToCanvas(svgString, 1);
+  ctx.drawImage(mapCanvas, sx, sy);
+
+  const legendEl =
+    root.querySelector<HTMLElement>('[data-map-export-floating-legend]') ??
+    root.querySelector<HTMLElement>('[data-map-export-bottom-legend]');
+  if (legendEl && opts?.legendDraw && opts.legendDraw.items.length > 0) {
+    const lr = legendEl.getBoundingClientRect();
+    const lx = (lr.left - rootRect.left) * qs;
+    const ly = (lr.top - rootRect.top) * qs;
+    const lw = Math.max(1, lr.width * qs);
+    const lh = Math.max(1, lr.height * qs);
+    drawLegendOnCanvas(ctx, { x: lx, y: ly, w: lw, h: lh }, opts.legendDraw);
+  }
+
+  if (opts?.watermark) {
+    await drawWatermark(ctx, w, h, opts.watermark);
+  }
+
+  if (format === 'png') {
+    const blob = await canvasToBlob(canvas, `image/${EXPORT_TYPES.png}`);
+    triggerDownload(blob, `${fileName}.${EXPORT_TYPES.png}`);
+  } else {
+    const blob = await canvasToBlob(canvas, `image/${EXPORT_TYPES.jpeg}`, 0.92);
+    triggerDownload(blob, `${fileName}.${EXPORT_TYPES.jpeg}`);
+  }
+
+  return true;
 };
 
 export const exportMapAsSvg = (fileName = DEFAULT_EXPORT_NAME): void => {
@@ -195,6 +378,10 @@ export const exportMapAsPng = async (
   fileName = DEFAULT_EXPORT_NAME,
   opts?: StillExportOpts,
 ): Promise<void> => {
+  if (await tryExportCompositeStill(quality, fileName, 'png', opts)) {
+    return;
+  }
+
   const clone = prepareSvgForExport(getMapSvgElement());
   const svgString = new XMLSerializer().serializeToString(clone);
   const canvas = await svgToCanvas(svgString, qualityToScale(quality));
@@ -217,11 +404,14 @@ export const exportMapAsJpeg = async (
   fileName = DEFAULT_EXPORT_NAME,
   opts?: StillExportOpts,
 ): Promise<void> => {
+  if (await tryExportCompositeStill(quality, fileName, 'jpeg', opts)) {
+    return;
+  }
+
   const clone = prepareSvgForExport(getMapSvgElement());
   const svgString = new XMLSerializer().serializeToString(clone);
   const canvas = await svgToCanvas(svgString, qualityToScale(quality));
 
-  // JPEG doesn't support transparency — fill with background color
   const jpegCanvas = document.createElement('canvas');
   jpegCanvas.width = canvas.width;
   jpegCanvas.height = canvas.height;

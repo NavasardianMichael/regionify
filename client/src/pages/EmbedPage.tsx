@@ -17,11 +17,15 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
     mapStyles: data.mapStyles,
     legendStyles: data.legendStyles,
     legendData: data.legendData,
-    embedEnabled: false,
-    embedToken: null,
-    embedSeoTitle: null,
-    embedSeoDescription: null,
-    embedSeoKeywords: null,
+    embed: {
+      enabled: false,
+      token: null,
+      seo: {
+        title: null,
+        description: null,
+        keywords: null,
+      },
+    },
     createdAt: '',
     updatedAt: '',
   };

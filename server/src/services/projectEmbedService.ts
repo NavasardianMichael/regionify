@@ -12,6 +12,7 @@ import { AppError } from '../middleware/errorHandler.js';
 import { localeToHtmlAndOg } from '../lib/localeSeo.js';
 import { projectRepository } from '../repositories/projectRepository.js';
 import { prisma } from '../db/index.js';
+import type { ProjectEmbedPublic } from './projectService.js';
 
 const EMBED_DESCRIPTION_MAX = 160;
 
@@ -94,13 +95,7 @@ export const projectEmbedService = {
     userId: string,
     projectId: string,
     input: ProjectEmbedUpdateInput,
-  ): Promise<{
-    embedEnabled: boolean;
-    embedToken: string | null;
-    embedSeoTitle: string | null;
-    embedSeoDescription: string | null;
-    embedSeoKeywords: unknown;
-  }> {
+  ): Promise<{ embed: ProjectEmbedPublic }> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { plan: true },
@@ -132,20 +127,22 @@ export const projectEmbedService = {
       embedToken = null;
     }
 
+    const seoIn = input.seo;
     const embedSeoKeywords =
-      input.seoKeywords === undefined
+      seoIn === undefined || seoIn.keywords === undefined
         ? (existing.embedSeoKeywords as string[] | null)
-        : input.seoKeywords;
+        : seoIn.keywords;
 
-    const embedSeoTitle = input.enabled ? (input.seoTitle ?? '').trim().slice(0, 200) : null;
+    const embedSeoTitle = input.enabled ? (seoIn?.title ?? '').trim().slice(0, 200) : null;
 
+    const descIn = seoIn?.description;
     const embedSeoDescription = input.enabled
-      ? (input.seoDescription ?? '').trim()
-      : input.seoDescription === undefined
+      ? (descIn ?? '').trim()
+      : descIn === undefined
         ? existing.embedSeoDescription
-        : input.seoDescription === null
+        : descIn === null
           ? null
-          : input.seoDescription.trim() || null;
+          : descIn.trim() || null;
 
     const updated = await projectRepository.update(projectId, {
       embedEnabled: input.enabled,
@@ -164,11 +161,15 @@ export const projectEmbedService = {
     }
 
     return {
-      embedEnabled: updated.embedEnabled,
-      embedToken: updated.embedToken,
-      embedSeoTitle: updated.embedSeoTitle,
-      embedSeoDescription: updated.embedSeoDescription,
-      embedSeoKeywords: updated.embedSeoKeywords,
+      embed: {
+        enabled: updated.embedEnabled,
+        token: updated.embedToken,
+        seo: {
+          title: updated.embedSeoTitle,
+          description: updated.embedSeoDescription,
+          keywords: toKeywordArray(updated.embedSeoKeywords),
+        },
+      },
     };
   },
 };

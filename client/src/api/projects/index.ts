@@ -2,8 +2,8 @@ import { PROJECT_ENDPOINTS } from './endpoints';
 import type {
   Project,
   ProjectCreatePayload,
-  ProjectEmbedSettingsResponse,
   ProjectEmbedUpdatePayload,
+  ProjectEmbedUpdateResponse,
   ProjectUpdatePayload,
 } from './types';
 
@@ -110,7 +110,7 @@ export const updateProject = async (
 export const updateProjectEmbed = async (
   id: string,
   payload: ProjectEmbedUpdatePayload,
-): Promise<ProjectEmbedSettingsResponse> => {
+): Promise<ProjectEmbedUpdateResponse> => {
   const response = await fetch(PROJECT_ENDPOINTS.embed(id), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -118,7 +118,7 @@ export const updateProjectEmbed = async (
     body: JSON.stringify(payload),
   });
 
-  const data = (await response.json()) as ApiResponse<ProjectEmbedSettingsResponse>;
+  const data = (await response.json()) as ApiResponse<ProjectEmbedUpdateResponse>;
 
   if (!response.ok) {
     throw new Error(getErrorMessage(data, 'Failed to update embed settings'));

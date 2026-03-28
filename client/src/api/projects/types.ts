@@ -50,6 +50,20 @@ export type ProjectLegendData = {
   }>;
 };
 
+/** SEO fields for the public embed page. */
+export type ProjectEmbedSeo = {
+  title: string | null;
+  description: string | null;
+  keywords: string[] | null;
+};
+
+/** Public embed settings for a saved project (API shape). */
+export type ProjectEmbed = {
+  enabled: boolean;
+  token: string | null;
+  seo: ProjectEmbedSeo;
+};
+
 export type Project = {
   id: string;
   name: string;
@@ -58,28 +72,22 @@ export type Project = {
   mapStyles: ProjectMapStyles | null;
   legendStyles: ProjectLegendStyles | null;
   legendData: ProjectLegendData | null;
-  embedEnabled: boolean;
-  embedToken: string | null;
-  embedSeoTitle: string | null;
-  embedSeoDescription: string | null;
-  embedSeoKeywords: string[] | null;
+  embed: ProjectEmbed;
   createdAt: string;
   updatedAt: string;
 };
 
 export type ProjectEmbedUpdatePayload = {
   enabled: boolean;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  seoKeywords?: string[] | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string[] | null;
+  };
 };
 
-export type ProjectEmbedSettingsResponse = {
-  embedEnabled: boolean;
-  embedToken: string | null;
-  embedSeoTitle: string | null;
-  embedSeoDescription: string | null;
-  embedSeoKeywords: unknown;
+export type ProjectEmbedUpdateResponse = {
+  embed: ProjectEmbed;
 };
 
 export type ProjectCreatePayload = {

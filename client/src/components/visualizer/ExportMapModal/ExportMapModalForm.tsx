@@ -25,9 +25,10 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
     exportTypeOptions,
     exportTypeInfoTooltip,
     quality,
+    resolvedQuality,
     secondsPerPeriod,
+    resolvedSecondsPerPeriod,
     smoothTransitions,
-    setSecondsPerPeriod,
     setSmoothTransitions,
     isExporting,
     progress,
@@ -39,7 +40,11 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
     maxQuality,
     timePeriods,
     handleExportTypeChange,
-    handleQualityChange,
+    handleQualityInputChange,
+    handleQualitySliderChange,
+    handleQualityBlur,
+    handleSecondsInputChange,
+    handleSecondsBlur,
     handleDownload,
     showQualityControl,
     downloadButtonLabel,
@@ -83,7 +88,8 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
               min={1}
               max={maxQuality}
               value={quality}
-              onChange={handleQualityChange}
+              onChange={handleQualityInputChange}
+              onBlur={handleQualityBlur}
               className="w-20"
               disabled={isExporting}
             />
@@ -91,8 +97,8 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
           <Slider
             min={1}
             max={100}
-            value={quality}
-            onChange={handleQualityChange}
+            value={quality ?? resolvedQuality}
+            onChange={handleQualitySliderChange}
             aria-label="Export quality"
             disabled={isExporting}
           />
@@ -119,9 +125,8 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
               max={10}
               step={0.5}
               value={secondsPerPeriod}
-              onChange={(v: number | null) =>
-                setSecondsPerPeriod(Math.max(0.5, Math.min(v ?? 2, 10)))
-              }
+              onChange={handleSecondsInputChange}
+              onBlur={handleSecondsBlur}
               className="w-20"
               disabled={isExporting}
             />
@@ -137,13 +142,13 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
           </Flex>
           <Typography.Text type="secondary" className="text-xs">
             {getAnimationTotalFrames(timePeriods.length, {
-              secondsPerPeriod,
+              secondsPerPeriod: resolvedSecondsPerPeriod,
               fps: EXPORT_FPS,
             })}{' '}
             frames · ~
             {(
               getAnimationTotalFrames(timePeriods.length, {
-                secondsPerPeriod,
+                secondsPerPeriod: resolvedSecondsPerPeriod,
                 fps: EXPORT_FPS,
               }) / EXPORT_FPS
             ).toFixed(1)}

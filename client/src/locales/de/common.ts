@@ -222,14 +222,15 @@ const de: CommonNs = {
     googleSheets: {
       title: 'Aus Google Tabellen importieren',
       intro:
-        'Fügen Sie die URL einer öffentlichen Google-Tabelle ein. Die Tabelle muss für „Jeder mit dem Link“ freigegeben sein.',
+        'Fügen Sie die URL einer öffentlichen Google-Tabelle ein (Freigabe „Jeder mit dem Link“).',
       placeholder: 'https://docs.google.com/spreadsheets/d/...',
       howToShare: 'FREIGABE:',
       stepOpen: 'Google-Tabelle öffnen',
       stepShare: 'Freigeben → Allgemeiner Zugriff',
       stepAnyone: 'Auf „Jeder mit dem Link“ stellen',
       stepPaste: 'URL kopieren und oben einfügen',
-      importButton: 'Tabelle importieren',
+      syncButton: 'Verknüpfen & synchronisieren',
+      importOnceButton: 'Einmal importieren',
       fetching: 'Wird geladen...',
       fetchFailed: 'Google-Tabelle konnte nicht geladen werden',
     },
@@ -353,8 +354,10 @@ const de: CommonNs = {
       tooltipZoomIn: 'Vergrößern',
       tooltipZoomOut: 'Verkleinern',
       tooltipResetMapAndLabels: 'Karte und Beschriftungen zurücksetzen',
-      tooltipEnableLabelDragging: 'Beschriftungen verschieben aktivieren',
-      tooltipDisableLabelDragging: 'Beschriftungen verschieben deaktivieren',
+      tooltipEnableLabelDragging:
+        'Regionsbeschriftungen verschieben aktivieren (deaktiviert das Verschieben der Karte)',
+      tooltipDisableLabelDragging:
+        'Regionsbeschriftungen verschieben deaktivieren (aktiviert das Verschieben der Karte wieder)',
       showLabels: 'Beschriftungen anzeigen',
       fontSize: 'Schriftgröße',
     },
