@@ -37,7 +37,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import type { DataSet, RegionData } from '@/store/mapData/types';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { selectCurrentProject, selectCurrentProjectId } from '@/store/projects/selectors';
+import { selectCurrentProject } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
@@ -124,7 +124,6 @@ export const ImportDataPanel: FC = () => {
   const plan = user?.plan ?? PLANS.observer;
   const { limits } = PLAN_DETAILS[plan];
   const currentProject = useProjectsStore(selectCurrentProject);
-  const currentProjectId = useProjectsStore(selectCurrentProjectId);
   const googleUrl = useVisualizerStore((s) => s.google.url);
 
   /** Auto-detected: current data is panel/dynamic (has time dimension). */
@@ -468,6 +467,9 @@ export const ImportDataPanel: FC = () => {
           if (titles.length > 0) {
             const viz = useVisualizerStore.getState();
             if (viz.selectedCountryId !== selectedCountryId) return;
+            if (viz.importDataType === IMPORT_DATA_TYPES.sheets && Boolean(viz.google.url)) {
+              return;
+            }
             if (storeDataMatchesMapTitles(titles, viz.data, viz.timePeriods, viz.timelineData)) {
               return;
             }
@@ -640,11 +642,7 @@ export const ImportDataPanel: FC = () => {
       return;
     }
 
-    const canRun =
-      Boolean(googleUrl) &&
-      Boolean(selectedCountryId) &&
-      Boolean(currentProjectId) &&
-      svgTitles.length > 0;
+    const canRun = Boolean(googleUrl) && Boolean(selectedCountryId) && svgTitles.length > 0;
 
     if (skipSheetsRefetchOnceRef.current) {
       skipSheetsRefetchOnceRef.current = false;
@@ -680,7 +678,6 @@ export const ImportDataPanel: FC = () => {
     };
   }, [
     afterSheetCsvParsed,
-    currentProjectId,
     googleUrl,
     importDataType,
     messageApi,

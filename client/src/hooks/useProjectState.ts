@@ -9,10 +9,48 @@ import type {
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useVisualizerStore } from '@/store/mapData/store';
+import type { DataSet, GoogleSheetSource } from '@/store/mapData/types';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectSavedStateSnapshot } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import type { ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
+
+/** Persisted dataset: linked Google Sheets only stores the URL; row data is fetched client-side. */
+function buildPersistedDataset(
+  importDataType: ImportDataType,
+  google: GoogleSheetSource,
+  data: DataSet,
+): ProjectDataset | null {
+  const isSheetsLinked = importDataType === IMPORT_DATA_TYPES.sheets && Boolean(google.url);
+  const hasTabularData = data.allIds.length > 0;
+  if (!hasTabularData && !isSheetsLinked) return null;
+
+  return {
+    allIds: isSheetsLinked ? [] : data.allIds,
+    byId: isSheetsLinked ? {} : data.byId,
+    importDataType,
+    ...(isSheetsLinked ? { google: { url: google.url as string, gid: google.gid } } : {}),
+  };
+}
+
+/** Dataset slice for dirty-check snapshots (includes live rows even when Google-linked). */
+function buildSnapshotDataset(
+  importDataType: ImportDataType,
+  google: GoogleSheetSource,
+  data: DataSet,
+): ProjectDataset | null {
+  const isSheetsLinked = importDataType === IMPORT_DATA_TYPES.sheets && Boolean(google.url);
+  const hasTabularData = data.allIds.length > 0;
+  if (!hasTabularData && !isSheetsLinked) return null;
+
+  return {
+    allIds: data.allIds,
+    byId: data.byId,
+    importDataType,
+    ...(isSheetsLinked ? { google: { url: google.url as string, gid: google.gid } } : {}),
+  };
+}
 
 /**
  * Builds a serializable snapshot of the current visualizer state
@@ -25,18 +63,7 @@ function buildStateSnapshot(): string {
     useLegendStylesStore.getState();
   const { items } = useLegendDataStore.getState();
 
-  const hasData = data.allIds.length > 0;
-
-  const dataset: ProjectDataset | null = hasData
-    ? {
-        allIds: data.allIds,
-        byId: data.byId,
-        importDataType,
-        ...(importDataType === IMPORT_DATA_TYPES.sheets && google.url
-          ? { google: { url: google.url, gid: google.gid } }
-          : {}),
-      }
-    : null;
+  const dataset = buildSnapshotDataset(importDataType, google, data);
 
   const mapStyles: ProjectMapStyles = {
     border,
@@ -74,8 +101,28 @@ function buildStateSnapshot(): string {
  * Pass `name` to include it (for create), omit for updates.
  */
 export function getProjectPayload(name?: string): ProjectCreatePayload {
-  const snapshot = JSON.parse(buildStateSnapshot()) as Omit<ProjectCreatePayload, 'name'>;
-  return { name: name ?? '', ...snapshot };
+  const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
+  const { border, shadow, zoomControls, picture, regionLabels } = useMapStylesStore.getState();
+  const { labels, title, position, floatingPosition, floatingSize, backgroundColor, noDataColor } =
+    useLegendStylesStore.getState();
+  const { items } = useLegendDataStore.getState();
+
+  return {
+    name: name ?? '',
+    countryId: selectedCountryId,
+    dataset: buildPersistedDataset(importDataType, google, data),
+    mapStyles: { border, shadow, zoomControls, picture, regionLabels },
+    legendStyles: {
+      labels,
+      title,
+      position,
+      floatingPosition,
+      floatingSize,
+      backgroundColor,
+      noDataColor,
+    },
+    legendData: { items: items.allIds.map((id) => items.byId[id]) },
+  };
 }
 
 /**
@@ -114,17 +161,7 @@ export function useHasUnsavedChanges(): boolean {
   return useMemo(() => {
     if (!savedSnapshot) return false;
 
-    const hasData = data.allIds.length > 0;
-    const dataset: ProjectDataset | null = hasData
-      ? {
-          allIds: data.allIds,
-          byId: data.byId,
-          importDataType,
-          ...(importDataType === IMPORT_DATA_TYPES.sheets && google.url
-            ? { google: { url: google.url, gid: google.gid } }
-            : {}),
-        }
-      : null;
+    const dataset = buildSnapshotDataset(importDataType, google, data);
 
     const currentSnapshot = JSON.stringify({
       countryId: selectedCountryId,

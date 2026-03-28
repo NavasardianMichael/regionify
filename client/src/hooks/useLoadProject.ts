@@ -46,17 +46,24 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
     const { setItems } = useLegendDataStore.getState();
     const { setCurrentProjectId, setSavedStateSnapshot } = useProjectsStore.getState();
 
-    // Load country + dataset
+    const importDataType =
+      (project.dataset?.importDataType as ImportDataType) ?? IMPORT_DATA_TYPES.csv;
+    const google = readGoogleFromDataset(project.dataset ?? null);
+    const isSheetsSync = importDataType === IMPORT_DATA_TYPES.sheets && Boolean(google.url);
+
+    // Load country + dataset (Google Sheets: rows come only from /sheets/fetch, not stored JSON)
     setVisualizerState({
       selectedCountryId: (project.countryId as CountryId) ?? null,
-      importDataType: (project.dataset?.importDataType as ImportDataType) ?? IMPORT_DATA_TYPES.csv,
-      data: project.dataset
-        ? {
-            allIds: project.dataset.allIds,
-            byId: migrateDatasetById(project.dataset.byId),
-          }
-        : { allIds: [], byId: {} },
-      google: readGoogleFromDataset(project.dataset ?? null),
+      importDataType,
+      data: isSheetsSync
+        ? { allIds: [], byId: {} }
+        : project.dataset
+          ? {
+              allIds: project.dataset.allIds,
+              byId: migrateDatasetById(project.dataset.byId),
+            }
+          : { allIds: [], byId: {} },
+      google,
       isGoogleSheetSyncLoading: false,
     });
 
