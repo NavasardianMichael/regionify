@@ -16,6 +16,8 @@ import {
   Flex,
   Input,
   Modal,
+  Radio,
+  type RadioChangeEvent,
   Spin,
   Splitter,
   theme,
@@ -34,6 +36,7 @@ import {
   selectSetSavedStateSnapshot,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { useIsMdUp } from '@/hooks/useIsMdUp';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import { useVisualizerPage } from '@/hooks/useVisualizerPage';
@@ -55,6 +58,8 @@ const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal
 const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal'));
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
+type MobileVisualizerSection = 'map' | 'data' | 'styles';
+
 const VisualizerPage: FC = () => {
   const { token } = theme.useToken();
   const { t } = useTypedTranslation();
@@ -69,6 +74,8 @@ const VisualizerPage: FC = () => {
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const loadProject = useLoadProject();
+  const isMdUp = useIsMdUp();
+  const [mobileSection, setMobileSection] = useState<MobileVisualizerSection>('map');
   const [isResolvingProjectFromUrl, setIsResolvingProjectFromUrl] = useState(false);
 
   const {
@@ -213,96 +220,137 @@ const VisualizerPage: FC = () => {
     });
   }, [location.pathname, setCurrentProjectId, setSavedStateSnapshot]);
 
+  const dataPanel = (
+    <CardLayout component="aside" vertical className="h-full">
+      <RegionSelect />
+      <Divider />
+      <ImportDataPanel />
+      <Divider />
+      <LegendConfigPanel />
+    </CardLayout>
+  );
+
+  const mapPanel = (
+    <CardLayout className="min-h-md gap-md h-full">
+      <Flex align="center" justify="space-between" wrap className="mb-sm shrink-0" gap="middle">
+        <Typography.Title level={3} className="text-primary mb-0! text-base font-semibold">
+          {t('visualizer.mapAreaTitle')}
+        </Typography.Title>
+        <Flex gap="small" wrap="wrap">
+          <Button
+            icon={<SaveOutlined />}
+            onClick={handleSave}
+            disabled={isSaveDisabled || isResolvingProjectFromUrl}
+            loading={isSaving}
+          >
+            {saveButtonText}
+          </Button>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={handleOpenExportModal}
+            disabled={!selectedCountryId || isResolvingProjectFromUrl}
+          >
+            {exportButtonText}
+          </Button>
+          {isLoggedIn ? (
+            embedButtonDisabled ? (
+              <Tooltip title={embedTooltipTitle}>
+                <span className="inline-flex">{embedButton}</span>
+              </Tooltip>
+            ) : (
+              embedButton
+            )
+          ) : null}
+        </Flex>
+      </Flex>
+      {!isResolvingProjectFromUrl && hasTimelineData && (
+        <Suspense>
+          <AnimationControls />
+        </Suspense>
+      )}
+      {isResolvingProjectFromUrl ? (
+        <Flex align="center" justify="center" className="min-h-0 flex-1">
+          <Spin size="large" />
+        </Flex>
+      ) : (
+        <Suspense fallback={<Spin className="m-auto flex-1" />}>
+          <MapViewer className="min-h-0 flex-1" />
+        </Suspense>
+      )}
+    </CardLayout>
+  );
+
+  const stylesPanel = (
+    <CardLayout component="aside" vertical className="h-full">
+      <MapStylesPanel />
+      <Divider />
+      <LegendStylesPanel />
+      <Divider />
+      <GeneralStylesPack />
+    </CardLayout>
+  );
+
   return (
     <>
-      <Splitter className="h-full min-h-0 w-full">
-        <Splitter.Panel
-          defaultSize="25%"
-          min="15%"
-          max="40%"
-          collapsible={{ start: true, end: true, showCollapsibleIcon: true }}
-        >
-          <CardLayout component="aside" vertical className="h-full">
-            <RegionSelect />
-            <Divider />
-            <ImportDataPanel />
-            <Divider />
-            <LegendConfigPanel />
-          </CardLayout>
-        </Splitter.Panel>
-
-        <Splitter.Panel>
-          <CardLayout className="min-h-md gap-md h-full">
-            <Flex
-              align="center"
-              justify="space-between"
-              wrap
-              className="mb-sm shrink-0"
-              gap="middle"
+      {isMdUp ? (
+        <Splitter orientation="horizontal" className="h-full min-h-0 w-full">
+          <Splitter.Panel
+            defaultSize="25%"
+            min="15%"
+            max="40%"
+            collapsible={{ start: true, end: true, showCollapsibleIcon: true }}
+          >
+            {dataPanel}
+          </Splitter.Panel>
+          <Splitter.Panel>{mapPanel}</Splitter.Panel>
+          <Splitter.Panel
+            defaultSize="25%"
+            min="15%"
+            max="35%"
+            collapsible={{ start: true, end: false, showCollapsibleIcon: true }}
+          >
+            {stylesPanel}
+          </Splitter.Panel>
+        </Splitter>
+      ) : (
+        <Flex vertical gap={8} className="h-full min-h-0 w-full min-w-0 flex-1">
+          <Radio.Group
+            value={mobileSection}
+            optionType="button"
+            buttonStyle="solid"
+            block
+            className="shrink-0 [&_.ant-radio-button-wrapper]:flex-1 [&_.ant-radio-button-wrapper]:basis-0 [&_.ant-radio-button-wrapper]:px-2! [&_.ant-radio-button-wrapper]:text-center! [&_.ant-radio-button-wrapper]:first:rounded-s-md [&_.ant-radio-button-wrapper]:last:rounded-e-md"
+            onChange={(e: RadioChangeEvent) => {
+              setMobileSection(e.target.value as MobileVisualizerSection);
+            }}
+          >
+            <Radio.Button value="map">{t('visualizer.tabMap')}</Radio.Button>
+            <Radio.Button value="data">{t('visualizer.tabData')}</Radio.Button>
+            <Radio.Button value="styles">{t('visualizer.tabStyles')}</Radio.Button>
+          </Radio.Group>
+          <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
+            <div
+              className={`flex h-full min-h-0 w-full flex-col ${mobileSection === 'map' ? '' : 'hidden'}`}
+              aria-hidden={mobileSection !== 'map'}
             >
-              <Typography.Title level={3} className="text-primary mb-0! text-base font-semibold">
-                {t('visualizer.mapAreaTitle')}
-              </Typography.Title>
-              <Flex gap="small">
-                <Button
-                  icon={<SaveOutlined />}
-                  onClick={handleSave}
-                  disabled={isSaveDisabled || isResolvingProjectFromUrl}
-                  loading={isSaving}
-                >
-                  {saveButtonText}
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<DownloadOutlined />}
-                  onClick={handleOpenExportModal}
-                  disabled={!selectedCountryId || isResolvingProjectFromUrl}
-                >
-                  {exportButtonText}
-                </Button>
-                {isLoggedIn ? (
-                  embedButtonDisabled ? (
-                    <Tooltip title={embedTooltipTitle}>
-                      <span className="inline-flex">{embedButton}</span>
-                    </Tooltip>
-                  ) : (
-                    embedButton
-                  )
-                ) : null}
-              </Flex>
-            </Flex>
-            {!isResolvingProjectFromUrl && hasTimelineData && (
-              <Suspense>
-                <AnimationControls />
-              </Suspense>
-            )}
-            {isResolvingProjectFromUrl ? (
-              <Flex align="center" justify="center" className="min-h-0 flex-1">
-                <Spin size="large" />
-              </Flex>
-            ) : (
-              <Suspense fallback={<Spin className="m-auto flex-1" />}>
-                <MapViewer className="min-h-0 flex-1" />
-              </Suspense>
-            )}
-          </CardLayout>
-        </Splitter.Panel>
-
-        <Splitter.Panel
-          defaultSize="25%"
-          min="15%"
-          max="35%"
-          collapsible={{ start: true, end: false, showCollapsibleIcon: true }}
-        >
-          <CardLayout component="aside" vertical className="h-full">
-            <MapStylesPanel />
-            <Divider />
-            <LegendStylesPanel />
-            <Divider />
-            <GeneralStylesPack />
-          </CardLayout>
-        </Splitter.Panel>
-      </Splitter>
+              {mapPanel}
+            </div>
+            <div
+              className={`flex h-full min-h-0 w-full flex-col ${mobileSection === 'data' ? '' : 'hidden'}`}
+              aria-hidden={mobileSection !== 'data'}
+            >
+              {dataPanel}
+            </div>
+            <div
+              className={`flex h-full min-h-0 w-full flex-col ${mobileSection === 'styles' ? '' : 'hidden'}`}
+              aria-hidden={mobileSection !== 'styles'}
+            >
+              {stylesPanel}
+            </div>
+          </div>
+        </Flex>
+      )}
 
       {isExportModalOpen && (
         <Suspense>

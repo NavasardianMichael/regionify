@@ -16,6 +16,9 @@ const fr: CommonNs = {
     cancel: 'Annuler',
     logoutError: 'Échec de la déconnexion. Veuillez réessayer.',
     languageSelectAriaLabel: "Langue de l'interface",
+    openMenu: 'Ouvrir le menu',
+    mainMenu: 'Menu',
+    closeMenu: 'Fermer le menu',
   },
   deleteAccountModal: {
     title: 'Supprimer le compte',
@@ -139,6 +142,9 @@ const fr: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Visualisation de la carte',
+    tabData: 'Données',
+    tabMap: 'Carte',
+    tabStyles: 'Styles',
     saveModalTitle: 'Enregistrer le projet',
     saveModalPrompt: 'Entrez un nom pour votre projet :',
     saveModalPlaceholder: 'Mon projet de carte',

@@ -6,8 +6,8 @@ const HomePage: FC = () => {
   const { t } = useTypedTranslation();
   return (
     <Flex vertical className="h-full min-h-0 w-full flex-col items-center">
-      <Flex vertical gap="middle" className="w-full max-w-4xl p-6">
-        <Typography.Title level={1} className="text-primary mb-0! text-3xl font-bold">
+      <Flex vertical gap="middle" className="w-full max-w-4xl p-4 md:p-6">
+        <Typography.Title level={1} className="text-primary mb-0! text-2xl font-bold md:text-3xl">
           {t('home.title')}
         </Typography.Title>
         <Typography.Paragraph className="mb-0! text-gray-600">

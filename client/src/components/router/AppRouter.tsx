@@ -43,7 +43,7 @@ function AppRoutesLayout() {
       >
         <div
           className={
-            isEmbedRoute ? 'flex h-full min-h-0 flex-col' : 'flex h-full flex-col items-center'
+            isEmbedRoute ? 'flex h-full min-h-0 flex-col' : 'flex h-full flex-col items-stretch'
           }
         >
           <Suspense fallback={<PageLoader />}>

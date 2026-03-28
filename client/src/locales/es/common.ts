@@ -16,6 +16,9 @@ const es: CommonNs = {
     cancel: 'Cancelar',
     logoutError: 'Error al cerrar sesión. Inténtalo de nuevo.',
     languageSelectAriaLabel: 'Idioma de la interfaz',
+    openMenu: 'Abrir menú',
+    mainMenu: 'Menú',
+    closeMenu: 'Cerrar menú',
   },
   deleteAccountModal: {
     title: 'Eliminar cuenta',
@@ -139,6 +142,9 @@ const es: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Visualización del mapa',
+    tabData: 'Datos',
+    tabMap: 'Mapa',
+    tabStyles: 'Estilos',
     saveModalTitle: 'Guardar proyecto',
     saveModalPrompt: 'Introduce un nombre para tu proyecto:',
     saveModalPlaceholder: 'Mi proyecto de mapa',

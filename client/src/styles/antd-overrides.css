@@ -11,15 +11,14 @@
     }
   }
 
-  /* First splitter bar (between left sidebar and center) */
-  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
+  /* Horizontal 3-column layout only: vertical splitter uses default bar alignment */
+  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter.ant-splitter-horizontal
     > .ant-splitter-bar:nth-of-type(2)
     .ant-splitter-bar-collapse-bar {
     margin-inline-start: 8px !important;
   }
 
-  /* Second splitter bar (between center and right sidebar) */
-  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter
+  :where(.css-dev-only-do-not-override-3uaqrl).ant-splitter.ant-splitter-horizontal
     > .ant-splitter-bar:nth-of-type(4)
     .ant-splitter-bar-collapse-bar {
     margin-inline-start: -8px;

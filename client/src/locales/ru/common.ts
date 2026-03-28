@@ -16,6 +16,9 @@ const ru: CommonNs = {
     cancel: 'Отмена',
     logoutError: 'Не удалось выйти. Попробуйте ещё раз.',
     languageSelectAriaLabel: 'Язык интерфейса',
+    openMenu: 'Открыть меню',
+    mainMenu: 'Меню',
+    closeMenu: 'Закрыть меню',
   },
   deleteAccountModal: {
     title: 'Удалить аккаунт',
@@ -137,6 +140,9 @@ const ru: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Визуализация карты',
+    tabData: 'Данные',
+    tabMap: 'Карта',
+    tabStyles: 'Стили',
     saveModalTitle: 'Сохранить проект',
     saveModalPrompt: 'Введите название проекта:',
     saveModalPlaceholder: 'Мой картографический проект',

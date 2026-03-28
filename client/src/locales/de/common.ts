@@ -16,6 +16,9 @@ const de: CommonNs = {
     cancel: 'Abbrechen',
     logoutError: 'Abmeldung fehlgeschlagen. Bitte erneut versuchen.',
     languageSelectAriaLabel: 'Oberflächensprache',
+    openMenu: 'Menü öffnen',
+    mainMenu: 'Menü',
+    closeMenu: 'Menü schließen',
   },
   deleteAccountModal: {
     title: 'Konto löschen',
@@ -143,6 +146,9 @@ const de: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Kartenvisualisierung',
+    tabData: 'Daten',
+    tabMap: 'Karte',
+    tabStyles: 'Stile',
     saveModalTitle: 'Projekt speichern',
     saveModalPrompt: 'Geben Sie einen Projektnamen ein:',
     saveModalPlaceholder: 'Mein Kartenprojekt',

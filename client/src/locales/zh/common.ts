@@ -16,6 +16,9 @@ const zh: CommonNs = {
     cancel: '取消',
     logoutError: '退出登录失败，请重试。',
     languageSelectAriaLabel: '界面语言',
+    openMenu: '打开菜单',
+    mainMenu: '菜单',
+    closeMenu: '关闭菜单',
   },
   deleteAccountModal: {
     title: '删除账户',
@@ -129,6 +132,9 @@ const zh: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: '地图可视化',
+    tabData: '数据',
+    tabMap: '地图',
+    tabStyles: '样式',
     saveModalTitle: '保存项目',
     saveModalPrompt: '为项目输入名称：',
     saveModalPlaceholder: '我的地图项目',

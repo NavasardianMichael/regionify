@@ -19,6 +19,12 @@ export type CommonNs = {
     logoutError: string;
     /** Accessible name for the locale combobox in the nav */
     languageSelectAriaLabel: string;
+    /** Accessible label for the hamburger menu button */
+    openMenu: string;
+    /** Drawer title for the mobile navigation menu */
+    mainMenu: string;
+    /** Accessible label for the drawer close control */
+    closeMenu: string;
   };
   deleteAccountModal: {
     title: string;
@@ -131,6 +137,10 @@ export type CommonNs = {
   };
   visualizer: {
     mapAreaTitle: string;
+    /** Mobile layout: tab labels for Data / Map / Styles sections */
+    tabData: string;
+    tabMap: string;
+    tabStyles: string;
     saveModalTitle: string;
     saveModalPrompt: string;
     saveModalPlaceholder: string;

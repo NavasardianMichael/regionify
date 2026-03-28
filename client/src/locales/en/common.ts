@@ -16,6 +16,9 @@ const en: CommonNs = {
     cancel: 'Cancel',
     logoutError: 'Logout failed. Please try again.',
     languageSelectAriaLabel: 'Interface language',
+    openMenu: 'Open menu',
+    mainMenu: 'Menu',
+    closeMenu: 'Close menu',
   },
   deleteAccountModal: {
     title: 'Delete Account',
@@ -138,6 +141,9 @@ const en: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Map Visualization',
+    tabData: 'Data',
+    tabMap: 'Map',
+    tabStyles: 'Styles',
     saveModalTitle: 'Save Project',
     saveModalPrompt: 'Enter a name for your project:',
     saveModalPlaceholder: 'My Map Project',

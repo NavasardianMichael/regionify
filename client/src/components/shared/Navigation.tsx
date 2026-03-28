@@ -1,22 +1,34 @@
-import { type FC, useCallback, useMemo } from 'react';
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
+  CloseOutlined,
   CreditCardOutlined,
   FolderOutlined,
   HomeOutlined,
   LoginOutlined,
   LogoutOutlined,
   MailOutlined,
+  MenuOutlined,
   SafetyOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import type { Locale } from '@regionify/shared';
-import { Avatar, Dropdown, type DropdownProps, Flex } from 'antd';
+import {
+  Avatar,
+  Button,
+  Divider,
+  Drawer,
+  Dropdown,
+  type DropdownProps,
+  Flex,
+  Typography,
+} from 'antd';
 import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small.png';
 import { logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { useIsMdUp } from '@/hooks/useIsMdUp';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
@@ -36,6 +48,8 @@ export const Navigation: FC = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTypedTranslation();
   const { message } = useAppFeedback();
+  const isMdUp = useIsMdUp();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
   const logout = useProfileStore(selectLogout);
@@ -49,6 +63,14 @@ export const Navigation: FC = () => {
     ],
     [t],
   );
+
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setMobileMenuOpen(false);
+    });
+  }, [location.pathname, isMdUp]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -95,62 +117,193 @@ export const Navigation: FC = () => {
     }`;
   };
 
-  return (
-    <nav className="shrink-0 border-b border-gray-200 bg-white px-6 py-3">
-      <Flex align="center" justify="space-between">
-        <Link to={ROUTES.HOME}>
-          <img
-            src={logoImage}
-            alt={t('appName')}
-            className="h-12 w-auto"
-            width={120}
-            height={32}
-            fetchPriority="high"
-          />
-        </Link>
-        <Flex align="center" gap={16}>
-          <Flex component="ul" gap={4}>
-            {publicNavItems.map((item) => (
-              <li key={item.path}>
-                <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
-                  <item.icon />
-                  {item.label}
-                </AppNavLink>
-              </li>
-            ))}
+  const getDrawerNavLinkClassName = (path: string) =>
+    `${getNavLinkClassName(path)} w-full justify-start`;
+
+  const mobileDrawerTitle = useMemo(
+    () => (
+      <Flex align="center" justify="space-between" gap={8} className="w-full min-w-0">
+        <Typography.Text
+          strong
+          className="mb-0! min-w-0 flex-1 truncate text-base leading-snug text-gray-900"
+        >
+          {t('nav.mainMenu')}
+        </Typography.Text>
+        <Button
+          type="text"
+          icon={<CloseOutlined />}
+          aria-label={t('nav.closeMenu')}
+          onClick={closeMobileMenu}
+          className="shrink-0 text-gray-500!"
+        />
+      </Flex>
+    ),
+    [closeMobileMenu, t],
+  );
+
+  const desktopTrailing = (
+    <Flex align="center" gap={16}>
+      <Flex component="ul" gap={4}>
+        {publicNavItems.map((item) => (
+          <li key={item.path}>
+            <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
+              <item.icon />
+              {item.label}
+            </AppNavLink>
+          </li>
+        ))}
+      </Flex>
+      <div className="h-6 w-px bg-gray-200" aria-hidden />
+      <LanguageDropdown
+        variant="borderless"
+        currentLocale={i18n.language as Locale}
+        placement="bottomRight"
+      />
+      <div className="h-6 w-px bg-gray-200" aria-hidden />
+      {isLoggedIn ? (
+        <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
+          <button
+            type="button"
+            className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100"
+          >
+            {user?.avatarUrl ? (
+              <Avatar
+                src={user.avatarUrl}
+                size="small"
+                alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
+              />
+            ) : null}
+            <span className="text-sm font-medium text-gray-700">{user?.name}</span>
+          </button>
+        </Dropdown>
+      ) : (
+        <Flex component="ul" gap={4}>
+          <li>
+            <AppNavLink to={ROUTES.LOGIN} className={getNavLinkClassName(ROUTES.LOGIN)}>
+              <LoginOutlined />
+              {t('nav.login')}
+            </AppNavLink>
+          </li>
+        </Flex>
+      )}
+    </Flex>
+  );
+
+  const drawerContent = (
+    <Flex vertical gap="small" className="pb-4">
+      <Flex component="ul" vertical gap={4} className="m-0 list-none p-0">
+        {publicNavItems.map((item) => (
+          <li key={item.path} className="w-full">
+            <AppNavLink to={item.path} className={getDrawerNavLinkClassName(item.path)}>
+              <item.icon />
+              {item.label}
+            </AppNavLink>
+          </li>
+        ))}
+      </Flex>
+      <Divider className="my-2!" />
+      {isLoggedIn ? (
+        <Flex vertical gap="small">
+          <Flex align="center" gap="small" className="min-h-10 px-1">
+            {user?.avatarUrl ? (
+              <Avatar
+                src={user.avatarUrl}
+                size="small"
+                alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
+              />
+            ) : null}
+            <span className="text-sm font-medium text-gray-800">{user?.name}</span>
           </Flex>
-          <div className="h-6 w-px bg-gray-200" />
-          <LanguageDropdown
-            variant="borderless"
-            currentLocale={i18n.language as Locale}
-            placement="bottomRight"
-          />
-          <div className="h-6 w-px bg-gray-200" />
-          {isLoggedIn ? (
-            <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
-              <button className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100">
-                {user?.avatarUrl ? (
-                  <Avatar
-                    src={user.avatarUrl}
-                    size="small"
-                    alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
-                  />
-                ) : null}
-                <span className="text-sm font-medium text-gray-700">{user?.name}</span>
-              </button>
-            </Dropdown>
+          <Button
+            type="text"
+            block
+            icon={<SettingOutlined />}
+            className="justify-start!"
+            onClick={() => {
+              navigate(ROUTES.PROFILE);
+            }}
+          >
+            {t('nav.account')}
+          </Button>
+          <Button
+            type="text"
+            block
+            icon={<SafetyOutlined />}
+            className="justify-start!"
+            onClick={() => {
+              navigate(ROUTES.SECURITY);
+            }}
+          >
+            {t('nav.security')}
+          </Button>
+          <Button
+            type="text"
+            block
+            danger
+            icon={<LogoutOutlined />}
+            className="justify-start!"
+            onClick={() => void handleLogout()}
+          >
+            {t('nav.logout')}
+          </Button>
+        </Flex>
+      ) : (
+        <AppNavLink to={ROUTES.LOGIN} className={getDrawerNavLinkClassName(ROUTES.LOGIN)}>
+          <LoginOutlined />
+          {t('nav.login')}
+        </AppNavLink>
+      )}
+    </Flex>
+  );
+
+  return (
+    <>
+      <nav className="shrink-0 border-b border-gray-200 bg-white px-3 py-3 md:px-6">
+        <Flex align="center" justify="space-between">
+          <Link to={ROUTES.HOME}>
+            <img
+              src={logoImage}
+              alt={t('appName')}
+              className="h-10 w-auto md:h-12"
+              width={120}
+              height={32}
+              fetchPriority="high"
+            />
+          </Link>
+          {isMdUp ? (
+            desktopTrailing
           ) : (
-            <Flex component="ul" gap={4}>
-              <li>
-                <AppNavLink to={ROUTES.LOGIN} className={getNavLinkClassName(ROUTES.LOGIN)}>
-                  <LoginOutlined />
-                  {t('nav.login')}
-                </AppNavLink>
-              </li>
+            <Flex align="center" gap={8}>
+              <LanguageDropdown
+                variant="borderless"
+                currentLocale={i18n.language as Locale}
+                placement="bottomRight"
+              />
+              <Button
+                type="text"
+                icon={<MenuOutlined />}
+                aria-label={t('nav.openMenu')}
+                aria-expanded={mobileMenuOpen}
+                aria-haspopup="dialog"
+                onClick={() => setMobileMenuOpen(true)}
+              />
             </Flex>
           )}
         </Flex>
-      </Flex>
-    </nav>
+      </nav>
+
+      <Drawer
+        title={mobileDrawerTitle}
+        closable={false}
+        placement="right"
+        width={280}
+        open={mobileMenuOpen}
+        onClose={closeMobileMenu}
+        destroyOnClose={false}
+        styles={{ body: { paddingTop: 8 } }}
+      >
+        {drawerContent}
+      </Drawer>
+    </>
   );
 };
