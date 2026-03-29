@@ -12,3 +12,12 @@ export const generateRandomId = (length = 8): string => {
   }
   return result;
 };
+
+/** Shorten a long URL for inline display; use `title={url}` for the full string. */
+export function truncateUrlForDisplay(url: string, maxChars = 56): string {
+  if (url.length <= maxChars) return url;
+  const inner = maxChars - 3;
+  const head = Math.ceil(inner / 2);
+  const tail = Math.floor(inner / 2);
+  return `${url.slice(0, head)}…${url.slice(-tail)}`;
+}

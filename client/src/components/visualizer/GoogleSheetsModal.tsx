@@ -1,4 +1,4 @@
-import { type ChangeEvent, type FC, useCallback, useState } from 'react';
+import { type ChangeEvent, type FC, useCallback, useEffect, useState } from 'react';
 import { DownloadOutlined, LinkOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, Modal, Typography } from 'antd';
 import { fetchGoogleSheet } from '@/api/sheets';
@@ -10,16 +10,24 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onImport: (payload: { csv: string; url: string; mode: GoogleSheetImportMode }) => void;
+  /** When changing an existing linked sheet, pre-fill the URL field. */
+  initialUrl?: string | null;
 };
 
 const GOOGLE_SHEETS_URL_REGEX = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/[a-zA-Z0-9_-]+/;
 
-const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport }) => {
+const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport, initialUrl }) => {
   const { t } = useTypedTranslation();
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMode, setLoadingMode] = useState<GoogleSheetImportMode | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    setUrl((initialUrl ?? '').trim());
+    setError(null);
+  }, [open, initialUrl]);
 
   const isValidUrl = GOOGLE_SHEETS_URL_REGEX.test(url.trim());
   const busy = isLoading;

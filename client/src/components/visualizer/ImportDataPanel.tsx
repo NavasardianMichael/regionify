@@ -11,6 +11,7 @@ import {
 } from 'react';
 import {
   CloudUploadOutlined,
+  CopyOutlined,
   DownloadOutlined,
   EditOutlined,
   FileExcelOutlined,
@@ -125,6 +126,8 @@ export const ImportDataPanel: FC = () => {
   const { limits } = PLAN_DETAILS[plan];
   const currentProject = useProjectsStore(selectCurrentProject);
   const googleUrl = useVisualizerStore((s) => s.google.url);
+  const googleGid = useVisualizerStore((s) => s.google.gid);
+  const isGoogleSheetSyncLoading = useVisualizerStore((s) => s.isGoogleSheetSyncLoading);
 
   /** Auto-detected: current data is panel/dynamic (has time dimension). */
   const hasHistoricalFormat = useMemo(() => {
@@ -619,6 +622,12 @@ export const ImportDataPanel: FC = () => {
     [handleDownloadSampleOnly, messageApi, processImportedData, t],
   );
 
+  const afterSheetCsvParsedRef = useRef(afterSheetCsvParsed);
+  afterSheetCsvParsedRef.current = afterSheetCsvParsed;
+
+  const sheetFetchTRef = useRef(t);
+  sheetFetchTRef.current = t;
+
   const handleSheetImport = useCallback(
     (payload: { csv: string; url: string; mode: GoogleSheetImportMode }) => {
       const { csv, url, mode } = payload;
@@ -664,10 +673,14 @@ export const ImportDataPanel: FC = () => {
       try {
         const csv = await fetchGoogleSheet({ url: sheetUrl });
         if (cancelled) return;
-        afterSheetCsvParsed(csv);
+        afterSheetCsvParsedRef.current(csv);
       } catch {
         if (!cancelled) {
-          showMessageWithClose(messageApi, 'error', t('visualizer.googleSheets.fetchFailed'));
+          showMessageWithClose(
+            messageApi,
+            'error',
+            sheetFetchTRef.current('visualizer.googleSheets.fetchFailed'),
+          );
         }
       } finally {
         if (!cancelled) {
@@ -680,16 +693,7 @@ export const ImportDataPanel: FC = () => {
       cancelled = true;
       setVisualizerState({ isGoogleSheetSyncLoading: false });
     };
-  }, [
-    afterSheetCsvParsed,
-    googleUrl,
-    importDataType,
-    messageApi,
-    selectedCountryId,
-    setVisualizerState,
-    svgTitles,
-    t,
-  ]);
+  }, [googleUrl, importDataType, messageApi, selectedCountryId, setVisualizerState, svgTitles]);
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options: Parameters<NonNullable<UploadProps['customRequest']>>[0]) => {
@@ -779,6 +783,19 @@ export const ImportDataPanel: FC = () => {
     [messageApi, importDataType, processImportedData, handleDownloadSampleOnly, t],
   );
 
+  const handleCopyGoogleSheetUrl = useCallback(async () => {
+    if (!googleUrl) return;
+    try {
+      await navigator.clipboard.writeText(googleUrl);
+      messageApi.success({
+        content: t('visualizer.importData.sheetsUrlCopied'),
+        duration: 2,
+      });
+    } catch {
+      messageApi.error(t('visualizer.embed.copyFailed'));
+    }
+  }, [googleUrl, messageApi, t]);
+
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
       manual: (
@@ -802,14 +819,54 @@ export const ImportDataPanel: FC = () => {
         </Tooltip>
       ),
       sheets: (
-        <Flex>
-          <Button
-            type="primary"
-            icon={<CloudUploadOutlined />}
-            onClick={() => setIsSheetsModalOpen(true)}
-          >
-            {t('visualizer.importData.connectSheets')}
-          </Button>
+        <Flex vertical gap="small" className="min-w-0">
+          {googleUrl ? (
+            <>
+              <Typography.Text type="secondary" className="text-xs text-gray-600">
+                {t('visualizer.importData.sheetsSyncDescription')}
+              </Typography.Text>
+              {isGoogleSheetSyncLoading ? (
+                <Flex align="center" gap="small" className="text-xs text-gray-500">
+                  <LoadingOutlined aria-hidden />
+                  <span>{t('visualizer.importData.sheetsSyncLoading')}</span>
+                </Flex>
+              ) : null}
+              <Flex align="center" gap="small" className="w-full max-w-full min-w-0">
+                <span
+                  className="min-w-0 flex-1 overflow-hidden font-mono text-xs text-ellipsis whitespace-nowrap text-gray-800"
+                  title={googleUrl}
+                >
+                  {googleUrl}
+                </span>
+                <Tooltip title={t('visualizer.importData.sheetsCopyUrlTooltip')}>
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<CopyOutlined />}
+                    onClick={() => void handleCopyGoogleSheetUrl()}
+                    aria-label={t('visualizer.importData.sheetsCopyUrlTooltip')}
+                    className="shrink-0 text-gray-500"
+                  />
+                </Tooltip>
+              </Flex>
+              {googleGid ? (
+                <Typography.Text type="secondary" className="text-xs">
+                  {t('visualizer.importData.sheetsTabId', { gid: googleGid })}
+                </Typography.Text>
+              ) : null}
+            </>
+          ) : null}
+          <Flex>
+            <Button
+              type="primary"
+              icon={<CloudUploadOutlined />}
+              onClick={() => setIsSheetsModalOpen(true)}
+            >
+              {googleUrl
+                ? t('visualizer.importData.changeSheetsSource')
+                : t('visualizer.importData.connectSheets')}
+            </Button>
+          </Flex>
         </Flex>
       ),
       csv: (
@@ -839,7 +896,15 @@ export const ImportDataPanel: FC = () => {
         </Upload>
       ),
     }),
-    [handleFileUpload, selectedCountryId, t],
+    [
+      googleGid,
+      googleUrl,
+      handleCopyGoogleSheetUrl,
+      handleFileUpload,
+      isGoogleSheetSyncLoading,
+      selectedCountryId,
+      t,
+    ],
   );
 
   return (
@@ -934,10 +999,21 @@ export const ImportDataPanel: FC = () => {
         aria-label={t('visualizer.importData.segmentedAria')}
       />
 
-      <Flex gap="small" align="center" wrap="wrap" className="text-sm text-gray-500">
-        <Typography.Text className="text-sm text-gray-500">
-          {t('visualizer.importData.regionIdsNote')}
-          <br />
+      {importActionComponents[importDataType]}
+
+      <Flex vertical gap="small" className="p-sm! min-w-0 rounded-md bg-gray-50">
+        <Typography.Text className="text-xs font-semibold text-gray-500">
+          {t('visualizer.importData.expectedFormat')}
+        </Typography.Text>
+        <ImportFormatExamples
+          importDataType={importDataType}
+          hasHistoricalFormat={hasHistoricalFormat}
+        />
+      </Flex>
+
+      <Flex gap="small" align="center" wrap="wrap" className="text-xs text-gray-500">
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.importData.regionIdsNote')}{' '}
           <Tooltip
             title={
               !selectedCountryId ? t('visualizer.importData.downloadTooltipNoCountry') : undefined
@@ -951,7 +1027,7 @@ export const ImportDataPanel: FC = () => {
                 onClick={handleDownloadSampleOnly}
                 disabled={!selectedCountryId || svgTitles.length === 0 || isDownloadingSample}
                 loading={isDownloadingSample}
-                className="h-auto p-0! font-medium!"
+                className="h-auto p-0! align-baseline text-xs font-medium!"
                 aria-label={t('messages.downloadSample')}
               >
                 {!isDownloadingSample && t('visualizer.importData.downloadLink')}
@@ -960,18 +1036,6 @@ export const ImportDataPanel: FC = () => {
           </Tooltip>{' '}
           {t('visualizer.importData.sampleNoteSuffix')}
         </Typography.Text>
-      </Flex>
-
-      {importActionComponents[importDataType]}
-
-      <Flex vertical gap="small" className="p-sm! min-w-0 rounded-md bg-gray-50">
-        <Typography.Text className="text-xs font-semibold text-gray-500">
-          {t('visualizer.importData.expectedFormat')}
-        </Typography.Text>
-        <ImportFormatExamples
-          importDataType={importDataType}
-          hasHistoricalFormat={hasHistoricalFormat}
-        />
       </Flex>
 
       {isManualModalOpen && (
@@ -991,6 +1055,7 @@ export const ImportDataPanel: FC = () => {
             open={isSheetsModalOpen}
             onClose={() => setIsSheetsModalOpen(false)}
             onImport={handleSheetImport}
+            initialUrl={googleUrl}
           />
         </Suspense>
       )}

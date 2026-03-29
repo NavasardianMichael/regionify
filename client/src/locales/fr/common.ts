@@ -105,7 +105,7 @@ const fr: CommonNs = {
   },
   auth: {
     login: {
-      title: 'Bon retour',
+      title: 'Content de vous revoir',
       subtitle: 'Connectez-vous à votre compte pour continuer',
       continueGoogle: 'Continuer avec Google',
       dividerEmail: 'ou connectez-vous par e-mail',
@@ -189,8 +189,15 @@ const fr: CommonNs = {
       sampleNoteSuffix:
         'un exemple de données pour obtenir les bons ID et faire correspondre vos libellés.',
       expectedFormat: 'FORMAT ATTENDU :',
+      sheetsSyncDescription:
+        'La synchronisation en direct avec cette feuille Google est activée. Voici votre URL de partage.',
+      sheetsSyncLoading: 'Mise à jour des données depuis Google Sheets…',
+      sheetsCopyUrlTooltip: 'Copier l’URL dans le presse-papiers',
+      sheetsUrlCopied: 'URL copiée',
+      sheetsTabId: 'Onglet de la feuille (gid) : {{gid}}',
       enterManually: 'Saisir les données manuellement',
       connectSheets: 'Connecter Google Sheets',
+      changeSheetsSource: 'Changer la source Google Sheets',
       chooseCsv: 'Choisir un fichier CSV',
       chooseExcel: 'Choisir un fichier Excel',
       chooseJson: 'Choisir un fichier JSON',

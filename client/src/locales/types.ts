@@ -182,8 +182,14 @@ export type CommonNs = {
       downloadTooltipNoCountry: string;
       sampleNoteSuffix: string;
       expectedFormat: string;
+      sheetsSyncDescription: string;
+      sheetsSyncLoading: string;
+      sheetsCopyUrlTooltip: string;
+      sheetsUrlCopied: string;
+      sheetsTabId: string;
       enterManually: string;
       connectSheets: string;
+      changeSheetsSource: string;
       chooseCsv: string;
       chooseExcel: string;
       chooseJson: string;
