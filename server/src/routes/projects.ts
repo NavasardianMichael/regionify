@@ -88,8 +88,11 @@ router.put('/:id', async (req, res, next) => {
     const userId = req.session.userId!;
     const { name, countryId, dataset, mapStyles, legendStyles, legendData } = req.body;
 
+    const trimmedName =
+      typeof name === 'string' && name.trim().length > 0 ? name.trim() : undefined;
+
     const project = await projectService.updateProject(userId, req.params.id, {
-      ...(name !== undefined && { name }),
+      ...(trimmedName !== undefined && { name: trimmedName }),
       ...(countryId !== undefined && { countryId }),
       ...(dataset !== undefined && { dataset }),
       ...(mapStyles !== undefined && { mapStyles }),

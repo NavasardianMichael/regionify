@@ -1,11 +1,9 @@
 /* eslint-disable react-refresh/only-export-components -- Table DnD helpers and sortable primitives live together */
 import React, { forwardRef, type ReactNode, useMemo } from 'react';
-import { MenuOutlined } from '@ant-design/icons';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import {
   arrayMove,
-  horizontalListSortingStrategy,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -13,14 +11,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 
 export const ROW_DND_PREFIX = 'row:';
-export const COL_DND_PREFIX = 'col:';
 
 export function rowDndId(key: string): string {
   return `${ROW_DND_PREFIX}${key}`;
-}
-
-export function colDndId(key: string): string {
-  return `${COL_DND_PREFIX}${key}`;
 }
 
 export function parseRowDndId(id: string | number): string | null {
@@ -28,12 +21,10 @@ export function parseRowDndId(id: string | number): string | null {
   return s.startsWith(ROW_DND_PREFIX) ? s.slice(ROW_DND_PREFIX.length) : null;
 }
 
-export function parseColDndId(id: string | number): string | null {
-  const s = String(id);
-  return s.startsWith(COL_DND_PREFIX) ? s.slice(COL_DND_PREFIX.length) : null;
-}
-
-/** Drag handle is the second body cell (index 1). */
+/**
+ * Body cell index that receives drag listeners.
+ * With `rowSelection`, Ant Design injects the selection column first; index column is second.
+ */
 export const DRAG_HANDLE_COLUMN_INDEX = 1;
 
 type SortableRowProps = React.HTMLAttributes<HTMLTableRowElement> & {
@@ -85,53 +76,18 @@ export const SortableBodyRow = forwardRef<HTMLTableRowElement, SortableRowProps>
   },
 );
 
-type SortableColTitleProps = {
-  id: string;
-  title: ReactNode;
-};
-
-export function SortableColumnTitle({ id, title }: SortableColTitleProps): ReactNode {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: colDndId(id),
-  });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    ...(isDragging ? { position: 'relative', zIndex: 9 } : {}),
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} className="flex min-w-0 items-center gap-1" {...attributes}>
-      <span
-        {...listeners}
-        className="inline-flex shrink-0 cursor-grab touch-none text-gray-400 hover:text-gray-600"
-        aria-hidden
-      >
-        <MenuOutlined className="text-xs" />
-      </span>
-      <span className="min-w-0 flex-1">{title}</span>
-    </div>
-  );
-}
-
-type UseManualEntryDndArgs = {
+type UseManualEntryRowDndArgs = {
   rowKeysInOrder: string[];
-  middleColumnKeys: string[];
   onRowReorder: (keysInNewOrder: string[]) => void;
-  onColumnReorder: (keysInNewOrder: string[]) => void;
 };
 
 export function useManualEntryTableDnd({
   rowKeysInOrder,
-  middleColumnKeys,
   onRowReorder,
-  onColumnReorder,
-}: UseManualEntryDndArgs): {
+}: UseManualEntryRowDndArgs): {
   sensors: ReturnType<typeof useSensors>;
   onDragEnd: (event: DragEndEvent) => void;
   rowSortableItems: string[];
-  colSortableItems: string[];
 } {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -140,24 +96,10 @@ export function useManualEntryTableDnd({
   );
 
   const rowSortableItems = useMemo(() => rowKeysInOrder.map((k) => rowDndId(k)), [rowKeysInOrder]);
-  const colSortableItems = useMemo(
-    () => middleColumnKeys.map((k) => colDndId(k)),
-    [middleColumnKeys],
-  );
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over == null || active.id === over.id) return;
-
-    const colActive = parseColDndId(active.id);
-    const colOver = parseColDndId(over.id);
-    if (colActive && colOver) {
-      const oldIndex = middleColumnKeys.indexOf(colActive);
-      const newIndex = middleColumnKeys.indexOf(colOver);
-      if (oldIndex < 0 || newIndex < 0) return;
-      onColumnReorder(arrayMove(middleColumnKeys, oldIndex, newIndex));
-      return;
-    }
 
     const rowActive = parseRowDndId(active.id);
     const rowOver = parseRowDndId(over.id);
@@ -169,22 +111,7 @@ export function useManualEntryTableDnd({
     }
   };
 
-  return { sensors, onDragEnd, rowSortableItems, colSortableItems };
-}
-
-export function createSortableTheadWrapper(colSortableItems: string[]) {
-  return forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
-    function SortableThead(props, ref) {
-      const { children, ...rest } = props;
-      return (
-        <SortableContext items={colSortableItems} strategy={horizontalListSortingStrategy}>
-          <thead {...rest} ref={ref}>
-            {children}
-          </thead>
-        </SortableContext>
-      );
-    },
-  );
+  return { sensors, onDragEnd, rowSortableItems };
 }
 
 export function createSortableTbodyWrapper(rowSortableItems: string[]) {

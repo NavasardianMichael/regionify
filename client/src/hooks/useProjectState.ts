@@ -5,6 +5,7 @@ import type {
   ProjectLegendData,
   ProjectLegendStyles,
   ProjectMapStyles,
+  ProjectUpdatePayload,
 } from '@/api/projects/types';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
@@ -98,17 +99,18 @@ function buildStateSnapshot(): string {
 
 /**
  * Returns the current project payload ready for API save.
- * Pass `name` to include it (for create), omit for updates.
+ * Omit `name` on updates so the server does not overwrite the stored title with an empty string.
  */
-export function getProjectPayload(name?: string): ProjectCreatePayload {
+export function getProjectPayload(): ProjectUpdatePayload;
+export function getProjectPayload(name: string): ProjectCreatePayload;
+export function getProjectPayload(name?: string): ProjectCreatePayload | ProjectUpdatePayload {
   const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
   const { border, shadow, zoomControls, picture, regionLabels } = useMapStylesStore.getState();
   const { labels, title, position, floatingPosition, floatingSize, backgroundColor, noDataColor } =
     useLegendStylesStore.getState();
   const { items } = useLegendDataStore.getState();
 
-  return {
-    name: name ?? '',
+  const base = {
     countryId: selectedCountryId,
     dataset: buildPersistedDataset(importDataType, google, data),
     mapStyles: { border, shadow, zoomControls, picture, regionLabels },
@@ -123,6 +125,12 @@ export function getProjectPayload(name?: string): ProjectCreatePayload {
     },
     legendData: { items: items.allIds.map((id) => items.byId[id]) },
   };
+
+  if (name === undefined) {
+    return base;
+  }
+
+  return { ...base, name };
 }
 
 /**

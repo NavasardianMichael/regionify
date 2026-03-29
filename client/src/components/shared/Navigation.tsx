@@ -296,7 +296,7 @@ export const Navigation: FC = () => {
         title={mobileDrawerTitle}
         closable={false}
         placement="right"
-        width={280}
+        size={280}
         open={mobileMenuOpen}
         onClose={closeMobileMenu}
         destroyOnClose={false}
