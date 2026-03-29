@@ -560,7 +560,11 @@ export const ImportDataPanel: FC = () => {
         onSuccess?.(timeline);
       } else {
         if (hasTimePeriods && !limits.historicalDataImport) {
-          showMessageWithClose(messageApi, 'info', t('messages.timeSeriesDetected'));
+          showMessageWithClose(
+            messageApi,
+            'info',
+            t('messages.timeSeriesDetected', { planName: t('plans.items.chronographer.name') }),
+          );
         }
         if (limits.historicalDataImport) {
           showMessageWithClose(messageApi, 'warning', t('messages.noTimeColumnDetected'));

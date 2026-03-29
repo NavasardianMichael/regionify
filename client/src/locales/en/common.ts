@@ -235,7 +235,7 @@ const en: CommonNs = {
       modalTitle: 'Public map embed',
       openButton: 'Embed',
       intro:
-        'Share a read-only map on your site (iframe) or as a link. Requires Chronographer. Optional SEO fields apply to the standalone embed page.',
+        'Share a read-only map on your site (iframe) or as a link. The {{planName}} plan is required. Optional SEO fields apply to the standalone embed page.',
       publicToggle: 'Enable public embed',
       seoTitle: 'Page title (SEO)',
       titleMax: 'Use at most 200 characters',
@@ -253,9 +253,9 @@ const en: CommonNs = {
       shareLinkHint:
         'Turn on public embed and click Save to get the share link, open the page, and iframe code.',
       openInNewTab: 'Open embed page',
-      planRequired: 'Public embed requires the Chronographer plan.',
+      planRequired: 'Public embed requires the {{planName}} plan.',
       tooltipChronographerBody:
-        'Public map embed (share link and iframe) is included with the Chronographer plan.',
+        'Public map embed (share link and iframe) is included with the {{planName}} plan.',
       upgradePlansLink: 'View plans and upgrade',
       tooltipNeedSavedProject: 'Save your map as a project first to configure embed.',
       tooltipSelectCountry: 'Select a country before using embed.',
@@ -270,7 +270,7 @@ const en: CommonNs = {
       copyFailed: 'Could not copy',
     },
     exportModal: {
-      upgradeToExplorer: 'Upgrade to Explorer',
+      upgradeToExplorer: 'Upgrade to {{planName}}',
       singleFormatHintAfterLink: ' for PNG, SVG, full-quality still exports, and no watermark.',
       qualityLimited: 'Quality limited to {{max}}%.',
       qualityFullHint: ' for 100%.',
@@ -476,7 +476,7 @@ const en: CommonNs = {
     importedRegions: 'Imported {{count}} regions',
     importedRowsPeriods: 'Imported {{count}} rows across {{periods}} time periods',
     timeSeriesDetected:
-      'Time series data detected. Upgrade to Atlas plan for animated visualizations.',
+      'Time series data detected. Upgrade to the {{planName}} plan for animated visualizations.',
     noTimeColumnDetected:
       'No time column detected (year, time, period, etc.). Data imported as single period.',
     datasetMustIncludeId: 'Dataset must include an id column.',

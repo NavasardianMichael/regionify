@@ -100,10 +100,10 @@ const de: CommonNs = {
         buttonText: 'Entdecker kaufen (einmalig, dauerhaft)',
       },
       chronographer: {
-        name: 'Chronographer',
+        name: 'Chronograph',
         description:
           'Zusätzlich: Zeitreihen-Import, animierte Timeline-Exports, optionales öffentliches Embed pro Projekt.',
-        buttonText: 'Chronographer kaufen (einmalig, dauerhaft)',
+        buttonText: 'Chronograph kaufen (einmalig, dauerhaft)',
       },
     },
   },
@@ -245,7 +245,7 @@ const de: CommonNs = {
       modalTitle: 'Öffentliche Karten-Einbettung',
       openButton: 'Einbetten',
       intro:
-        'Karte nur lesend per Link oder iframe teilen. Chronograph erforderlich. SEO-Felder gelten für die eigenständige Embed-Seite.',
+        'Karte nur lesend per Link oder iframe teilen. Tarif {{planName}} erforderlich. SEO-Felder gelten für die eigenständige Embed-Seite.',
       publicToggle: 'Öffentliches Embed aktivieren',
       seoTitle: 'Seitentitel (SEO)',
       titleMax: 'Höchstens 200 Zeichen',
@@ -264,9 +264,9 @@ const de: CommonNs = {
       shareLinkHint:
         'Öffentliches Embed aktivieren und auf Speichern tippen, um Freigabe-Link, Seite und iframe-Code zu erhalten.',
       openInNewTab: 'Embed-Seite öffnen',
-      planRequired: 'Öffentliches Embed erfordert den Chronographer-Tarif.',
+      planRequired: 'Öffentliches Embed erfordert den Tarif {{planName}}.',
       tooltipChronographerBody:
-        'Öffentliches Karten-Embed (Freigabe-Link und iframe) ist im Chronographer-Tarif enthalten.',
+        'Öffentliches Karten-Embed (Freigabe-Link und iframe) ist im Tarif {{planName}} enthalten.',
       upgradePlansLink: 'Tarife ansehen und upgraden',
       tooltipNeedSavedProject: 'Speichern Sie die Karte zuerst als Projekt, um Embed einzurichten.',
       tooltipSelectCountry: 'Wählen Sie zuerst ein Land, bevor Sie Embed nutzen.',
@@ -281,7 +281,7 @@ const de: CommonNs = {
       copyFailed: 'Kopieren fehlgeschlagen',
     },
     exportModal: {
-      upgradeToExplorer: 'Zu Explorer wechseln',
+      upgradeToExplorer: 'Zu {{planName}} wechseln',
       singleFormatHintAfterLink:
         ' für PNG, SVG, Stillbild-Export in voller Qualität und ohne Wasserzeichen.',
       qualityLimited: 'Qualität auf {{max}}% begrenzt.',
@@ -491,7 +491,8 @@ const de: CommonNs = {
     switch: 'Umstellen',
     importedRegions: '{{count}} Regionen importiert',
     importedRowsPeriods: '{{count}} Zeilen in {{periods}} Zeiträumen importiert',
-    timeSeriesDetected: 'Zeitreihendaten erkannt. Wechseln Sie zum Atlas-Plan für Animationen.',
+    timeSeriesDetected:
+      'Zeitreihendaten erkannt. Wechseln Sie zum Tarif {{planName}} für Animationen.',
     noTimeColumnDetected:
       'Keine Zeit-Spalte erkannt (year, time, period usw.). Daten als einzelner Zeitraum importiert.',
     datasetMustIncludeId: 'Der Datensatz muss eine id-Spalte enthalten.',

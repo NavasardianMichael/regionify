@@ -153,7 +153,9 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
       } catch (e) {
         const raw = e instanceof Error ? e.message : '';
         if (raw === EMBED_PLAN_ERROR_EN) {
-          message.error(t('visualizer.embed.planRequired'));
+          message.error(
+            t('visualizer.embed.planRequired', { planName: t('plans.items.chronographer.name') }),
+          );
         } else {
           message.error(raw || t('visualizer.embed.saveFailed'));
         }
@@ -212,7 +214,7 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
             type="secondary"
             className="mb-0! max-w-[min(100%,20rem)] flex-1 text-xs"
           >
-            {t('visualizer.embed.intro')}
+            {t('visualizer.embed.intro', { planName: t('plans.items.chronographer.name') })}
           </Typography.Paragraph>
           <Flex align="center" gap="small" className="shrink-0">
             <Typography.Text className="text-xs whitespace-nowrap">

@@ -94,10 +94,10 @@ const ru: CommonNs = {
         buttonText: 'Купить Исследователь (разовый платёж)',
       },
       chronographer: {
-        name: 'Chronographer',
+        name: 'Хронограф',
         description:
           'Плюс импорт рядов по времени, анимированные экспорты линии времени и опциональная публичная вставка на проект.',
-        buttonText: 'Купить Chronographer (разовый платёж)',
+        buttonText: 'Купить Хронограф (разовый платёж)',
       },
     },
   },
@@ -235,7 +235,7 @@ const ru: CommonNs = {
       modalTitle: 'Публичная вставка карты',
       openButton: 'Вставка',
       intro:
-        'Поделитесь картой только для чтения по ссылке или через iframe. Нужен план Chronographer. SEO-поля для отдельной страницы вставки.',
+        'Поделитесь картой только для чтения по ссылке или через iframe. Нужен тариф {{planName}}. SEO-поля для отдельной страницы вставки.',
       publicToggle: 'Включить публичную вставку',
       seoTitle: 'Заголовок страницы (SEO)',
       titleMax: 'Не более 200 символов',
@@ -255,9 +255,9 @@ const ru: CommonNs = {
       shareLinkHint:
         'Включите публичную вставку и нажмите «Сохранить», чтобы получить ссылку, открыть страницу и код iframe.',
       openInNewTab: 'Открыть страницу вставки',
-      planRequired: 'Публичная вставка доступна на тарифе Chronographer.',
+      planRequired: 'Публичная вставка доступна на тарифе {{planName}}.',
       tooltipChronographerBody:
-        'Публичная вставка карты (ссылка для sharing и iframe) входит в тариф Chronographer.',
+        'Публичная вставка карты (ссылка для sharing и iframe) входит в тариф {{planName}}.',
       upgradePlansLink: 'Тарифы и апгрейд',
       tooltipNeedSavedProject: 'Сначала сохраните карту как проект, чтобы настроить вставку.',
       tooltipSelectCountry: 'Выберите страну перед использованием вставки.',
@@ -272,7 +272,7 @@ const ru: CommonNs = {
       copyFailed: 'Не удалось скопировать',
     },
     exportModal: {
-      upgradeToExplorer: 'Перейти на Explorer',
+      upgradeToExplorer: 'Перейти на {{planName}}',
       singleFormatHintAfterLink: ' для PNG, SVG, полноценного экспорта статики без водяного знака.',
       qualityLimited: 'Качество ограничено {{max}}%.',
       qualityFullHint: ' для 100%.',
@@ -480,7 +480,8 @@ const ru: CommonNs = {
     switch: 'Переключить',
     importedRegions: 'Импортировано регионов: {{count}}',
     importedRowsPeriods: 'Импортировано {{count}} строк за {{periods}} периодов',
-    timeSeriesDetected: 'Обнаружены данные временных рядов. Перейдите на план Atlas для анимаций.',
+    timeSeriesDetected:
+      'Обнаружены данные временных рядов. Перейдите на тариф {{planName}} для анимаций.',
     noTimeColumnDetected:
       'Временная колонка не обнаружена (year, time, period и т.д.). Данные импортированы как один период.',
     datasetMustIncludeId: 'В наборе данных должна быть колонка id.',

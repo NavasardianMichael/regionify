@@ -19,6 +19,9 @@ import { EXPORT_FPS, type ExportMapModalFormProps } from './useExportMapModal';
 
 export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
   const { t } = useTypedTranslation();
+  const explorerUpgradeLabel = t('visualizer.exportModal.upgradeToExplorer', {
+    planName: t('plans.items.explorer.name'),
+  });
   const {
     exportType,
     defaultExportType,
@@ -73,7 +76,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         {allowedFormats.length === 1 && (
           <Typography.Text type="secondary" className="text-xs">
             <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
-              {t('visualizer.exportModal.upgradeToExplorer')}
+              {explorerUpgradeLabel}
             </AppNavLink>
             {t('visualizer.exportModal.singleFormatHintAfterLink')}
           </Typography.Text>
@@ -106,7 +109,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
             <Typography.Text type="secondary" className="text-xs">
               {t('visualizer.exportModal.qualityLimited', { max: maxQuality })}{' '}
               <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
-                {t('visualizer.exportModal.upgradeToExplorer')}
+                {explorerUpgradeLabel}
               </AppNavLink>
               {t('visualizer.exportModal.qualityFullHint')}
             </Typography.Text>

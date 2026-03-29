@@ -96,10 +96,10 @@ const fr: CommonNs = {
         buttonText: 'Acheter Explorateur (paiement unique)',
       },
       chronographer: {
-        name: 'Chronographer',
+        name: 'Chronographe',
         description:
           'Ajoute import temporel, exports de ligne de temps animée et intégration publique optionnelle par projet.',
-        buttonText: 'Acheter Chronographer (paiement unique)',
+        buttonText: 'Acheter Chronographe (paiement unique)',
       },
     },
   },
@@ -242,7 +242,7 @@ const fr: CommonNs = {
       modalTitle: 'Intégration publique de la carte',
       openButton: 'Intégrer',
       intro:
-        'Partagez la carte en lecture seule par lien ou iframe. Chronographer requis. Les champs SEO s’appliquent à la page d’intégration.',
+        'Partagez la carte en lecture seule par lien ou iframe. Le forfait {{planName}} est requis. Les champs SEO s’appliquent à la page d’intégration.',
       publicToggle: 'Activer l’intégration publique',
       seoTitle: 'Titre de page (SEO)',
       titleMax: '200 caractères maximum',
@@ -262,9 +262,9 @@ const fr: CommonNs = {
       shareLinkHint:
         'Activez l’intégration publique et cliquez sur Enregistrer pour obtenir le lien, ouvrir la page et le code iframe.',
       openInNewTab: 'Ouvrir la page d’intégration',
-      planRequired: 'L’intégration publique nécessite le forfait Chronographer.',
+      planRequired: 'L’intégration publique nécessite le forfait {{planName}}.',
       tooltipChronographerBody:
-        'L’intégration publique de la carte (lien de partage et iframe) est incluse dans le forfait Chronographer.',
+        'L’intégration publique de la carte (lien de partage et iframe) est incluse dans le forfait {{planName}}.',
       upgradePlansLink: 'Voir les forfaits et passer à l’offre supérieure',
       tooltipNeedSavedProject:
         'Enregistrez d’abord votre carte en tant que projet pour configurer l’intégration.',
@@ -280,7 +280,7 @@ const fr: CommonNs = {
       copyFailed: 'Impossible de copier',
     },
     exportModal: {
-      upgradeToExplorer: 'Passer à Explorer',
+      upgradeToExplorer: 'Passer à {{planName}}',
       singleFormatHintAfterLink:
         ' pour PNG, SVG, export d’images pleine qualité et sans filigrane.',
       qualityLimited: 'Qualité limitée à {{max}}%.',
@@ -493,7 +493,7 @@ const fr: CommonNs = {
     importedRegions: '{{count}} régions importées',
     importedRowsPeriods: '{{count}} lignes importées sur {{periods}} périodes',
     timeSeriesDetected:
-      'Données de séries temporelles détectées. Passez au plan Atlas pour les animations.',
+      'Données de séries temporelles détectées. Passez au forfait {{planName}} pour les animations.',
     noTimeColumnDetected:
       'Aucune colonne de temps détectée (year, time, period, etc.). Données importées en une seule période.',
     datasetMustIncludeId: 'Le jeu de données doit contenir une colonne id.',

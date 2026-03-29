@@ -96,10 +96,10 @@ const es: CommonNs = {
         buttonText: 'Comprar Explorador (pago único)',
       },
       chronographer: {
-        name: 'Chronographer',
+        name: 'Cronógrafo',
         description:
           'Añade importación temporal, exportación de líneas de tiempo animadas e incrustación pública opcional por proyecto.',
-        buttonText: 'Comprar Chronographer (pago único)',
+        buttonText: 'Comprar Cronógrafo (pago único)',
       },
     },
   },
@@ -241,7 +241,7 @@ const es: CommonNs = {
       modalTitle: 'Embed público del mapa',
       openButton: 'Insertar',
       intro:
-        'Comparte el mapa de solo lectura con un enlace o iframe. Requiere Chronographer. Los campos SEO aplican a la página del embed.',
+        'Comparte el mapa de solo lectura con un enlace o iframe. Requiere el plan {{planName}}. Los campos SEO aplican a la página del embed.',
       publicToggle: 'Activar embed público',
       seoTitle: 'Título de página (SEO)',
       titleMax: 'Como máximo 200 caracteres',
@@ -259,9 +259,9 @@ const es: CommonNs = {
       shareLinkHint:
         'Activa el embed público y pulsa Guardar para obtener el enlace, abrir la página y el código iframe.',
       openInNewTab: 'Abrir página del embed',
-      planRequired: 'El embed público requiere el plan Chronographer.',
+      planRequired: 'El embed público requiere el plan {{planName}}.',
       tooltipChronographerBody:
-        'El embed público del mapa (enlace para compartir e iframe) está incluido en el plan Chronographer.',
+        'El embed público del mapa (enlace para compartir e iframe) está incluido en el plan {{planName}}.',
       upgradePlansLink: 'Ver planes y mejorar',
       tooltipNeedSavedProject: 'Guarda primero tu mapa como proyecto para configurar el embed.',
       tooltipSelectCountry: 'Selecciona un país antes de usar el embed.',
@@ -276,7 +276,7 @@ const es: CommonNs = {
       copyFailed: 'No se pudo copiar',
     },
     exportModal: {
-      upgradeToExplorer: 'Pasarte a Explorer',
+      upgradeToExplorer: 'Pasarte a {{planName}}',
       singleFormatHintAfterLink:
         ' para PNG, SVG, exportación fija a calidad completa y sin marca de agua.',
       qualityLimited: 'Calidad limitada al {{max}}%.',
@@ -488,7 +488,7 @@ const es: CommonNs = {
     importedRegions: '{{count}} regiones importadas',
     importedRowsPeriods: '{{count}} filas importadas en {{periods}} períodos',
     timeSeriesDetected:
-      'Datos de series temporales detectados. Mejora al plan Atlas para animaciones.',
+      'Datos de series temporales detectados. Mejora al plan {{planName}} para animaciones.',
     noTimeColumnDetected:
       'No se detectó columna de tiempo (año, time, period, etc.). Datos importados como un solo período.',
     datasetMustIncludeId: 'El conjunto de datos debe incluir una columna id.',

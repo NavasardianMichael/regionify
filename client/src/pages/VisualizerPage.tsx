@@ -121,7 +121,9 @@ const VisualizerPage: FC = () => {
             className="text-sm text-balance"
             style={{ color: onTooltip, textWrap: 'balance' }}
           >
-            {t('visualizer.embed.tooltipChronographerBody')}
+            {t('visualizer.embed.tooltipChronographerBody', {
+              planName: t('plans.items.chronographer.name'),
+            })}
           </Typography.Text>
           <Link to={ROUTES.BILLING} className="text-sm" style={linkStyle}>
             {t('visualizer.embed.upgradePlansLink')}
