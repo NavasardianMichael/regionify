@@ -286,6 +286,21 @@ export type CommonNs = {
       colLabel: string;
       colValue: string;
       colTime: string;
+      colActions: string;
+      deleteRow: string;
+      selectAll: string;
+      bulkActions: string;
+      bulkRemoveSelected: string;
+      bulkHideSelected: string;
+      bulkShowSelected: string;
+      filterClose: string;
+      filterReset: string;
+      filterPlaceholder: {
+        id: string;
+        label: string;
+        value: string;
+        time: string;
+      };
     };
     legendConfig: {
       sectionTitle: string;

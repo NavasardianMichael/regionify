@@ -55,5 +55,11 @@ export const theme: ThemeConfig = {
       headerPadding: '8px 0',
       contentPadding: '4px',
     },
+    Table: {
+      headerBg: 'rgba(24, 41, 77, 0.06)',
+      headerColor: '#18294D',
+      headerSplitColor: 'rgba(24, 41, 77, 0.12)',
+      rowSelectedBg: 'rgba(24, 41, 77, 0.08)',
+    },
   },
 };

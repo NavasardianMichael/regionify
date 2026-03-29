@@ -44,7 +44,9 @@ export function findFirstMissingDataSlot(
   if (timelineMode && timePeriods.length > 0) {
     for (const period of timePeriods) {
       for (const id of mapRegionIds) {
-        const exists = rows.some((r) => r.id === id && r.timePeriod === period);
+        const exists = rows.some(
+          (r) => r.id.trim() === id && (r.timePeriod ?? '').trim() === period.trim(),
+        );
         if (!exists) return { kind: 'timeline', id, timePeriod: period };
       }
     }
@@ -56,6 +58,55 @@ export function findFirstMissingDataSlot(
     if (!exists) return { kind: 'static', id };
   }
   return null;
+}
+
+/**
+ * True when the row’s id (and time period in timeline mode) matches the map’s expected slots.
+ */
+export function isManualEntryRowMatchedToExpected(
+  row: DataRow,
+  mapRegionIds: string[],
+  timelineMode: boolean,
+  timePeriods: string[],
+): boolean {
+  const id = row.id.trim();
+  if (!id || !mapRegionIds.includes(id)) return false;
+
+  if (timelineMode && timePeriods.length > 0) {
+    const period = (row.timePeriod ?? '').trim();
+    if (!period) return false;
+    return timePeriods.some((p) => p.trim() === period);
+  }
+
+  return true;
+}
+
+/** After reordering filtered/sorted visible rows, merge back into the full row list. */
+export function mergeVisibleRowReorder(
+  allRows: DataRow[],
+  nextVisibleOrdered: DataRow[],
+): DataRow[] {
+  const vis = new Set(nextVisibleOrdered.map((r) => r.key));
+  const firstOriginalIndex = Math.min(
+    ...allRows.map((r, i) => (vis.has(r.key) ? i : Number.POSITIVE_INFINITY)),
+  );
+  if (firstOriginalIndex === Number.POSITIVE_INFINITY) {
+    return allRows;
+  }
+  const left = allRows.slice(0, firstOriginalIndex).filter((r) => !vis.has(r.key));
+  const right = allRows.slice(firstOriginalIndex).filter((r) => !vis.has(r.key));
+  return [...left, ...nextVisibleOrdered, ...right];
+}
+
+export function compareTimePeriodForSort(a: string | undefined, b: string | undefined): number {
+  const sa = (a ?? '').trim();
+  const sb = (b ?? '').trim();
+  const na = Number(sa);
+  const nb = Number(sb);
+  if (!Number.isNaN(na) && !Number.isNaN(nb) && sa !== '' && sb !== '') {
+    return na - nb;
+  }
+  return sa.localeCompare(sb, undefined, { numeric: true });
 }
 
 /** True when two or more valid rows share the same region (and time period in timeline mode). */
