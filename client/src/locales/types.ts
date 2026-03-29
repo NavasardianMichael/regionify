@@ -137,6 +137,11 @@ export type CommonNs = {
   };
   visualizer: {
     mapAreaTitle: string;
+    renameProjectTitle: string;
+    renameProjectPrompt: string;
+    renameProjectOk: string;
+    mapHeaderRenameTooltip: string;
+    mapHeaderDeleteTooltip: string;
     /** Mobile layout: tab labels for Data / Map / Styles sections */
     tabData: string;
     tabMap: string;

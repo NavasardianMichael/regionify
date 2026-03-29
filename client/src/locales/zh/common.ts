@@ -132,6 +132,11 @@ const zh: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: '地图可视化',
+    renameProjectTitle: '重命名项目',
+    renameProjectPrompt: '输入新名称：',
+    renameProjectOk: '重命名',
+    mapHeaderRenameTooltip: '重命名项目',
+    mapHeaderDeleteTooltip: '删除项目',
     tabData: '数据',
     tabMap: '地图',
     tabStyles: '样式',

@@ -9,7 +9,13 @@ import {
   useState,
 } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { DownloadOutlined, SaveOutlined, ShareAltOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  SaveOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons';
 import {
   Button,
   Divider,
@@ -30,7 +36,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { selectLogout } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import {
-  selectCurrentProject,
+  selectAddProject,
   selectCurrentProjectId,
   selectSetCurrentProjectId,
   selectSetSavedStateSnapshot,
@@ -56,6 +62,7 @@ import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
 const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
 const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal'));
+const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 type MobileVisualizerSection = 'map' | 'data' | 'styles';
@@ -69,9 +76,9 @@ const VisualizerPage: FC = () => {
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
   const logout = useProfileStore(selectLogout);
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
-  const currentProject = useProjectsStore(selectCurrentProject);
   const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
+  const addProjectToStore = useProjectsStore(selectAddProject);
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const loadProject = useLoadProject();
   const isMdUp = useIsMdUp();
@@ -86,7 +93,11 @@ const VisualizerPage: FC = () => {
     canUseEmbed,
     isSaving,
     isNameModalOpen,
+    currentProject,
     projectName,
+    isRenameModalOpen,
+    renameName,
+    isRenameSubmitting,
     isSaveDisabled,
     saveButtonText,
     exportButtonText,
@@ -99,6 +110,11 @@ const VisualizerPage: FC = () => {
     handleCreateProject,
     handleNameModalCancel,
     handleNameChange,
+    handleOpenRenameModal,
+    handleRenameModalCancel,
+    handleRenameModalConfirm,
+    setRenameNameValue,
+    handleDeleteCurrentProject,
   } = useVisualizerPage();
 
   const embedButtonDisabled =
@@ -176,6 +192,9 @@ const VisualizerPage: FC = () => {
         const project = await getProject(urlProjectId);
         if (cancelled) return;
         loadProject(project);
+        if (!useProjectsStore.getState().projects.some((p) => p.id === project.id)) {
+          addProjectToStore(project);
+        }
       } catch (error) {
         if (cancelled) return;
         const err = error as Error & { code?: string };
@@ -206,6 +225,7 @@ const VisualizerPage: FC = () => {
     location.pathname,
     location.search,
     loadProject,
+    addProjectToStore,
     logout,
     message,
     navigate,
@@ -235,9 +255,35 @@ const VisualizerPage: FC = () => {
   const mapPanel = (
     <CardLayout className="min-h-md gap-md h-full">
       <Flex align="center" justify="space-between" wrap className="mb-sm shrink-0" gap="middle">
-        <Typography.Title level={3} className="text-primary mb-0! text-base font-semibold">
-          {t('visualizer.mapAreaTitle')}
-        </Typography.Title>
+        <Flex align="center" gap="small" className="min-w-0">
+          <Typography.Title
+            level={3}
+            className="text-primary mb-0! min-w-0 flex-1 truncate text-base font-semibold"
+          >
+            {currentProject?.name?.trim() ? currentProject.name : t('visualizer.mapAreaTitle')}
+          </Typography.Title>
+          {isLoggedIn && currentProject && !isResolvingProjectFromUrl ? (
+            <Flex gap={0} className="shrink-0">
+              <Tooltip title={t('visualizer.mapHeaderRenameTooltip')}>
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={handleOpenRenameModal}
+                  aria-label={t('visualizer.mapHeaderRenameTooltip')}
+                />
+              </Tooltip>
+              <Tooltip title={t('visualizer.mapHeaderDeleteTooltip')}>
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={handleDeleteCurrentProject}
+                  aria-label={t('visualizer.mapHeaderDeleteTooltip')}
+                />
+              </Tooltip>
+            </Flex>
+          ) : null}
+        </Flex>
         <Flex gap="small" wrap="wrap">
           <Button
             icon={<SaveOutlined />}
@@ -369,6 +415,19 @@ const VisualizerPage: FC = () => {
           />
         </Suspense>
       )}
+
+      {isRenameModalOpen && currentProject ? (
+        <Suspense>
+          <RenameProjectModal
+            project={currentProject}
+            name={renameName}
+            onNameChange={setRenameNameValue}
+            onConfirm={handleRenameModalConfirm}
+            onCancel={handleRenameModalCancel}
+            confirmLoading={isRenameSubmitting}
+          />
+        </Suspense>
+      ) : null}
 
       <Modal
         title={t('visualizer.saveModalTitle')}

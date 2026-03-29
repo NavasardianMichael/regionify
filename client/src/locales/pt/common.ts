@@ -140,6 +140,11 @@ const pt: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Visualização do mapa',
+    renameProjectTitle: 'Renomear projeto',
+    renameProjectPrompt: 'Introduza um novo nome:',
+    renameProjectOk: 'Renomear',
+    mapHeaderRenameTooltip: 'Renomear projeto',
+    mapHeaderDeleteTooltip: 'Eliminar projeto',
     tabData: 'Dados',
     tabMap: 'Mapa',
     tabStyles: 'Estilos',

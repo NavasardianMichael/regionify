@@ -141,6 +141,11 @@ const en: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Map Visualization',
+    renameProjectTitle: 'Rename project',
+    renameProjectPrompt: 'Enter a new name:',
+    renameProjectOk: 'Rename',
+    mapHeaderRenameTooltip: 'Rename project',
+    mapHeaderDeleteTooltip: 'Delete project',
     tabData: 'Data',
     tabMap: 'Map',
     tabStyles: 'Styles',

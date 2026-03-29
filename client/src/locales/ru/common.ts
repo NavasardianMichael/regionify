@@ -140,6 +140,11 @@ const ru: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Визуализация карты',
+    renameProjectTitle: 'Переименовать проект',
+    renameProjectPrompt: 'Введите новое имя:',
+    renameProjectOk: 'Переименовать',
+    mapHeaderRenameTooltip: 'Переименовать проект',
+    mapHeaderDeleteTooltip: 'Удалить проект',
     tabData: 'Данные',
     tabMap: 'Карта',
     tabStyles: 'Стили',

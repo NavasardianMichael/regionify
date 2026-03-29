@@ -142,6 +142,11 @@ const fr: CommonNs = {
   },
   visualizer: {
     mapAreaTitle: 'Visualisation de la carte',
+    renameProjectTitle: 'Renommer le projet',
+    renameProjectPrompt: 'Entrez un nouveau nom :',
+    renameProjectOk: 'Renommer',
+    mapHeaderRenameTooltip: 'Renommer le projet',
+    mapHeaderDeleteTooltip: 'Supprimer le projet',
     tabData: 'Données',
     tabMap: 'Carte',
     tabStyles: 'Styles',
