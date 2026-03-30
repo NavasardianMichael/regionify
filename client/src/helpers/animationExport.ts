@@ -10,6 +10,7 @@ import type {
   ShadowConfig,
 } from '@/store/mapStyles/types';
 import { getInterpolatedColorMap, smoothstep01 } from '@/helpers/legendColorInterpolation';
+import { cropCanvas, type CropRect } from '@/helpers/mapExport';
 import { renderStyledSvg } from './svgRenderer';
 
 const LEGEND_REFERENCE_SIZE = 800;
@@ -50,6 +51,8 @@ type AnimationExportOptions = {
   regionLabels?: RegionLabelsConfig;
   /** Optional positions for region labels (path id → { x, y }). */
   labelPositions?: RegionLabelPositions;
+  /** Optional crop rectangle applied to every frame. */
+  cropRect?: CropRect;
   onProgress?: (progress: number) => void;
 };
 
@@ -423,6 +426,34 @@ const renderFrameForSpec = async (
   return renderInterpolatedFrame(rawSvg, dataA, dataB, tColor, spec.label, scale, options);
 };
 
+/**
+ * Generates a preview canvas for the first frame of the animation.
+ * Used by the crop step to show and crop the animation preview.
+ */
+export const generateAnimationPreviewCanvas = async (
+  options: Omit<AnimationExportOptions, 'fps' | 'secondsPerPeriod' | 'smooth' | 'onProgress'>,
+): Promise<HTMLCanvasElement | null> => {
+  const { rawSvg, timePeriods, timelineData, quality } = options;
+  if (timePeriods.length === 0) return null;
+
+  const scale = qualityToScale(quality);
+  const firstPeriod = timePeriods[0];
+  const data = timelineData[firstPeriod];
+  if (!data) return null;
+
+  const spec: FrameSpec = { type: 'hold', periodIndex: 0, label: firstPeriod };
+  return renderFrameForSpec(rawSvg, timelineData, timePeriods, spec, scale, options);
+};
+
+/** Apply optional crop to a frame canvas. */
+const maybeApplyCrop = (
+  canvas: HTMLCanvasElement,
+  crop: CropRect | undefined,
+): HTMLCanvasElement => {
+  if (!crop) return canvas;
+  return cropCanvas(canvas, crop);
+};
+
 /** Export animation as GIF using gifenc with smooth color transitions and stable global palette. */
 export const exportAnimationAsGif = async (options: AnimationExportOptions): Promise<void> => {
   const {
@@ -433,6 +464,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     fps,
     secondsPerPeriod = DEFAULT_SECONDS_PER_PERIOD,
     smooth = true,
+    cropRect,
     onProgress,
   } = options;
 
@@ -453,7 +485,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
 
   const sampleCanvases: HTMLCanvasElement[] = [];
   for (let i = 0; i < sampleIndices.length; i++) {
-    const canvas = await renderFrameForSpec(
+    const raw = await renderFrameForSpec(
       rawSvg,
       timelineData,
       timePeriods,
@@ -461,7 +493,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
       scale,
       options,
     );
-    sampleCanvases.push(canvas);
+    sampleCanvases.push(maybeApplyCrop(raw, cropRect));
   }
   const { width, height } = sampleCanvases[0];
 
@@ -478,10 +510,13 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
   const sampleIndexSet = new Set(sampleIndices);
 
   for (let i = 0; i < totalFrames; i++) {
-    const canvas = sampleIndexSet.has(i)
+    const rawCanvas = sampleIndexSet.has(i)
       ? sampleCanvases[sampleIndices.indexOf(i)]
-      : await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options);
-    const ctx = canvas.getContext('2d');
+      : maybeApplyCrop(
+          await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
+          cropRect,
+        );
+    const ctx = rawCanvas.getContext('2d');
     if (!ctx) throw new Error('Failed to get canvas context');
     const imageData = ctx.getImageData(0, 0, width, height);
     const index = applyPalette(imageData.data, globalPalette);
@@ -505,6 +540,7 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
     fps,
     secondsPerPeriod = DEFAULT_SECONDS_PER_PERIOD,
     smooth = true,
+    cropRect,
     onProgress,
   } = options;
 
@@ -519,13 +555,9 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
 
   if (totalFrames === 0) return;
 
-  const firstCanvas = await renderFrameForSpec(
-    rawSvg,
-    timelineData,
-    timePeriods,
-    frameList[0],
-    scale,
-    options,
+  const firstCanvas = maybeApplyCrop(
+    await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[0], scale, options),
+    cropRect,
   );
   const { width, height } = firstCanvas;
 
@@ -585,13 +617,9 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
       onProgress?.(1 / totalFrames);
 
       for (let i = 1; i < totalFrames; i++) {
-        const canvas = await renderFrameForSpec(
-          rawSvg,
-          timelineData,
-          timePeriods,
-          frameList[i],
-          scale,
-          options,
+        const canvas = maybeApplyCrop(
+          await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
+          cropRect,
         );
         await drawAndCapture(canvas);
         onProgress?.((i + 1) / totalFrames);

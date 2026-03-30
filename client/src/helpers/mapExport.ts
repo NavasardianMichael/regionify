@@ -72,7 +72,7 @@ const prepareSvgForExport = (
   return clone;
 };
 
-const triggerDownload = (blob: Blob, fileName: string): void => {
+export const triggerDownload = (blob: Blob, fileName: string): void => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -111,7 +111,7 @@ const normalizeWatermark = (
 /**
  * Light gray corner watermark: optional logo, brand text, optional ™.
  */
-const drawWatermark = async (
+export const drawWatermark = async (
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
@@ -188,7 +188,7 @@ const svgToCanvas = (svgString: string, scale: number): Promise<HTMLCanvasElemen
   });
 };
 
-const canvasToBlob = (
+export const canvasToBlob = (
   canvas: HTMLCanvasElement,
   mimeType: string,
   quality?: number,
@@ -235,10 +235,16 @@ const drawLegendOnCanvas = (
   ctx: CanvasRenderingContext2D,
   bounds: { x: number; y: number; w: number; h: number },
   legend: MapExportLegendDrawOptions,
+  scale: number,
 ): void => {
   const { x, y, w, h } = bounds;
-  const pad = 8;
-  const radius = 8;
+  const pad = Math.round(8 * scale);
+  const radius = Math.round(8 * scale);
+  const swatch = Math.round(12 * scale);
+  const fontSize = Math.round(legend.labels.fontSize * scale);
+  const swatchTextGap = Math.round(8 * scale);
+  const rowGap = Math.round(8 * scale);
+  const titleGap = Math.round(12 * scale);
 
   ctx.save();
   ctx.beginPath();
@@ -253,27 +259,26 @@ const drawLegendOnCanvas = (
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  let cy = y + pad + 2;
+  let cy = y + pad + Math.round(2 * scale);
   ctx.textAlign = 'left';
 
   if (legend.title.show && legend.title.text.trim()) {
-    ctx.font = `600 ${legend.labels.fontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.font = `600 ${fontSize}px system-ui, -apple-system, sans-serif`;
     ctx.fillStyle = legend.labels.color;
     ctx.textBaseline = 'top';
     ctx.fillText(legend.title.text, x + pad, cy);
-    cy += legend.labels.fontSize + 12;
+    cy += fontSize + titleGap;
   }
 
-  const swatch = 12;
   ctx.textBaseline = 'middle';
 
   for (const item of legend.items) {
     ctx.fillStyle = item.color;
     ctx.fillRect(x + pad, cy - swatch / 2, swatch, swatch);
-    ctx.font = `${legend.labels.fontSize}px system-ui, -apple-system, sans-serif`;
+    ctx.font = `${fontSize}px system-ui, -apple-system, sans-serif`;
     ctx.fillStyle = legend.labels.color;
-    ctx.fillText(item.name, x + pad + swatch + 8, cy);
-    cy += Math.max(swatch, legend.labels.fontSize) + 8;
+    ctx.fillText(item.name, x + pad + swatch + swatchTextGap, cy);
+    cy += Math.max(swatch, fontSize) + rowGap;
   }
 
   ctx.strokeStyle = '#d1d5db';
@@ -281,33 +286,59 @@ const drawLegendOnCanvas = (
   ctx.strokeRect(x + pad, cy - swatch / 2, swatch, swatch);
   ctx.fillStyle = legend.noDataColor;
   ctx.fillRect(x + pad + 0.5, cy - swatch / 2 + 0.5, swatch - 1, swatch - 1);
-  ctx.font = `${legend.labels.fontSize}px system-ui, -apple-system, sans-serif`;
+  ctx.font = `${fontSize}px system-ui, -apple-system, sans-serif`;
   ctx.fillStyle = legend.labels.color;
-  ctx.fillText('No Data', x + pad + swatch + 8, cy);
+  ctx.fillText('No Data', x + pad + swatch + swatchTextGap, cy);
 
   ctx.restore();
 };
 
+export type CropRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+/** Crops a canvas to the given rectangle. Returns a new canvas with the cropped area. */
+export const cropCanvas = (source: HTMLCanvasElement, crop: CropRect): HTMLCanvasElement => {
+  const cropped = document.createElement('canvas');
+  cropped.width = Math.round(crop.width);
+  cropped.height = Math.round(crop.height);
+  const ctx = cropped.getContext('2d');
+  if (!ctx) throw new Error('Failed to get crop canvas context');
+  ctx.drawImage(
+    source,
+    Math.round(crop.x),
+    Math.round(crop.y),
+    Math.round(crop.width),
+    Math.round(crop.height),
+    0,
+    0,
+    Math.round(crop.width),
+    Math.round(crop.height),
+  );
+  return cropped;
+};
+
 /**
- * Exports map + optional legend using the same layout as the visualizer (zoom/pan/legend position).
- * @returns true if composite export ran, false if markers were missing (caller may fall back).
+ * Generates the map canvas at export quality using the composite DOM layout.
+ * Returns the canvas if successful, or null if the export root is unavailable.
  */
-const tryExportCompositeStill = async (
+export const generateMapCanvas = async (
   quality: number,
-  fileName: string,
   format: 'png' | 'jpeg',
   opts?: StillExportOpts,
-): Promise<boolean> => {
+): Promise<HTMLCanvasElement | null> => {
   const root = document.querySelector<HTMLElement>(MAP_EXPORT_ROOT);
-  if (!root) return false;
+  if (!root) return null;
 
-  // Ensure flex children have finished layout before measuring (export runs while modal is open).
   await new Promise<void>((resolve) => {
     requestAnimationFrame(() => resolve());
   });
 
   const svgEl = root.querySelector<SVGSVGElement>(MAP_SVG_SELECTOR);
-  if (!svgEl) return false;
+  if (!svgEl) return null;
 
   const qs = qualityToScale(quality);
   const rootRect = root.getBoundingClientRect();
@@ -348,12 +379,69 @@ const tryExportCompositeStill = async (
     const ly = (lr.top - rootRect.top) * qs;
     const lw = Math.max(1, lr.width * qs);
     const lh = Math.max(1, lr.height * qs);
-    drawLegendOnCanvas(ctx, { x: lx, y: ly, w: lw, h: lh }, opts.legendDraw);
+    drawLegendOnCanvas(ctx, { x: lx, y: ly, w: lw, h: lh }, opts.legendDraw, qs);
   }
 
   if (opts?.watermark) {
     await drawWatermark(ctx, w, h, opts.watermark);
   }
+
+  return canvas;
+};
+
+/**
+ * Fallback canvas generation when the composite DOM root is not available.
+ * Renders from the SVG element directly (no legend/layout matching).
+ */
+export const generateMapCanvasFallback = async (
+  quality: number,
+  format: 'png' | 'jpeg',
+  opts?: StillExportOpts,
+): Promise<HTMLCanvasElement> => {
+  const clone = prepareSvgForExport(getMapSvgElement());
+  const svgString = new XMLSerializer().serializeToString(clone);
+  const canvas = await svgToCanvas(svgString, qualityToScale(quality));
+  const ctx = canvas.getContext('2d');
+
+  if (format === 'jpeg') {
+    const jpegCanvas = document.createElement('canvas');
+    jpegCanvas.width = canvas.width;
+    jpegCanvas.height = canvas.height;
+    const jpegCtx = jpegCanvas.getContext('2d');
+    if (!jpegCtx) throw new Error('Failed to create JPEG canvas context');
+    jpegCtx.fillStyle = opts?.backgroundColor || '#ffffff';
+    jpegCtx.fillRect(0, 0, jpegCanvas.width, jpegCanvas.height);
+    jpegCtx.drawImage(canvas, 0, 0);
+    if (opts?.watermark) {
+      await drawWatermark(jpegCtx, jpegCanvas.width, jpegCanvas.height, opts.watermark);
+    }
+    return jpegCanvas;
+  }
+
+  if (ctx && opts?.backgroundColor) {
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = opts.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  if (ctx && opts?.watermark) {
+    await drawWatermark(ctx, canvas.width, canvas.height, opts.watermark);
+  }
+  return canvas;
+};
+
+/**
+ * Exports map + optional legend using the same layout as the visualizer (zoom/pan/legend position).
+ * @returns true if composite export ran, false if markers were missing (caller may fall back).
+ */
+const tryExportCompositeStill = async (
+  quality: number,
+  fileName: string,
+  format: 'png' | 'jpeg',
+  opts?: StillExportOpts,
+): Promise<boolean> => {
+  const canvas = await generateMapCanvas(quality, format, opts);
+  if (!canvas) return false;
 
   if (format === 'png') {
     const blob = await canvasToBlob(canvas, `image/${EXPORT_TYPES.png}`);

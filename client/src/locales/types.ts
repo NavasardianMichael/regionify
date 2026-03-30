@@ -276,6 +276,20 @@ export type CommonNs = {
       tooltipSelectCountry: string;
     };
     exportModal: {
+      title: string;
+      cropAndDownload: string;
+      nextCropAndDownload: string;
+      exportTypeLabel: string;
+      qualityLabel: string;
+      secondsPerPeriod: string;
+      smoothTransitions: string;
+      animationDuration: string;
+      aspectRatioLabel: string;
+      outputSizeLabel: string;
+      width: string;
+      height: string;
+      back: string;
+      downloadFormat: string;
       upgradeToExplorer: string;
       singleFormatHintAfterLink: string;
       qualityLimited: string;

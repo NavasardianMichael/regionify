@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { DownloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { DownloadOutlined, InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import {
   Button,
   Flex,
@@ -35,6 +35,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
     setSmoothTransitions,
     isExporting,
     progress,
+    isSvgFormat,
     isAnimationFormat,
     hasTimelineData,
     selectedCountryId,
@@ -49,6 +50,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
     handleSecondsInputChange,
     handleSecondsBlur,
     handleDownload,
+    handleNext,
     showQualityControl,
     downloadButtonLabel,
   } = props;
@@ -57,7 +59,9 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
     <Flex vertical gap="middle" className="py-md">
       <Flex vertical gap="small">
         <Flex align="center" gap="small">
-          <Typography.Text className="text-sm text-gray-600">Export type:</Typography.Text>
+          <Typography.Text className="text-sm text-gray-600">
+            {t('visualizer.exportModal.exportTypeLabel')}
+          </Typography.Text>
           {exportTypeInfoTooltip && (
             <Tooltip title={exportTypeInfoTooltip}>
               <InfoCircleOutlined className="cursor-help text-gray-400" />
@@ -86,7 +90,18 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
       {showQualityControl && (
         <Flex vertical gap="small">
           <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">Quality (%):</Typography.Text>
+            <Flex align="center" gap="small">
+              <Typography.Text className="text-sm text-gray-600">
+                {t('visualizer.exportModal.qualityLabel')}
+              </Typography.Text>
+              {limits.pictureQualityLimit && (
+                <Tooltip
+                  title={`${t('visualizer.exportModal.qualityLimited', { max: maxQuality })} ${t('visualizer.exportModal.upgradeToExplorer', { planName: t('plans.items.explorer.name') })}${t('visualizer.exportModal.qualityFullHint')}`}
+                >
+                  <InfoCircleOutlined className="cursor-help text-gray-400" />
+                </Tooltip>
+              )}
+            </Flex>
             <InputNumber
               min={1}
               max={maxQuality}
@@ -105,15 +120,6 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
             aria-label="Export quality"
             disabled={isExporting}
           />
-          {limits.pictureQualityLimit && (
-            <Typography.Text type="secondary" className="text-xs">
-              {t('visualizer.exportModal.qualityLimited', { max: maxQuality })}{' '}
-              <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
-                {explorerUpgradeLabel}
-              </AppNavLink>
-              {t('visualizer.exportModal.qualityFullHint')}
-            </Typography.Text>
-          )}
         </Flex>
       )}
 
@@ -121,7 +127,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         <Flex vertical gap="small">
           <Flex align="center" justify="space-between">
             <Typography.Text className="text-sm text-gray-600">
-              Seconds per time period:
+              {t('visualizer.exportModal.secondsPerPeriod')}
             </Typography.Text>
             <InputNumber
               min={0.5}
@@ -135,7 +141,9 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
             />
           </Flex>
           <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">Smooth transitions:</Typography.Text>
+            <Typography.Text className="text-sm text-gray-600">
+              {t('visualizer.exportModal.smoothTransitions')}
+            </Typography.Text>
             <Switch
               checked={smoothTransitions}
               onChange={setSmoothTransitions}
@@ -144,18 +152,18 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
             />
           </Flex>
           <Typography.Text type="secondary" className="text-xs">
-            {getAnimationTotalFrames(timePeriods.length, {
-              secondsPerPeriod: resolvedSecondsPerPeriod,
-              fps: EXPORT_FPS,
-            })}{' '}
-            frames · ~
-            {(
-              getAnimationTotalFrames(timePeriods.length, {
+            {t('visualizer.exportModal.animationDuration', {
+              frames: getAnimationTotalFrames(timePeriods.length, {
                 secondsPerPeriod: resolvedSecondsPerPeriod,
                 fps: EXPORT_FPS,
-              }) / EXPORT_FPS
-            ).toFixed(1)}
-            s duration
+              }),
+              seconds: (
+                getAnimationTotalFrames(timePeriods.length, {
+                  secondsPerPeriod: resolvedSecondsPerPeriod,
+                  fps: EXPORT_FPS,
+                }) / EXPORT_FPS
+              ).toFixed(1),
+            })}
           </Typography.Text>
         </Flex>
       )}
@@ -164,15 +172,27 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         <Progress percent={Math.round(progress * 100)} status="active" strokeColor="#18294D" />
       )}
 
-      <Button
-        type="primary"
-        icon={<DownloadOutlined />}
-        onClick={handleDownload}
-        loading={isExporting}
-        disabled={isExporting || !selectedCountryId || (isAnimationFormat && !hasTimelineData)}
-      >
-        {downloadButtonLabel}
-      </Button>
+      {isSvgFormat ? (
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleDownload}
+          loading={isExporting}
+          disabled={isExporting || !selectedCountryId}
+        >
+          {downloadButtonLabel}
+        </Button>
+      ) : (
+        <Button
+          type="primary"
+          icon={<RightOutlined />}
+          iconPosition="end"
+          onClick={handleNext}
+          disabled={isExporting || !selectedCountryId || (isAnimationFormat && !hasTimelineData)}
+        >
+          {t('visualizer.exportModal.nextCropAndDownload')}
+        </Button>
+      )}
     </Flex>
   );
 };

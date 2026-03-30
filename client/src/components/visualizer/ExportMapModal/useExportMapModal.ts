@@ -34,11 +34,21 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   exportAnimationAsGif,
   exportAnimationAsVideo,
+  generateAnimationPreviewCanvas,
   type LegendPositionExport,
 } from '@/helpers/animationExport';
-import { exportMapAsJpeg, exportMapAsPng, exportMapAsSvg } from '@/helpers/mapExport';
+import {
+  canvasToBlob,
+  cropCanvas,
+  drawWatermark,
+  exportMapAsSvg,
+  generateMapCanvas,
+  generateMapCanvasFallback,
+  triggerDownload,
+} from '@/helpers/mapExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import { useExportCrop } from './useExportCrop';
 
 type ExportTypeOption = { value: ExportType; label: string };
 
@@ -114,7 +124,9 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const [smoothTransitions, setSmoothTransitions] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [step, setStep] = useState<1 | 2>(1);
 
+  const isSvgFormat = exportType === EXPORT_TYPES.svg;
   const isAnimationFormat = exportType === EXPORT_TYPES.gif || exportType === EXPORT_TYPES.mp4;
 
   const resolvedQuality = useMemo(() => {
@@ -135,6 +147,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         setExportType(defaultExportType);
         setQuality(Math.min(DEFAULT_QUALITY, maxQuality));
         setSecondsPerPeriod(DEFAULT_SECONDS_PER_PERIOD);
+        setStep(1);
       }
     },
     [defaultExportType, maxQuality],
@@ -196,27 +209,99 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     ],
   );
 
-  const exportHandlers = useMemo(
+  const observerStillOpts = useMemo(
     () => ({
-      [EXPORT_TYPES.svg]: (fileName: string) => exportMapAsSvg(fileName),
-      [EXPORT_TYPES.png]: (fileName: string) =>
-        exportMapAsPng(resolvedQuality, fileName, staticStillOpts),
-      [EXPORT_TYPES.jpeg]: (fileName: string) => {
-        if (plan === PLANS.observer) {
-          return exportMapAsJpeg(resolvedQuality, fileName, {
-            ...staticStillOpts,
-            backgroundColor: '#f5f5f5',
-            watermark: { text: 'Regionify', showTrademark: true },
-          });
-        }
-        return exportMapAsJpeg(resolvedQuality, fileName, {
-          ...staticStillOpts,
-          backgroundColor: staticStillOpts.backgroundColor ?? '#ffffff',
-        });
-      },
+      ...staticStillOpts,
+      backgroundColor: '#f5f5f5',
+      watermark: { text: 'Regionify' } as const,
     }),
-    [resolvedQuality, plan, staticStillOpts],
+    [staticStillOpts],
   );
+
+  const resolvedStillOpts = useMemo(() => {
+    if (exportType === EXPORT_TYPES.jpeg && plan === PLANS.observer) {
+      return observerStillOpts;
+    }
+    if (exportType === EXPORT_TYPES.jpeg) {
+      return { ...staticStillOpts, backgroundColor: staticStillOpts.backgroundColor ?? '#ffffff' };
+    }
+    return staticStillOpts;
+  }, [exportType, plan, staticStillOpts, observerStillOpts]);
+
+  const animationBaseOptions = useMemo(
+    () => ({
+      timePeriods,
+      timelineData,
+      legendItems,
+      noDataColor,
+      border,
+      shadow,
+      picture,
+      legend: {
+        title: legendTitle,
+        labels: legendLabels,
+        backgroundColor: legendBackgroundColor,
+      },
+      quality: resolvedQuality,
+      legendPosition: (legendPosition === LEGEND_POSITIONS.floating
+        ? 'floating'
+        : 'bottom') as LegendPositionExport,
+      floatingPosition,
+      regionLabels,
+      labelPositions: labelPositionsByRegionId,
+    }),
+    [
+      timePeriods,
+      timelineData,
+      legendItems,
+      noDataColor,
+      border,
+      shadow,
+      picture,
+      legendTitle,
+      legendLabels,
+      legendBackgroundColor,
+      resolvedQuality,
+      legendPosition,
+      floatingPosition,
+      regionLabels,
+      labelPositionsByRegionId,
+    ],
+  );
+
+  const generatePreviewCanvas = useCallback(async (): Promise<HTMLCanvasElement | null> => {
+    if (isAnimationFormat) {
+      if (!hasTimelineData || !selectedCountryId) return null;
+      const rawSvg = await loadMapSvg(selectedCountryId);
+      if (!rawSvg) return null;
+      return generateAnimationPreviewCanvas({ rawSvg, ...animationBaseOptions });
+    }
+
+    const format = exportType === EXPORT_TYPES.jpeg ? 'jpeg' : 'png';
+    const canvas = await generateMapCanvas(resolvedQuality, format, resolvedStillOpts);
+    if (canvas) return canvas;
+    return generateMapCanvasFallback(resolvedQuality, format, resolvedStillOpts);
+  }, [
+    isAnimationFormat,
+    hasTimelineData,
+    selectedCountryId,
+    exportType,
+    resolvedQuality,
+    resolvedStillOpts,
+    animationBaseOptions,
+  ]);
+
+  const crop = useExportCrop({ generatePreviewCanvas });
+
+  const handleNext = useCallback(async () => {
+    setStep(2);
+    await crop.generatePreview();
+  }, [crop]);
+
+  const handleBack = useCallback(() => {
+    setStep(1);
+    crop.reset();
+  }, [crop]);
 
   const handleDownload = useCallback(async () => {
     const fileName = selectedCountryId ? `regionify-${selectedCountryId}` : 'regionify-map';
@@ -224,6 +309,13 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     setIsExporting(true);
     setProgress(0);
     try {
+      if (isSvgFormat) {
+        exportMapAsSvg(fileName);
+        message.success(t('messages.mapExportedAs', { format: 'SVG' }), 5);
+        onClose();
+        return;
+      }
+
       if (isAnimationFormat) {
         if (!hasTimelineData) {
           message.warning(t('messages.importHistoricalFirst'), 0);
@@ -232,31 +324,15 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         const rawSvg = await loadMapSvg(selectedCountryId!);
         if (!rawSvg) throw new Error('Failed to load map SVG');
 
-        const exportLegendPosition: LegendPositionExport =
-          legendPosition === LEGEND_POSITIONS.floating ? 'floating' : 'bottom';
+        const cropRect = crop.getCropRect() ?? undefined;
 
         const exportOptions = {
           rawSvg,
-          timePeriods,
-          timelineData,
-          legendItems,
-          noDataColor,
-          border,
-          shadow,
-          picture,
-          legend: {
-            title: legendTitle,
-            labels: legendLabels,
-            backgroundColor: legendBackgroundColor,
-          },
-          quality: resolvedQuality,
+          ...animationBaseOptions,
           fps: EXPORT_FPS,
           secondsPerPeriod: resolvedSecondsPerPeriod,
           smooth: smoothTransitions,
-          legendPosition: exportLegendPosition,
-          floatingPosition,
-          regionLabels,
-          labelPositions: labelPositionsByRegionId,
+          cropRect,
           onProgress: setProgress,
         };
 
@@ -266,9 +342,31 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
           await exportAnimationAsVideo(exportOptions);
         }
       } else {
-        const handler = exportHandlers[exportType as keyof typeof exportHandlers];
-        if (!handler) return;
-        await handler(fileName);
+        // Generate a fresh canvas WITHOUT watermark, crop it, then apply watermark
+        // so the watermark is always correctly positioned in the final export.
+        const { watermark, ...cleanOpts } = resolvedStillOpts;
+        const format = exportType === EXPORT_TYPES.jpeg ? 'jpeg' : 'png';
+        let cleanCanvas = await generateMapCanvas(resolvedQuality, format, cleanOpts);
+        if (!cleanCanvas)
+          cleanCanvas = generateMapCanvasFallback(resolvedQuality, format, cleanOpts);
+        if (!cleanCanvas) throw new Error('Failed to generate export canvas');
+
+        const cropRect = crop.getCropRect();
+        const finalCanvas = cropRect ? cropCanvas(cleanCanvas, cropRect) : cleanCanvas;
+
+        if (watermark) {
+          const ctx = finalCanvas.getContext('2d');
+          if (ctx) {
+            await drawWatermark(ctx, finalCanvas.width, finalCanvas.height, watermark);
+          }
+        }
+
+        const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const blobQuality = format === 'jpeg' ? 0.92 : undefined;
+        const ext = format === 'jpeg' ? 'jpeg' : 'png';
+
+        const blob = await canvasToBlob(finalCanvas, mimeType, blobQuality);
+        triggerDownload(blob, `${fileName}.${ext}`);
       }
       message.success(t('messages.mapExportedAs', { format: exportType.toUpperCase() }), 5);
       onClose();
@@ -280,27 +378,16 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     }
   }, [
     exportType,
+    isSvgFormat,
     isAnimationFormat,
     hasTimelineData,
     selectedCountryId,
-    exportHandlers,
+    crop,
+    animationBaseOptions,
     message,
-    timePeriods,
-    timelineData,
-    legendItems,
-    noDataColor,
-    border,
-    shadow,
-    picture,
-    legendLabels,
-    legendTitle,
-    legendBackgroundColor,
-    legendPosition,
-    floatingPosition,
-    regionLabels,
-    labelPositionsByRegionId,
     resolvedQuality,
     resolvedSecondsPerPeriod,
+    resolvedStillOpts,
     smoothTransitions,
     onClose,
     t,
@@ -311,12 +398,15 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   }, [exportType, isAnimationFormat]);
 
   const downloadButtonLabel = useMemo(() => {
-    if (exportType === EXPORT_TYPES.gif) return 'Download GIF';
-    if (exportType === EXPORT_TYPES.mp4) return 'Download Video';
-    return `Download ${exportType.toUpperCase()}`;
-  }, [exportType]);
+    if (exportType === EXPORT_TYPES.gif)
+      return t('visualizer.exportModal.downloadFormat', { format: 'GIF' });
+    if (exportType === EXPORT_TYPES.mp4)
+      return t('visualizer.exportModal.downloadFormat', { format: 'Video' });
+    return t('visualizer.exportModal.downloadFormat', { format: exportType.toUpperCase() });
+  }, [exportType, t]);
 
   return {
+    step,
     exportType,
     defaultExportType,
     exportTypeOptions,
@@ -329,6 +419,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     setSmoothTransitions,
     isExporting,
     progress,
+    isSvgFormat,
     isAnimationFormat,
     hasTimelineData,
     selectedCountryId,
@@ -336,6 +427,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     limits,
     maxQuality,
     timePeriods,
+    crop,
     handleAfterOpenChange,
     handleExportTypeChange,
     handleQualityInputChange,
@@ -344,6 +436,8 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     handleSecondsInputChange,
     handleSecondsBlur,
     handleDownload,
+    handleNext,
+    handleBack,
     showQualityControl,
     downloadButtonLabel,
   };

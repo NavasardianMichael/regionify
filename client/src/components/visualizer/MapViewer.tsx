@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { DragOutlined, FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { PLANS } from '@regionify/shared';
 import { Button, Flex, Spin, Tooltip, Typography } from 'antd';
 import DOMPurify from 'dompurify';
 import { selectPlaybackPreviewBlend, selectTransitionType } from '@/store/animation/selectors';
@@ -44,6 +45,8 @@ import {
   selectZoomControls,
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
+import { selectUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
@@ -58,6 +61,8 @@ type MapViewerProps = {
 
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const { t } = useTypedTranslation();
+  const user = useProfileStore(selectUser);
+  const plan = user?.plan ?? PLANS.observer;
   const containerRef = useRef<HTMLButtonElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
   const [rawSvgContent, setRawSvgContent] = useState<string>('');
@@ -650,6 +655,16 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                   <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22Z" />
                 </svg>
               </button>
+            </div>
+          )}
+
+          {/* Watermark for observer plan */}
+          {plan === PLANS.observer && (
+            <div className="pointer-events-none absolute right-3 bottom-3 z-10 flex items-center gap-1.5 opacity-40 select-none">
+              <img src="/favicon-32x32.png" alt="" className="h-4 w-4" draggable={false} />
+              <Typography.Text className="text-xs font-semibold tracking-wide text-gray-500">
+                Regionify
+              </Typography.Text>
             </div>
           )}
 

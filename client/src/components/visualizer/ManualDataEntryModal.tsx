@@ -1,4 +1,11 @@
-import { type FC, useCallback, useMemo, useState } from 'react';
+import {
+  type ChangeEvent,
+  type FC,
+  type KeyboardEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import {
   DeleteOutlined,
   DownOutlined,
@@ -24,6 +31,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import type { FilterDropdownProps, FilterValue, SorterResult } from 'antd/es/table/interface';
 import {
   selectClearTimelineData,
@@ -395,14 +403,16 @@ const ManualDataEntryModal: FC<Props> = ({
             className="w-52 p-2"
             role="search"
             tabIndex={-1}
-            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDown={(e: KeyboardEvent) => e.stopPropagation()}
           >
             <Input
               allowClear
               prefix={<SearchOutlined className="text-gray-400" />}
               placeholder={t(`visualizer.manualEntry.filterPlaceholder.${columnKey}`)}
               value={columnFilters[columnKey]}
-              onChange={(e) => setColumnFilters((f) => ({ ...f, [columnKey]: e.target.value }))}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setColumnFilters((f) => ({ ...f, [columnKey]: e.target.value }))
+              }
             />
             <Flex justify="flex-end" className="mt-2">
               <Button type="link" size="small" onClick={() => close()}>
@@ -427,7 +437,7 @@ const ManualDataEntryModal: FC<Props> = ({
         sortOrder: sortedInfo.field === 'id' ? sortedInfo.order : null,
         filtered: Boolean(columnFilters.id),
         filterDropdown: makeTextFilterDropdown('id'),
-        filterIcon: (filtered) => (
+        filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
         width: 120,
@@ -449,7 +459,7 @@ const ManualDataEntryModal: FC<Props> = ({
         sortOrder: sortedInfo.field === 'label' ? sortedInfo.order : null,
         filtered: Boolean(columnFilters.label),
         filterDropdown: makeTextFilterDropdown('label'),
-        filterIcon: (filtered) => (
+        filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
         render: (_, record) => (
@@ -468,14 +478,14 @@ const ManualDataEntryModal: FC<Props> = ({
         sortOrder: sortedInfo.field === 'value' ? sortedInfo.order : null,
         filtered: Boolean(columnFilters.value),
         filterDropdown: makeTextFilterDropdown('value'),
-        filterIcon: (filtered) => (
+        filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
         width: 120,
         render: (_, record) => (
           <InputNumber
             value={record.value}
-            onChange={(v) => handleValueChange(record.key, v)}
+            onChange={(v: number | null) => handleValueChange(record.key, v)}
             min={0}
             className="w-full max-w-full"
           />
@@ -488,7 +498,7 @@ const ManualDataEntryModal: FC<Props> = ({
         sortOrder: sortedInfo.field === 'time' ? sortedInfo.order : null,
         filtered: Boolean(columnFilters.time),
         filterDropdown: makeTextFilterDropdown('time'),
-        filterIcon: (filtered) => (
+        filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
         width: 100,
@@ -517,7 +527,7 @@ const ManualDataEntryModal: FC<Props> = ({
           checked={visibleRowKeys.length > 0 && selectedVisibleCount === visibleRowKeys.length}
           indeterminate={selectedVisibleCount > 0 && selectedVisibleCount < visibleRowKeys.length}
           aria-label={t('visualizer.manualEntry.selectAll')}
-          onChange={(e) => {
+          onChange={(e: CheckboxChangeEvent) => {
             if (e.target.checked) {
               setSelectedRowKeys((prev) => {
                 const set = new Set(prev.map(String));
@@ -533,7 +543,7 @@ const ManualDataEntryModal: FC<Props> = ({
       render: (_, record) => (
         <Checkbox
           checked={selectedRowKeys.includes(record.key)}
-          onChange={(e) => {
+          onChange={(e: CheckboxChangeEvent) => {
             const checked = e.target.checked;
             setSelectedRowKeys((keys) =>
               checked ? [...keys, record.key] : keys.filter((k) => k !== record.key),
@@ -721,7 +731,7 @@ const ManualDataEntryModal: FC<Props> = ({
   );
 
   const onBulkMenuClick: NonNullable<MenuProps['onClick']> = useCallback(
-    (info) => {
+    (info: { key: string }) => {
       const { key } = info;
       if (selectedRowKeys.length === 0) return;
       if (key === 'remove') bulkRemoveSelected();

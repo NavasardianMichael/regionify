@@ -275,7 +275,7 @@ const VisualizerPage: FC = () => {
               <Tooltip title={t('visualizer.mapHeaderDeleteTooltip')}>
                 <Button
                   type="text"
-                  danger
+                  // danger
                   icon={<DeleteOutlined />}
                   onClick={handleDeleteCurrentProject}
                   aria-label={t('visualizer.mapHeaderDeleteTooltip')}

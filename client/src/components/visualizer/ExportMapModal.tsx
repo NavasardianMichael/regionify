@@ -1,6 +1,8 @@
-import { type FC } from 'react';
-import { DownloadOutlined } from '@ant-design/icons';
+import { type FC, useMemo } from 'react';
+import { DownloadOutlined, ScissorOutlined } from '@ant-design/icons';
 import { Flex, Modal, Typography } from 'antd';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { ExportCropStep } from '@/components/visualizer/ExportMapModal/ExportCropStep';
 import { ExportMapModalForm } from '@/components/visualizer/ExportMapModal/ExportMapModalForm';
 import { useExportMapModal } from '@/components/visualizer/ExportMapModal/useExportMapModal';
 
@@ -11,17 +13,32 @@ type Props = {
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const state = useExportMapModal(open, onClose);
+  const { t } = useTypedTranslation();
+  const isStep2 = state.step === 2;
+
+  const title = useMemo(() => {
+    const icon = isStep2 ? (
+      <ScissorOutlined className="text-primary" />
+    ) : (
+      <DownloadOutlined className="text-primary" />
+    );
+    const text = isStep2
+      ? t('visualizer.exportModal.cropAndDownload')
+      : t('visualizer.exportModal.title');
+
+    return (
+      <Flex align="center" gap="small" className="mb-6!">
+        {icon}
+        <Typography.Title level={4} className="mb-0!">
+          {text}
+        </Typography.Title>
+      </Flex>
+    );
+  }, [isStep2, t]);
 
   return (
     <Modal
-      title={
-        <Flex align="center" gap="small" className="mb-6!">
-          <DownloadOutlined className="text-primary" />
-          <Typography.Title level={4} className="mb-0!">
-            Export Map Visualizer
-          </Typography.Title>
-        </Flex>
-      }
+      title={title}
       open={open}
       onCancel={onClose}
       confirmLoading={state.isExporting}
@@ -30,10 +47,20 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       closable={{ disabled: state.isExporting }}
       afterOpenChange={state.handleAfterOpenChange}
       footer={null}
-      width={400}
+      width={isStep2 ? 680 : 400}
       destroyOnHidden
     >
-      <ExportMapModalForm {...state} />
+      {isStep2 ? (
+        <ExportCropStep
+          crop={state.crop}
+          isExporting={state.isExporting}
+          downloadButtonLabel={state.downloadButtonLabel}
+          onBack={state.handleBack}
+          onDownload={state.handleDownload}
+        />
+      ) : (
+        <ExportMapModalForm {...state} />
+      )}
     </Modal>
   );
 };
