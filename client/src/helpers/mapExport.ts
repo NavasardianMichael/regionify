@@ -22,7 +22,7 @@ export type MapExportWatermarkOptions = {
   logoSrc?: string | null;
 };
 
-type StillExportOpts = {
+export type StillExportOpts = {
   backgroundColor?: string;
   watermark?: string | MapExportWatermarkOptions;
   /** Draw legend in export to match on-screen layout when legend markers exist. */

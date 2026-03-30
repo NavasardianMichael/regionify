@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { Cropper } from 'react-advanced-cropper';
+import { Cropper, ImageRestriction } from 'react-advanced-cropper';
 import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
 import { Button, Flex, InputNumber, Segmented, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
@@ -54,7 +54,7 @@ export const ExportCropStep: FC<Props> = ({
             ref={cropperRef}
             src={previewSrc}
             onChange={handleCropChange}
-            imageRestriction="fitArea"
+            imageRestriction={ImageRestriction.fitArea}
             defaultSize={({ imageSize }: { imageSize: { width: number; height: number } }) => ({
               width: imageSize.width * 0.92,
               height: imageSize.height * 0.92,

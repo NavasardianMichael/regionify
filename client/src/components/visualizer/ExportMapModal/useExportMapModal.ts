@@ -44,6 +44,7 @@ import {
   exportMapAsSvg,
   generateMapCanvas,
   generateMapCanvasFallback,
+  type StillExportOpts,
   triggerDownload,
 } from '@/helpers/mapExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
@@ -218,7 +219,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     [staticStillOpts],
   );
 
-  const resolvedStillOpts = useMemo(() => {
+  const resolvedStillOpts = useMemo((): StillExportOpts => {
     if (exportType === EXPORT_TYPES.jpeg && plan === PLANS.observer) {
       return observerStillOpts;
     }
@@ -348,7 +349,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         const format = exportType === EXPORT_TYPES.jpeg ? 'jpeg' : 'png';
         let cleanCanvas = await generateMapCanvas(resolvedQuality, format, cleanOpts);
         if (!cleanCanvas)
-          cleanCanvas = generateMapCanvasFallback(resolvedQuality, format, cleanOpts);
+          cleanCanvas = await generateMapCanvasFallback(resolvedQuality, format, cleanOpts);
         if (!cleanCanvas) throw new Error('Failed to generate export canvas');
 
         const cropRect = crop.getCropRect();
