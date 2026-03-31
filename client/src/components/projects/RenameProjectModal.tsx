@@ -38,6 +38,7 @@ const RenameProjectModal: FC<Props> = ({
       okText={t('visualizer.renameProjectOk')}
       confirmLoading={confirmLoading}
       closable={{ disabled: confirmLoading }}
+      maskClosable={false}
       centered
       okButtonProps={{
         disabled: !name.trim() || name.trim() === project?.name,
