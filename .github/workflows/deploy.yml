@@ -56,9 +56,9 @@ jobs:
         run: |
           tar -czf server-build.tar.gz \
             --exclude='node_modules' \
-            --exclude='client' \
+            --exclude='client/src' \
             --exclude='.git' \
-            server shared docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
+            server shared client docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
