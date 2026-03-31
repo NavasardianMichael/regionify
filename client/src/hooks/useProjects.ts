@@ -29,7 +29,6 @@ type UseProjectsReturn = {
   isLoggedIn: boolean;
   search: string;
   renamingProject: Project | null;
-  newName: string;
   deletingProject: Project | null;
   isDeleting: boolean;
   setSearch: (value: string) => void;
@@ -37,9 +36,8 @@ type UseProjectsReturn = {
   handleDeleteConfirm: () => Promise<void>;
   handleDeleteCancel: () => void;
   handleRenameStart: (project: Project) => void;
-  handleRenameConfirm: () => Promise<void>;
+  handleRenameConfirm: (trimmedName: string) => Promise<void>;
   handleRenameCancel: () => void;
-  setNewName: (value: string) => void;
 };
 
 export const useProjects = (): UseProjectsReturn => {
@@ -58,7 +56,6 @@ export const useProjects = (): UseProjectsReturn => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounceValue(search, 300);
   const [renamingProject, setRenamingProject] = useState<Project | null>(null);
-  const [newName, setNewName] = useState('');
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -120,13 +117,11 @@ export const useProjects = (): UseProjectsReturn => {
 
   const handleRenameStart = useCallback((project: Project) => {
     setRenamingProject(project);
-    setNewName(project.name);
   }, []);
 
-  const handleRenameConfirm = useCallback(async () => {
-    if (!renamingProject) return;
-    const trimmed = newName.trim();
-    if (trimmed && trimmed !== renamingProject.name) {
+  const handleRenameConfirm = useCallback(
+    async (trimmed: string) => {
+      if (!renamingProject) return;
       try {
         const updated = await updateProjectApi(renamingProject.id, { name: trimmed });
         updateProjectInList(updated);
@@ -134,14 +129,13 @@ export const useProjects = (): UseProjectsReturn => {
       } catch {
         message.error(t('messages.projectRenameFailed'), 0);
       }
-    }
-    setRenamingProject(null);
-    setNewName('');
-  }, [renamingProject, newName, updateProjectInList, message, t]);
+      setRenamingProject(null);
+    },
+    [renamingProject, updateProjectInList, message, t],
+  );
 
   const handleRenameCancel = useCallback(() => {
     setRenamingProject(null);
-    setNewName('');
   }, []);
 
   return {
@@ -151,7 +145,6 @@ export const useProjects = (): UseProjectsReturn => {
     isLoggedIn,
     search,
     renamingProject,
-    newName,
     deletingProject,
     isDeleting,
     setSearch,
@@ -161,6 +154,5 @@ export const useProjects = (): UseProjectsReturn => {
     handleRenameStart,
     handleRenameConfirm,
     handleRenameCancel,
-    setNewName,
   };
 };

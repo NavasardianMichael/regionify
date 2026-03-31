@@ -86,7 +86,6 @@ export function useVisualizerPage() {
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [projectName, setProjectName] = useState('');
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
-  const [renameName, setRenameName] = useState('');
   const [isRenameSubmitting, setIsRenameSubmitting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
@@ -202,47 +201,30 @@ export function useVisualizerPage() {
 
   const handleOpenRenameModal = useCallback(() => {
     if (!currentProject) return;
-    setRenameName(currentProject.name);
     setIsRenameModalOpen(true);
   }, [currentProject]);
 
   const handleRenameModalCancel = useCallback(() => {
     setIsRenameModalOpen(false);
-    setRenameName('');
   }, []);
 
-  const handleRenameModalConfirm = useCallback(async () => {
-    if (!currentProjectId || !currentProject) return;
-    const trimmed = renameName.trim();
-    if (!trimmed || trimmed === currentProject.name) {
-      handleRenameModalCancel();
-      return;
-    }
-    setIsRenameSubmitting(true);
-    try {
-      const updated = await updateProject(currentProjectId, { name: trimmed });
-      updateProjectInList(updated);
-      message.success(t('messages.projectRenamed'), 5);
-      setIsRenameModalOpen(false);
-      setRenameName('');
-    } catch {
-      message.error(t('messages.projectRenameFailed'), 0);
-    } finally {
-      setIsRenameSubmitting(false);
-    }
-  }, [
-    currentProjectId,
-    currentProject,
-    renameName,
-    updateProjectInList,
-    message,
-    t,
-    handleRenameModalCancel,
-  ]);
-
-  const setRenameNameValue = useCallback((value: string) => {
-    setRenameName(value);
-  }, []);
+  const handleRenameModalConfirm = useCallback(
+    async (trimmed: string) => {
+      if (!currentProjectId || !currentProject) return;
+      setIsRenameSubmitting(true);
+      try {
+        const updated = await updateProject(currentProjectId, { name: trimmed });
+        updateProjectInList(updated);
+        message.success(t('messages.projectRenamed'), 5);
+        setIsRenameModalOpen(false);
+      } catch {
+        message.error(t('messages.projectRenameFailed'), 0);
+      } finally {
+        setIsRenameSubmitting(false);
+      }
+    },
+    [currentProjectId, currentProject, updateProjectInList, message, t],
+  );
 
   const handleDeleteCurrentProject = useCallback(() => {
     if (!currentProject) return;
@@ -298,7 +280,6 @@ export function useVisualizerPage() {
     isNameModalOpen,
     projectName,
     isRenameModalOpen,
-    renameName,
     isRenameSubmitting,
     isSaveDisabled,
     saveButtonText,
@@ -315,7 +296,6 @@ export function useVisualizerPage() {
     handleOpenRenameModal,
     handleRenameModalCancel,
     handleRenameModalConfirm,
-    setRenameNameValue,
     handleDeleteCurrentProject,
     isDeleteModalOpen,
     isDeleteSubmitting,

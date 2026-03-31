@@ -1,39 +1,55 @@
-import { type FC, useCallback } from 'react';
+import { type FC, useCallback, useState } from 'react';
 import { Flex, Input, Modal, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type Props = {
   project: Project | null;
-  name: string;
-  onNameChange: (name: string) => void;
-  onConfirm: () => void;
+  onConfirm: (newName: string) => void | Promise<void>;
   onCancel: () => void;
   confirmLoading?: boolean;
 };
 
 const RenameProjectModal: FC<Props> = ({
   project,
-  name,
-  onNameChange,
   onConfirm,
   onCancel,
   confirmLoading = false,
 }) => {
   const { t } = useTypedTranslation();
+  const [draftName, setDraftName] = useState(() => project?.name ?? '');
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onNameChange(e.target.value);
+  const isOpen = project !== null;
+
+  const handleAfterOpenChange = useCallback(
+    (open: boolean) => {
+      if (open && project) {
+        setDraftName(project.name);
+      }
     },
-    [onNameChange],
+    [project],
   );
+
+  const handleSubmit = useCallback(() => {
+    if (!project) return;
+    const trimmed = draftName.trim();
+    if (!trimmed || trimmed === project.name) {
+      onCancel();
+      return;
+    }
+    return onConfirm(trimmed);
+  }, [draftName, project, onConfirm, onCancel]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setDraftName(e.target.value);
+  }, []);
 
   return (
     <Modal
       title={t('visualizer.renameProjectTitle')}
-      open={project !== null}
-      onOk={onConfirm}
+      open={isOpen}
+      afterOpenChange={handleAfterOpenChange}
+      onOk={handleSubmit}
       onCancel={onCancel}
       okText={t('visualizer.renameProjectOk')}
       confirmLoading={confirmLoading}
@@ -41,15 +57,15 @@ const RenameProjectModal: FC<Props> = ({
       maskClosable={false}
       centered
       okButtonProps={{
-        disabled: !name.trim() || name.trim() === project?.name,
+        disabled: !draftName.trim() || draftName.trim() === project?.name,
       }}
     >
       <Flex vertical gap="small" className="py-sm">
         <Typography.Text>{t('visualizer.renameProjectPrompt')}</Typography.Text>
         <Input
-          value={name}
+          value={draftName}
           onChange={handleInputChange}
-          onPressEnter={onConfirm}
+          onPressEnter={handleSubmit}
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
         />

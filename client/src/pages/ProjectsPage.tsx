@@ -22,7 +22,6 @@ const ProjectsPage: FC = () => {
     isLoading,
     search,
     renamingProject,
-    newName,
     deletingProject,
     isDeleting,
     setSearch,
@@ -32,7 +31,6 @@ const ProjectsPage: FC = () => {
     handleRenameStart,
     handleRenameConfirm,
     handleRenameCancel,
-    setNewName,
   } = useProjects();
 
   const handleOpen = useCallback(
@@ -128,8 +126,6 @@ const ProjectsPage: FC = () => {
         <Suspense>
           <RenameProjectModal
             project={renamingProject}
-            name={newName}
-            onNameChange={setNewName}
             onConfirm={handleRenameConfirm}
             onCancel={handleRenameCancel}
           />

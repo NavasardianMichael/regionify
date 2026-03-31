@@ -97,7 +97,6 @@ const VisualizerPage: FC = () => {
     currentProject,
     projectName,
     isRenameModalOpen,
-    renameName,
     isRenameSubmitting,
     isSaveDisabled,
     saveButtonText,
@@ -114,7 +113,6 @@ const VisualizerPage: FC = () => {
     handleOpenRenameModal,
     handleRenameModalCancel,
     handleRenameModalConfirm,
-    setRenameNameValue,
     handleDeleteCurrentProject,
     isDeleteModalOpen,
     isDeleteSubmitting,
@@ -425,8 +423,6 @@ const VisualizerPage: FC = () => {
         <Suspense>
           <RenameProjectModal
             project={currentProject}
-            name={renameName}
-            onNameChange={setRenameNameValue}
             onConfirm={handleRenameModalConfirm}
             onCancel={handleRenameModalCancel}
             confirmLoading={isRenameSubmitting}
