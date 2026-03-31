@@ -746,6 +746,7 @@ const ManualDataEntryModal: FC<Props> = ({
       title={t('visualizer.manualEntry.title')}
       open={open}
       onCancel={handleCancel}
+      closable
       maskClosable={false}
       afterOpenChange={handleAfterOpenChange}
       footer={

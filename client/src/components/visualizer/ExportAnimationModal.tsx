@@ -180,6 +180,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
       maskClosable={false}
       keyboard={!isExporting}
       closable={{ disabled: isExporting }}
+      centered
       footer={null}
       width={420}
       destroyOnHidden

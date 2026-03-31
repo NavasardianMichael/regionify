@@ -31,7 +31,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   const buttonType = useMemo(() => (plan.popular ? 'primary' : 'default'), [plan.popular]);
 
   const cardClassName = useMemo(
-    () => `relative h-full min-h-0 shadow-sm ${plan.popular ? 'border-primary border-2' : ''}`,
+    () => `relative min-h-0 shadow-sm sm:h-full ${plan.popular ? 'border-primary border-2' : ''}`,
     [plan.popular],
   );
 
@@ -60,7 +60,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           >
             {plan.name}
           </Typography.Title>
-          <Typography.Paragraph className="mb-0! w-full max-w-full text-center text-gray-500">
+          <Typography.Paragraph className="mb-0! w-full max-w-full text-center! text-gray-500">
             {plan.description}
           </Typography.Paragraph>
           <Flex align="baseline" justify="center" gap={4} className="w-full">

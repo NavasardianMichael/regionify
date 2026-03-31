@@ -30,8 +30,12 @@ type UseProjectsReturn = {
   search: string;
   renamingProject: Project | null;
   newName: string;
+  deletingProject: Project | null;
+  isDeleting: boolean;
   setSearch: (value: string) => void;
   handleDelete: (project: Project) => void;
+  handleDeleteConfirm: () => Promise<void>;
+  handleDeleteCancel: () => void;
   handleRenameStart: (project: Project) => void;
   handleRenameConfirm: () => Promise<void>;
   handleRenameCancel: () => void;
@@ -40,7 +44,7 @@ type UseProjectsReturn = {
 
 export const useProjects = (): UseProjectsReturn => {
   const { t } = useTypedTranslation();
-  const { message, modal } = useAppFeedback();
+  const { message } = useAppFeedback();
   const navigate = useNavigate();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const logout = useProfileStore(selectLogout);
@@ -55,6 +59,8 @@ export const useProjects = (): UseProjectsReturn => {
   const debouncedSearch = useDebounceValue(search, 300);
   const [renamingProject, setRenamingProject] = useState<Project | null>(null);
   const [newName, setNewName] = useState('');
+  const [deletingProject, setDeletingProject] = useState<Project | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -89,29 +95,28 @@ export const useProjects = (): UseProjectsReturn => {
     );
   }, [projects, debouncedSearch]);
 
-  const handleDelete = useCallback(
-    (project: Project) => {
-      modal.confirm({
-        centered: true,
-        maskClosable: false,
-        title: t('messages.deleteProjectTitle'),
-        icon: null,
-        content: t('messages.deleteProjectContent', { name: project.name }),
-        okText: t('messages.deleteProjectOk'),
-        okButtonProps: { danger: true },
-        onOk: async () => {
-          try {
-            await deleteProjectApi(project.id);
-            removeProject(project.id);
-            message.success(t('messages.projectDeleted'), 5);
-          } catch {
-            message.error(t('messages.projectDeleteFailed'), 0);
-          }
-        },
-      });
-    },
-    [modal, removeProject, message, t],
-  );
+  const handleDelete = useCallback((project: Project) => {
+    setDeletingProject(project);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deletingProject) return;
+    setIsDeleting(true);
+    try {
+      await deleteProjectApi(deletingProject.id);
+      removeProject(deletingProject.id);
+      message.success(t('messages.projectDeleted'), 5);
+      setDeletingProject(null);
+    } catch {
+      message.error(t('messages.projectDeleteFailed'), 0);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [deletingProject, removeProject, message, t]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeletingProject(null);
+  }, []);
 
   const handleRenameStart = useCallback((project: Project) => {
     setRenamingProject(project);
@@ -147,8 +152,12 @@ export const useProjects = (): UseProjectsReturn => {
     search,
     renamingProject,
     newName,
+    deletingProject,
+    isDeleting,
     setSearch,
     handleDelete,
+    handleDeleteConfirm,
+    handleDeleteCancel,
     handleRenameStart,
     handleRenameConfirm,
     handleRenameCancel,

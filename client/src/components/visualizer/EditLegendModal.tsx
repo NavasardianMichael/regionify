@@ -187,6 +187,7 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
       title={t('visualizer.legendModal.title')}
       open={open}
       onCancel={onCancel}
+      closable
       afterOpenChange={handleAfterOpenChange}
       footer={
         <Flex justify="end" gap="middle">

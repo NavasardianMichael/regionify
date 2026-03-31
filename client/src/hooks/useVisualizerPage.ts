@@ -66,7 +66,7 @@ function buildFullTemporaryState(): FullTemporaryProjectState {
 
 export function useVisualizerPage() {
   const { t } = useTypedTranslation();
-  const { message, modal } = useAppFeedback();
+  const { message } = useAppFeedback();
   const navigate = useNavigate();
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
@@ -88,6 +88,8 @@ export function useVisualizerPage() {
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [renameName, setRenameName] = useState('');
   const [isRenameSubmitting, setIsRenameSubmitting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 
   const isFreePlan = useMemo(() => !user || user.plan === PLANS.observer, [user]);
 
@@ -244,26 +246,28 @@ export function useVisualizerPage() {
 
   const handleDeleteCurrentProject = useCallback(() => {
     if (!currentProject) return;
-    modal.confirm({
-      centered: true,
-      maskClosable: false,
-      title: t('messages.deleteProjectTitle'),
-      icon: null,
-      content: t('messages.deleteProjectContent', { name: currentProject.name }),
-      okText: t('messages.deleteProjectOk'),
-      okButtonProps: { danger: true },
-      onOk: async () => {
-        try {
-          await deleteProjectApi(currentProject.id);
-          removeProject(currentProject.id);
-          message.success(t('messages.projectDeleted'), 5);
-          navigate(ROUTES.PROJECTS);
-        } catch {
-          message.error(t('messages.projectDeleteFailed'), 0);
-        }
-      },
-    });
-  }, [currentProject, modal, removeProject, message, t, navigate]);
+    setIsDeleteModalOpen(true);
+  }, [currentProject]);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!currentProject) return;
+    setIsDeleteSubmitting(true);
+    try {
+      await deleteProjectApi(currentProject.id);
+      removeProject(currentProject.id);
+      message.success(t('messages.projectDeleted'), 5);
+      setIsDeleteModalOpen(false);
+      navigate(ROUTES.PROJECTS);
+    } catch {
+      message.error(t('messages.projectDeleteFailed'), 0);
+    } finally {
+      setIsDeleteSubmitting(false);
+    }
+  }, [currentProject, removeProject, message, t, navigate]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setIsDeleteModalOpen(false);
+  }, []);
 
   const isSaveDisabled = !selectedCountryId || (!!currentProjectId && !hasUnsavedChanges);
 
@@ -313,5 +317,9 @@ export function useVisualizerPage() {
     handleRenameModalConfirm,
     setRenameNameValue,
     handleDeleteCurrentProject,
+    isDeleteModalOpen,
+    isDeleteSubmitting,
+    handleDeleteConfirm,
+    handleDeleteCancel,
   };
 }

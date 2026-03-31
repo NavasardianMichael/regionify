@@ -63,6 +63,7 @@ import { RegionSelect } from '@/components/visualizer/RegionSelect';
 const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
 const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal'));
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
+const DeleteProjectModal = lazy(() => import('@/components/projects/DeleteProjectModal'));
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 type MobileVisualizerSection = 'map' | 'data' | 'styles';
@@ -115,6 +116,10 @@ const VisualizerPage: FC = () => {
     handleRenameModalConfirm,
     setRenameNameValue,
     handleDeleteCurrentProject,
+    isDeleteModalOpen,
+    isDeleteSubmitting,
+    handleDeleteConfirm,
+    handleDeleteCancel,
   } = useVisualizerPage();
 
   const embedButtonDisabled =
@@ -429,6 +434,15 @@ const VisualizerPage: FC = () => {
         </Suspense>
       ) : null}
 
+      <Suspense>
+        <DeleteProjectModal
+          project={isDeleteModalOpen ? currentProject : null}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          confirmLoading={isDeleteSubmitting}
+        />
+      </Suspense>
+
       <Modal
         title={t('visualizer.saveModalTitle')}
         open={isNameModalOpen}
@@ -436,6 +450,7 @@ const VisualizerPage: FC = () => {
         onCancel={handleNameModalCancel}
         okText={t('visualizer.saveModalCreate')}
         okButtonProps={{ disabled: !projectName.trim() }}
+        centered
       >
         <Flex vertical gap="small" className="py-sm">
           <Typography.Text>{t('visualizer.saveModalPrompt')}</Typography.Text>

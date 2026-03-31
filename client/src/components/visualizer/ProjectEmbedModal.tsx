@@ -194,6 +194,7 @@ const ProjectEmbedModal: FC<Props> = ({ open, onClose, project }) => {
       maskClosable={false}
       keyboard={!submitting}
       closable={{ disabled: submitting }}
+      centered
       footer={
         <Flex justify="flex-end" gap="small">
           <Button onClick={onClose} disabled={submitting}>

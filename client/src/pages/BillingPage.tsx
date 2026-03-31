@@ -41,19 +41,19 @@ const BillingPage: FC = () => {
   );
 
   return (
-    <Flex vertical align="center" gap="large" className="mx-auto! w-full max-w-5xl">
+    <Flex vertical align="center" gap="large" className="m-auto! w-full max-w-5xl">
       <Flex vertical align="center" gap="small">
         <Typography.Title level={1} className="text-primary mb-0! text-3xl font-bold">
           {t('plans.title')}
         </Typography.Title>
-        <Typography.Paragraph className="mb-0! text-gray-500">
+        <Typography.Paragraph className="mb-0! text-center text-gray-500 sm:text-left">
           {t('plans.subtitle')}
         </Typography.Paragraph>
       </Flex>
 
       <Flex gap="large" justify="center" align="stretch" wrap="wrap" className="w-full">
         {billingPlans.map((plan) => (
-          <Flex key={plan.id} className="h-full w-80 max-w-full min-w-0 shrink-0" vertical>
+          <Flex key={plan.id} className="w-80 max-w-full min-w-0 shrink-0 sm:h-full" vertical>
             <PlanCard
               plan={plan}
               currentPlan={currentPlan}
@@ -64,7 +64,9 @@ const BillingPage: FC = () => {
         ))}
       </Flex>
 
-      <Typography.Text type="secondary">{t('plans.paymentNote')}</Typography.Text>
+      <Typography.Text type="secondary" className="w-full text-center">
+        {t('plans.paymentNote')}
+      </Typography.Text>
     </Flex>
   );
 };

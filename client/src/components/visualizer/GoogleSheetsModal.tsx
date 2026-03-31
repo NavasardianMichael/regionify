@@ -81,6 +81,7 @@ const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport, initialUrl }) =
       maskClosable={false}
       keyboard={!busy}
       closable={{ disabled: busy }}
+      centered
     >
       <Flex vertical gap="middle" className="py-2">
         <Typography.Text className="text-sm text-gray-600">

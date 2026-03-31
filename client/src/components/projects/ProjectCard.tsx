@@ -48,7 +48,7 @@ const ProjectCard = memo<Props>(({ project, onOpen, onDelete, onRename }) => {
 
   return (
     <Card
-      className="w-72 cursor-pointer shadow-sm transition-shadow hover:shadow-md"
+      className="w-full cursor-pointer shadow-sm transition-shadow hover:shadow-md sm:max-w-72"
       onClick={handleOpenClick}
       actions={[
         <Button key="rename" type="text" icon={<EditOutlined />} onClick={handleRenameClick}>

@@ -1,10 +1,15 @@
-import { type FC, useMemo } from 'react';
+import { type FC, lazy, Suspense, useMemo } from 'react';
 import { DownloadOutlined, ScissorOutlined } from '@ant-design/icons';
-import { Flex, Modal, Typography } from 'antd';
+import { Flex, Modal, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { ExportCropStep } from '@/components/visualizer/ExportMapModal/ExportCropStep';
 import { ExportMapModalForm } from '@/components/visualizer/ExportMapModal/ExportMapModalForm';
 import { useExportMapModal } from '@/components/visualizer/ExportMapModal/useExportMapModal';
+
+const ExportCropStep = lazy(() =>
+  import('@/components/visualizer/ExportMapModal/ExportCropStep').then((m) => ({
+    default: m.ExportCropStep,
+  })),
+);
 
 type Props = {
   open: boolean;
@@ -45,19 +50,28 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       maskClosable={false}
       keyboard={!state.isExporting}
       closable={{ disabled: state.isExporting }}
+      centered
       afterOpenChange={state.handleAfterOpenChange}
       footer={null}
       width={isStep2 ? 680 : 400}
       destroyOnHidden
     >
       {isStep2 ? (
-        <ExportCropStep
-          crop={state.crop}
-          isExporting={state.isExporting}
-          downloadButtonLabel={state.downloadButtonLabel}
-          onBack={state.handleBack}
-          onDownload={state.handleDownload}
-        />
+        <Suspense
+          fallback={
+            <Flex justify="center" align="center" className="h-80">
+              <Spin size="large" />
+            </Flex>
+          }
+        >
+          <ExportCropStep
+            crop={state.crop}
+            isExporting={state.isExporting}
+            downloadButtonLabel={state.downloadButtonLabel}
+            onBack={state.handleBack}
+            onDownload={state.handleDownload}
+          />
+        </Suspense>
       ) : (
         <ExportMapModalForm {...state} />
       )}

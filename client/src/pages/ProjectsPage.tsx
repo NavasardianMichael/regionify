@@ -10,6 +10,7 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
+const DeleteProjectModal = lazy(() => import('@/components/projects/DeleteProjectModal'));
 
 const ProjectsPage: FC = () => {
   const { t } = useTypedTranslation();
@@ -22,8 +23,12 @@ const ProjectsPage: FC = () => {
     search,
     renamingProject,
     newName,
+    deletingProject,
+    isDeleting,
     setSearch,
     handleDelete,
+    handleDeleteConfirm,
+    handleDeleteCancel,
     handleRenameStart,
     handleRenameConfirm,
     handleRenameCancel,
@@ -91,7 +96,12 @@ const ProjectsPage: FC = () => {
             </Empty>
           </Flex>
         ) : (
-          <Flex wrap="wrap" gap="middle" className="pb-md overflow-y-auto">
+          <Flex
+            wrap="wrap"
+            gap="middle"
+            justify="center"
+            className="pb-md overflow-y-auto sm:justify-start!"
+          >
             {filteredProjects.map((project) => (
               <ProjectCard
                 key={project.id}
@@ -104,6 +114,15 @@ const ProjectsPage: FC = () => {
           </Flex>
         )}
       </Flex>
+
+      <Suspense>
+        <DeleteProjectModal
+          project={deletingProject}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          confirmLoading={isDeleting}
+        />
+      </Suspense>
 
       {renamingProject && (
         <Suspense>
