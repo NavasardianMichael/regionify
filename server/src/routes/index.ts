@@ -1,11 +1,11 @@
 import { type Router as ExpressRouter, Router } from 'express';
 
-import { authRoutes } from './auth.js';
-import { contactRoutes } from './contact.js';
-import { embedDataRoutes } from './embedData.js';
-import { paymentRoutes } from './payments.js';
-import { projectRoutes } from './projects.js';
-import { sheetsRoutes } from './sheets.js';
+import { authRoutes } from '@/routes/auth.js';
+import { contactRoutes } from '@/routes/contact.js';
+import { embedDataRoutes } from '@/routes/embedData.js';
+import { paymentRoutes } from '@/routes/payments.js';
+import { projectRoutes } from '@/routes/projects.js';
+import { sheetsRoutes } from '@/routes/sheets.js';
 
 const router: ExpressRouter = Router();
 

@@ -16,13 +16,13 @@ import {
   type VerifyEmailInput,
 } from '@regionify/shared';
 
-import { hashPassword, verifyPassword, needsRehash } from '../lib/password.js';
-import { logger } from '../lib/logger.js';
-import { AppError } from '../middleware/errorHandler.js';
-import { emailVerificationRepository } from '../repositories/emailVerificationRepository.js';
-import { passwordResetRepository } from '../repositories/passwordResetRepository.js';
-import { userRepository } from '../repositories/userRepository.js';
-import { emailService } from './emailService.js';
+import { hashPassword, verifyPassword, needsRehash } from '@/lib/password.js';
+import { logger } from '@/lib/logger.js';
+import { AppError } from '@/middleware/errorHandler.js';
+import { emailVerificationRepository } from '@/repositories/emailVerificationRepository.js';
+import { passwordResetRepository } from '@/repositories/passwordResetRepository.js';
+import { userRepository } from '@/repositories/userRepository.js';
+import { emailService } from '@/services/emailService.js';
 
 function toPublicUser(user: User): UserPublic {
   return {

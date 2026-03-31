@@ -14,14 +14,14 @@ export const MessageWithSampleDownload: FC<MessageWithSampleDownloadProps> = ({
   onDownloadSample,
   downloadLabel = 'Download sample',
 }) => (
-  <Flex align="center" gap="small" wrap="wrap" style={{ alignItems: 'center' }}>
+  <Flex align="center" gap="small" wrap="wrap">
     <span>{message}</span>
     <Button
       type="link"
       size="small"
+      className="p-0!"
       icon={<DownloadOutlined />}
       onClick={onDownloadSample}
-      style={{ padding: 0 }}
     >
       {downloadLabel}
     </Button>

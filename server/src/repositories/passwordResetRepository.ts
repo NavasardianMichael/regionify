@@ -1,7 +1,7 @@
 import type { PasswordResetToken } from '@prisma/client';
 import crypto from 'crypto';
 
-import { prisma } from '../db/index.js';
+import { prisma } from '@/db/index.js';
 
 const TOKEN_EXPIRY_MINUTES = 30; // 30 minutes - improved security per OWASP recommendations
 

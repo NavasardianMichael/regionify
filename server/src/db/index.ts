@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
-import { env, isDev } from '../config/env.js';
-import { logger } from '../lib/logger.js';
+import { env, isDev } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
 
 // Prisma Client singleton pattern
 // https://www.prisma.io/docs/guides/performance-and-optimization/connection-management

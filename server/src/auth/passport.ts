@@ -1,9 +1,9 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
-import { env } from '../config/env.js';
-import { logger } from '../lib/logger.js';
-import { authService } from '../services/authService.js';
+import { env } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
+import { authService } from '@/services/authService.js';
 
 export function configurePassport(): void {
   // Google OAuth Strategy

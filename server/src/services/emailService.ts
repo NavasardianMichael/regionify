@@ -1,5 +1,5 @@
-import { env } from '../config/env.js';
-import { logger } from '../lib/logger.js';
+import { env } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
 
 const APP_ID = 'regionify';
 const APP_NAME = 'Regionify';

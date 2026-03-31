@@ -7,14 +7,14 @@ import helmet from 'helmet';
 import passport from 'passport';
 import { pinoHttp } from 'pino-http';
 
-import { configurePassport } from './auth/passport.js';
-import { env, isProd } from './config/env.js';
-import { logger } from './lib/logger.js';
-import { redis } from './lib/redis.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import { generalLimiter } from './middleware/rateLimiter.js';
-import { apiRoutes } from './routes/index.js';
-import { setupWebClient } from './web/setupWebClient.js';
+import { configurePassport } from '@/auth/passport.js';
+import { env, isProd } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
+import { redis } from '@/lib/redis.js';
+import { errorHandler } from '@/middleware/errorHandler.js';
+import { generalLimiter } from '@/middleware/rateLimiter.js';
+import { apiRoutes } from '@/routes/index.js';
+import { setupWebClient } from '@/web/setupWebClient.js';
 
 export function createApp(): express.Application {
   const app = express();

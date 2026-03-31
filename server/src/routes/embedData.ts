@@ -1,8 +1,8 @@
 import { type Router as ExpressRouter, Router } from 'express';
 
-import { embedDataCors } from '../middleware/embedDataCors.js';
-import { embedDataLimiter } from '../middleware/embedDataLimiter.js';
-import { projectEmbedService } from '../services/projectEmbedService.js';
+import { embedDataCors } from '@/middleware/embedDataCors.js';
+import { embedDataLimiter } from '@/middleware/embedDataLimiter.js';
+import { projectEmbedService } from '@/services/projectEmbedService.js';
 
 const router: ExpressRouter = Router();
 

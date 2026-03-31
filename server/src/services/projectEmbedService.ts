@@ -8,11 +8,11 @@ import {
   PLANS,
 } from '@regionify/shared';
 
-import { AppError } from '../middleware/errorHandler.js';
-import { localeToHtmlAndOg } from '../lib/localeSeo.js';
-import { projectRepository } from '../repositories/projectRepository.js';
-import { prisma } from '../db/index.js';
-import type { ProjectEmbedPublic } from './projectService.js';
+import { AppError } from '@/middleware/errorHandler.js';
+import { localeToHtmlAndOg } from '@/lib/localeSeo.js';
+import { projectRepository } from '@/repositories/projectRepository.js';
+import { prisma } from '@/db/index.js';
+import type { ProjectEmbedPublic } from '@/services/projectService.js';
 
 const EMBED_DESCRIPTION_MAX = 160;
 

@@ -1,7 +1,7 @@
 import { type ContactInput } from '@regionify/shared';
 
-import { env } from '../config/env.js';
-import { logger } from '../lib/logger.js';
+import { env } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
 
 const APP_ID = 'regionify';
 

@@ -1,9 +1,9 @@
 import { HttpStatus, ErrorCode, PLAN_DETAILS, Plan, PLANS } from '@regionify/shared';
 import crypto from 'node:crypto';
 
-import { env } from '../config/env.js';
-import { AppError } from '../middleware/errorHandler.js';
-import { userRepository } from '../repositories/userRepository.js';
+import { env } from '@/config/env.js';
+import { AppError } from '@/middleware/errorHandler.js';
+import { userRepository } from '@/repositories/userRepository.js';
 import type { User } from '@prisma/client';
 
 type PayablePlan = Exclude<Plan, typeof PLANS.observer>;
@@ -41,10 +41,7 @@ export const paymentService = {
    * Create a Lemon Squeezy checkout for a plan upgrade. Returns URL to redirect the user.
    * Server-only; API key never sent to client.
    */
-  async createCheckout(
-    userId: string,
-    plan: PayablePlan,
-  ): Promise<CreateCheckoutResult> {
+  async createCheckout(userId: string, plan: PayablePlan): Promise<CreateCheckoutResult> {
     const apiKey = env.LEMON_SQUEEZY_API_KEY;
     const storeId = env.LEMON_SQUEEZY_STORE_ID;
     if (!apiKey || !storeId) {

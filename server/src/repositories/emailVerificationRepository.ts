@@ -1,7 +1,7 @@
 import type { EmailVerificationToken } from '@prisma/client';
 import crypto from 'crypto';
 
-import { prisma } from '../db/index.js';
+import { prisma } from '@/db/index.js';
 
 const TOKEN_EXPIRY_HOURS = 48; // 48 hours - improved UX for initial signup
 

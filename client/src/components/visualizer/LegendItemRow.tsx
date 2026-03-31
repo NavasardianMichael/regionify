@@ -5,6 +5,8 @@ import type { LegendItem } from '@/store/legendData/types';
 
 const DEFAULT_GRID_COLS = 'grid-cols-[24px_minmax(80px,1fr)_60px_60px_36px_32px]';
 
+type ColorLike = { toHexString: () => string };
+
 type LegendItemRowProps = {
   item: LegendItem;
   index: number;
@@ -14,10 +16,10 @@ type LegendItemRowProps = {
   onDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragEnd: () => void;
-  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onMinChange: (value: number | null) => void;
-  onMaxChange: (value: number | null) => void;
-  onColorChange: (color: { toHexString: () => string }) => void;
+  onNameChange: (id: string, name: string) => void;
+  onMinChange: (id: string, value: number | null) => void;
+  onMaxChange: (id: string, value: number | null) => void;
+  onColorChange: (id: string, color: ColorLike) => void;
   onRemove: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
@@ -38,9 +40,25 @@ export const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
 }) {
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      onNameChange(e);
+      const id = e.currentTarget.dataset.id;
+      if (id) onNameChange(id, e.target.value);
     },
     [onNameChange],
+  );
+
+  const handleMinChange = useCallback(
+    (v: number | null) => onMinChange(item.id, v),
+    [item.id, onMinChange],
+  );
+
+  const handleMaxChange = useCallback(
+    (v: number | null) => onMaxChange(item.id, v),
+    [item.id, onMaxChange],
+  );
+
+  const handleColorChange = useCallback(
+    (color: ColorLike) => onColorChange(item.id, color),
+    [item.id, onColorChange],
   );
 
   return (
@@ -70,7 +88,7 @@ export const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
       />
       <InputNumber
         value={item.min}
-        onChange={onMinChange}
+        onChange={handleMinChange}
         size="small"
         min={0}
         controls={false}
@@ -79,14 +97,14 @@ export const LegendItemRow = memo<LegendItemRowProps>(function LegendItemRow({
       />
       <InputNumber
         value={item.max}
-        onChange={onMaxChange}
+        onChange={handleMaxChange}
         size="small"
         min={0}
         controls={false}
         className="box-border w-full!"
         aria-label="Maximum value"
       />
-      <ColorPicker value={item.color} onChangeComplete={onColorChange} size="small" />
+      <ColorPicker value={item.color} onChangeComplete={handleColorChange} size="small" />
       <Tooltip title="Remove">
         <Button
           type="text"

@@ -1,7 +1,7 @@
 import { createRequire } from 'module';
 import pino from 'pino';
 
-import { env, isDev } from '../config/env.js';
+import { env, isDev } from '@/config/env.js';
 
 function canUsePrettyTransport(): boolean {
   if (!isDev) return false;

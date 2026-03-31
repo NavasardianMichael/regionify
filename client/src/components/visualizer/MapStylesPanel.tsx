@@ -131,9 +131,7 @@ const MapStylesPanel: FC = () => {
             <Typography.Text className="font-semibold">
               {t('visualizer.mapStyles.collapseBackground')}
             </Typography.Text>
-            {plan === PLANS.observer && (
-              <InfoCircleOutlined style={{ color: '#888', marginLeft: 4 }} />
-            )}
+            {plan === PLANS.observer && <InfoCircleOutlined className="ml-1 text-gray-500" />}
           </Flex>
         ),
         children: (

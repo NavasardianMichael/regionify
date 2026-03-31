@@ -1,4 +1,4 @@
-import { escapeHtml } from '../lib/htmlEscape.js';
+import { escapeHtml } from '@/lib/htmlEscape.js';
 
 export type PageMeta = {
   documentTitle: string;

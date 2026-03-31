@@ -280,12 +280,16 @@ server/
 
 ### Path Aliases
 
-Use `@/` within server. Always include `.js` extension (ES modules):
+Use `@/` within server for imports under `src/`. Always include the **`.js` extension** on these specifiers (native ESM; TypeScript resolves them to the corresponding `.ts` sources):
 
 ```typescript
 import { db } from '@/db/index.js';
 import { logger } from '@/lib/logger.js';
 ```
+
+Import workspace and external packages normally (`@regionify/shared`, `express`, etc.) — no `.js` suffix on package specifiers.
+
+`pnpm build` runs `tsc` then `tsc-alias` so emitted `dist/` code uses relative paths Node can load. Dev (`tsx watch`) resolves `@/` via `tsconfig.json` `paths`.
 
 ### API Design
 

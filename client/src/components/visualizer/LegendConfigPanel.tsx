@@ -158,6 +158,10 @@ const samplePaletteColor = (palette: string[], index: number, total: number): st
   return palette[paletteIndex] ?? palette[palette.length - 1];
 };
 
+const PALETTE_BY_ID = new Map<string, string[]>(
+  PALETTE_GROUPS.flatMap((g) => g.suggestions.map((s) => [s.id, s.colors] as [string, string[]])),
+);
+
 const LegendConfigPanel: FC = () => {
   const { t } = useTypedTranslation();
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -215,6 +219,44 @@ const LegendConfigPanel: FC = () => {
     [legendItems, setItems],
   );
 
+  const handlePaletteSwatchClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const paletteId = e.currentTarget.dataset.paletteId;
+      if (!paletteId) return;
+      const colors = PALETTE_BY_ID.get(paletteId);
+      if (colors) handleApplyPalette(colors);
+    },
+    [handleApplyPalette],
+  );
+
+  const handleLegendNameChange = useCallback(
+    (id: string, name: string) => {
+      updateItem(id, { name });
+    },
+    [updateItem],
+  );
+
+  const handleLegendMinChange = useCallback(
+    (id: string, v: number | null) => {
+      updateItem(id, { min: v ?? 0 });
+    },
+    [updateItem],
+  );
+
+  const handleLegendMaxChange = useCallback(
+    (id: string, v: number | null) => {
+      updateItem(id, { max: v ?? 0 });
+    },
+    [updateItem],
+  );
+
+  const handleLegendColorChange = useCallback(
+    (id: string, color: { toHexString: () => string }) => {
+      updateItem(id, { color: color.toHexString() });
+    },
+    [updateItem],
+  );
+
   const handleRemoveLegendRange = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
       const id = e.currentTarget.dataset.id;
@@ -256,30 +298,31 @@ const LegendConfigPanel: FC = () => {
     [setLegendStylesState],
   );
 
+  const sortLegendTooltip = useMemo(
+    () =>
+      sortDirection === 'asc'
+        ? t('visualizer.legendConfig.sortAscending')
+        : t('visualizer.legendConfig.sortDescending'),
+    [sortDirection, t],
+  );
+
+  const sortLegendIcon = useMemo(
+    () => (sortDirection === 'asc' ? <SortAscendingOutlined /> : <SortDescendingOutlined />),
+    [sortDirection],
+  );
+
   const rangesContent = (
     <Flex vertical gap="small">
       <Flex align="center" justify="space-between">
         <Flex gap={4}>
-          <Tooltip
-            title={
-              sortDirection === 'asc'
-                ? t('visualizer.legendConfig.sortAscending')
-                : t('visualizer.legendConfig.sortDescending')
-            }
-          >
+          <Tooltip title={sortLegendTooltip}>
             <Button
               type="text"
-              icon={
-                sortDirection === 'asc' ? <SortAscendingOutlined /> : <SortDescendingOutlined />
-              }
+              icon={sortLegendIcon}
               size="small"
               onClick={handleSort}
               className="text-gray-500"
-              aria-label={
-                sortDirection === 'asc'
-                  ? t('visualizer.legendConfig.sortAscending')
-                  : t('visualizer.legendConfig.sortDescending')
-              }
+              aria-label={sortLegendTooltip}
             />
           </Tooltip>
           <Tooltip title={t('visualizer.legendConfig.expandEdit')}>
@@ -323,13 +366,10 @@ const LegendConfigPanel: FC = () => {
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
-            onNameChange={(e) => {
-              const id = e.currentTarget.dataset.id;
-              if (id) updateItem(id, { name: e.target.value });
-            }}
-            onMinChange={(v) => updateItem(item.id, { min: v ?? 0 })}
-            onMaxChange={(v) => updateItem(item.id, { max: v ?? 0 })}
-            onColorChange={(c) => updateItem(item.id, { color: c.toHexString() })}
+            onNameChange={handleLegendNameChange}
+            onMinChange={handleLegendMinChange}
+            onMaxChange={handleLegendMaxChange}
+            onColorChange={handleLegendColorChange}
             onRemove={handleRemoveLegendRange}
           />
         ))}
@@ -371,7 +411,8 @@ const LegendConfigPanel: FC = () => {
                   <button
                     type="button"
                     className="m-0 h-6 w-10 cursor-pointer overflow-hidden rounded border border-gray-200 p-0"
-                    onClick={() => handleApplyPalette(palette.colors)}
+                    data-palette-id={palette.id}
+                    onClick={handlePaletteSwatchClick}
                     aria-label={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
                   >
                     <span className="flex h-full w-full">

@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 
-import { env } from '../config/env.js';
+import { env } from '@/config/env.js';
 
 export const embedDataLimiter = rateLimit({
   windowMs: env.RATE_LIMIT_WINDOW_MS,

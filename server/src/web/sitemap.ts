@@ -1,5 +1,5 @@
-import { prisma } from '../db/index.js';
-import { escapeHtml } from '../lib/htmlEscape.js';
+import { prisma } from '@/db/index.js';
+import { escapeHtml } from '@/lib/htmlEscape.js';
 
 function formatLastMod(d: Date): string {
   return d.toISOString().slice(0, 10);

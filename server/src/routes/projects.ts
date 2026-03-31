@@ -1,10 +1,10 @@
 import { projectEmbedUpdateSchema } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
-import { validate } from '../middleware/validate.js';
-import { requireAuth } from '../middleware/requireAuth.js';
-import { projectEmbedService } from '../services/projectEmbedService.js';
-import { projectService } from '../services/projectService.js';
+import { validate } from '@/middleware/validate.js';
+import { requireAuth } from '@/middleware/requireAuth.js';
+import { projectEmbedService } from '@/services/projectEmbedService.js';
+import { projectService } from '@/services/projectService.js';
 
 const router: ExpressRouter = Router();
 

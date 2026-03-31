@@ -1,7 +1,7 @@
 import { ErrorCode, extractGid, extractSpreadsheetId, HttpStatus } from '@regionify/shared';
 
-import { logger } from '../lib/logger.js';
-import { AppError } from '../middleware/errorHandler.js';
+import { logger } from '@/lib/logger.js';
+import { AppError } from '@/middleware/errorHandler.js';
 
 /**
  * Builds the CSV export URL for a public Google Sheet.

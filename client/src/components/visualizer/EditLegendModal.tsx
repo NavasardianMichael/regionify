@@ -84,37 +84,46 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
     }));
   }, []);
 
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const id = e.currentTarget.dataset.id;
-      if (id) {
-        handleUpdateItem(id, { name: e.target.value });
-      }
+  const handleLegendNameChange = useCallback(
+    (id: string, name: string) => {
+      handleUpdateItem(id, { name });
     },
     [handleUpdateItem],
   );
 
-  // Memoize handlers by id to avoid recreating on every render
-  const itemHandlers = useMemo(() => {
-    return normalizedItems.allIds.reduce(
-      (acc, id) => {
-        acc[id] = {
-          onMinChange: (value: number | null) => handleUpdateItem(id, { min: value! }),
-          onMaxChange: (value: number | null) => handleUpdateItem(id, { max: value! }),
-          onColorChange: (color: ColorLike) => handleUpdateItem(id, { color: color.toHexString() }),
-        };
-        return acc;
-      },
-      {} as Record<
-        string,
-        {
-          onMinChange: (value: number | null) => void;
-          onMaxChange: (value: number | null) => void;
-          onColorChange: (color: ColorLike) => void;
-        }
-      >,
-    );
-  }, [normalizedItems.allIds, handleUpdateItem]);
+  const handleLegendMinChange = useCallback(
+    (id: string, value: number | null) => {
+      handleUpdateItem(id, { min: value ?? 0 });
+    },
+    [handleUpdateItem],
+  );
+
+  const handleLegendMaxChange = useCallback(
+    (id: string, value: number | null) => {
+      handleUpdateItem(id, { max: value ?? 0 });
+    },
+    [handleUpdateItem],
+  );
+
+  const handleLegendColorChange = useCallback(
+    (id: string, color: ColorLike) => {
+      handleUpdateItem(id, { color: color.toHexString() });
+    },
+    [handleUpdateItem],
+  );
+
+  const sortTooltipTitle = useMemo(
+    () =>
+      sortDirection === 'asc'
+        ? t('visualizer.legendModal.sortAscending')
+        : t('visualizer.legendModal.sortDescending'),
+    [sortDirection, t],
+  );
+
+  const sortLegendIcon = useMemo(
+    () => (sortDirection === 'asc' ? <SortAscendingOutlined /> : <SortDescendingOutlined />),
+    [sortDirection],
+  );
 
   const handleRemoveLegendRange = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const id = e.currentTarget.dataset.id;
@@ -204,18 +213,10 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
       <Flex vertical gap="small" className="py-md">
         {/* Actions Row */}
         <Flex gap={4} justify="end">
-          <Tooltip
-            title={
-              sortDirection === 'asc'
-                ? t('visualizer.legendModal.sortAscending')
-                : t('visualizer.legendModal.sortDescending')
-            }
-          >
+          <Tooltip title={sortTooltipTitle}>
             <Button
               type="text"
-              icon={
-                sortDirection === 'asc' ? <SortAscendingOutlined /> : <SortDescendingOutlined />
-              }
+              icon={sortLegendIcon}
               size="small"
               onClick={handleSortLegendRanges}
               className="text-gray-500"
@@ -263,10 +264,10 @@ const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) => {
               onDragStart={handleDragStartLegendRange}
               onDragOver={handleDragOverLegendRange}
               onDragEnd={handleDragEndLegendRange}
-              onNameChange={handleNameChange}
-              onMinChange={itemHandlers[item.id]?.onMinChange ?? (() => {})}
-              onMaxChange={itemHandlers[item.id]?.onMaxChange ?? (() => {})}
-              onColorChange={itemHandlers[item.id]?.onColorChange ?? (() => {})}
+              onNameChange={handleLegendNameChange}
+              onMinChange={handleLegendMinChange}
+              onMaxChange={handleLegendMaxChange}
+              onColorChange={handleLegendColorChange}
               onRemove={handleRemoveLegendRange}
             />
           ))}

@@ -1,8 +1,8 @@
 import { Plan, PLANS } from '@regionify/shared';
 import { type Router as ExpressRouter, Router, type Request } from 'express';
 
-import { requireAuth } from '../middleware/requireAuth.js';
-import { paymentService } from '../services/paymentService.js';
+import { requireAuth } from '@/middleware/requireAuth.js';
+import { paymentService } from '@/services/paymentService.js';
 
 const router: ExpressRouter = Router();
 
@@ -34,12 +34,16 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   const eventName = req.get('X-Event-Name');
 
   if (!rawBody) {
-    res.status(400).json({ success: false, error: { code: 'BAD_REQUEST', message: 'Missing body' } });
+    res
+      .status(400)
+      .json({ success: false, error: { code: 'BAD_REQUEST', message: 'Missing body' } });
     return;
   }
 
   if (!paymentService.verifyWebhookSignature(rawBody, signature)) {
-    res.status(401).json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid signature' } });
+    res
+      .status(401)
+      .json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid signature' } });
     return;
   }
 

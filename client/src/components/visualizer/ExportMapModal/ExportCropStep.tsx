@@ -49,7 +49,7 @@ export const ExportCropStep: FC<Props> = ({
           <Spin size="large" />
         </Flex>
       ) : previewSrc ? (
-        <div className="export-cropper-container" style={{ height: 400 }}>
+        <div className="export-cropper-container h-[400px]">
           <Cropper
             ref={cropperRef}
             src={previewSrc}

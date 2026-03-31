@@ -38,9 +38,9 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
   return (
     <Flex vertical gap="small">
       {plan === PLANS.observer && (
-        <Typography.Text type="secondary" style={{ fontSize: 13, marginBottom: 8 }}>
+        <Typography.Text type="secondary" className="mb-2 text-[13px]">
           {t('visualizer.mapStyles.freePlanNote')}{' '}
-          <a href={ROUTES.BILLING} style={{ color: '#1677ff' }}>
+          <a href={ROUTES.BILLING} className="text-[#1677ff]">
             {t('visualizer.mapStyles.upgradePlanLink')}
           </a>
           .

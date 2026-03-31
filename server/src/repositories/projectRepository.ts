@@ -1,7 +1,7 @@
 import { type Plan, Prisma, type Project } from '@prisma/client';
 import type { InputJsonValue } from '@prisma/client/runtime/library';
 
-import { prisma } from '../db/index.js';
+import { prisma } from '@/db/index.js';
 
 export type ProjectCreate = {
   userId: string;

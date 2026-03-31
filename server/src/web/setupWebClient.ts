@@ -2,14 +2,14 @@ import { existsSync } from 'node:fs';
 import type { Application, Request, Response } from 'express';
 import express from 'express';
 
-import { env, isProd } from '../config/env.js';
-import { escapeHtml } from '../lib/htmlEscape.js';
-import { logger } from '../lib/logger.js';
-import { projectEmbedService } from '../services/projectEmbedService.js';
-import { HOME_PAGE_DEFAULT } from './homeCopy.js';
-import { readClientEntryAssets } from './readClientManifest.js';
-import { renderHtmlDocument } from './renderHtmlDocument.js';
-import { buildRobotsTxt, buildSitemapXml } from './sitemap.js';
+import { env, isProd } from '@/config/env.js';
+import { escapeHtml } from '@/lib/htmlEscape.js';
+import { logger } from '@/lib/logger.js';
+import { projectEmbedService } from '@/services/projectEmbedService.js';
+import { HOME_PAGE_DEFAULT } from '@/web/homeCopy.js';
+import { readClientEntryAssets } from '@/web/readClientManifest.js';
+import { renderHtmlDocument } from '@/web/renderHtmlDocument.js';
+import { buildRobotsTxt, buildSitemapXml } from '@/web/sitemap.js';
 
 /** Visible `<header>` intro; full copy remains in meta tags. */
 const EMBED_VISIBLE_INTRO_MAX_CHARS = 360;

@@ -1,12 +1,12 @@
 import type { Project } from '@prisma/client';
 import { ErrorCode, HttpStatus } from '@regionify/shared';
 
-import { AppError } from '../middleware/errorHandler.js';
+import { AppError } from '@/middleware/errorHandler.js';
 import {
   projectRepository,
   type ProjectCreate,
   type ProjectUpdate,
-} from '../repositories/projectRepository.js';
+} from '@/repositories/projectRepository.js';
 
 export type ProjectEmbedSeoPublic = {
   title: string | null;

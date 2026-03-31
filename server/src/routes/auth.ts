@@ -10,12 +10,12 @@ import {
 import { type Router as ExpressRouter, Router } from 'express';
 import passport from 'passport';
 
-import { env } from '../config/env.js';
-import { logger } from '../lib/logger.js';
-import { authLimiter } from '../middleware/rateLimiter.js';
-import { requireAuth } from '../middleware/requireAuth.js';
-import { validate } from '../middleware/validate.js';
-import { authService } from '../services/authService.js';
+import { env } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
+import { authLimiter } from '@/middleware/rateLimiter.js';
+import { requireAuth } from '@/middleware/requireAuth.js';
+import { validate } from '@/middleware/validate.js';
+import { authService } from '@/services/authService.js';
 
 const router: ExpressRouter = Router();
 
@@ -119,7 +119,9 @@ router.get('/me', requireAuth, async (req, res, next) => {
     const userId = req.session.userId!;
     const user = await authService.getUserById(userId);
     if (!user) {
-      res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'User not found' } });
+      res
+        .status(404)
+        .json({ success: false, error: { code: 'NOT_FOUND', message: 'User not found' } });
       return;
     }
     res.json({ success: true, data: { user } });

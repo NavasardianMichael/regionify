@@ -1,8 +1,8 @@
 import { type ErrorCodeType, HttpStatus } from '@regionify/shared';
 import { type NextFunction, type Request, type Response } from 'express';
 
-import { isDev } from '../config/env.js';
-import { logger } from '../lib/logger.js';
+import { isDev } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
 
 export class AppError extends Error {
   constructor(

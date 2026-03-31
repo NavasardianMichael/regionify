@@ -2,7 +2,7 @@ import { ErrorCode, HttpStatus } from '@regionify/shared';
 import { type NextFunction, type Request, type Response } from 'express';
 import { type ZodSchema, ZodError } from 'zod';
 
-import { AppError } from './errorHandler.js';
+import { AppError } from '@/middleware/errorHandler.js';
 
 type ValidationTarget = 'body' | 'query' | 'params';
 
