@@ -455,12 +455,14 @@ export type CommonNs = {
     newProject: string;
     empty: string;
     emptyFiltered: string;
+    cardNoCountry: string;
   };
   common: {
     loading: string;
     save: string;
     cancel: string;
     delete: string;
+    rename: string;
     error: string;
     language: string;
   };
