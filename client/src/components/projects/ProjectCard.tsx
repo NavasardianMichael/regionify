@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import { Button, Flex, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
+import { useMapThumbnail } from '@/hooks/useMapThumbnail';
 import { COUNTRY_ID_SPLIT_REGEX, PROJECT_DATE_FORMAT_OPTIONS } from '@/constants/data';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { Card } from '@/components/ui/Card';
@@ -45,6 +46,8 @@ const ProjectCard = memo<Props>(({ project, onOpen, onDelete, onRename }) => {
     ? project.countryId.replace(COUNTRY_ID_SPLIT_REGEX, ' $1').trim()
     : t('projects.cardNoCountry');
 
+  const mapThumbnail = useMapThumbnail(project.countryId);
+
   const updatedAt = new Date(project.updatedAt).toLocaleDateString(
     'en-US',
     PROJECT_DATE_FORMAT_OPTIONS,
@@ -68,24 +71,34 @@ const ProjectCard = memo<Props>(({ project, onOpen, onDelete, onRename }) => {
       onClick={handleOpenClick}
       actions={actions}
     >
-      <Flex vertical gap="small">
-        <Flex align="center" gap="small" className="min-w-0">
-          <FolderOpenOutlined className="text-primary shrink-0 text-lg" />
-          <Typography.Text strong className="truncate">
-            {project.name}
+      <Flex align="center" gap="middle">
+        <Flex vertical gap="small" className="min-w-0 flex-1">
+          <Flex align="center" gap="small" className="min-w-0">
+            <FolderOpenOutlined className="text-primary shrink-0 text-lg" />
+            <Typography.Text strong className="truncate">
+              {project.name}
+            </Typography.Text>
+          </Flex>
+
+          <Flex align="center" gap="small">
+            <GlobalOutlined className="shrink-0 text-gray-400" />
+            <Typography.Text type="secondary" className="truncate text-xs capitalize">
+              {countryLabel}
+            </Typography.Text>
+          </Flex>
+
+          <Typography.Text type="secondary" className="text-xs">
+            {updatedAt}
           </Typography.Text>
         </Flex>
 
-        <Flex align="center" gap="small">
-          <GlobalOutlined className="shrink-0 text-gray-400" />
-          <Typography.Text type="secondary" className="truncate text-xs capitalize">
-            {countryLabel}
-          </Typography.Text>
-        </Flex>
-
-        <Typography.Text type="secondary" className="text-xs">
-          {updatedAt}
-        </Typography.Text>
+        {mapThumbnail && (
+          <img
+            src={mapThumbnail}
+            alt=""
+            className="pointer-events-none h-16 w-16 shrink-0 object-contain opacity-20"
+          />
+        )}
       </Flex>
     </Card>
   );
