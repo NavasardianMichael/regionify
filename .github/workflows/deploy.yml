@@ -49,6 +49,10 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
+      # Same Dockerfile as on the production host (`Deploy server` runs docker compose there; logs show here).
+      - name: Verify server Docker image builds
+        run: docker build -f server/Dockerfile .
+
       - name: Create client archive
         run: tar -czf client-build.tar.gz -C client/dist/client .
 
@@ -153,7 +157,7 @@ jobs:
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
 
-          # Deploy with Docker (entrypoint.sh runs prisma migrate deploy before starting the server)
+          # Docker build runs on this host (not on GitHub runners). Keep server/Dockerfile in sync with CI verify step.
           docker compose -f docker-compose.prod.yml build --no-cache server
           docker compose -f docker-compose.prod.yml down server --remove-orphans || true
           docker compose -f docker-compose.prod.yml up -d

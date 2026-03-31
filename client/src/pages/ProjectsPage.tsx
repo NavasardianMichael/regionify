@@ -55,12 +55,12 @@ const ProjectsPage: FC = () => {
   return (
     <>
       <Flex vertical className="mx-auto h-full w-full" gap="middle">
-        <Flex align="center" justify="space-between" wrap="wrap" gap="small">
+        <Flex align="center" justify="space-between" wrap="wrap" gap="middle">
           <Typography.Title level={2} className="text-primary mb-0! text-xl font-bold">
             {t('projects.title')}
           </Typography.Title>
           {projects.length > 0 && (
-            <Flex gap="small">
+            <Flex gap="middle">
               <Input.Search
                 placeholder={t('projects.searchPlaceholder')}
                 className="w-64"

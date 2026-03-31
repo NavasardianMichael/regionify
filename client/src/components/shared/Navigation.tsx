@@ -28,7 +28,7 @@ import logoImage from '@/assets/images/logo/logo-high-resolution-with-text_small
 import { logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { useIsMdUp } from '@/hooks/useIsMdUp';
+import { useIsLgUp } from '@/hooks/useIsLgUp';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
@@ -48,7 +48,7 @@ export const Navigation: FC = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTypedTranslation();
   const { message } = useAppFeedback();
-  const isMdUp = useIsMdUp();
+  const isLgUp = useIsLgUp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const user = useProfileStore(selectUser);
@@ -70,7 +70,7 @@ export const Navigation: FC = () => {
     queueMicrotask(() => {
       setMobileMenuOpen(false);
     });
-  }, [location.pathname, isMdUp]);
+  }, [location.pathname, isLgUp]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -112,7 +112,7 @@ export const Navigation: FC = () => {
 
   const getNavLinkClassName = (path: string) => {
     const isActive = location.pathname === path;
-    return `flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+    return `flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium transition-colors lg:gap-2 lg:px-4 ${
       isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
     }`;
   };
@@ -142,7 +142,7 @@ export const Navigation: FC = () => {
   );
 
   const desktopTrailing = (
-    <Flex align="center" gap={16}>
+    <Flex align="center" gap={12} className="flex-1 justify-end lg:gap-4">
       <Flex component="ul" gap={4}>
         {publicNavItems.map((item) => (
           <li key={item.path}>
@@ -259,18 +259,14 @@ export const Navigation: FC = () => {
   return (
     <>
       <nav className="shrink-0 border-b border-gray-200 bg-white px-3 py-3 md:px-6">
-        <Flex align="center" justify="space-between">
-          <Link to={ROUTES.HOME}>
-            <img
-              src={logoImage}
-              alt={t('appName')}
-              className="h-10 w-auto md:h-12"
-              width={120}
-              height={32}
-              fetchPriority="high"
-            />
+        <Flex align="center" justify="space-between" gap={8} className="min-w-0">
+          <Link
+            to={ROUTES.HOME}
+            className="flex shrink-0 items-center outline-offset-2 [&_img]:max-h-10 [&_img]:w-auto [&_img]:max-w-[min(160px,42vw)] [&_img]:object-contain [&_img]:object-left md:[&_img]:max-h-11 lg:[&_img]:max-h-12 lg:[&_img]:max-w-none"
+          >
+            <img src={logoImage} alt={t('appName')} fetchPriority="high" />
           </Link>
-          {isMdUp ? (
+          {isLgUp ? (
             desktopTrailing
           ) : (
             <Flex align="center" gap={8}>

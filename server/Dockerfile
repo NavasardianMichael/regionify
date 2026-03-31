@@ -7,7 +7,8 @@
 # -----------------------------------------------------------------------------
 FROM node:22-alpine AS builder
 
-RUN apk add --no-cache libc6-compat && \
+# glibc compat for musl (libc6-compat removed from Alpine 3.19+; gcompat is the replacement)
+RUN apk add --no-cache gcompat && \
     corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
@@ -43,7 +44,7 @@ FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
 ENV CLIENT_STATIC_DIR=/app/client/dist/client
 
-RUN apk add --no-cache libc6-compat && \
+RUN apk add --no-cache gcompat && \
     corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app

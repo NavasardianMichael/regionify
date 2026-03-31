@@ -71,3 +71,6 @@ jobs:
 
       - name: Build all packages
         run: pnpm build
+
+      - name: Verify server Docker image builds
+        run: docker build -f server/Dockerfile .
