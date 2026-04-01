@@ -339,6 +339,8 @@ const pt: CommonNs = {
         value: 'Pesquisar por valor',
         time: 'Pesquisar por tempo',
       },
+      googleSheetsSyncReadOnlyNote:
+        'Este projeto sincroniza dados com a sua folha Google associada. A tabela é atualizada automaticamente a partir da folha; não pode editar valores, selecionar linhas nem usar ações de linha aqui. Ordenação e pesquisa por coluna continuam disponíveis. Altere os dados na folha ou mude o tipo de importação para editar nesta janela.',
     },
     legendConfig: {
       sectionTitle: 'Configuração da legenda',

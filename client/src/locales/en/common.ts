@@ -333,6 +333,8 @@ const en: CommonNs = {
         value: 'Search by value',
         time: 'Search by time',
       },
+      googleSheetsSyncReadOnlyNote:
+        'This project syncs data from your linked Google Sheet. The table refreshes from the sheet automatically, so you cannot edit values, select rows, or use row actions here. Sorting and column search still work. Change data in the spreadsheet, or switch import type if you need to edit in this modal.',
     },
     legendConfig: {
       sectionTitle: 'Legend Configuration',

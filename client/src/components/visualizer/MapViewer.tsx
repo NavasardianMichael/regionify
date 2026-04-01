@@ -59,6 +59,9 @@ type MapViewerProps = {
   className?: string;
 };
 
+/** Shift slightly toward the bottom edge so the mark sits under the control stack instead of on it. */
+const OBSERVER_WATERMARK_BOTTOM_BELOW_ZOOM_ANCHOR_PX = 24;
+
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
@@ -658,9 +661,22 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             </div>
           )}
 
-          {/* Watermark for observer plan */}
+          {/* Watermark for observer plan — offset when zoom UI is shown so it does not cover controls */}
           {plan === PLANS.observer && (
-            <div className="pointer-events-none absolute right-3 bottom-3 z-10 flex items-center gap-1.5 opacity-40 select-none">
+            <div
+              className="pointer-events-none absolute z-10 flex items-center gap-1.5 opacity-40 select-none"
+              style={
+                zoomControls.show
+                  ? {
+                      right: zoomControls.position.x,
+                      bottom: Math.max(
+                        0,
+                        zoomControls.position.y - OBSERVER_WATERMARK_BOTTOM_BELOW_ZOOM_ANCHOR_PX,
+                      ),
+                    }
+                  : { right: 12, bottom: 12 }
+              }
+            >
               <img src="/favicon-32x32.png" alt="" className="h-4 w-4" draggable={false} />
               <Typography.Text className="text-xs font-semibold tracking-wide text-gray-500">
                 Regionify

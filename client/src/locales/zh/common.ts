@@ -319,6 +319,8 @@ const zh: CommonNs = {
         value: '按数值搜索',
         time: '按时间搜索',
       },
+      googleSheetsSyncReadOnlyNote:
+        '本项目从已关联的 Google 表格同步数据，内容会随工作表自动更新；此处不能编辑数值、选择行或使用行操作。排序与列内搜索仍可使用。请在电子表格中修改数据，或改用其他导入方式以在此对话框中编辑。',
     },
     legendConfig: {
       sectionTitle: '图例配置',

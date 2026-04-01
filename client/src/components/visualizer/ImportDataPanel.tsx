@@ -62,7 +62,7 @@ import { ImportFormatInfoTooltip } from '@/components/visualizer/ImportDataPanel
 import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPanel/SwitchModeConfirmContent';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
-const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal'));
+const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal/Modal'));
 const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
 
 const SUCCESS_MESSAGE_DURATION = 5;
@@ -128,6 +128,8 @@ export const ImportDataPanel: FC = () => {
   const googleUrl = useVisualizerStore((s) => s.google.url);
   const googleGid = useVisualizerStore((s) => s.google.gid);
   const isGoogleSheetSyncLoading = useVisualizerStore((s) => s.isGoogleSheetSyncLoading);
+
+  const isGoogleSheetsLiveSync = importDataType === IMPORT_DATA_TYPES.sheets && Boolean(googleUrl);
 
   /** Auto-detected: current data is panel/dynamic (has time dimension). */
   const hasHistoricalFormat = useMemo(() => {
@@ -1045,6 +1047,7 @@ export const ImportDataPanel: FC = () => {
             onClose={() => setIsManualModalOpen(false)}
             mapRegionIds={svgTitles}
             historicalDataImport={limits.historicalDataImport}
+            googleSheetsSyncReadOnly={isGoogleSheetsLiveSync}
           />
         </Suspense>
       )}

@@ -326,6 +326,7 @@ export type CommonNs = {
         value: string;
         time: string;
       };
+      googleSheetsSyncReadOnlyNote: string;
     };
     legendConfig: {
       sectionTitle: string;

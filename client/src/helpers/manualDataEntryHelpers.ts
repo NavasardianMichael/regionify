@@ -25,6 +25,13 @@ export const isTimelineManualEntryMode = (
 ): boolean =>
   historicalDataImport && timePeriods.length > 0 && Object.keys(timelineData).length > 0;
 
+/** Stable React/dnd key for a saved static row (one row per map region id). */
+export const manualEntryRowKeyStatic = (regionId: string): string => `me:static:${regionId}`;
+
+/** Stable key for a timeline row (region × time period). */
+export const manualEntryRowKeyTimeline = (timePeriod: string, regionId: string): string =>
+  `me:tl:${timePeriod}:${regionId}`;
+
 export const createEmptyStaticRow = (): DataRow => ({
   key: generateRandomId(),
   id: '',
@@ -144,7 +151,7 @@ export const rowsFromTimeline = (
       const r = data.byId[regionId];
       if (!r) continue;
       rows.push({
-        key: generateRandomId(),
+        key: manualEntryRowKeyTimeline(period, r.id),
         id: r.id,
         label: r.label,
         value: r.value,
@@ -164,7 +171,7 @@ export const rowsFromStaticData = (storeData: LocalDataState): DataRow[] => {
   return storeData.allIds.map((storeId) => {
     const r = storeData.byId[storeId];
     return {
-      key: generateRandomId(),
+      key: manualEntryRowKeyStatic(storeId),
       id: r.id,
       label: r.label,
       value: r.value,
