@@ -1,4 +1,4 @@
-/** Default home SEO copy (aligned with `client/src/locales/en/common.ts` home + index.html). */
+/** Default home SEO copy (aligned with `client/src/locales/en.ts` home + index.html). */
 export const HOME_PAGE_DEFAULT = {
   documentTitle: 'Regionify - Interactive Map Visualization Tool',
   metaDescription:

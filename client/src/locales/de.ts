@@ -1,4 +1,4 @@
-import type { CommonNs } from '../types';
+import type { CommonNs } from './types';
 
 const de: CommonNs = {
   appName: 'Regionskarte',
@@ -348,7 +348,7 @@ const de: CommonNs = {
         time: 'Nach Zeit suchen',
       },
       googleSheetsSyncReadOnlyNote:
-        'Dieses Projekt synchronisiert Daten mit Ihrer verknüpften Google-Tabelle. Die Tabelle wird automatisch aus dem Sheet aktualisiert; Werte bearbeiten, Zeilen auswählen und Zeilenaktionen sind hier deaktiviert. Sortierung und Suche in den Spalten funktionieren weiterhin. Ändern Sie Daten in der Tabelle oder wählen Sie einen anderen Importtyp zum Bearbeiten in diesem Dialog.',
+        'Dieses Projekt synchronisiert Daten mit Ihrer verknüpften Google-Tabelle. Werte lassen sich daher hier nicht manuell bearbeiten. Ändern Sie die Daten in der Tabelle, oder wechseln Sie den Importtyp, wenn Sie in der App bearbeiten möchten.',
     },
     legendConfig: {
       sectionTitle: 'Legendenkonfiguration',

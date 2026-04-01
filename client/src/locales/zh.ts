@@ -1,4 +1,4 @@
-import type { CommonNs } from '../types';
+import type { CommonNs } from './types';
 
 const zh: CommonNs = {
   appName: '区域地图',
@@ -320,7 +320,7 @@ const zh: CommonNs = {
         time: '按时间搜索',
       },
       googleSheetsSyncReadOnlyNote:
-        '本项目从已关联的 Google 表格同步数据，内容会随工作表自动更新；此处不能编辑数值、选择行或使用行操作。排序与列内搜索仍可使用。请在电子表格中修改数据，或改用其他导入方式以在此对话框中编辑。',
+        '本项目会从已关联的 Google 表格同步数据，因此无法在此手动编辑数值。请在电子表格中修改数据；若需在应用内编辑，请改用其他导入类型。',
     },
     legendConfig: {
       sectionTitle: '图例配置',

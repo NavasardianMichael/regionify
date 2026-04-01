@@ -1,4 +1,4 @@
-import type { CommonNs } from '../types';
+import type { CommonNs } from './types';
 
 const en: CommonNs = {
   appName: 'Region Map',
@@ -334,7 +334,7 @@ const en: CommonNs = {
         time: 'Search by time',
       },
       googleSheetsSyncReadOnlyNote:
-        'This project syncs data from your linked Google Sheet. The table refreshes from the sheet automatically, so you cannot edit values, select rows, or use row actions here. Sorting and column search still work. Change data in the spreadsheet, or switch import type if you need to edit in this modal.',
+        'This project syncs data from your linked Google Sheet, so you cannot edit values manually here. Change data in the spreadsheet, or switch import type if you need to edit in app.',
     },
     legendConfig: {
       sectionTitle: 'Legend Configuration',

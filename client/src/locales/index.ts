@@ -1,12 +1,12 @@
 import type { Locale } from '@regionify/shared';
-import de from './de/common';
-import en from './en/common';
-import es from './es/common';
-import fr from './fr/common';
-import pt from './pt/common';
-import ru from './ru/common';
+import de from './de';
+import en from './en';
+import es from './es';
+import fr from './fr';
+import pt from './pt';
+import ru from './ru';
 import type { CommonNs } from './types';
-import zh from './zh/common';
+import zh from './zh';
 
 export type { CommonNs } from './types';
 

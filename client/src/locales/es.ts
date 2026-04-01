@@ -1,4 +1,4 @@
-import type { CommonNs } from '../types';
+import type { CommonNs } from './types';
 
 const es: CommonNs = {
   appName: 'Mapa de regiones',
@@ -344,7 +344,7 @@ const es: CommonNs = {
         time: 'Buscar por tiempo',
       },
       googleSheetsSyncReadOnlyNote:
-        'Este proyecto sincroniza los datos con tu hoja de Google vinculada. La tabla se actualiza automáticamente desde la hoja; no puedes editar valores, seleccionar filas ni usar acciones de fila aquí. Ordenar y buscar por columnas sigue disponible. Cambia los datos en la hoja o el tipo de importación si necesitas editar en este cuadro.',
+        'Este proyecto sincroniza los datos con tu hoja de Google vinculada, por lo que no puedes editar los valores manualmente aquí. Modifica los datos en la hoja de cálculo o cambia el tipo de importación si necesitas editar en la aplicación.',
     },
     legendConfig: {
       sectionTitle: 'Configuración de leyenda',
