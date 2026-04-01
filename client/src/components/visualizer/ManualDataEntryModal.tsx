@@ -2,8 +2,11 @@ import {
   type ChangeEvent,
   type FC,
   type KeyboardEvent,
+  startTransition,
   useCallback,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -25,6 +28,7 @@ import {
   Input,
   InputNumber,
   type InputProps,
+  type InputRef,
   Modal,
   type ModalProps,
   Table,
@@ -32,7 +36,12 @@ import {
   Typography,
 } from 'antd';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import type { FilterDropdownProps, FilterValue, SorterResult } from 'antd/es/table/interface';
+import type {
+  FilterDropdownProps,
+  FilterValue,
+  SorterResult,
+  TableCurrentDataSource,
+} from 'antd/es/table/interface';
 import {
   selectClearTimelineData,
   selectData,
@@ -115,6 +124,80 @@ function sortTableData(
 
 const EMPTY_FILTERS: ColumnFilters = { id: '', label: '', value: '', time: '' };
 
+type ManualEntryTextFilterBodyProps = {
+  columnKey: ColumnFilterKey;
+  visible: boolean;
+  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFilters>>;
+  placeholder: string;
+  filtersRef: React.MutableRefObject<ColumnFilters>;
+};
+
+/**
+ * Stable filter body: keeps a local input value while the dropdown stays open so the Table
+ * column's `filterDropdown` reference does not change every keystroke (which would break filtering).
+ */
+const ManualEntryTextFilterBody: FC<ManualEntryTextFilterBodyProps> = ({
+  columnKey,
+  visible,
+  setColumnFilters,
+  placeholder,
+  filtersRef,
+}) => {
+  const inputRef = useRef<InputRef>(null);
+  const [text, setText] = useState('');
+
+  useLayoutEffect(() => {
+    if (!visible) return;
+    setText(filtersRef.current[columnKey]);
+  }, [visible, columnKey, filtersRef]);
+
+  useLayoutEffect(() => {
+    if (!visible) return;
+    const focusInput = () => {
+      const inst = inputRef.current;
+      if (!inst) return;
+      const el = inst.input;
+      (el ?? inst).focus({ preventScroll: true });
+      if (el && typeof el.setSelectionRange === 'function') {
+        const len = el.value?.length ?? 0;
+        el.setSelectionRange(len, len);
+      }
+    };
+    focusInput();
+    const t1 = window.setTimeout(focusInput, 0);
+    const t2 = window.setTimeout(focusInput, 100);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [visible]);
+
+  const stopFilterKeyPropagation = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+  }, []);
+
+  return (
+    <div className="w-52 p-2">
+      <Input
+        ref={inputRef}
+        allowClear
+        variant="outlined"
+        prefix={<SearchOutlined className="text-[rgba(0,0,0,0.45)]" />}
+        placeholder={placeholder}
+        value={text}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          const v = e.target.value;
+          setText(v);
+          startTransition(() => {
+            setColumnFilters((f) => ({ ...f, [columnKey]: v }));
+          });
+        }}
+        onKeyDown={stopFilterKeyPropagation}
+      />
+    </div>
+  );
+};
+
 const ManualDataEntryModal: FC<Props> = ({
   open,
   onClose,
@@ -139,6 +222,10 @@ const ManualDataEntryModal: FC<Props> = ({
   );
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilters>({ ...EMPTY_FILTERS });
+  const columnFiltersRef = useRef(columnFilters);
+  useLayoutEffect(() => {
+    columnFiltersRef.current = columnFilters;
+  }, [columnFilters]);
   const [sortedInfo, setSortedInfo] = useState<{
     field?: string;
     order?: 'ascend' | 'descend';
@@ -394,38 +481,76 @@ const ManualDataEntryModal: FC<Props> = ({
     [HeaderWrapper, BodyWrapper],
   );
 
-  const makeTextFilterDropdown = useCallback(
-    (columnKey: ColumnFilterKey): TableColumnType<DataRow>['filterDropdown'] => {
-      function ManualFilterDropdown({ close }: FilterDropdownProps) {
-        return (
-          <Flex
-            vertical
-            className="w-52 p-2"
-            role="search"
-            tabIndex={-1}
-            onKeyDown={(e: KeyboardEvent) => e.stopPropagation()}
-          >
-            <Input
-              allowClear
-              prefix={<SearchOutlined className="text-gray-400" />}
-              placeholder={t(`visualizer.manualEntry.filterPlaceholder.${columnKey}`)}
-              value={columnFilters[columnKey]}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setColumnFilters((f) => ({ ...f, [columnKey]: e.target.value }))
-              }
-            />
-            <Flex justify="flex-end" className="mt-2">
-              <Button type="link" size="small" onClick={() => close()}>
-                {t('visualizer.manualEntry.filterClose')}
-              </Button>
-            </Flex>
-          </Flex>
-        );
-      }
-      return ManualFilterDropdown;
-    },
-    [columnFilters, t],
+  const manualEntryFilterDropdownProps = useMemo(
+    () => ({
+      autoFocus: true,
+      getPopupContainer: (triggerNode: HTMLElement): HTMLElement => {
+        const root = triggerNode.closest('.ant-modal-content');
+        return root instanceof HTMLElement ? root : document.body;
+      },
+    }),
+    [],
   );
+
+  const idFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
+    function IdFilterDropdown(props: FilterDropdownProps) {
+      return (
+        <ManualEntryTextFilterBody
+          columnKey="id"
+          visible={props.visible}
+          setColumnFilters={setColumnFilters}
+          placeholder={t('visualizer.manualEntry.filterPlaceholder.id')}
+          filtersRef={columnFiltersRef}
+        />
+      );
+    }
+    return IdFilterDropdown;
+  }, [t]);
+
+  const labelFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
+    function LabelFilterDropdown(props: FilterDropdownProps) {
+      return (
+        <ManualEntryTextFilterBody
+          columnKey="label"
+          visible={props.visible}
+          setColumnFilters={setColumnFilters}
+          placeholder={t('visualizer.manualEntry.filterPlaceholder.label')}
+          filtersRef={columnFiltersRef}
+        />
+      );
+    }
+    return LabelFilterDropdown;
+  }, [t]);
+
+  const valueFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
+    function ValueFilterDropdown(props: FilterDropdownProps) {
+      return (
+        <ManualEntryTextFilterBody
+          columnKey="value"
+          visible={props.visible}
+          setColumnFilters={setColumnFilters}
+          placeholder={t('visualizer.manualEntry.filterPlaceholder.value')}
+          filtersRef={columnFiltersRef}
+        />
+      );
+    }
+    return ValueFilterDropdown;
+  }, [t]);
+
+  const timeFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
+    function TimeFilterDropdown(props: FilterDropdownProps) {
+      return (
+        <ManualEntryTextFilterBody
+          columnKey="time"
+          visible={props.visible}
+          setColumnFilters={setColumnFilters}
+          placeholder={t('visualizer.manualEntry.filterPlaceholder.time')}
+          filtersRef={columnFiltersRef}
+        />
+      );
+    }
+    return TimeFilterDropdown;
+  }, [t]);
 
   const tableColumns = useMemo((): TableColumnType<DataRow>[] => {
     const middleBuilders: Record<MiddleColKey, () => TableColumnType<DataRow>> = {
@@ -435,8 +560,9 @@ const ManualDataEntryModal: FC<Props> = ({
         sorter: (a: DataRow, b: DataRow) =>
           a.id.trim().localeCompare(b.id.trim(), undefined, { numeric: true }),
         sortOrder: sortedInfo.field === 'id' ? sortedInfo.order : null,
-        filtered: Boolean(columnFilters.id),
-        filterDropdown: makeTextFilterDropdown('id'),
+        filtered: Boolean(columnFilters.id.trim()),
+        filterDropdown: idFilterDropdown,
+        filterDropdownProps: manualEntryFilterDropdownProps,
         filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
@@ -457,8 +583,9 @@ const ManualDataEntryModal: FC<Props> = ({
         sorter: (a: DataRow, b: DataRow) =>
           a.label.trim().localeCompare(b.label.trim(), undefined, { numeric: true }),
         sortOrder: sortedInfo.field === 'label' ? sortedInfo.order : null,
-        filtered: Boolean(columnFilters.label),
-        filterDropdown: makeTextFilterDropdown('label'),
+        filtered: Boolean(columnFilters.label.trim()),
+        filterDropdown: labelFilterDropdown,
+        filterDropdownProps: manualEntryFilterDropdownProps,
         filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
@@ -476,8 +603,9 @@ const ManualDataEntryModal: FC<Props> = ({
         title: <SortableColumnTitle id="value" title={t('visualizer.manualEntry.colValue')} />,
         sorter: (a: DataRow, b: DataRow) => a.value - b.value,
         sortOrder: sortedInfo.field === 'value' ? sortedInfo.order : null,
-        filtered: Boolean(columnFilters.value),
-        filterDropdown: makeTextFilterDropdown('value'),
+        filtered: Boolean(columnFilters.value.trim()),
+        filterDropdown: valueFilterDropdown,
+        filterDropdownProps: manualEntryFilterDropdownProps,
         filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
@@ -496,8 +624,9 @@ const ManualDataEntryModal: FC<Props> = ({
         title: <SortableColumnTitle id="time" title={t('visualizer.manualEntry.colTime')} />,
         sorter: (a: DataRow, b: DataRow) => compareTimePeriodForSort(a.timePeriod, b.timePeriod),
         sortOrder: sortedInfo.field === 'time' ? sortedInfo.order : null,
-        filtered: Boolean(columnFilters.time),
-        filterDropdown: makeTextFilterDropdown('time'),
+        filtered: Boolean(columnFilters.time.trim()),
+        filterDropdown: timeFilterDropdown,
+        filterDropdownProps: manualEntryFilterDropdownProps,
         filterIcon: (filtered: boolean) => (
           <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
         ),
@@ -625,7 +754,11 @@ const ManualDataEntryModal: FC<Props> = ({
     isTimelineMode,
     sortedInfo,
     columnFilters,
-    makeTextFilterDropdown,
+    idFilterDropdown,
+    labelFilterDropdown,
+    valueFilterDropdown,
+    timeFilterDropdown,
+    manualEntryFilterDropdownProps,
     t,
     placeholderRegionId,
     placeholderLabel,
@@ -657,7 +790,9 @@ const ManualDataEntryModal: FC<Props> = ({
       _pagination: TablePaginationConfig,
       _filters: Record<string, FilterValue | null>,
       sorter: SorterResult<DataRow> | SorterResult<DataRow>[],
+      extra: TableCurrentDataSource<DataRow>,
     ) => {
+      if (extra.action !== 'sort') return;
       const s = Array.isArray(sorter) ? sorter[0] : sorter;
       let field: string | undefined;
       if (s && 'field' in s && s.field != null) {
@@ -760,6 +895,7 @@ const ManualDataEntryModal: FC<Props> = ({
       centered
       className="w-4/5! lg:w-2/3! [&_.ant-table-thead>tr>th]:text-xs"
       destroyOnHidden
+      focusable={{ trap: false }}
     >
       <Flex vertical gap="small" className="py-md">
         <Flex gap="small" justify="space-between" wrap="wrap">
@@ -802,7 +938,7 @@ const ManualDataEntryModal: FC<Props> = ({
             pagination={false}
             scroll={{ x: 720, y: '65vh' }}
             sortDirections={['ascend', 'descend']}
-            showSorterTooltip
+            showSorterTooltip={{ target: 'sorter-icon' }}
             onChange={onTableChange}
             rowClassName={rowClassName}
             components={tableComponents}
