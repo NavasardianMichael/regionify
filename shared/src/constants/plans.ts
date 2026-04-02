@@ -17,6 +17,8 @@ export type PlanDetails = {
     pictureQualityLimit: boolean;
     /** Max projects count (Observer = 5; paid = unlimited). */
     maxProjectsCount: number | null;
+    /** Max simultaneous active sessions per account (null = unlimited). */
+    maxConcurrentSessions: number | null;
     /** Advanced map/legend styling (Explorer+). */
     advancedStylesEnabled: boolean;
     /** Time-series import & timeline (Chronographer). */
@@ -39,6 +41,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       allowedAnimationFormats: [],
       pictureQualityLimit: true,
       maxProjectsCount: 5,
+      maxConcurrentSessions: 5,
       advancedStylesEnabled: false,
       historicalDataImport: false,
       animationExport: false,
@@ -53,6 +56,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       allowedAnimationFormats: [],
       pictureQualityLimit: false,
       maxProjectsCount: null,
+      maxConcurrentSessions: 5,
       advancedStylesEnabled: true,
       historicalDataImport: false,
       animationExport: false,
@@ -73,6 +77,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       allowedAnimationFormats: [EXPORT_TYPES.gif, EXPORT_TYPES.mp4],
       pictureQualityLimit: false,
       maxProjectsCount: null,
+      maxConcurrentSessions: 5,
       advancedStylesEnabled: true,
       historicalDataImport: true,
       animationExport: true,

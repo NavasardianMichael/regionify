@@ -31,6 +31,10 @@ export const ErrorCode = {
   // Email verification
   EMAIL_NOT_VERIFIED: 'EMAIL_NOT_VERIFIED',
 
+  // Plan limit errors
+  PROJECT_LIMIT_REACHED: 'PROJECT_LIMIT_REACHED',
+  SESSION_LIMIT_REACHED: 'SESSION_LIMIT_REACHED',
+
   // General errors
   NOT_FOUND: 'NOT_FOUND',
   FORBIDDEN: 'FORBIDDEN',

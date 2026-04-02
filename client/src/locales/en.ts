@@ -74,6 +74,7 @@ const en: CommonNs = {
     rows: {
       projectsLimited: 'Up to {{count}} saved projects',
       projectsUnlimited: 'Unlimited saved projects',
+      sessionsLimited: 'Up to {{count}} simultaneous devices',
       imageExport: '{{formats}} export, up to {{quality}}% quality',
       advancedStyles: 'Advanced map & legend styling',
       watermark: 'Watermark on image exports',
@@ -466,6 +467,9 @@ const en: CommonNs = {
     empty: 'No projects yet. Create your first map visualization!',
     emptyFiltered: 'No projects match your search.',
     cardNoCountry: 'No country',
+    limitReachedTitle: 'Project limit reached',
+    limitReachedContent:
+      'You have reached the Observer free plan limit of {{count}} projects. Delete at least one project to create a new one, or upgrade your plan.',
   },
   common: {
     loading: 'Loading...',
@@ -526,6 +530,9 @@ const en: CommonNs = {
     deleteProjectOk: 'Delete',
     loginFailed: 'Failed to login',
     signUpFailed: 'Failed to create account',
+    sessionLimitReached:
+      'Your account is already active on the maximum number of devices. Please log out from another device first.',
+    googleAuthFailed: 'Google sign-in failed. Please try again.',
   },
 };
 

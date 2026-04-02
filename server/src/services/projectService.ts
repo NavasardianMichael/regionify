@@ -1,5 +1,5 @@
 import type { Project } from '@prisma/client';
-import { ErrorCode, HttpStatus } from '@regionify/shared';
+import { ErrorCode, HttpStatus, PLAN_DETAILS } from '@regionify/shared';
 
 import { AppError } from '@/middleware/errorHandler.js';
 import {
@@ -7,6 +7,7 @@ import {
   type ProjectCreate,
   type ProjectUpdate,
 } from '@/repositories/projectRepository.js';
+import { userRepository } from '@/repositories/userRepository.js';
 
 export type ProjectEmbedSeoPublic = {
   title: string | null;
@@ -83,6 +84,21 @@ export const projectService = {
   },
 
   async createProject(userId: string, data: Omit<ProjectCreate, 'userId'>): Promise<ProjectPublic> {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'User not found');
+    }
+    const limit = PLAN_DETAILS[user.plan].limits.maxProjectsCount;
+    if (limit !== null) {
+      const count = await projectRepository.countByUserId(userId);
+      if (count >= limit) {
+        throw new AppError(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.PROJECT_LIMIT_REACHED,
+          `Project limit reached. Your plan allows up to ${limit} projects.`,
+        );
+      }
+    }
     const project = await projectRepository.create({ ...data, userId });
     return toPublicProject(project);
   },

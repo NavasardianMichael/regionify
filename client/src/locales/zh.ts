@@ -68,6 +68,7 @@ const zh: CommonNs = {
     rows: {
       projectsLimited: '最多 {{count}} 个已保存项目',
       projectsUnlimited: '不限已保存项目',
+      sessionsLimited: '最多 {{count}} 台同时使用的设备',
       imageExport: '{{formats}} 导出，质量最高 {{quality}}%',
       advancedStyles: '高级地图与图例样式',
       watermark: '图片导出带水印',
@@ -451,6 +452,9 @@ const zh: CommonNs = {
     empty: '还没有项目。创建您的第一张地图吧！',
     emptyFiltered: '没有找到匹配的项目。',
     cardNoCountry: '无国家',
+    limitReachedTitle: '已达到项目限制',
+    limitReachedContent:
+      '您已达到 Observer 免费计划的 {{count}} 个项目限制。请至少删除一个项目以创建新项目，或升级您的计划。',
   },
   common: {
     loading: '加载中...',
@@ -504,6 +508,8 @@ const zh: CommonNs = {
     deleteProjectOk: '删除',
     loginFailed: '登录失败',
     signUpFailed: '创建账户失败',
+    sessionLimitReached: '您的账户已在最大数量的设备上登录。请先在其他设备上退出登录。',
+    googleAuthFailed: 'Google 登录失败，请重试。',
   },
 };
 

@@ -1,5 +1,5 @@
-import { type FC, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { type FC, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { Button, Card, Divider, Form, Input, Typography } from 'antd';
 import { login, resendVerificationEmail } from '@/api/auth';
@@ -35,7 +35,19 @@ const LoginPage: FC = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const { message } = useAppFeedback();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const setUser = useProfileStore(selectSetUser);
+
+  const errorParam = searchParams.get('error');
+  const urlError = useMemo<string | null>(() => {
+    if (errorParam === 'session_limit') return t('messages.sessionLimitReached');
+    if (errorParam === 'google_auth_failed' || errorParam === 'session_error') {
+      return t('messages.googleAuthFailed');
+    }
+    return null;
+  }, [errorParam, t]);
+
+  const displayError = loginError ?? urlError;
 
   const handleSubmit = async (values: LoginFormValues) => {
     setLoading(true);
@@ -199,9 +211,9 @@ const LoginPage: FC = () => {
           />
         </Form.Item>
 
-        {loginError && (
+        {displayError && (
           <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">
-            {loginError}
+            {displayError}
             {isUnverifiedError && (
               <div className="mt-2">
                 <Button

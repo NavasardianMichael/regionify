@@ -76,6 +76,7 @@ const fr: CommonNs = {
     rows: {
       projectsLimited: "Jusqu'à {{count}} projets enregistrés",
       projectsUnlimited: 'Projets enregistrés illimités',
+      sessionsLimited: "Jusqu'à {{count}} appareils simultanés",
       imageExport: "Export {{formats}}, qualité jusqu'à {{quality}} %",
       advancedStyles: 'Styles avancés carte et légende',
       watermark: "Filigrane sur les exports d'images",
@@ -483,6 +484,9 @@ const fr: CommonNs = {
     empty: "Aucun projet pour l'instant. Créez votre première carte !",
     emptyFiltered: 'Aucun projet ne correspond à votre recherche.',
     cardNoCountry: 'Aucun pays',
+    limitReachedTitle: 'Limite de projets atteinte',
+    limitReachedContent:
+      'Vous avez atteint la limite du plan gratuit Observer de {{count}} projets. Supprimez au moins un projet pour en créer un nouveau, ou passez à un plan supérieur.',
   },
   common: {
     loading: 'Chargement...',
@@ -543,6 +547,9 @@ const fr: CommonNs = {
     deleteProjectOk: 'Supprimer',
     loginFailed: 'Échec de la connexion',
     signUpFailed: 'Échec de la création du compte',
+    sessionLimitReached:
+      "Votre compte est déjà actif sur le nombre maximum d'appareils. Veuillez vous déconnecter d'un autre appareil en premier.",
+    googleAuthFailed: 'La connexion avec Google a échoué. Veuillez réessayer.',
   },
 };
 

@@ -78,6 +78,7 @@ const de: CommonNs = {
     rows: {
       projectsLimited: 'Bis zu {{count}} gespeicherte Projekte',
       projectsUnlimited: 'Unbegrenzt gespeicherte Projekte',
+      sessionsLimited: 'Bis zu {{count}} gleichzeitige Geräte',
       imageExport: '{{formats}}-Export, bis zu {{quality}} % Qualität',
       advancedStyles: 'Erweiterte Karten- und Legendenstile',
       watermark: 'Wasserzeichen auf Bildexporten',
@@ -483,6 +484,9 @@ const de: CommonNs = {
     empty: 'Noch keine Projekte. Erstellen Sie Ihre erste Kartenvisualisierung!',
     emptyFiltered: 'Keine Projekte entsprechen Ihrer Suche.',
     cardNoCountry: 'Kein Land',
+    limitReachedTitle: 'Projektlimit erreicht',
+    limitReachedContent:
+      'Sie haben das Limit des kostenlosen Observer-Plans von {{count}} Projekten erreicht. Löschen Sie mindestens ein Projekt, um ein neues zu erstellen, oder upgraden Sie Ihren Plan.',
   },
   common: {
     loading: 'Laden...',
@@ -544,6 +548,9 @@ const de: CommonNs = {
     deleteProjectOk: 'Löschen',
     loginFailed: 'Anmeldung fehlgeschlagen',
     signUpFailed: 'Konto konnte nicht erstellt werden',
+    sessionLimitReached:
+      'Ihr Konto ist bereits auf der maximalen Anzahl von Geräten aktiv. Bitte melden Sie sich zuerst von einem anderen Gerät ab.',
+    googleAuthFailed: 'Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
   },
 };
 

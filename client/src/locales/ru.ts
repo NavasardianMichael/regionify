@@ -74,6 +74,7 @@ const ru: CommonNs = {
     rows: {
       projectsLimited: 'До {{count}} сохранённых проектов',
       projectsUnlimited: 'Неограниченно сохранённых проектов',
+      sessionsLimited: 'До {{count}} одновременных устройств',
       imageExport: 'Экспорт {{formats}}, качество до {{quality}}%',
       advancedStyles: 'Расширенные стили карты и легенды',
       watermark: 'Водяной знак на экспорте изображений',
@@ -471,6 +472,9 @@ const ru: CommonNs = {
     empty: 'Пока нет проектов. Создайте первую карту!',
     emptyFiltered: 'По вашему запросу ничего не найдено.',
     cardNoCountry: 'Без страны',
+    limitReachedTitle: 'Достигнут лимит проектов',
+    limitReachedContent:
+      'Вы достигли лимита бесплатного плана Observer в {{count}} проектов. Удалите хотя бы один проект, чтобы создать новый, или перейдите на более высокий план.',
   },
   common: {
     loading: 'Загрузка...',
@@ -530,6 +534,9 @@ const ru: CommonNs = {
     deleteProjectOk: 'Удалить',
     loginFailed: 'Не удалось войти',
     signUpFailed: 'Не удалось создать аккаунт',
+    sessionLimitReached:
+      'Ваш аккаунт уже активен на максимальном количестве устройств. Сначала выйдите из системы на другом устройстве.',
+    googleAuthFailed: 'Не удалось войти через Google. Пожалуйста, попробуйте ещё раз.',
   },
 };
 

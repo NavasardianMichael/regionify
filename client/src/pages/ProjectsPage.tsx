@@ -1,8 +1,11 @@
 import { type FC, lazy, Suspense, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Empty, Flex, Input, Spin, Typography } from 'antd';
+import { PLAN_DETAILS } from '@regionify/shared';
+import { Button, Empty, Flex, Input, Modal, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
+import { selectUser } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { useProjects } from '@/hooks/useProjects';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
@@ -16,6 +19,7 @@ const ProjectsPage: FC = () => {
   const { t } = useTypedTranslation();
   const navigate = useNavigate();
   const loadProject = useLoadProject();
+  const user = useProfileStore(selectUser);
   const {
     projects,
     filteredProjects,
@@ -49,8 +53,16 @@ const ProjectsPage: FC = () => {
   );
 
   const handleNewProject = useCallback(() => {
+    const limit = user ? PLAN_DETAILS[user.plan].limits.maxProjectsCount : null;
+    if (limit !== null && projects.length >= limit) {
+      Modal.warning({
+        title: t('projects.limitReachedTitle'),
+        content: t('projects.limitReachedContent', { count: limit }),
+      });
+      return;
+    }
     navigate(ROUTES.PROJECT_NEW);
-  }, [navigate]);
+  }, [navigate, projects.length, user, t]);
 
   return (
     <>

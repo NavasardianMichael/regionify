@@ -25,6 +25,11 @@ function buildPlanFeatures(planId: Plan, t: TypedT): BillingPlan['features'] {
       ? t('plans.rows.projectsUnlimited')
       : t('plans.rows.projectsLimited', { count: l.maxProjectsCount });
 
+  const sessionsText =
+    l.maxConcurrentSessions === null
+      ? null
+      : t('plans.rows.sessionsLimited', { count: l.maxConcurrentSessions });
+
   const imageExportText = t('plans.rows.imageExport', {
     formats: formatStillImageFormats(planId),
     quality: l.maxExportQuality,
@@ -36,6 +41,7 @@ function buildPlanFeatures(planId: Plan, t: TypedT): BillingPlan['features'] {
 
   const rows: BillingPlan['features'] = [
     { text: projectText, included: true },
+    ...(sessionsText ? [{ text: sessionsText, included: true }] : []),
     { text: imageExportText, included: true },
     { text: t('plans.rows.advancedStyles'), included: true },
     { text: watermarkText, included: true },

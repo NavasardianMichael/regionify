@@ -7,7 +7,6 @@ import {
   type ForgotPasswordInput,
   HttpStatus,
   type LoginInput,
-  PLANS,
   type RegisterInput,
   type RegisterResponse,
   type ResetPasswordInput,
@@ -31,9 +30,7 @@ function toPublicUser(user: User): UserPublic {
     name: user.name,
     avatarUrl: user.avatarUrl,
     provider: user.provider as AuthProvider,
-    // plan: user.plan as UserPublic['plan'],
-    // TODO - remove hardcoded plan after implementing real subscription management
-    plan: PLANS.observer as UserPublic['plan'],
+    plan: user.plan as UserPublic['plan'],
     locale: (user.locale ?? 'en') as UserPublic['locale'],
     createdAt: user.createdAt.toISOString(),
   };

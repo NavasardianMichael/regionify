@@ -74,6 +74,7 @@ const pt: CommonNs = {
     rows: {
       projectsLimited: 'Até {{count}} projetos guardados',
       projectsUnlimited: 'Projetos guardados ilimitados',
+      sessionsLimited: 'Até {{count}} dispositivos simultâneos',
       imageExport: 'Exportação {{formats}}, qualidade até {{quality}}%',
       advancedStyles: 'Estilos avançados de mapa e legenda',
       watermark: 'Marca de água nas exportações de imagem',
@@ -476,6 +477,9 @@ const pt: CommonNs = {
     empty: 'Ainda não há projetos. Crie a sua primeira visualização!',
     emptyFiltered: 'Nenhum projeto corresponde à pesquisa.',
     cardNoCountry: 'Sem país',
+    limitReachedTitle: 'Limite de projetos atingido',
+    limitReachedContent:
+      'Atingiu o limite do plano gratuito Observer de {{count}} projetos. Elimine pelo menos um projeto para criar um novo ou faça upgrade do seu plano.',
   },
   common: {
     loading: 'A carregar...',
@@ -535,6 +539,9 @@ const pt: CommonNs = {
     deleteProjectOk: 'Eliminar',
     loginFailed: 'Falha ao iniciar sessão',
     signUpFailed: 'Falha ao criar a conta',
+    sessionLimitReached:
+      'A sua conta já está ativa no número máximo de dispositivos. Por favor encerre sessão noutro dispositivo primeiro.',
+    googleAuthFailed: 'Falha ao iniciar sessão com Google. Por favor tente novamente.',
   },
 };
 

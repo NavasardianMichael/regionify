@@ -73,6 +73,7 @@ export type CommonNs = {
     rows: {
       projectsLimited: string;
       projectsUnlimited: string;
+      sessionsLimited: string;
       imageExport: string;
       advancedStyles: string;
       watermark: string;
@@ -457,6 +458,8 @@ export type CommonNs = {
     empty: string;
     emptyFiltered: string;
     cardNoCountry: string;
+    limitReachedTitle: string;
+    limitReachedContent: string;
   };
   common: {
     loading: string;
@@ -510,5 +513,7 @@ export type CommonNs = {
     deleteProjectOk: string;
     loginFailed: string;
     signUpFailed: string;
+    sessionLimitReached: string;
+    googleAuthFailed: string;
   };
 };

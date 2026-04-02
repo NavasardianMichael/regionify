@@ -1,7 +1,10 @@
 import {
   changePasswordSchema,
+  ErrorCode,
   forgotPasswordSchema,
+  HttpStatus,
   loginSchema,
+  PLAN_DETAILS,
   registerSchema,
   resetPasswordSchema,
   updateProfileSchema,
@@ -12,9 +15,12 @@ import passport from 'passport';
 
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
+import { AppError } from '@/middleware/errorHandler.js';
 import { authLimiter } from '@/middleware/rateLimiter.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { validate } from '@/middleware/validate.js';
+import { sessionRepository } from '@/repositories/sessionRepository.js';
+import { userRepository } from '@/repositories/userRepository.js';
 import { authService } from '@/services/authService.js';
 
 const router: ExpressRouter = Router();
@@ -38,6 +44,18 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
   try {
     const result = await authService.login(req.body);
 
+    // Enforce concurrent session limit
+    await sessionRepository.deleteExpiredByUserId(result.user.id);
+    const sessionCount = await sessionRepository.countActiveByUserId(result.user.id);
+    const sessionLimit = PLAN_DETAILS[result.user.plan].limits.maxConcurrentSessions;
+    if (sessionLimit !== null && sessionCount >= sessionLimit) {
+      throw new AppError(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.SESSION_LIMIT_REACHED,
+        `Your account is already active on ${sessionCount} device${sessionCount === 1 ? '' : 's'}. Please log out from another device first.`,
+      );
+    }
+
     // Regenerate session to prevent session fixation
     req.session.regenerate((err) => {
       if (err) {
@@ -45,6 +63,19 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
       }
 
       req.session.userId = result.user.id;
+
+      const expiresAt = new Date(Date.now() + env.SESSION_MAX_AGE);
+      sessionRepository
+        .create({
+          id: req.sessionID,
+          userId: result.user.id,
+          expiresAt,
+          userAgent: req.headers['user-agent'] ?? null,
+          ipAddress: req.ip ?? null,
+        })
+        .catch((sessionErr) =>
+          logger.error({ err: sessionErr }, 'Failed to create session record'),
+        );
 
       res.json({
         success: true,
@@ -58,12 +89,17 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
 
 // POST /api/auth/logout
 router.post('/logout', (req, res, next) => {
+  const sessionId = req.sessionID;
   req.session.destroy((err) => {
     if (err) {
       return next(err);
     }
 
     res.clearCookie('regionify.sid');
+
+    sessionRepository
+      .deleteById(sessionId)
+      .catch((sessionErr) => logger.error({ err: sessionErr }, 'Failed to delete session record'));
 
     res.json({
       success: true,
@@ -94,6 +130,19 @@ router.get('/google/callback', (req, res, next) => {
 
     const typedUser = user as { id: string };
 
+    // Enforce concurrent session limit
+    const dbUser = await userRepository.findById(typedUser.id);
+    if (!dbUser) {
+      logger.error({ userId: typedUser.id }, 'Google auth: user not found in DB');
+      return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+    }
+    await sessionRepository.deleteExpiredByUserId(typedUser.id);
+    const sessionCount = await sessionRepository.countActiveByUserId(typedUser.id);
+    const sessionLimit = PLAN_DETAILS[dbUser.plan].limits.maxConcurrentSessions;
+    if (sessionLimit !== null && sessionCount >= sessionLimit) {
+      return res.redirect(`${env.CLIENT_URL}/login?error=session_limit`);
+    }
+
     // Regenerate session and set user ID
     req.session.regenerate(async (sessionErr) => {
       if (sessionErr) {
@@ -102,6 +151,17 @@ router.get('/google/callback', (req, res, next) => {
       }
 
       req.session.userId = typedUser.id;
+
+      const expiresAt = new Date(Date.now() + env.SESSION_MAX_AGE);
+      sessionRepository
+        .create({
+          id: req.sessionID,
+          userId: typedUser.id,
+          expiresAt,
+          userAgent: req.headers['user-agent'] ?? null,
+          ipAddress: req.ip ?? null,
+        })
+        .catch((createErr) => logger.error({ err: createErr }, 'Failed to create session record'));
 
       // Fetch public user data to pass to client
       const publicUser = await authService.getUserById(typedUser.id);

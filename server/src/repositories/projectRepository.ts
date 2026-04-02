@@ -66,6 +66,10 @@ export const projectRepository = {
     });
   },
 
+  async countByUserId(userId: string): Promise<number> {
+    return prisma.project.count({ where: { userId } });
+  },
+
   async create(data: ProjectCreate): Promise<Project> {
     return prisma.project.create({
       data: normalizeJsonFields(data) as Prisma.ProjectUncheckedCreateInput,
