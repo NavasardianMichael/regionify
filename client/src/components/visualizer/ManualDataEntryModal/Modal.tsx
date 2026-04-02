@@ -10,6 +10,7 @@ import { createSortableTbodyWrapper, SortableBodyRow, useTableDnd } from './tabl
 import { tableTheme } from './tableTheme';
 import { useModalState } from './useModalState';
 import { useTableColumns } from './useTableColumns';
+import styles from './Modal.module.css';
 
 type Props = {
   open: boolean;
@@ -189,7 +190,7 @@ const ManualDataEntryModal: FC<Props> = ({
         </Flex>
       }
       centered
-      className="manual-data-entry-modal w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs"
+      className={`${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
       destroyOnHidden
       focusable={{ trap: false }}
     >

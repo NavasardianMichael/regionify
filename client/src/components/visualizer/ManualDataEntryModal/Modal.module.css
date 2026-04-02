@@ -1,0 +1,57 @@
+/* Narrower scrollbars on modal body + Ant Table scroll areas */
+.modal :global(.ant-modal-body),
+.modal :global(.ant-table-body),
+.modal :global(.ant-table-content) {
+  scrollbar-width: thin;
+  scrollbar-color: theme(colors.gray.300) transparent;
+}
+
+.modal :global(.ant-modal-body)::-webkit-scrollbar,
+.modal :global(.ant-table-body)::-webkit-scrollbar,
+.modal :global(.ant-table-content)::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.modal :global(.ant-modal-body)::-webkit-scrollbar-track,
+.modal :global(.ant-table-body)::-webkit-scrollbar-track,
+.modal :global(.ant-table-content)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal :global(.ant-modal-body)::-webkit-scrollbar-thumb,
+.modal :global(.ant-table-body)::-webkit-scrollbar-thumb,
+.modal :global(.ant-table-content)::-webkit-scrollbar-thumb {
+  background-color: theme(colors.gray.300);
+  border-radius: 2px;
+}
+
+.modal :global(.ant-modal-body)::-webkit-scrollbar-thumb:hover,
+.modal :global(.ant-table-body)::-webkit-scrollbar-thumb:hover,
+.modal :global(.ant-table-content)::-webkit-scrollbar-thumb:hover {
+  background-color: theme(colors.gray.400);
+}
+
+/* No gray fill on disabled editors inside this modal's table */
+.modal :global(.ant-table .ant-input-outlined.ant-input-disabled),
+.modal :global(.ant-table .ant-input-outlined[disabled]),
+.modal :global(.ant-table .ant-input-number-outlined.ant-input-number-disabled) {
+  background-color: #ffffff !important;
+}
+
+.modal :global(.ant-table .ant-input-number-disabled .ant-input-number-input) {
+  background-color: transparent !important;
+}
+
+/* Selection column: avoid extra width from table-layout: fixed distributing space */
+.modal :global(col.ant-table-selection-col) {
+  width: auto !important;
+  min-width: 0;
+}
+
+.modal :global(.ant-table-thead > tr > th.ant-table-selection-column),
+.modal :global(.ant-table-tbody > tr > td.ant-table-selection-column) {
+  width: 0.01%;
+  white-space: nowrap;
+  padding-inline: 6px;
+}
