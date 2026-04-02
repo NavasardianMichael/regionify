@@ -227,9 +227,9 @@ export const ImportDataPanel: FC = () => {
             }
             return `${r.id},${r.label},${r.value}`;
           });
-          content = headers + '\n' + csvRows.join('\n');
+          content = '\uFEFF' + headers + '\n' + csvRows.join('\n');
           filename = `${projectName}${suffix}.csv`;
-          mimeType = 'text/csv';
+          mimeType = 'text/csv;charset=utf-8';
           break;
         }
       }
@@ -324,9 +324,9 @@ export const ImportDataPanel: FC = () => {
             }
             return `${r.id},${r.label},${r.value}`;
           });
-          content = headers + '\n' + csvRows.join('\n');
+          content = '\uFEFF' + headers + '\n' + csvRows.join('\n');
           filename = `${baseName}.csv`;
-          mimeType = 'text/csv';
+          mimeType = 'text/csv;charset=utf-8';
           break;
         }
       }

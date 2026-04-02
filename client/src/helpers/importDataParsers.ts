@@ -32,8 +32,11 @@ export const hasIdColumn = (header: string): boolean => {
 
 export type ParseCSVResult = ParsedRow[] | { error: 'missing_id' };
 
+/** Strip UTF-8 BOM so headers like `id` parse after re-importing exported CSVs (export adds BOM for Excel). */
+const stripUtf8Bom = (s: string): string => s.replace(/^\uFEFF/, '');
+
 export const parseCSV = (content: string): ParseCSVResult => {
-  const lines = content.trim().split('\n');
+  const lines = stripUtf8Bom(content).trim().split('\n');
   const data: ParsedRow[] = [];
 
   const headerLine = lines[0] || '';
