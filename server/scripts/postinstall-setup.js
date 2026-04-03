@@ -68,7 +68,9 @@ loadServerEnvFiles();
 
 if (!process.env.DATABASE_URL) {
   console.log('ℹ️  No DATABASE_URL — skipping `prisma migrate deploy`.');
-  console.log('   Add server/.env (or .env.local / .env.development.local) to auto-apply migrations after install.\n');
+  console.log(
+    '   Add server/.env (or .env.local / .env.development.local) to auto-apply migrations after install.\n',
+  );
   console.log('✅ Post-install setup complete!\n');
   process.exit(0);
 }
@@ -83,8 +85,12 @@ try {
   console.log('✅ Migrations up to date\n');
 } catch (error) {
   console.warn('\n⚠️  `prisma migrate deploy` failed.');
-  console.warn('Common causes: database not running, wrong DATABASE_URL, or drift (baseline/resolve).');
-  console.warn('Fix locally, then re-run: pnpm --filter @regionify/server exec prisma migrate deploy\n');
+  console.warn(
+    'Common causes: database not running, wrong DATABASE_URL, or drift (baseline/resolve).',
+  );
+  console.warn(
+    'Fix locally, then re-run: pnpm --filter @regionify/server exec prisma migrate deploy\n',
+  );
   // Do not fail install: clones without DB should still get a working Prisma client.
 }
 

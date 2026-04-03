@@ -105,11 +105,11 @@ All Lemon Squeezy API calls and secrets stay on the server; the client only rece
 
 ## 7. Plan features (each plan includes all features of the previous)
 
-| Plan          | Export formats     | Quality | Historical data import   | Animation (GIF/MP4) |
-| ------------- | ------------------ | ------- | ------------------------ | ------------------- |
-| Observer      | PNG only           | 50% max | No                       | No                  |
-| Explorer      | PNG, SVG, JPEG     | 100%    | No                       | No                  |
-| Chronographer | PNG, SVG, JPEG, …  | 100%    | Yes (same format + time) | Yes                 |
+| Plan          | Export formats    | Quality | Historical data import   | Animation (GIF/MP4) |
+| ------------- | ----------------- | ------- | ------------------------ | ------------------- |
+| Observer      | PNG only          | 50% max | No                       | No                  |
+| Explorer      | PNG, SVG, JPEG    | 100%    | No                       | No                  |
+| Chronographer | PNG, SVG, JPEG, … | 100%    | Yes (same format + time) | Yes                 |
 
 Lemon Squeezy integration is **one-time payment** only. No subscriptions.
 
