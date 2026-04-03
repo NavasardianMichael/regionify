@@ -17,13 +17,11 @@ import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import {
-  MapStylesBackgroundSection,
-  MapStylesBorderSection,
-  MapStylesRegionLabelsSection,
-  MapStylesShadowSection,
-  MapStylesZoomSection,
-} from '@/components/visualizer/MapStylesPanel/sections';
+import { MapStylesBackgroundSection } from '@/components/visualizer/MapStylesPanel/sections/MapStylesBackgroundSection';
+import { MapStylesBorderSection } from '@/components/visualizer/MapStylesPanel/sections/MapStylesBorderSection';
+import { MapStylesRegionLabelsSection } from '@/components/visualizer/MapStylesPanel/sections/MapStylesRegionLabelsSection';
+import { MapStylesShadowSection } from '@/components/visualizer/MapStylesPanel/sections/MapStylesShadowSection';
+import { MapStylesZoomSection } from '@/components/visualizer/MapStylesPanel/sections/MapStylesZoomSection';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const DEBOUNCE_MS = 150;
