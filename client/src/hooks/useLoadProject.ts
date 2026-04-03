@@ -7,7 +7,7 @@ import type { RegionData } from '@/store/mapData/types';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { useProjectsStore } from '@/store/projects/store';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
-import type { CountryId, ImportDataType } from '@/types/mapData';
+import type { CountryId } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { readGoogleFromDataset } from '@/helpers/readGoogleFromDataset';
 
@@ -46,8 +46,7 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
     const { setItems } = useLegendDataStore.getState();
     const { setCurrentProjectId, setSavedStateSnapshot } = useProjectsStore.getState();
 
-    const importDataType =
-      (project.dataset?.importDataType as ImportDataType) ?? IMPORT_DATA_TYPES.csv;
+    const importDataType = project.dataset?.importDataType ?? IMPORT_DATA_TYPES.csv;
     const google = readGoogleFromDataset(project.dataset ?? null);
     const isSheetsSync = importDataType === IMPORT_DATA_TYPES.sheets && Boolean(google.url);
 

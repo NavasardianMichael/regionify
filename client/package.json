@@ -22,6 +22,7 @@
     "antd": "^6.2.3",
     "dompurify": "^3.3.1",
     "gifenc": "^1.0.3",
+    "i18n-iso-countries": "^7.14.0",
     "i18next": "^25.8.10",
     "react": "^19.2.0",
     "react-advanced-cropper": "^0.20.1",

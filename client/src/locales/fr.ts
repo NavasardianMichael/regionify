@@ -484,6 +484,11 @@ const fr: CommonNs = {
     empty: "Aucun projet pour l'instant. Créez votre première carte !",
     emptyFiltered: 'Aucun projet ne correspond à votre recherche.',
     cardNoCountry: 'Aucun pays',
+    cardCreated: 'Créé le {{date}}',
+    cardUpdated: 'Mis à jour le {{date}}',
+    dataSource: 'Données : {{type}}',
+    dataSourceNone: 'Aucun jeu de données',
+    cardRegionThumbnailAlt: 'Aperçu de la carte régionale',
     limitReachedTitle: 'Limite de projets atteinte',
     limitReachedContent:
       'Vous avez atteint la limite du plan gratuit Observer de {{count}} projets. Supprimez au moins un projet pour en créer un nouveau, ou passez à un plan supérieur.',

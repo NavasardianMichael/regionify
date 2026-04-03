@@ -1,5 +1,5 @@
-import { type FC, lazy, Suspense, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { type FC, lazy, startTransition, Suspense, useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
 import { PLAN_DETAILS } from '@regionify/shared';
 import { Button, Empty, Flex, Input, Modal, Spin, Typography } from 'antd';
@@ -18,7 +18,9 @@ const DeleteProjectModal = lazy(() => import('@/components/projects/DeleteProjec
 const ProjectsPage: FC = () => {
   const { t } = useTypedTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const loadProject = useLoadProject();
+  const [openingProjectId, setOpeningProjectId] = useState<string | null>(null);
   const user = useProfileStore(selectUser);
   const {
     projects,
@@ -37,10 +39,30 @@ const ProjectsPage: FC = () => {
     handleRenameCancel,
   } = useProjects();
 
+  useEffect(() => {
+    void import('@/pages/VisualizerPage');
+  }, []);
+
+  useEffect(() => {
+    const path = location.pathname;
+    const onSavedProjectRoute =
+      path.startsWith('/projects/') &&
+      path !== ROUTES.PROJECT_NEW &&
+      path !== ROUTES.PROJECT_EDITOR;
+    if (onSavedProjectRoute) {
+      setOpeningProjectId(null);
+    }
+  }, [location.pathname]);
+
   const handleOpen = useCallback(
     (project: Project) => {
-      loadProject(project);
-      navigate(getProjectRoute(project.id));
+      setOpeningProjectId(project.id);
+      requestAnimationFrame(() => {
+        loadProject(project);
+        startTransition(() => {
+          navigate(getProjectRoute(project.id));
+        });
+      });
     },
     [loadProject, navigate],
   );
@@ -119,6 +141,7 @@ const ProjectsPage: FC = () => {
                 onOpen={handleOpen}
                 onDelete={handleDelete}
                 onRename={handleRenameStart}
+                isOpening={openingProjectId === project.id}
               />
             ))}
           </Flex>

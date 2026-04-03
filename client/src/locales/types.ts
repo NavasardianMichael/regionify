@@ -458,6 +458,11 @@ export type CommonNs = {
     empty: string;
     emptyFiltered: string;
     cardNoCountry: string;
+    cardCreated: string;
+    cardUpdated: string;
+    dataSource: string;
+    dataSourceNone: string;
+    cardRegionThumbnailAlt: string;
     limitReachedTitle: string;
     limitReachedContent: string;
   };

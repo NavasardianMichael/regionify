@@ -477,6 +477,11 @@ const pt: CommonNs = {
     empty: 'Ainda não há projetos. Crie a sua primeira visualização!',
     emptyFiltered: 'Nenhum projeto corresponde à pesquisa.',
     cardNoCountry: 'Sem país',
+    cardCreated: 'Criado {{date}}',
+    cardUpdated: 'Atualizado {{date}}',
+    dataSource: 'Dados: {{type}}',
+    dataSourceNone: 'Sem dados',
+    cardRegionThumbnailAlt: 'Pré-visualização do mapa regional',
     limitReachedTitle: 'Limite de projetos atingido',
     limitReachedContent:
       'Atingiu o limite do plano gratuito Observer de {{count}} projetos. Elimine pelo menos um projeto para criar um novo ou faça upgrade do seu plano.',

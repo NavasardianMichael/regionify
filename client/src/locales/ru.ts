@@ -472,6 +472,11 @@ const ru: CommonNs = {
     empty: 'Пока нет проектов. Создайте первую карту!',
     emptyFiltered: 'По вашему запросу ничего не найдено.',
     cardNoCountry: 'Без страны',
+    cardCreated: 'Создано {{date}}',
+    cardUpdated: 'Обновлено {{date}}',
+    dataSource: 'Данные: {{type}}',
+    dataSourceNone: 'Нет набора данных',
+    cardRegionThumbnailAlt: 'Предпросмотр региональной карты',
     limitReachedTitle: 'Достигнут лимит проектов',
     limitReachedContent:
       'Вы достигли лимита бесплатного плана Observer в {{count}} проектов. Удалите хотя бы один проект, чтобы создать новый, или перейдите на более высокий план.',

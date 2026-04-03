@@ -467,6 +467,11 @@ const en: CommonNs = {
     empty: 'No projects yet. Create your first map visualization!',
     emptyFiltered: 'No projects match your search.',
     cardNoCountry: 'No country',
+    cardCreated: 'Created {{date}}',
+    cardUpdated: 'Updated {{date}}',
+    dataSource: 'Data: {{type}}',
+    dataSourceNone: 'No dataset',
+    cardRegionThumbnailAlt: 'Region map preview',
     limitReachedTitle: 'Project limit reached',
     limitReachedContent:
       'You have reached the Observer free plan limit of {{count}} projects. Delete at least one project to create a new one, or upgrade your plan.',

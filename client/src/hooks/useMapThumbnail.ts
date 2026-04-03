@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MAP_THUMBNAIL_SVG_FILL } from '@/constants/data';
 import { SVG_PATH_COORD_REGEX, SVG_PATH_NUMBERS_REGEX } from '@/constants/svgPath';
 import { loadMapSvg } from '@/helpers/mapLoader';
 
@@ -72,8 +73,8 @@ function computeViewBox(svgEl: SVGSVGElement): string | null {
 }
 
 /**
- * Loads the SVG for a region, injects a viewBox, fills all paths with the
- * primary color, and returns a data URL suitable for use in an <img> tag.
+ * Loads the SVG for a region, injects a viewBox, fills paths with a muted gray,
+ * and returns a data URL suitable for use in an <img> tag.
  */
 export const useMapThumbnail = (countryId: string | null): string | null => {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
@@ -93,9 +94,8 @@ export const useMapThumbnail = (countryId: string | null): string | null => {
       const viewBox = computeViewBox(svgEl as SVGSVGElement);
       if (viewBox) svgEl.setAttribute('viewBox', viewBox);
 
-      // Fill all paths with primary color
       svgEl.querySelectorAll('path').forEach((p) => {
-        p.setAttribute('fill', '#18294D');
+        p.setAttribute('fill', MAP_THUMBNAIL_SVG_FILL);
         p.removeAttribute('style');
       });
 

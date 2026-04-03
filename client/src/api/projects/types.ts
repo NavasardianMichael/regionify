@@ -1,9 +1,11 @@
 import type { RegionData } from '@/store/mapData/types';
+import type { ImportDataType } from '@/types/mapData';
 
 export type ProjectDataset = {
   allIds: string[];
   byId: Record<string, RegionData>;
-  importDataType: string;
+  /** Optional for legacy API payloads missing this field. */
+  importDataType?: ImportDataType;
   /** Present when data was imported from Google Sheets. */
   google?: {
     url: string;

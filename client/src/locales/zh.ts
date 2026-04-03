@@ -452,6 +452,11 @@ const zh: CommonNs = {
     empty: '还没有项目。创建您的第一张地图吧！',
     emptyFiltered: '没有找到匹配的项目。',
     cardNoCountry: '无国家',
+    cardCreated: '创建于 {{date}}',
+    cardUpdated: '更新于 {{date}}',
+    dataSource: '数据：{{type}}',
+    dataSourceNone: '无数据集',
+    cardRegionThumbnailAlt: '区域地图预览',
     limitReachedTitle: '已达到项目限制',
     limitReachedContent:
       '您已达到 Observer 免费计划的 {{count}} 个项目限制。请至少删除一个项目以创建新项目，或升级您的计划。',
