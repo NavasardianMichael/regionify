@@ -72,39 +72,83 @@ function computeViewBox(svgEl: SVGSVGElement): string | null {
   return `${minX - pad} ${minY - pad} ${maxX - minX + pad * 2} ${maxY - minY + pad * 2}`;
 }
 
+export type MapThumbnailState = {
+  url: string | null;
+  isLoading: boolean;
+};
+
 /**
  * Loads the SVG for a region, injects a viewBox, fills paths with a muted gray,
- * and returns a data URL suitable for use in an <img> tag.
+ * and returns a data URL suitable for use in an `<img>` tag.
  */
-export const useMapThumbnail = (countryId: string | null): string | null => {
+export const useMapThumbnail = (countryId: string | null): MapThumbnailState => {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!countryId) return;
 
     let cancelled = false;
-    loadMapSvg(countryId).then((raw) => {
-      if (cancelled || !raw) return;
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(raw, 'image/svg+xml');
-      const svgEl = doc.querySelector('svg');
-      if (!svgEl) return;
-
-      const viewBox = computeViewBox(svgEl as SVGSVGElement);
-      if (viewBox) svgEl.setAttribute('viewBox', viewBox);
-
-      svgEl.querySelectorAll('path').forEach((p) => {
-        p.setAttribute('fill', MAP_THUMBNAIL_SVG_FILL);
-        p.removeAttribute('style');
-      });
-
-      const serialized = new XMLSerializer().serializeToString(svgEl);
-      const blob = new Blob([serialized], { type: 'image/svg+xml' });
-      const url = URL.createObjectURL(blob);
-
-      if (!cancelled) setDataUrl(url);
+    queueMicrotask(() => {
+      if (!cancelled) setIsLoading(true);
     });
+
+    loadMapSvg(countryId)
+      .then((raw) => {
+        if (cancelled) return;
+
+        if (!raw) {
+          setDataUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return null;
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(raw, 'image/svg+xml');
+        const svgEl = doc.querySelector('svg');
+        if (!svgEl) {
+          setDataUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return null;
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const viewBox = computeViewBox(svgEl as SVGSVGElement);
+        if (viewBox) svgEl.setAttribute('viewBox', viewBox);
+
+        svgEl.querySelectorAll('path').forEach((p) => {
+          p.setAttribute('fill', MAP_THUMBNAIL_SVG_FILL);
+          p.removeAttribute('style');
+        });
+
+        const serialized = new XMLSerializer().serializeToString(svgEl);
+        const blob = new Blob([serialized], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+
+        if (!cancelled) {
+          setDataUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return url;
+          });
+          setIsLoading(false);
+        } else {
+          URL.revokeObjectURL(url);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDataUrl((prev) => {
+            if (prev) URL.revokeObjectURL(prev);
+            return null;
+          });
+          setIsLoading(false);
+        }
+      });
 
     return () => {
       cancelled = true;
@@ -112,8 +156,9 @@ export const useMapThumbnail = (countryId: string | null): string | null => {
         if (prev) URL.revokeObjectURL(prev);
         return null;
       });
+      setIsLoading(false);
     };
   }, [countryId]);
 
-  return dataUrl;
+  return { url: dataUrl, isLoading };
 };

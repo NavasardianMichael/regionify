@@ -20,8 +20,8 @@ import {
   SwapOutlined,
 } from '@ant-design/icons';
 import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
-import type { UploadProps } from 'antd';
-import { Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
+import type { RadioChangeEvent, UploadProps } from 'antd';
+import { Button, Flex, Radio, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import {
   selectClearTimelineData,
@@ -344,6 +344,17 @@ export const ImportDataPanel: FC = () => {
       value,
     }));
   }, [t]);
+
+  const handleImportDataTypeChange = useCallback(
+    (e: RadioChangeEvent) => {
+      const next = e.target.value as ImportDataType;
+      setVisualizerState({
+        importDataType: next,
+        ...(next !== IMPORT_DATA_TYPES.sheets ? { google: { url: null, gid: null } } : {}),
+      });
+    },
+    [setVisualizerState],
+  );
 
   /** Apply static mode: clear timeline and set data to sample (or empty if no region). */
   const applySwitchToStatic = useCallback(() => {
@@ -917,19 +928,16 @@ export const ImportDataPanel: FC = () => {
         </Flex>
       </Flex>
 
-      <Segmented
-        options={importFormatOptions}
-        value={importDataType}
-        onChange={(value: string | number) => {
-          const next = value as ImportDataType;
-          setVisualizerState({
-            importDataType: next,
-            ...(next !== IMPORT_DATA_TYPES.sheets ? { google: { url: null, gid: null } } : {}),
-          });
-        }}
-        block
-        aria-label={t('visualizer.importData.segmentedAria')}
-      />
+      <Flex vertical className="min-w-0">
+        <Radio.Group
+          options={importFormatOptions}
+          value={importDataType}
+          onChange={handleImportDataTypeChange}
+          orientation="vertical"
+          className="w-full min-w-0 [&_.ant-radio-wrapper]:mr-0! [&_.ant-radio-wrapper]:max-w-full [&_.ant-radio-wrapper]:items-start [&_.ant-radio-wrapper]:leading-snug [&_.ant-radio-wrapper]:whitespace-normal"
+          aria-label={t('visualizer.importData.segmentedAria')}
+        />
+      </Flex>
 
       {importActionComponents[importDataType]}
 

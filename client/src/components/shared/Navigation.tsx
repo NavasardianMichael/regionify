@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CloseOutlined,
   CreditCardOutlined,
+  DownOutlined,
   FolderOutlined,
   HomeOutlined,
   LoginOutlined,
@@ -147,11 +148,7 @@ export const Navigation: FC = () => {
         ))}
       </Flex>
       <div className="h-6 w-px bg-gray-200" aria-hidden />
-      <LanguageDropdown
-        variant="borderless"
-        currentLocale={i18n.language as Locale}
-        placement="bottomRight"
-      />
+      <LanguageDropdown currentLocale={i18n.language as Locale} placement="bottomRight" />
       <div className="h-6 w-px bg-gray-200" aria-hidden />
       {isLoggedIn ? (
         <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
@@ -166,7 +163,8 @@ export const Navigation: FC = () => {
                 alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
               />
             ) : null}
-            <span className="text-sm font-medium text-gray-700">{user?.name}</span>
+            <span className="min-w-0 truncate text-sm font-medium text-gray-700">{user?.name}</span>
+            <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
           </button>
         </Dropdown>
       ) : (
@@ -252,11 +250,7 @@ export const Navigation: FC = () => {
             desktopTrailing
           ) : (
             <Flex align="center" gap={8}>
-              <LanguageDropdown
-                variant="borderless"
-                currentLocale={i18n.language as Locale}
-                placement="bottomRight"
-              />
+              <LanguageDropdown currentLocale={i18n.language as Locale} placement="bottomRight" />
               <Button
                 type="text"
                 icon={<MenuOutlined />}

@@ -6,7 +6,7 @@ import {
   GlobalOutlined,
   InsertRowAboveOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Flex, Typography } from 'antd';
+import { Avatar, Button, Flex, Skeleton, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useMapThumbnail } from '@/hooks/useMapThumbnail';
 import type { ImportDataType } from '@/types/mapData';
@@ -162,7 +162,9 @@ const ProjectCard = memo<ProjectCardProps>(
       return getLocalizedRegionLabel(project.countryId, dateLocale) ?? t('projects.cardNoCountry');
     }, [dateLocale, project.countryId, t]);
 
-    const mapThumbnail = useMapThumbnail(project.countryId);
+    const { url: mapThumbnailUrl, isLoading: isThumbnailLoading } = useMapThumbnail(
+      project.countryId,
+    );
 
     const createdDateStr = useMemo(
       () => new Date(project.createdAt).toLocaleDateString(dateLocale, PROJECT_DATE_FORMAT_OPTIONS),
@@ -209,33 +211,57 @@ const ProjectCard = memo<ProjectCardProps>(
     );
 
     return (
-      <Card
-        hoverable
-        loading={isOpening}
-        className="w-full sm:max-w-80"
-        classNames={{ root: 'border-gray-300 border' }}
-        cover={
-          <ProjectCardCover
-            mapThumbnailUrl={mapThumbnail}
-            thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
-          />
-        }
-        actions={actions}
-        onClick={handleOpenClick}
-        aria-busy={isOpening}
-      >
-        <ProjectCardMetaSection
-          projectName={project.name}
-          description={
-            <ProjectCardMetaDescription
-              countryLabel={countryLabel}
-              dataSourceLine={dataSourceLine}
-              createdLine={createdLine}
-              updatedLine={updatedLine}
-            />
+      <div className="relative w-full sm:max-w-80">
+        <Card
+          hoverable
+          loading={isThumbnailLoading}
+          className="w-full"
+          classNames={{ root: 'border-gray-300 border' }}
+          cover={
+            isThumbnailLoading ? (
+              <Flex
+                align="center"
+                justify="center"
+                className="flex! h-36 w-full min-w-0 bg-gray-50 px-4"
+              >
+                <Skeleton.Image
+                  active
+                  className="inline-block! h-28 w-[min(100%,20rem)] max-w-full shrink-0"
+                />
+              </Flex>
+            ) : (
+              <ProjectCardCover
+                mapThumbnailUrl={mapThumbnailUrl}
+                thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
+              />
+            )
           }
-        />
-      </Card>
+          actions={actions}
+          onClick={handleOpenClick}
+          aria-busy={isOpening || isThumbnailLoading}
+        >
+          <ProjectCardMetaSection
+            projectName={project.name}
+            description={
+              <ProjectCardMetaDescription
+                countryLabel={countryLabel}
+                dataSourceLine={dataSourceLine}
+                createdLine={createdLine}
+                updatedLine={updatedLine}
+              />
+            }
+          />
+        </Card>
+        {isOpening ? (
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70"
+            aria-busy
+            aria-live="polite"
+          >
+            <Spin size="large" />
+          </div>
+        ) : null}
+      </div>
     );
   },
 );

@@ -1,6 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
+import { DownOutlined } from '@ant-design/icons';
 import type { Locale } from '@regionify/shared';
-import { Flex, Select, type SelectProps } from 'antd';
+import { Dropdown, type DropdownProps, Flex, type MenuProps } from 'antd';
 import deFlag from '@/assets/images/flags/de.svg';
 import enFlag from '@/assets/images/flags/en.svg';
 import esFlag from '@/assets/images/flags/es.svg';
@@ -26,12 +27,14 @@ const FLAG_SRC: Record<Locale, string> = {
   de: deFlag,
 };
 
-type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'> & {
-  /** Current locale from i18n (e.g. after changeLanguage). */
+type Props = {
   currentLocale: Locale;
+  placement?: DropdownProps['placement'];
+  /** Extra classes for the trigger button (e.g. form full width). */
+  className?: string;
 };
 
-export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) => {
+export const LanguageDropdown: FC<Props> = ({ currentLocale, placement, className = '' }) => {
   const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const setUser = useProfileStore(selectSetUser);
@@ -53,10 +56,10 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) =
     [user, setUser],
   );
 
-  const options = useMemo(
+  const menuItems: MenuProps['items'] = useMemo(
     () =>
       LOCALE_OPTIONS.map(({ code, label }) => ({
-        value: code,
+        key: code,
         label: (
           <Flex align="center" gap="small">
             <img
@@ -73,20 +76,37 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) =
     [],
   );
 
+  const onMenuClick = useCallback(
+    (info: { key: string }) => {
+      void handleLocaleChange(info.key as Locale);
+    },
+    [handleLocaleChange],
+  );
+
+  const currentLabel = LOCALE_OPTIONS.find((o) => o.code === currentLocale)?.label ?? currentLocale;
+
   return (
-    <Select<Locale>
-      value={currentLocale}
-      role="combobox"
-      aria-label={t('nav.languageSelectAriaLabel')}
-      onChange={handleLocaleChange}
-      options={options}
-      // className={
-      //   variant === 'borderless'
-      //     ? '[&_.ant-select-selector]:border-none! [&_.ant-select-selector]:bg-transparent! [&_.ant-select-selector]:shadow-none!'
-      //     : ''
-      // }
-      className="w-32"
-      {...selectProps}
-    />
+    <Dropdown
+      menu={{ items: menuItems, onClick: onMenuClick }}
+      trigger={['click']}
+      placement={placement ?? 'bottomRight'}
+    >
+      <button
+        type="button"
+        aria-label={t('nav.languageSelectAriaLabel')}
+        aria-haspopup="menu"
+        className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100 ${className}`}
+      >
+        <img
+          src={FLAG_SRC[currentLocale]}
+          alt=""
+          className="h-4 w-6 shrink-0 rounded-sm object-cover"
+          width={24}
+          height={16}
+        />
+        <span className="min-w-0 truncate text-sm font-medium text-gray-700">{currentLabel}</span>
+        <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
+      </button>
+    </Dropdown>
   );
 };

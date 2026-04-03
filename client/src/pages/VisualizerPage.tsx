@@ -24,7 +24,6 @@ import {
   Modal,
   Radio,
   type RadioChangeEvent,
-  Skeleton,
   Spin,
   Splitter,
   theme,
@@ -267,20 +266,15 @@ const VisualizerPage: FC = () => {
     <CardLayout className="min-h-md gap-md h-full">
       <Flex align="center" justify="space-between" wrap className="mb-sm shrink-0" gap="middle">
         <Flex align="center" gap="small" className="min-w-0">
-          {isAwaitingProjectFromUrl ? (
-            <Skeleton
-              active
-              title={{ width: 'min(280px, 55vw)', style: { marginTop: 6, marginBottom: 0 } }}
-              paragraph={false}
-              className="min-w-0 flex-1"
-            />
-          ) : (
+          {!isAwaitingProjectFromUrl ? (
             <Typography.Title
               level={3}
               className="text-primary mb-0! min-w-0 flex-1 truncate text-base font-semibold"
             >
               {currentProject?.name?.trim() ? currentProject.name : t('visualizer.mapAreaTitle')}
             </Typography.Title>
+          ) : (
+            <span className="min-h-9 min-w-0 flex-1 shrink-0" aria-hidden />
           )}
           {isLoggedIn && currentProject && !isAwaitingProjectFromUrl ? (
             <Flex gap={0} className="shrink-0">

@@ -72,6 +72,10 @@ type MapViewerProps = {
 /** Shift slightly toward the bottom edge so the mark sits under the control stack instead of on it. */
 const OBSERVER_WATERMARK_BOTTOM_BELOW_ZOOM_ANCHOR_PX = 24;
 
+const LEGEND_MIN_WIDTH_PX = 120;
+const LEGEND_MIN_HEIGHT_PX = 80;
+const LEGEND_RESIZE_CONTAINER_PADDING_PX = 8;
+
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
@@ -94,8 +98,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   // Legend resize state
   const [isLegendResizing, setIsLegendResizing] = useState(false);
-  const resizeStartRef = useRef({ x: 0, width: 0 });
+  const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const currentWidthRef = useRef(0);
+  const currentHeightRef = useRef(0);
 
   // Region label drag state
   const labelPositionsRef = useRef<Record<string, { x: number; y: number }>>({});
@@ -472,18 +477,32 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         }
       }
 
-      if (isLegendResizing && legendRef.current) {
-        const newWidth = Math.max(
-          120,
-          resizeStartRef.current.width + (e.clientX - resizeStartRef.current.x),
-        );
-        currentWidthRef.current = newWidth;
+      if (isLegendResizing && legendRef.current && containerRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const deltaX = e.clientX - resizeStartRef.current.x;
+        const deltaY = e.clientY - resizeStartRef.current.y;
+        let newWidth = Math.max(LEGEND_MIN_WIDTH_PX, resizeStartRef.current.width + deltaX);
+        let newHeight = Math.max(LEGEND_MIN_HEIGHT_PX, resizeStartRef.current.height + deltaY);
 
-        // Apply width directly via transform scale or width
+        const maxW = Math.max(
+          LEGEND_MIN_WIDTH_PX,
+          containerRect.width - floatingPosition.x - LEGEND_RESIZE_CONTAINER_PADDING_PX,
+        );
+        const maxH = Math.max(
+          LEGEND_MIN_HEIGHT_PX,
+          containerRect.height - floatingPosition.y - LEGEND_RESIZE_CONTAINER_PADDING_PX,
+        );
+        newWidth = Math.min(newWidth, maxW);
+        newHeight = Math.min(newHeight, maxH);
+
+        currentWidthRef.current = newWidth;
+        currentHeightRef.current = newHeight;
+
         if (rafIdRef.current === null) {
           rafIdRef.current = requestAnimationFrame(() => {
             if (legendRef.current) {
               legendRef.current.style.width = `${currentWidthRef.current}px`;
+              legendRef.current.style.height = `${currentHeightRef.current}px`;
             }
             rafIdRef.current = null;
           });
@@ -513,15 +532,26 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       }
     }
 
-    // Commit final width to store
-    if (isLegendResizing && currentWidthRef.current > 0) {
-      setLegendStylesState({ floatingSize: { ...floatingSize, width: currentWidthRef.current } });
+    // Commit final size to store
+    if (isLegendResizing && currentWidthRef.current > 0 && currentHeightRef.current > 0) {
+      setLegendStylesState({
+        floatingSize: {
+          width: currentWidthRef.current,
+          height: currentHeightRef.current,
+        },
+      });
       currentWidthRef.current = 0;
+      currentHeightRef.current = 0;
+      if (legendRef.current) {
+        legendRef.current.style.width = '';
+        legendRef.current.style.height = '';
+        legendRef.current.style.willChange = 'auto';
+      }
     }
 
     setIsLegendDragging(false);
     setIsLegendResizing(false);
-  }, [isLegendDragging, isLegendResizing, floatingPosition, floatingSize, setLegendStylesState]);
+  }, [isLegendDragging, isLegendResizing, floatingPosition, setLegendStylesState]);
 
   // Legend resize handler
   const handleResizeMouseDown = useCallback(
@@ -529,15 +559,23 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       e.stopPropagation();
       e.preventDefault();
 
-      setIsLegendResizing(true);
-      resizeStartRef.current = { x: e.clientX, width: floatingSize.width };
-      currentWidthRef.current = floatingSize.width;
+      if (!legendRef.current) return;
 
-      if (legendRef.current) {
-        legendRef.current.style.willChange = 'width';
-      }
+      setIsLegendResizing(true);
+      const rect = legendRef.current.getBoundingClientRect();
+      const startHeight = floatingSize.height === 'auto' ? rect.height : floatingSize.height;
+      resizeStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        width: floatingSize.width,
+        height: startHeight,
+      };
+      currentWidthRef.current = floatingSize.width;
+      currentHeightRef.current = startHeight;
+
+      legendRef.current.style.willChange = 'width, height';
     },
-    [floatingSize.width],
+    [floatingSize.width, floatingSize.height],
   );
 
   // Add global mouse event listeners for legend drag/resize
@@ -564,6 +602,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   }, [position]);
 
   const isBottomLegend = position === LEGEND_POSITIONS.bottom;
+
+  const floatingLegendHeightPx = floatingSize.height === 'auto' ? undefined : floatingSize.height;
+  const isFloatingLegendHeightFixed = floatingSize.height !== 'auto';
 
   const dateLocale = i18n.resolvedLanguage ?? i18n.language;
   const mapInteractiveAriaLabel = useMemo(() => {
@@ -656,33 +697,58 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               role="region"
               aria-label="Map legend"
               data-map-export-floating-legend
-              className={`absolute ${legendPositionClasses} p-sm cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)]`}
+              className={`absolute ${legendPositionClasses} p-sm rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${
+                isFloatingLegendHeightFixed
+                  ? 'flex min-h-0 flex-col overflow-hidden'
+                  : 'cursor-move'
+              }`}
               style={{
                 left: floatingPosition.x,
                 top: floatingPosition.y,
                 width: floatingSize.width,
+                ...(floatingLegendHeightPx != null ? { height: floatingLegendHeightPx } : {}),
                 backgroundColor,
               }}
             >
-              {/* Invisible drag handle overlay */}
-              <button
-                type="button"
-                aria-label="Drag to reposition legend"
-                className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
-                onMouseDown={handleLegendMouseDown}
-              />
-              <div className="pointer-events-none relative z-20">
-                <MapLegendContent
-                  title={title}
-                  labels={labels}
-                  legendItems={legendItems}
-                  noDataColor={noDataColor}
-                />
-              </div>
+              {isFloatingLegendHeightFixed ? (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Drag to reposition legend"
+                    className="z-10 mb-1 h-8 w-full shrink-0 cursor-move border-none bg-transparent p-0"
+                    onMouseDown={handleLegendMouseDown}
+                  />
+                  <div className="z-20 min-h-0 flex-1 overflow-y-auto pr-1">
+                    <MapLegendContent
+                      title={title}
+                      labels={labels}
+                      legendItems={legendItems}
+                      noDataColor={noDataColor}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Drag to reposition legend"
+                    className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
+                    onMouseDown={handleLegendMouseDown}
+                  />
+                  <div className="pointer-events-none relative z-20">
+                    <MapLegendContent
+                      title={title}
+                      labels={labels}
+                      legendItems={legendItems}
+                      noDataColor={noDataColor}
+                    />
+                  </div>
+                </>
+              )}
               {/* Resize handle for floating legend */}
               <button
                 type="button"
-                aria-label="Resize legend width"
+                aria-label="Resize legend width and height"
                 className="absolute -right-1 -bottom-1 z-20 h-6 w-6 cursor-se-resize rounded-bl-lg border-none bg-transparent p-0 transition-colors hover:bg-gray-100"
                 onMouseDown={handleResizeMouseDown}
               >
