@@ -20,6 +20,7 @@ import { useProjectsStore } from '@/store/projects/store';
 import { useDebounceValue } from '@/hooks/useDebounce';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { getLocalizedRegionLabel, getRegionDisplayName } from '@/helpers/regionDisplay';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
 type UseProjectsReturn = {
@@ -41,7 +42,7 @@ type UseProjectsReturn = {
 };
 
 export const useProjects = (): UseProjectsReturn => {
-  const { t } = useTypedTranslation();
+  const { t, i18n } = useTypedTranslation();
   const { message } = useAppFeedback();
   const navigate = useNavigate();
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
@@ -87,10 +88,16 @@ export const useProjects = (): UseProjectsReturn => {
   const filteredProjects = useMemo(() => {
     if (!debouncedSearch.trim()) return projects;
     const query = debouncedSearch.toLowerCase();
-    return projects.filter(
-      (p) => p.name.toLowerCase().includes(query) || p.countryId?.toLowerCase().includes(query),
-    );
-  }, [projects, debouncedSearch]);
+    const dateLocale = i18n.resolvedLanguage ?? i18n.language;
+    return projects.filter((p) => {
+      if (p.name.toLowerCase().includes(query)) return true;
+      if (p.countryId?.toLowerCase().includes(query)) return true;
+      if (!p.countryId) return false;
+      const localized = getLocalizedRegionLabel(p.countryId, dateLocale)?.toLowerCase() ?? '';
+      const english = getRegionDisplayName(p.countryId)?.toLowerCase() ?? '';
+      return localized.includes(query) || english.includes(query);
+    });
+  }, [projects, debouncedSearch, i18n.language, i18n.resolvedLanguage]);
 
   const handleDelete = useCallback((project: Project) => {
     setDeletingProject(project);

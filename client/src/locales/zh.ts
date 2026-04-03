@@ -138,6 +138,8 @@ const zh: CommonNs = {
     renameProjectOk: '重命名',
     mapHeaderRenameTooltip: '重命名项目',
     mapHeaderDeleteTooltip: '删除项目',
+    mapAriaMapOf: '{{region}}地图',
+    mapAriaNoCountrySelected: '未选择国家',
     tabData: '数据',
     tabMap: '地图',
     tabStyles: '样式',

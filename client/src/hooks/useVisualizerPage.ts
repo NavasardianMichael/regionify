@@ -24,9 +24,9 @@ import {
   getProjectPayload,
   useHasUnsavedChanges,
 } from '@/hooks/useProjectState';
-import { REGION_OPTIONS } from '@/constants/regions';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
 import {
   buildPartialTemporaryState,
   type FullTemporaryProjectState,
@@ -65,7 +65,7 @@ function buildFullTemporaryState(): FullTemporaryProjectState {
 }
 
 export function useVisualizerPage() {
-  const { t } = useTypedTranslation();
+  const { t, i18n } = useTypedTranslation();
   const { message } = useAppFeedback();
   const navigate = useNavigate();
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
@@ -139,7 +139,9 @@ export function useVisualizerPage() {
     }
 
     if (!currentProjectId) {
-      const regionLabel = REGION_OPTIONS.find((r) => r.value === selectedCountryId)?.label ?? '';
+      const locale = i18n.resolvedLanguage ?? i18n.language;
+      const regionLabel =
+        selectedCountryId != null ? (getLocalizedRegionLabel(selectedCountryId, locale) ?? '') : '';
       setProjectName(String(regionLabel));
       setIsNameModalOpen(true);
       return;
@@ -162,6 +164,8 @@ export function useVisualizerPage() {
     isLoggedIn,
     currentProjectId,
     selectedCountryId,
+    i18n.language,
+    i18n.resolvedLanguage,
     updateProjectInList,
     setSavedStateSnapshot,
     message,

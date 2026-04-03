@@ -146,6 +146,8 @@ const ru: CommonNs = {
     renameProjectOk: 'Переименовать',
     mapHeaderRenameTooltip: 'Переименовать проект',
     mapHeaderDeleteTooltip: 'Удалить проект',
+    mapAriaMapOf: 'Карта: {{region}}',
+    mapAriaNoCountrySelected: 'Страна не выбрана',
     tabData: 'Данные',
     tabMap: 'Карта',
     tabStyles: 'Стили',

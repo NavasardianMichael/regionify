@@ -52,6 +52,7 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
 import { smoothstep01 } from '@/helpers/legendColorInterpolation';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
 import { MapLegendContent } from '@/components/visualizer/MapViewer/MapLegendContent';
 import styles from './MapViewer.module.css';
 
@@ -63,7 +64,7 @@ type MapViewerProps = {
 const OBSERVER_WATERMARK_BOTTOM_BELOW_ZOOM_ANCHOR_PX = 24;
 
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
-  const { t } = useTypedTranslation();
+  const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
   const containerRef = useRef<HTMLButtonElement>(null);
@@ -537,6 +538,15 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   const isBottomLegend = position === LEGEND_POSITIONS.bottom;
 
+  const dateLocale = i18n.resolvedLanguage ?? i18n.language;
+  const mapInteractiveAriaLabel = useMemo(() => {
+    if (!selectedCountryId) {
+      return t('visualizer.mapAriaNoCountrySelected');
+    }
+    const region = getLocalizedRegionLabel(selectedCountryId, dateLocale) ?? selectedCountryId;
+    return t('visualizer.mapAriaMapOf', { region });
+  }, [dateLocale, selectedCountryId, t]);
+
   const showSheetSyncOnMap =
     isGoogleSheetSyncLoading && Boolean(selectedCountryId) && Boolean(svgContent) && !isLoading;
 
@@ -556,7 +566,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           <button
             type="button"
             ref={containerRef}
-            aria-label={selectedCountryId ? `Map of ${selectedCountryId}` : 'No country selected'}
+            aria-label={mapInteractiveAriaLabel}
             className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
               labelDragMode ? 'cursor-default' : 'cursor-move'
             }`}

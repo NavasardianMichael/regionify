@@ -8,15 +8,7 @@ import ru from 'i18n-iso-countries/langs/ru.json';
 import zh from 'i18n-iso-countries/langs/zh.json';
 
 /** Browser builds must register locales before `getAlpha2Code` / `getName` work (en is required for lookups). */
-const LOCALES: LocaleData[] = [
-  en as LocaleData,
-  de as LocaleData,
-  es as LocaleData,
-  fr as LocaleData,
-  pt as LocaleData,
-  ru as LocaleData,
-  zh as LocaleData,
-];
+const LOCALES: LocaleData[] = [en, de, es, fr, pt, ru, zh];
 
 for (const locale of LOCALES) {
   registerLocale(locale);

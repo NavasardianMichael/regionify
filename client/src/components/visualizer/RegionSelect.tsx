@@ -10,13 +10,13 @@ import {
 import { useVisualizerStore } from '@/store/mapData/store';
 import { useHasUnsavedChanges } from '@/hooks/useProjectState';
 import type { RegionId } from '@/types/mapData';
-import { REGION_OPTIONS } from '@/constants/regions';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { getLocalizedRegionSelectOptions } from '@/helpers/regionDisplay';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 export const RegionSelect: FC = () => {
-  const { t } = useTypedTranslation();
+  const { t, i18n } = useTypedTranslation();
   const { modal } = useAppFeedback();
   const selectRef = useRef<RefSelectProps>(null);
 
@@ -55,6 +55,11 @@ export const RegionSelect: FC = () => {
     [modal, selectedCountryId, setVisualizerState, shouldWarnOnCountryChange, t],
   );
 
+  const regionOptions = useMemo(
+    () => getLocalizedRegionSelectOptions(i18n.resolvedLanguage ?? i18n.language),
+    [i18n.language, i18n.resolvedLanguage],
+  );
+
   const showSearchConfig = useMemo<SelectProps['showSearch']>(
     () => ({
       filterOption: (input, option) =>
@@ -72,7 +77,7 @@ export const RegionSelect: FC = () => {
         ref={selectRef}
         value={selectedCountryId}
         onChange={handleCountryChange}
-        options={REGION_OPTIONS}
+        options={regionOptions}
         placeholder={t('visualizer.region.placeholder')}
         className="max-w-64!"
         showSearch={showSearchConfig}

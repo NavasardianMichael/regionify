@@ -1,3 +1,4 @@
+import type { DefaultOptionType } from 'antd/es/select';
 import { getAlpha2Code, getName, getSimpleAlpha2Code } from 'i18n-iso-countries';
 import { REGION_OPTIONS } from '@/constants/regions';
 
@@ -114,4 +115,12 @@ export function getLocalizedRegionLabel(
   }
 
   return displayNameForRegionCode(code, appLocale, english);
+}
+
+/** Ant Design Select options with `label` translated for the current UI locale (values unchanged). */
+export function getLocalizedRegionSelectOptions(appLocale: string): DefaultOptionType[] {
+  return REGION_OPTIONS.map((o) => ({
+    ...o,
+    label: getLocalizedRegionLabel(String(o.value), appLocale) ?? String(o.label),
+  }));
 }

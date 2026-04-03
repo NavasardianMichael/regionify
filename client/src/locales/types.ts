@@ -143,6 +143,10 @@ export type CommonNs = {
     renameProjectOk: string;
     mapHeaderRenameTooltip: string;
     mapHeaderDeleteTooltip: string;
+    /** Accessible label for the map surface when a region is selected */
+    mapAriaMapOf: string;
+    /** Accessible label when no region is selected */
+    mapAriaNoCountrySelected: string;
     /** Mobile layout: tab labels for Data / Map / Styles sections */
     tabData: string;
     tabMap: string;

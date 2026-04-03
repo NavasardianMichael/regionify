@@ -148,6 +148,8 @@ const fr: CommonNs = {
     renameProjectOk: 'Renommer',
     mapHeaderRenameTooltip: 'Renommer le projet',
     mapHeaderDeleteTooltip: 'Supprimer le projet',
+    mapAriaMapOf: 'Carte de {{region}}',
+    mapAriaNoCountrySelected: 'Aucun pays sélectionné',
     tabData: 'Données',
     tabMap: 'Carte',
     tabStyles: 'Styles',
