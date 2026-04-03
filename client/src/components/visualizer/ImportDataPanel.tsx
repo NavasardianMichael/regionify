@@ -23,7 +23,6 @@ import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { UploadProps } from 'antd';
 import { Button, Flex, Segmented, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
-import { fetchGoogleSheet } from '@/api/sheets';
 import {
   selectClearTimelineData,
   selectData,
@@ -57,50 +56,18 @@ import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import type { GoogleSheetImportMode } from '@/components/visualizer/GoogleSheetsModal';
+import {
+  showMessageWithClose,
+  storeDataMatchesMapTitles,
+} from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
 import { ImportFormatExamples } from '@/components/visualizer/ImportDataPanel/ImportFormatExamples';
 import { ImportFormatInfoTooltip } from '@/components/visualizer/ImportDataPanel/ImportFormatInfoTooltip';
 import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPanel/SwitchModeConfirmContent';
+import { useGoogleSheetSyncEffect } from '@/components/visualizer/ImportDataPanel/useGoogleSheetSyncEffect';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal/Modal'));
 const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
-
-const SUCCESS_MESSAGE_DURATION = 5;
-
-/**
- * When every stored region id exists on the loaded map SVG, keep the current dataset
- * (e.g. project just loaded). Otherwise sample data would overwrite saved imports.
- */
-function storeDataMatchesMapTitles(
-  titles: string[],
-  data: DataSet,
-  timePeriods: string[],
-  timelineData: Record<string, DataSet>,
-): boolean {
-  if (titles.length === 0) return false;
-  const titleSet = new Set(titles);
-  if (timePeriods.length > 0) {
-    return timePeriods.every((p) => {
-      const ds = timelineData[p];
-      return ds && ds.allIds.length > 0 && ds.allIds.every((id) => titleSet.has(id));
-    });
-  }
-  if (data.allIds.length === 0) return false;
-  return data.allIds.every((id) => titleSet.has(id));
-}
-
-/** Show a message. Success auto-hides after 5s; persistent types use duration 0 (global close control applies). */
-function showMessageWithClose(
-  messageApi: ReturnType<typeof useAppFeedback>['message'],
-  type: 'success' | 'info' | 'warning' | 'error',
-  content: string,
-): void {
-  if (type === 'success') {
-    messageApi.success({ content, duration: SUCCESS_MESSAGE_DURATION });
-    return;
-  }
-  messageApi[type]({ content, duration: 0 });
-}
 
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
@@ -627,9 +594,6 @@ export const ImportDataPanel: FC = () => {
   const afterSheetCsvParsedRef = useRef(afterSheetCsvParsed);
   afterSheetCsvParsedRef.current = afterSheetCsvParsed;
 
-  const sheetFetchTRef = useRef(t);
-  sheetFetchTRef.current = t;
-
   const handleSheetImport = useCallback(
     (payload: { csv: string; url: string; mode: GoogleSheetImportMode }) => {
       const { csv, url, mode } = payload;
@@ -651,51 +615,17 @@ export const ImportDataPanel: FC = () => {
     [afterSheetCsvParsed, setVisualizerState],
   );
 
-  useEffect(() => {
-    if (importDataType !== IMPORT_DATA_TYPES.sheets) {
-      setVisualizerState({ isGoogleSheetSyncLoading: false });
-      return;
-    }
-
-    const canRun = Boolean(googleUrl) && Boolean(selectedCountryId) && svgTitles.length > 0;
-
-    if (skipSheetsRefetchOnceRef.current) {
-      skipSheetsRefetchOnceRef.current = false;
-      if (!canRun) return;
-      return;
-    }
-
-    if (!canRun || !googleUrl) return;
-
-    const sheetUrl = googleUrl;
-
-    setVisualizerState({ isGoogleSheetSyncLoading: true });
-    let cancelled = false;
-    void (async () => {
-      try {
-        const csv = await fetchGoogleSheet({ url: sheetUrl });
-        if (cancelled) return;
-        afterSheetCsvParsedRef.current(csv);
-      } catch {
-        if (!cancelled) {
-          showMessageWithClose(
-            messageApi,
-            'error',
-            sheetFetchTRef.current('visualizer.googleSheets.fetchFailed'),
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setVisualizerState({ isGoogleSheetSyncLoading: false });
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-      setVisualizerState({ isGoogleSheetSyncLoading: false });
-    };
-  }, [googleUrl, importDataType, messageApi, selectedCountryId, setVisualizerState, svgTitles]);
+  useGoogleSheetSyncEffect({
+    importDataType,
+    googleUrl,
+    selectedCountryId,
+    svgTitles,
+    setVisualizerState,
+    messageApi,
+    afterSheetCsvParsedRef,
+    skipSheetsRefetchOnceRef,
+    fetchFailedMessage: t('visualizer.googleSheets.fetchFailed'),
+  });
 
   const handleFileUpload: UploadProps['customRequest'] = useCallback(
     (options: Parameters<NonNullable<UploadProps['customRequest']>>[0]) => {
