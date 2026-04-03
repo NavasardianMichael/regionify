@@ -414,6 +414,10 @@ const de: CommonNs = {
         'Regionsbeschriftungen verschieben aktivieren (deaktiviert das Verschieben der Karte)',
       tooltipDisableLabelDragging:
         'Regionsbeschriftungen verschieben deaktivieren (aktiviert das Verschieben der Karte wieder)',
+      tooltipPanUp: 'Karte nach oben verschieben',
+      tooltipPanDown: 'Karte nach unten verschieben',
+      tooltipPanLeft: 'Karte nach links verschieben',
+      tooltipPanRight: 'Karte nach rechts verschieben',
       showLabels: 'Beschriftungen anzeigen',
       fontSize: 'Schriftgröße',
     },

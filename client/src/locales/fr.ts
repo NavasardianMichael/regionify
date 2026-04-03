@@ -411,6 +411,10 @@ const fr: CommonNs = {
         'Activer le déplacement des étiquettes de région (désactive le déplacement de la carte)',
       tooltipDisableLabelDragging:
         'Désactiver le déplacement des étiquettes de région (réactive le déplacement de la carte)',
+      tooltipPanUp: 'Déplacer la carte vers le haut',
+      tooltipPanDown: 'Déplacer la carte vers le bas',
+      tooltipPanLeft: 'Déplacer la carte vers la gauche',
+      tooltipPanRight: 'Déplacer la carte vers la droite',
       showLabels: 'Afficher les libellés',
       fontSize: 'Taille de police',
     },

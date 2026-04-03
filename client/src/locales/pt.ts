@@ -405,6 +405,10 @@ const pt: CommonNs = {
         'Ativar arrasto de etiquetas de região (desativa o arrasto do mapa)',
       tooltipDisableLabelDragging:
         'Desativar arrasto de etiquetas de região (reativa o arrasto do mapa)',
+      tooltipPanUp: 'Mover o mapa para cima',
+      tooltipPanDown: 'Mover o mapa para baixo',
+      tooltipPanLeft: 'Mover o mapa para a esquerda',
+      tooltipPanRight: 'Mover o mapa para a direita',
       showLabels: 'Mostrar etiquetas',
       fontSize: 'Tamanho da fonte',
     },

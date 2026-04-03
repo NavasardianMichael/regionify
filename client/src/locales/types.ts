@@ -391,6 +391,10 @@ export type CommonNs = {
       tooltipResetMapAndLabels: string;
       tooltipEnableLabelDragging: string;
       tooltipDisableLabelDragging: string;
+      tooltipPanUp: string;
+      tooltipPanDown: string;
+      tooltipPanLeft: string;
+      tooltipPanRight: string;
       showLabels: string;
       fontSize: string;
     };

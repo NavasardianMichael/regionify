@@ -7,7 +7,16 @@ import {
   useRef,
   useState,
 } from 'react';
-import { DragOutlined, FullscreenOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  ArrowDownOutlined,
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  ArrowUpOutlined,
+  DragOutlined,
+  FullscreenOutlined,
+  MinusOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { PLANS } from '@regionify/shared';
 import { Button, Flex, Spin, Tooltip, Typography } from 'antd';
 import DOMPurify from 'dompurify';
@@ -242,6 +251,24 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   const handleZoomOut = useCallback(() => {
     setZoom((prev) => Math.max(prev / 1.2, 0.5));
+  }, []);
+
+  const PAN_STEP = 50;
+
+  const handlePanUp = useCallback(() => {
+    setPan((prev) => ({ ...prev, y: prev.y + PAN_STEP }));
+  }, []);
+
+  const handlePanDown = useCallback(() => {
+    setPan((prev) => ({ ...prev, y: prev.y - PAN_STEP }));
+  }, []);
+
+  const handlePanLeft = useCallback(() => {
+    setPan((prev) => ({ ...prev, x: prev.x + PAN_STEP }));
+  }, []);
+
+  const handlePanRight = useCallback(() => {
+    setPan((prev) => ({ ...prev, x: prev.x - PAN_STEP }));
   }, []);
 
   const handleResetView = useCallback(() => {
@@ -555,7 +582,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       <Flex vertical className="h-full min-h-0 flex-1">
         {/* Map Container */}
         <div
-          className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg"
+          className="group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg"
           data-map-export-map-area
           style={{
             backgroundColor: picture.transparentBackground
@@ -692,6 +719,60 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 Regionify
               </Typography.Text>
             </div>
+          )}
+
+          {/* Arrow pan buttons */}
+          {zoomControls.show && (
+            <>
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <Tooltip title={t('visualizer.mapStyles.tooltipPanUp')} placement="bottom">
+                  <Button
+                    type="default"
+                    icon={<ArrowUpOutlined />}
+                    onClick={handlePanUp}
+                    disabled={!selectedCountryId}
+                    className="shadow-md"
+                    aria-label={t('visualizer.mapStyles.tooltipPanUp')}
+                  />
+                </Tooltip>
+              </div>
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <Tooltip title={t('visualizer.mapStyles.tooltipPanDown')} placement="top">
+                  <Button
+                    type="default"
+                    icon={<ArrowDownOutlined />}
+                    onClick={handlePanDown}
+                    disabled={!selectedCountryId}
+                    className="shadow-md"
+                    aria-label={t('visualizer.mapStyles.tooltipPanDown')}
+                  />
+                </Tooltip>
+              </div>
+              <div className="absolute top-1/2 left-0 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <Tooltip title={t('visualizer.mapStyles.tooltipPanLeft')} placement="right">
+                  <Button
+                    type="default"
+                    icon={<ArrowLeftOutlined />}
+                    onClick={handlePanLeft}
+                    disabled={!selectedCountryId}
+                    className="shadow-md"
+                    aria-label={t('visualizer.mapStyles.tooltipPanLeft')}
+                  />
+                </Tooltip>
+              </div>
+              <div className="absolute top-1/2 right-0 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <Tooltip title={t('visualizer.mapStyles.tooltipPanRight')} placement="left">
+                  <Button
+                    type="default"
+                    icon={<ArrowRightOutlined />}
+                    onClick={handlePanRight}
+                    disabled={!selectedCountryId}
+                    className="shadow-md"
+                    aria-label={t('visualizer.mapStyles.tooltipPanRight')}
+                  />
+                </Tooltip>
+              </div>
+            </>
           )}
 
           {/* Controls */}
