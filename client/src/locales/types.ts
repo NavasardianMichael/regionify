@@ -19,6 +19,8 @@ export type CommonNs = {
     logoutError: string;
     /** Accessible name for the locale combobox in the nav */
     languageSelectAriaLabel: string;
+    /** Full-page overlay while switching language (Ant Design locale load) */
+    languageSwitchingOverlay: string;
     /** Accessible label for the hamburger menu button */
     openMenu: string;
     /** Drawer title for the mobile navigation menu */
@@ -162,6 +164,7 @@ export type CommonNs = {
     loginToExport: string;
     resetStyles: string;
     randomStylesPack: string;
+    randomPaletteLoadFailed: string;
     defaultLegendTitle: string;
     done: string;
     newLegendRangeName: string;

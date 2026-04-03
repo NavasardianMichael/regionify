@@ -200,8 +200,8 @@ const ManualDataEntryModal: FC<Props> = ({
             <Alert
               type="info"
               showIcon
-              className="manual-entry-google-sync-alert border-primary/30! bg-primary/10! [&_.ant-alert-icon]:text-primary! [&_.ant-alert-message]:text-primary [&_.ant-alert-info]:bg-transparent! [&_.ant-alert-message]:mb-0!"
-              message={
+              className="manual-entry-google-sync-alert border-primary/30! bg-primary/10! [&_.ant-alert-icon]:text-primary! [&_.ant-alert-title]:text-primary [&_.ant-alert-info]:bg-transparent! [&_.ant-alert-title]:mb-0!"
+              title={
                 <Typography.Text className="text-primary text-sm">
                   {t('visualizer.manualEntry.googleSheetsSyncReadOnlyNote')}
                 </Typography.Text>

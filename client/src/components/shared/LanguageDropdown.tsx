@@ -14,6 +14,7 @@ import { useProfileStore } from '@/store/profile/store';
 import { LOCALE_OPTIONS } from '@/constants/locales';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { setStoredLocale } from '@/helpers/localeStorage';
+import { runUiLocaleSwitch } from '@/helpers/runUiLocaleSwitch';
 
 const FLAG_SRC: Record<Locale, string> = {
   en: enFlag,
@@ -31,13 +32,13 @@ type Props = Omit<SelectProps<Locale>, 'value' | 'onChange' | 'options' | 'role'
 };
 
 export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) => {
-  const { i18n, t } = useTypedTranslation();
+  const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const setUser = useProfileStore(selectSetUser);
 
   const handleLocaleChange = useCallback(
     async (locale: Locale) => {
-      await i18n.changeLanguage(locale);
+      await runUiLocaleSwitch(locale, { showOverlay: true });
       if (user) {
         try {
           const { user: updated } = await updateProfile({ locale });
@@ -49,7 +50,7 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, ...selectProps }) =
         setStoredLocale(locale);
       }
     },
-    [i18n, user, setUser],
+    [user, setUser],
   );
 
   const options = useMemo(

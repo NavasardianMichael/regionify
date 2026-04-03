@@ -16,6 +16,7 @@ const de: CommonNs = {
     cancel: 'Abbrechen',
     logoutError: 'Abmeldung fehlgeschlagen. Bitte erneut versuchen.',
     languageSelectAriaLabel: 'Oberflächensprache',
+    languageSwitchingOverlay: 'Sprache wird gewechselt',
     openMenu: 'Menü öffnen',
     mainMenu: 'Menü',
     closeMenu: 'Menü schließen',
@@ -167,7 +168,9 @@ const de: CommonNs = {
     export: 'Exportieren',
     loginToExport: 'Zum Exportieren anmelden',
     resetStyles: 'Stile zurücksetzen',
-    randomStylesPack: 'Zufälliges Stil-Paket anwenden',
+    randomStylesPack: 'Zufällige Farbpalette anwenden',
+    randomPaletteLoadFailed:
+      'Zufällige Paletten konnten nicht geladen werden. Bitte erneut versuchen.',
     defaultLegendTitle: 'INTENSITÄTSVERHÄLTNIS',
     done: 'Fertig',
     newLegendRangeName: 'Neuer Bereich',

@@ -31,6 +31,7 @@ import type { LegendItem } from '@/store/legendData/types';
 import { selectNoDataColor, selectSetLegendStylesState } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { samplePaletteColor } from '@/helpers/samplePaletteColor';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -149,14 +150,6 @@ const PALETTE_GROUPS: PaletteGroup[] = [
     ],
   },
 ];
-
-const samplePaletteColor = (palette: string[], index: number, total: number): string => {
-  if (palette.length === 0) return '#6B7280';
-  if (total <= 1) return palette[palette.length - 1];
-  const ratio = index / (total - 1);
-  const paletteIndex = Math.round(ratio * (palette.length - 1));
-  return palette[paletteIndex] ?? palette[palette.length - 1];
-};
 
 const PALETTE_BY_ID = new Map<string, string[]>(
   PALETTE_GROUPS.flatMap((g) => g.suggestions.map((s) => [s.id, s.colors] as [string, string[]])),
