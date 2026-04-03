@@ -1,5 +1,7 @@
-import { getAlpha2Code } from 'i18n-iso-countries';
+import { getAlpha2Code, getName, getSimpleAlpha2Code } from 'i18n-iso-countries';
 import { REGION_OPTIONS } from '@/constants/regions';
+
+import './registerIsoCountriesLocales';
 
 const REGION_LABEL_BY_VALUE = new Map(
   REGION_OPTIONS.map((o) => [String(o.value), String(o.label)]),
@@ -45,15 +47,46 @@ const APP_LOCALE_TO_INTL: Record<string, string> = {
   de: 'de',
 };
 
+const SUPPORTED_ISO_COUNTRIES_LANGS = new Set(['en', 'de', 'es', 'fr', 'ru', 'zh', 'pt']);
+
+function toIsoCountriesLang(appLocale: string): string {
+  const base = appLocale.split('-')[0]?.toLowerCase() ?? 'en';
+  return SUPPORTED_ISO_COUNTRIES_LANGS.has(base) ? base : 'en';
+}
+
+function isUnM49AreaCode(code: string): boolean {
+  return /^\d{3}$/.test(code);
+}
+
+function displayNameForRegionCode(
+  code: string,
+  appLocale: string,
+  englishFallback: string,
+): string {
+  const intlLocale = APP_LOCALE_TO_INTL[appLocale] ?? appLocale;
+  try {
+    const dn = new Intl.DisplayNames([intlLocale, 'en'], { type: 'region' });
+    return dn.of(code) ?? englishFallback;
+  } catch {
+    return englishFallback;
+  }
+}
+
 /** Human-readable region label in English (same as the region picker). */
 export function getRegionDisplayName(countryId: string | null | undefined): string | null {
   if (!countryId) return null;
   return REGION_LABEL_BY_VALUE.get(countryId) ?? null;
 }
 
+function resolveAlpha2OrAreaCode(regionId: string, english: string): string | undefined {
+  const fromId = ISO2_BY_REGION_ID[regionId] ?? UN_M49_BY_REGION_ID[regionId];
+  if (fromId) return fromId;
+  return getAlpha2Code(english, 'en') ?? getSimpleAlpha2Code(english, 'en') ?? undefined;
+}
+
 /**
- * Localized region / area name for the current UI language using `Intl.DisplayNames`.
- * Falls back to the English picker label when no CLDR code can be resolved.
+ * Localized region / area name: ISO countries via i18n-iso-countries (`getName`),
+ * UN M.49 areas via `Intl.DisplayNames`. Requires `registerIsoCountriesLocales` (side effect import).
  */
 export function getLocalizedRegionLabel(
   regionId: string | null | undefined,
@@ -65,21 +98,20 @@ export function getLocalizedRegionLabel(
     return regionId.replace(/([A-Z])/g, ' $1').trim();
   }
 
-  const code =
-    ISO2_BY_REGION_ID[regionId] ??
-    UN_M49_BY_REGION_ID[regionId] ??
-    getAlpha2Code(english, 'en') ??
-    undefined;
-
+  const code = resolveAlpha2OrAreaCode(regionId, english);
   if (!code) {
     return english;
   }
 
-  const intlLocale = APP_LOCALE_TO_INTL[appLocale] ?? appLocale;
-  try {
-    const dn = new Intl.DisplayNames([intlLocale, 'en'], { type: 'region' });
-    return dn.of(code) ?? english;
-  } catch {
-    return english;
+  if (isUnM49AreaCode(code)) {
+    return displayNameForRegionCode(code, appLocale, english);
   }
+
+  const lang = toIsoCountriesLang(appLocale);
+  const localized = getName(code, lang) ?? getName(code, 'en');
+  if (localized) {
+    return localized;
+  }
+
+  return displayNameForRegionCode(code, appLocale, english);
 }
