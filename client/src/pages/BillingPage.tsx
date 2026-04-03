@@ -1,7 +1,7 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type Plan, PLANS } from '@regionify/shared';
-import { Flex, Typography } from 'antd';
+import { Typography } from 'antd';
 import { createCheckout } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
@@ -41,33 +41,36 @@ const BillingPage: FC = () => {
   );
 
   return (
-    <Flex vertical align="center" gap="large" className="m-auto! w-full max-w-5xl">
-      <Flex vertical align="center" gap="small">
-        <Typography.Title level={1} className="text-primary mb-0! text-3xl font-bold">
+    <div className="mx-auto w-full max-w-5xl shrink-0 pb-10">
+      <header className="mb-8 flex flex-col items-center gap-2 text-center">
+        <Typography.Title level={1} className="text-primary mb-0! w-full text-3xl font-bold">
           {t('plans.title')}
         </Typography.Title>
-        <Typography.Paragraph className="mb-0! text-center text-gray-500 sm:text-left">
+        <Typography.Paragraph className="mb-0! w-full max-w-3xl text-center text-gray-500">
           {t('plans.subtitle')}
         </Typography.Paragraph>
-      </Flex>
+      </header>
 
-      <Flex gap="large" justify="center" align="stretch" wrap="wrap" className="w-full">
+      <ul className="m-0 flex w-full min-w-0 list-none flex-wrap justify-center gap-8 p-0 md:items-stretch md:gap-6">
         {billingPlans.map((plan) => (
-          <Flex key={plan.id} className="w-80 max-w-full min-w-0 shrink-0 sm:h-full" vertical>
+          <li key={plan.id} className="w-full flex-col md:w-80 md:shrink-0">
             <PlanCard
               plan={plan}
               currentPlan={currentPlan}
               onUpgrade={onUpgrade}
               upgradingPlan={upgradingPlan}
             />
-          </Flex>
+          </li>
         ))}
-      </Flex>
+      </ul>
 
-      <Typography.Text type="secondary" className="w-full text-center">
+      <Typography.Text
+        type="secondary"
+        className="relative z-10 mt-10 block w-full px-1 text-center text-sm lg:text-base"
+      >
         {t('plans.paymentNote')}
       </Typography.Text>
-    </Flex>
+    </div>
   );
 };
 

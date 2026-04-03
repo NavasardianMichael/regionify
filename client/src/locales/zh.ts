@@ -22,7 +22,7 @@ const zh: CommonNs = {
   },
   deleteAccountModal: {
     title: '删除账户',
-    content: '确定要删除账户吗？您的所有数据（包括项目）将被永久删除，且无法恢复。',
+    content: '您的所有数据（包括项目）将被永久删除。',
     ok: '删除账户',
     error: '删除账户失败',
   },
@@ -75,7 +75,8 @@ const zh: CommonNs = {
       noWatermark: '图片导出无水印',
       timeSeries: '时间序列数据与地图时间轴',
       animationExport: '动画导出（GIF 与 MP4）',
-      publicEmbed: '公开地图页（分享链接与 iframe）',
+      embedMapIframe: '嵌入地图（iframe）',
+      publicMapPage: '带地图的公开页面',
     },
     items: {
       observer: {
@@ -410,7 +411,7 @@ const zh: CommonNs = {
     subtitle: '更新您的姓名和语言偏好。',
     name: '姓名',
     email: '电子邮箱',
-    emailNote: '出于安全原因，无法更改电子邮箱。',
+    emailNote: '电子邮箱无法修改。',
     language: '语言',
     saveProfile: '保存资料',
     profileUpdated: '资料更新成功。',

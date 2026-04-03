@@ -6,7 +6,7 @@ import {
   GlobalOutlined,
   InsertRowAboveOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Flex, Skeleton, Spin, Typography } from 'antd';
+import { Avatar, Button, Flex, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useMapThumbnail } from '@/hooks/useMapThumbnail';
 import type { ImportDataType } from '@/types/mapData';
@@ -25,25 +25,34 @@ type ProjectCardProps = {
 };
 
 type ProjectCardCoverProps = {
-  mapThumbnailUrl: string | null;
+  mapThumbnailUrl: string;
   thumbnailAlt: string;
 };
 
 const ProjectCardCover = memo<ProjectCardCoverProps>(({ mapThumbnailUrl, thumbnailAlt }) => (
   // Card cover sets direct children to `display:block`, so flex must be forced to center the image.
   <Flex align="center" justify="center" className="flex! h-36 w-full min-w-0 bg-gray-50 px-4">
-    {mapThumbnailUrl ? (
-      <img
-        src={mapThumbnailUrl}
-        alt={thumbnailAlt}
-        className="max-h-30 w-auto max-w-full shrink-0 object-contain"
-      />
-    ) : (
-      <FolderOpenOutlined className="text-5xl text-gray-300" aria-hidden />
-    )}
+    <img
+      src={mapThumbnailUrl}
+      alt={thumbnailAlt}
+      className="max-h-30 w-auto max-w-full shrink-0 object-contain"
+    />
   </Flex>
 ));
 ProjectCardCover.displayName = 'ProjectCardCover';
+
+const ProjectCardCoverLoading = memo(() => (
+  <Flex
+    align="center"
+    justify="center"
+    className="flex! h-36 w-full min-w-0 bg-gray-50 px-4"
+    aria-busy
+    aria-live="polite"
+  >
+    <Spin size="large" />
+  </Flex>
+));
+ProjectCardCoverLoading.displayName = 'ProjectCardCoverLoading';
 
 type ProjectCardMetaDescriptionProps = {
   countryLabel: string;
@@ -211,57 +220,35 @@ const ProjectCard = memo<ProjectCardProps>(
     );
 
     return (
-      <div className="relative w-full sm:max-w-80">
-        <Card
-          hoverable
-          loading={isThumbnailLoading}
-          className="w-full"
-          classNames={{ root: 'border-gray-300 border' }}
-          cover={
-            isThumbnailLoading ? (
-              <Flex
-                align="center"
-                justify="center"
-                className="flex! h-36 w-full min-w-0 bg-gray-50 px-4"
-              >
-                <Skeleton.Image
-                  active
-                  className="inline-block! h-28 w-[min(100%,20rem)] max-w-full shrink-0"
-                />
-              </Flex>
-            ) : (
-              <ProjectCardCover
-                mapThumbnailUrl={mapThumbnailUrl}
-                thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
-              />
-            )
+      <Card
+        hoverable
+        className="w-full sm:max-w-80"
+        classNames={{ root: 'border-gray-300 border' }}
+        cover={
+          isThumbnailLoading ? (
+            <ProjectCardCoverLoading />
+          ) : mapThumbnailUrl ? (
+            <ProjectCardCover
+              mapThumbnailUrl={mapThumbnailUrl}
+              thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
+            />
+          ) : undefined
+        }
+        actions={actions}
+        onClick={handleOpenClick}
+      >
+        <ProjectCardMetaSection
+          projectName={project.name}
+          description={
+            <ProjectCardMetaDescription
+              countryLabel={countryLabel}
+              dataSourceLine={dataSourceLine}
+              createdLine={createdLine}
+              updatedLine={updatedLine}
+            />
           }
-          actions={actions}
-          onClick={handleOpenClick}
-          aria-busy={isOpening || isThumbnailLoading}
-        >
-          <ProjectCardMetaSection
-            projectName={project.name}
-            description={
-              <ProjectCardMetaDescription
-                countryLabel={countryLabel}
-                dataSourceLine={dataSourceLine}
-                createdLine={createdLine}
-                updatedLine={updatedLine}
-              />
-            }
-          />
-        </Card>
-        {isOpening ? (
-          <div
-            className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70"
-            aria-busy
-            aria-live="polite"
-          >
-            <Spin size="large" />
-          </div>
-        ) : null}
-      </div>
+        />
+      </Card>
     );
   },
 );

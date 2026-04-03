@@ -22,8 +22,7 @@ const pt: CommonNs = {
   },
   deleteAccountModal: {
     title: 'Eliminar conta',
-    content:
-      'Tem a certeza que deseja eliminar a sua conta? Todos os seus dados, incluindo projetos, serão removidos permanentemente. Esta ação não pode ser revertida.',
+    content: 'Todos os seus dados, incluindo projetos, serão removidos permanentemente.',
     ok: 'Eliminar conta',
     error: 'Falha ao eliminar a conta',
   },
@@ -81,7 +80,8 @@ const pt: CommonNs = {
       noWatermark: 'Sem marca de água nas exportações de imagem',
       timeSeries: 'Dados temporais e linha do tempo no mapa',
       animationExport: 'Exportação animada (GIF e MP4)',
-      publicEmbed: 'Página pública do mapa (ligação e iframe)',
+      embedMapIframe: 'Mapa incorporado (iframe)',
+      publicMapPage: 'Página pública com mapa',
     },
     items: {
       observer: {
@@ -433,7 +433,7 @@ const pt: CommonNs = {
     subtitle: 'Atualize o seu nome e preferências de idioma.',
     name: 'Nome',
     email: 'E-mail',
-    emailNote: 'O e-mail não pode ser alterado por razões de segurança.',
+    emailNote: 'O e-mail não pode ser alterado.',
     language: 'Idioma',
     saveProfile: 'Guardar perfil',
     profileUpdated: 'Perfil atualizado com sucesso.',

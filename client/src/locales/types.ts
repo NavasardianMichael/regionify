@@ -81,7 +81,8 @@ export type CommonNs = {
       noWatermark: string;
       timeSeries: string;
       animationExport: string;
-      publicEmbed: string;
+      embedMapIframe: string;
+      publicMapPage: string;
     };
     items: {
       observer: {

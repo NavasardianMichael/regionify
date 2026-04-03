@@ -22,8 +22,7 @@ const en: CommonNs = {
   },
   deleteAccountModal: {
     title: 'Delete Account',
-    content:
-      'Are you sure you want to delete your account? All your data, including projects, will be permanently removed. This action cannot be undone.',
+    content: 'All your data, including projects, will be permanently removed.',
     ok: 'Delete Account',
     error: 'Failed to delete account',
   },
@@ -81,7 +80,8 @@ const en: CommonNs = {
       noWatermark: 'No watermark on image exports',
       timeSeries: 'Time-series data & timeline on the map',
       animationExport: 'Animated export (GIF & MP4)',
-      publicEmbed: 'Public map page (share link & iframe)',
+      embedMapIframe: 'Embed map (iframe)',
+      publicMapPage: 'Public page with map',
     },
     items: {
       observer: {
@@ -425,7 +425,7 @@ const en: CommonNs = {
     subtitle: 'Update your name and language preferences.',
     name: 'Name',
     email: 'Email',
-    emailNote: 'Email cannot be changed for security reasons.',
+    emailNote: 'Email cannot be changed.',
     language: 'Language',
     saveProfile: 'Save profile',
     profileUpdated: 'Profile updated successfully.',

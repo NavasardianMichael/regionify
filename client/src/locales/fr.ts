@@ -22,8 +22,7 @@ const fr: CommonNs = {
   },
   deleteAccountModal: {
     title: 'Supprimer le compte',
-    content:
-      'Êtes-vous sûr de vouloir supprimer votre compte ? Toutes vos données, y compris les projets, seront définitivement effacées. Cette action est irréversible.',
+    content: 'Toutes vos données, y compris les projets, seront définitivement effacées.',
     ok: 'Supprimer le compte',
     error: 'Échec de la suppression du compte',
   },
@@ -83,7 +82,8 @@ const fr: CommonNs = {
       noWatermark: "Pas de filigrane sur les exports d'images",
       timeSeries: 'Données temporelles et frise chronologique sur la carte',
       animationExport: 'Export animé (GIF et MP4)',
-      publicEmbed: 'Page carte publique (lien et iframe)',
+      embedMapIframe: 'Carte intégrée (iframe)',
+      publicMapPage: 'Page publique avec carte',
     },
     items: {
       observer: {
@@ -439,7 +439,7 @@ const fr: CommonNs = {
     subtitle: 'Mettez à jour votre nom et vos préférences linguistiques.',
     name: 'Nom',
     email: 'E-mail',
-    emailNote: "L'e-mail ne peut pas être modifié pour des raisons de sécurité.",
+    emailNote: "L'adresse e-mail ne peut pas être modifiée.",
     language: 'Langue',
     saveProfile: 'Enregistrer le profil',
     profileUpdated: 'Profil mis à jour avec succès.',

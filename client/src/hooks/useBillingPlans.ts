@@ -47,7 +47,8 @@ function buildPlanFeatures(planId: Plan, t: TypedT): BillingPlan['features'] {
     { text: watermarkText, included: true },
     { text: t('plans.rows.timeSeries'), included: l.historicalDataImport },
     { text: t('plans.rows.animationExport'), included: l.animationExport },
-    { text: t('plans.rows.publicEmbed'), included: l.publicEmbed },
+    { text: t('plans.rows.embedMapIframe'), included: l.publicEmbed },
+    { text: t('plans.rows.publicMapPage'), included: l.publicEmbed },
   ];
   /** Only show capabilities this plan actually includes (no gray “not included” filler rows). */
   return rows.filter((row) => row.included);

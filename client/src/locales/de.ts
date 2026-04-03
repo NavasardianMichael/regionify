@@ -22,8 +22,7 @@ const de: CommonNs = {
   },
   deleteAccountModal: {
     title: 'Konto löschen',
-    content:
-      'Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Alle Ihre Daten, einschließlich Projekte, werden dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.',
+    content: 'Alle Ihre Daten, einschließlich Projekte, werden dauerhaft entfernt.',
     ok: 'Konto löschen',
     error: 'Konto konnte nicht gelöscht werden',
   },
@@ -85,7 +84,8 @@ const de: CommonNs = {
       noWatermark: 'Kein Wasserzeichen auf Bildexporten',
       timeSeries: 'Zeitreihen-Daten & Zeitstrahl auf der Karte',
       animationExport: 'Animierter Export (GIF & MP4)',
-      publicEmbed: 'Öffentliche Kartenseite (Link & iframe)',
+      embedMapIframe: 'Karte einbetten (iframe)',
+      publicMapPage: 'Öffentliche Seite mit Karte',
     },
     items: {
       observer: {
@@ -442,7 +442,7 @@ const de: CommonNs = {
     subtitle: 'Aktualisieren Sie Ihren Namen und Ihre Spracheinstellungen.',
     name: 'Name',
     email: 'E-Mail',
-    emailNote: 'Die E-Mail kann aus Sicherheitsgründen nicht geändert werden.',
+    emailNote: 'Die E-Mail-Adresse kann nicht geändert werden.',
     language: 'Sprache',
     saveProfile: 'Profil speichern',
     profileUpdated: 'Profil erfolgreich aktualisiert.',
