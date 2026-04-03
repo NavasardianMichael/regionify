@@ -12,7 +12,6 @@ export type CommonNs = {
     about: string;
     login: string;
     account: string;
-    security: string;
     logout: string;
     deleteAccount: string;
     cancel: string;
@@ -425,26 +424,6 @@ export type CommonNs = {
     saveProfile: string;
     profileUpdated: string;
     updateError: string;
-    backToProjects: string;
-  };
-  security: {
-    title: string;
-    subtitle: string;
-    changePassword: string;
-    changePasswordDescription: string;
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-    passwordUpdated: string;
-    updateError: string;
-    securityInfo: {
-      title: string;
-      passwordHashing: string;
-      sessionSecurity: string;
-      rateLimiting: string;
-      dataEncryption: string;
-    };
-    googleAccountNote: string;
     backToProjects: string;
   };
   contact: {

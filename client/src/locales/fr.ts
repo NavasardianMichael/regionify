@@ -10,7 +10,6 @@ const fr: CommonNs = {
     about: 'À propos',
     login: 'Connexion',
     account: 'Compte',
-    security: 'Sécurité',
     logout: 'Déconnexion',
     deleteAccount: 'Supprimer le compte',
     cancel: 'Annuler',
@@ -445,29 +444,6 @@ const fr: CommonNs = {
     saveProfile: 'Enregistrer le profil',
     profileUpdated: 'Profil mis à jour avec succès.',
     updateError: 'Échec de la mise à jour du profil',
-    backToProjects: '← Retour aux projets',
-  },
-  security: {
-    title: 'Sécurité',
-    subtitle: 'Gérez les paramètres de sécurité de votre compte.',
-    changePassword: 'Changer le mot de passe',
-    changePasswordDescription: 'Entrez votre mot de passe actuel et choisissez-en un nouveau.',
-    currentPassword: 'Mot de passe actuel',
-    newPassword: 'Nouveau mot de passe',
-    confirmPassword: 'Confirmer le nouveau mot de passe',
-    passwordUpdated: 'Mot de passe mis à jour avec succès.',
-    updateError: 'Échec de la modification du mot de passe',
-    securityInfo: {
-      title: 'Fonctionnalités de sécurité',
-      passwordHashing:
-        "Les mots de passe sont hachés avec Argon2id selon les paramètres recommandés par l'OWASP",
-      sessionSecurity:
-        'Les sessions utilisent des cookies HttpOnly et Secure avec protection SameSite',
-      rateLimiting: 'La limitation du débit protège contre les attaques par force brute',
-      dataEncryption: 'Toutes les données sensibles sont chiffrées en transit et au repos',
-    },
-    googleAccountNote:
-      'Vous êtes connecté avec Google. La gestion du mot de passe est gérée par Google.',
     backToProjects: '← Retour aux projets',
   },
   contact: {

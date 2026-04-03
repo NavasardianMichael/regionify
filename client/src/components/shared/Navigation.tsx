@@ -9,7 +9,6 @@ import {
   LogoutOutlined,
   MailOutlined,
   MenuOutlined,
-  SafetyOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
@@ -91,12 +90,6 @@ export const Navigation: FC = () => {
           label: t('nav.account'),
           icon: <SettingOutlined />,
           onClick: () => navigate(ROUTES.PROFILE),
-        },
-        {
-          key: 'security',
-          label: t('nav.security'),
-          icon: <SafetyOutlined />,
-          onClick: () => navigate(ROUTES.SECURITY),
         },
         { type: 'divider' as const },
         {
@@ -224,17 +217,6 @@ export const Navigation: FC = () => {
             }}
           >
             {t('nav.account')}
-          </Button>
-          <Button
-            type="text"
-            block
-            icon={<SafetyOutlined />}
-            className="justify-start!"
-            onClick={() => {
-              navigate(ROUTES.SECURITY);
-            }}
-          >
-            {t('nav.security')}
           </Button>
           <Button
             type="text"

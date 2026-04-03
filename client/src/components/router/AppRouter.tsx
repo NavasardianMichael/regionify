@@ -22,7 +22,6 @@ const PaymentReturnPage = lazy(() => import('@/pages/PaymentReturnPage'));
 const PaymentCancelPage = lazy(() => import('@/pages/PaymentCancelPage'));
 const AccountDeletedPage = lazy(() => import('@/pages/AccountDeletedPage'));
 const AccountPage = lazy(() => import('@/pages/AccountPage'));
-const SecurityPage = lazy(() => import('@/pages/SecurityPage'));
 const EmbedPage = lazy(() => import('@/pages/EmbedPage'));
 
 function AppRoutesLayout() {
@@ -63,7 +62,6 @@ function AppRoutesLayout() {
               <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
               <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallbackPage />} />
               <Route path={ROUTES.PROFILE} element={<AccountPage />} />
-              <Route path={ROUTES.SECURITY} element={<SecurityPage />} />
               <Route path={ROUTES.ACCOUNT_DELETED} element={<AccountDeletedPage />} />
               <Route path={ROUTES.BILLING} element={<BillingPage />} />
               <Route path={ROUTES.PAYMENTS_RETURN} element={<PaymentReturnPage />} />
