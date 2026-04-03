@@ -87,8 +87,15 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [labelDragMode, setLabelDragMode] = useState(false);
+
+  /** Latest pan for drag math (avoids stale closure; state updates are rAF-batched). */
+  const panRef = useRef(pan);
+  const mapPanListenersActiveRef = useRef(false);
+  const mapPanDragStartRef = useRef({ x: 0, y: 0 });
+  const mapPanPendingRef = useRef({ x: 0, y: 0 });
+  const mapPanRafRef = useRef<number | null>(null);
+  const mapTransformRef = useRef<HTMLDivElement>(null);
 
   // Legend drag state - use refs for smooth animation without re-renders
   const [isLegendDragging, setIsLegendDragging] = useState(false);
@@ -206,6 +213,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     }
   }, [selectedCountryId, setLabelPositionsByRegionId]);
 
+  useEffect(() => {
+    panRef.current = pan;
+  }, [pan]);
+
   /**
    * Keep ref in sync for label-drag mouseup (batch into store). During drag, DOM x/y lead until
    * release; svgContent uses labelPositionsByRegionId from the store directly.
@@ -287,29 +298,80 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     setLabelDragMode((prev) => !prev);
   }, []);
 
+  const flushMapPanRaf = useCallback(() => {
+    if (mapPanRafRef.current !== null) {
+      cancelAnimationFrame(mapPanRafRef.current);
+      mapPanRafRef.current = null;
+    }
+  }, []);
+
+  const handleMapPanWindowMove = useCallback((e: MouseEvent) => {
+    mapPanPendingRef.current = {
+      x: e.clientX - mapPanDragStartRef.current.x,
+      y: e.clientY - mapPanDragStartRef.current.y,
+    };
+    if (mapPanRafRef.current === null) {
+      mapPanRafRef.current = requestAnimationFrame(() => {
+        const next = mapPanPendingRef.current;
+        panRef.current = next;
+        setPan(next);
+        mapPanRafRef.current = null;
+      });
+    }
+  }, []);
+
+  const endMapPanDrag = useCallback(() => {
+    if (!mapPanListenersActiveRef.current) {
+      return;
+    }
+    mapPanListenersActiveRef.current = false;
+    flushMapPanRaf();
+    const finalPan = mapPanPendingRef.current;
+    panRef.current = finalPan;
+    setPan(finalPan);
+    setIsDragging(false);
+    window.removeEventListener('mousemove', handleMapPanWindowMove);
+    window.removeEventListener('mouseup', endMapPanDrag);
+    if (mapTransformRef.current) {
+      mapTransformRef.current.style.willChange = 'auto';
+    }
+  }, [flushMapPanRaf, handleMapPanWindowMove]);
+
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (labelDragMode) return;
-      setIsDragging(true);
-      setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-    },
-    [pan, labelDragMode],
-  );
+      if (labelDragMode || mapPanListenersActiveRef.current) return;
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isDragging) return;
-      setPan({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
+      const p = panRef.current;
+      mapPanDragStartRef.current = {
+        x: e.clientX - p.x,
+        y: e.clientY - p.y,
+      };
+      mapPanPendingRef.current = { ...p };
+      mapPanListenersActiveRef.current = true;
+      setIsDragging(true);
+
+      if (mapTransformRef.current) {
+        mapTransformRef.current.style.willChange = 'transform';
+      }
+
+      window.addEventListener('mousemove', handleMapPanWindowMove);
+      window.addEventListener('mouseup', endMapPanDrag);
     },
-    [isDragging, dragStart],
+    [labelDragMode, handleMapPanWindowMove, endMapPanDrag],
   );
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    endMapPanDrag();
+  }, [endMapPanDrag]);
+
+  useEffect(() => {
+    return () => {
+      flushMapPanRaf();
+      window.removeEventListener('mousemove', handleMapPanWindowMove);
+      window.removeEventListener('mouseup', endMapPanDrag);
+      mapPanListenersActiveRef.current = false;
+    };
+  }, [flushMapPanRaf, handleMapPanWindowMove, endMapPanDrag]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
@@ -639,7 +701,6 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               labelDragMode ? 'cursor-default' : 'cursor-move'
             }`}
             onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
@@ -648,6 +709,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             ) : svgContent ? (
               <>
                 <div
+                  ref={mapTransformRef}
                   className="relative flex h-[80%] w-[80%] items-center justify-center"
                   data-map-export-map-transform
                   style={{
