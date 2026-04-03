@@ -24,6 +24,7 @@ import {
   Modal,
   Radio,
   type RadioChangeEvent,
+  Skeleton,
   Spin,
   Splitter,
   theme,
@@ -84,7 +85,10 @@ const VisualizerPage: FC = () => {
   const loadProject = useLoadProject();
   const isMdUp = useIsMdUp();
   const [mobileSection, setMobileSection] = useState<MobileVisualizerSection>('map');
-  const [isResolvingProjectFromUrl, setIsResolvingProjectFromUrl] = useState(false);
+
+  /** Saved project in URL but store not hydrated yet (no flash of placeholder copy / default legend). */
+  const isAwaitingProjectFromUrl =
+    urlProjectId != null && urlProjectId !== 'new' && currentProjectId === null;
 
   const {
     selectedCountryId,
@@ -121,7 +125,7 @@ const VisualizerPage: FC = () => {
   } = useVisualizerPage();
 
   const embedButtonDisabled =
-    !canUseEmbed || !selectedCountryId || !currentProject || isResolvingProjectFromUrl;
+    !canUseEmbed || !selectedCountryId || !currentProject || isAwaitingProjectFromUrl;
 
   const embedTooltipTitle = useMemo(() => {
     if (!embedButtonDisabled) return undefined;
@@ -188,8 +192,6 @@ const VisualizerPage: FC = () => {
     if (currentProjectId !== null) return;
 
     let cancelled = false;
-    setIsResolvingProjectFromUrl(true);
-
     const run = async () => {
       try {
         const project = await getProject(urlProjectId);
@@ -209,10 +211,6 @@ const VisualizerPage: FC = () => {
         } else {
           message.error(t('messages.projectLoadFailed'), 0);
           navigate(ROUTES.PROJECTS);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsResolvingProjectFromUrl(false);
         }
       }
     };
@@ -245,7 +243,17 @@ const VisualizerPage: FC = () => {
     });
   }, [location.pathname, setCurrentProjectId, setSavedStateSnapshot]);
 
-  const dataPanel = (
+  const sidePanelLoading = (
+    <CardLayout component="aside" vertical className="h-full">
+      <Flex align="center" justify="center" className="min-h-[12rem] flex-1">
+        <Spin size="large" />
+      </Flex>
+    </CardLayout>
+  );
+
+  const dataPanel = isAwaitingProjectFromUrl ? (
+    sidePanelLoading
+  ) : (
     <CardLayout component="aside" vertical className="h-full">
       <RegionSelect />
       <Divider />
@@ -259,13 +267,22 @@ const VisualizerPage: FC = () => {
     <CardLayout className="min-h-md gap-md h-full">
       <Flex align="center" justify="space-between" wrap className="mb-sm shrink-0" gap="middle">
         <Flex align="center" gap="small" className="min-w-0">
-          <Typography.Title
-            level={3}
-            className="text-primary mb-0! min-w-0 flex-1 truncate text-base font-semibold"
-          >
-            {currentProject?.name?.trim() ? currentProject.name : t('visualizer.mapAreaTitle')}
-          </Typography.Title>
-          {isLoggedIn && currentProject && !isResolvingProjectFromUrl ? (
+          {isAwaitingProjectFromUrl ? (
+            <Skeleton
+              active
+              title={{ width: 'min(280px, 55vw)', style: { marginTop: 6, marginBottom: 0 } }}
+              paragraph={false}
+              className="min-w-0 flex-1"
+            />
+          ) : (
+            <Typography.Title
+              level={3}
+              className="text-primary mb-0! min-w-0 flex-1 truncate text-base font-semibold"
+            >
+              {currentProject?.name?.trim() ? currentProject.name : t('visualizer.mapAreaTitle')}
+            </Typography.Title>
+          )}
+          {isLoggedIn && currentProject && !isAwaitingProjectFromUrl ? (
             <Flex gap={0} className="shrink-0">
               <Tooltip title={t('visualizer.mapHeaderRenameTooltip')}>
                 <Button
@@ -291,7 +308,7 @@ const VisualizerPage: FC = () => {
           <Button
             icon={<SaveOutlined />}
             onClick={handleSave}
-            disabled={isSaveDisabled || isResolvingProjectFromUrl}
+            disabled={isSaveDisabled || isAwaitingProjectFromUrl}
             loading={isSaving}
           >
             {saveButtonText}
@@ -300,7 +317,7 @@ const VisualizerPage: FC = () => {
             type="primary"
             icon={<DownloadOutlined />}
             onClick={handleOpenExportModal}
-            disabled={!selectedCountryId || isResolvingProjectFromUrl}
+            disabled={!selectedCountryId || isAwaitingProjectFromUrl}
           >
             {exportButtonText}
           </Button>
@@ -315,12 +332,12 @@ const VisualizerPage: FC = () => {
           ) : null}
         </Flex>
       </Flex>
-      {!isResolvingProjectFromUrl && hasTimelineData && (
+      {!isAwaitingProjectFromUrl && hasTimelineData && (
         <Suspense>
           <AnimationControls />
         </Suspense>
       )}
-      {isResolvingProjectFromUrl ? (
+      {isAwaitingProjectFromUrl ? (
         <Flex align="center" justify="center" className="min-h-0 flex-1">
           <Spin size="large" />
         </Flex>
@@ -332,7 +349,9 @@ const VisualizerPage: FC = () => {
     </CardLayout>
   );
 
-  const stylesPanel = (
+  const stylesPanel = isAwaitingProjectFromUrl ? (
+    sidePanelLoading
+  ) : (
     <CardLayout component="aside" vertical className="h-full">
       <MapStylesPanel />
       <Divider />

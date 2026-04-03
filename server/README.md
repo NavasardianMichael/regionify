@@ -78,21 +78,21 @@ The server will start at `http://localhost:3000`.
 
 ### Health Check
 
-| Method | Endpoint      | Description  |
-| ------ | ------------- | ------------ |
+| Method | Endpoint  | Description  |
+| ------ | --------- | ------------ |
 | GET    | `/health` | Health check |
 
 ### Authentication
 
-| Method | Endpoint                    | Description            | Auth Required |
-| ------ | --------------------------- | ---------------------- | ------------- |
-| POST   | `/auth/register`            | Register new user      | No            |
-| POST   | `/auth/login`               | Login with credentials | No            |
-| POST   | `/auth/logout`              | Logout current session | No            |
-| GET    | `/auth/me`                  | Get current user       | Yes           |
-| GET    | `/auth/status`              | Check auth status      | No            |
-| GET    | `/auth/google`              | Initiate Google OAuth  | No            |
-| GET    | `/auth/google/callback`     | Google OAuth callback  | No            |
+| Method | Endpoint                | Description            | Auth Required |
+| ------ | ----------------------- | ---------------------- | ------------- |
+| POST   | `/auth/register`        | Register new user      | No            |
+| POST   | `/auth/login`           | Login with credentials | No            |
+| POST   | `/auth/logout`          | Logout current session | No            |
+| GET    | `/auth/me`              | Get current user       | Yes           |
+| GET    | `/auth/status`          | Check auth status      | No            |
+| GET    | `/auth/google`          | Initiate Google OAuth  | No            |
+| GET    | `/auth/google/callback` | Google OAuth callback  | No            |
 
 ### Request/Response Examples
 

@@ -1,7 +1,12 @@
 import type { ReactNode } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, Flex } from 'antd';
-import type { ArgsProps, JointContent, MessageInstance, MessageType } from 'antd/es/message/interface';
+import type {
+  ArgsProps,
+  JointContent,
+  MessageInstance,
+  MessageType,
+} from 'antd/es/message/interface';
 
 function nextKey(): string {
   return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -16,7 +21,7 @@ function wrapContent(inner: ReactNode, destroy: () => void): ReactNode {
         size="small"
         icon={<CloseOutlined className="text-sm" />}
         aria-label="Close"
-        className="text-gray-500 hover:text-gray-700! shrink-0"
+        className="shrink-0 text-gray-500 hover:text-gray-700!"
         onClick={destroy}
       />
     </Flex>
@@ -41,7 +46,11 @@ export function wrapMessageWithCloseButton(api: MessageInstance): MessageInstanc
 
   const makeTyped =
     (type: 'success' | 'error' | 'info' | 'warning' | 'loading') =>
-    (jointContent: JointContent, duration?: number | VoidFunction, onClose?: VoidFunction): MessageType => {
+    (
+      jointContent: JointContent,
+      duration?: number | VoidFunction,
+      onClose?: VoidFunction,
+    ): MessageType => {
       let config: ArgsProps;
       if (jointContent && typeof jointContent === 'object' && 'content' in jointContent) {
         config = jointContent as ArgsProps;

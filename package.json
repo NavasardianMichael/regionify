@@ -13,7 +13,7 @@
     "lint": "pnpm run --parallel -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "pnpm run --parallel -r typecheck",
+    "typecheck": "pnpm --filter @regionify/shared build && pnpm run --parallel -r typecheck",
     "prepare": "husky",
     "db:generate": "pnpm --filter @regionify/server db:generate",
     "db:migrate": "pnpm --filter @regionify/server db:migrate",
