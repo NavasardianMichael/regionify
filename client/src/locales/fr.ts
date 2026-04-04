@@ -298,7 +298,7 @@ const fr: CommonNs = {
       copyFailed: 'Impossible de copier',
     },
     exportModal: {
-      title: 'Exporter la visualisation',
+      title: "Configurer l'exportation",
       cropAndDownload: 'Recadrer et télécharger',
       nextCropAndDownload: 'Suivant : Recadrer et télécharger',
       exportTypeLabel: "Type d'export :",

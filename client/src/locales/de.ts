@@ -301,7 +301,7 @@ const de: CommonNs = {
       copyFailed: 'Kopieren fehlgeschlagen',
     },
     exportModal: {
-      title: 'Kartenvisualisierung exportieren',
+      title: 'Exporteinstellungen konfigurieren',
       cropAndDownload: 'Zuschneiden & Herunterladen',
       nextCropAndDownload: 'Weiter: Zuschneiden & Herunterladen',
       exportTypeLabel: 'Exporttyp:',

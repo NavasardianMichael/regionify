@@ -287,7 +287,7 @@ const en: CommonNs = {
       copyFailed: 'Could not copy',
     },
     exportModal: {
-      title: 'Export Map Visualizer',
+      title: 'Configure Exporting Asset',
       cropAndDownload: 'Crop & Download',
       nextCropAndDownload: 'Next: Crop & Download',
       exportTypeLabel: 'Export type:',
@@ -302,7 +302,7 @@ const en: CommonNs = {
       back: 'Back',
       downloadFormat: 'Download {{format}}',
       upgradeToExplorer: 'Upgrade to {{planName}}',
-      singleFormatHintAfterLink: ' for PNG, SVG, full-quality still exports, and no watermark.',
+      singleFormatHintAfterLink: ' for PNG, SVG, full quality and no watermark.',
       qualityLimited: 'Quality limited to {{max}}%.',
       qualityFullHint: ' for 100%.',
     },

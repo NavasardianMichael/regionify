@@ -296,7 +296,7 @@ const es: CommonNs = {
       copyFailed: 'No se pudo copiar',
     },
     exportModal: {
-      title: 'Exportar visualización del mapa',
+      title: 'Configurar exportación',
       cropAndDownload: 'Recortar y descargar',
       nextCropAndDownload: 'Siguiente: Recortar y descargar',
       exportTypeLabel: 'Tipo de exportación:',

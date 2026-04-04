@@ -276,7 +276,7 @@ const zh: CommonNs = {
       copyFailed: '复制失败',
     },
     exportModal: {
-      title: '导出地图可视化',
+      title: '配置导出资源',
       cropAndDownload: '裁剪并下载',
       nextCropAndDownload: '下一步：裁剪并下载',
       exportTypeLabel: '导出类型：',

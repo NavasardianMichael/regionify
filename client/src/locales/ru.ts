@@ -290,7 +290,7 @@ const ru: CommonNs = {
       copyFailed: 'Не удалось скопировать',
     },
     exportModal: {
-      title: 'Экспорт визуализации карты',
+      title: 'Настроить экспорт',
       cropAndDownload: 'Обрезать и скачать',
       nextCropAndDownload: 'Далее: Обрезать и скачать',
       exportTypeLabel: 'Тип экспорта:',

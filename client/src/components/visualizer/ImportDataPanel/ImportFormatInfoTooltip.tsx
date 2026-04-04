@@ -9,19 +9,19 @@ export const ImportFormatInfoTooltip: FC = () => {
   return (
     <ul className="m-0 list-disc space-y-2 p-3 ps-8 text-sm text-white">
       <li>
-        <Typography.Text strong className="text-white">
+        <Typography.Text strong className="font-semibold text-white!">
           id
         </Typography.Text>{' '}
         — {t('visualizer.importFormatTooltip.id')}
       </li>
       <li>
-        <Typography.Text strong className="text-white">
+        <Typography.Text strong className="font-semibold text-white!">
           label
         </Typography.Text>{' '}
         — {t('visualizer.importFormatTooltip.label')}
       </li>
       <li>
-        <Typography.Text strong className="text-white">
+        <Typography.Text strong className="font-semibold text-white!">
           value
         </Typography.Text>{' '}
         — {t('visualizer.importFormatTooltip.value')}

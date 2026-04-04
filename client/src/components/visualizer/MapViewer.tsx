@@ -56,6 +56,7 @@ import {
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
@@ -78,6 +79,7 @@ const LEGEND_RESIZE_CONTAINER_PADDING_PX = 8;
 
 const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const { t, i18n } = useTypedTranslation();
+  const isTouchDevice = useIsTouchDevice();
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
   const containerRef = useRef<HTMLButtonElement>(null);
@@ -305,7 +307,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     }
   }, []);
 
-  const handleMapPanWindowMove = useCallback((e: MouseEvent) => {
+  const handleMapPanWindowMove = useCallback((e: PointerEvent) => {
     mapPanPendingRef.current = {
       x: e.clientX - mapPanDragStartRef.current.x,
       y: e.clientY - mapPanDragStartRef.current.y,
@@ -330,15 +332,15 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     panRef.current = finalPan;
     setPan(finalPan);
     setIsDragging(false);
-    window.removeEventListener('mousemove', handleMapPanWindowMove);
-    window.removeEventListener('mouseup', endMapPanDrag);
+    window.removeEventListener('pointermove', handleMapPanWindowMove);
+    window.removeEventListener('pointerup', endMapPanDrag);
     if (mapTransformRef.current) {
       mapTransformRef.current.style.willChange = 'auto';
     }
   }, [flushMapPanRaf, handleMapPanWindowMove]);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
       if (labelDragMode || mapPanListenersActiveRef.current) return;
 
       const p = panRef.current;
@@ -354,21 +356,21 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         mapTransformRef.current.style.willChange = 'transform';
       }
 
-      window.addEventListener('mousemove', handleMapPanWindowMove);
-      window.addEventListener('mouseup', endMapPanDrag);
+      window.addEventListener('pointermove', handleMapPanWindowMove);
+      window.addEventListener('pointerup', endMapPanDrag);
     },
     [labelDragMode, handleMapPanWindowMove, endMapPanDrag],
   );
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     endMapPanDrag();
   }, [endMapPanDrag]);
 
   useEffect(() => {
     return () => {
       flushMapPanRaf();
-      window.removeEventListener('mousemove', handleMapPanWindowMove);
-      window.removeEventListener('mouseup', endMapPanDrag);
+      window.removeEventListener('pointermove', handleMapPanWindowMove);
+      window.removeEventListener('pointerup', endMapPanDrag);
       mapPanListenersActiveRef.current = false;
     };
   }, [flushMapPanRaf, handleMapPanWindowMove, endMapPanDrag]);
@@ -404,7 +406,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   );
 
   const handleLabelDragMove = useCallback(
-    (e: MouseEvent) => {
+    (e: PointerEvent) => {
       const dragging = draggingLabelRef.current;
       if (!dragging) return;
 
@@ -418,7 +420,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   );
 
   const handleLabelDragEnd = useCallback(
-    (e: MouseEvent) => {
+    (e: PointerEvent) => {
       const dragging = draggingLabelRef.current;
       if (!dragging) return;
 
@@ -429,8 +431,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       }
 
       draggingLabelRef.current = null;
-      window.removeEventListener('mousemove', handleLabelDragMove);
-      window.removeEventListener('mouseup', handleLabelDragEnd);
+      window.removeEventListener('pointermove', handleLabelDragMove);
+      window.removeEventListener('pointerup', handleLabelDragEnd);
     },
     [screenToSvgCoords, handleLabelDragMove, setLabelPositionsByRegionId],
   );
@@ -442,7 +444,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
     const textElements = container.querySelectorAll<SVGTextElement>('text[data-region-id]');
 
-    const handleLabelMouseDown = (e: MouseEvent) => {
+    const handleLabelPointerDown = (e: PointerEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -459,17 +461,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         regionId,
       };
 
-      window.addEventListener('mousemove', handleLabelDragMove);
-      window.addEventListener('mouseup', handleLabelDragEnd);
+      window.addEventListener('pointermove', handleLabelDragMove);
+      window.addEventListener('pointerup', handleLabelDragEnd);
     };
 
     textElements.forEach((el) => {
-      el.addEventListener('mousedown', handleLabelMouseDown);
+      el.addEventListener('pointerdown', handleLabelPointerDown);
     });
 
     return () => {
       textElements.forEach((el) => {
-        el.removeEventListener('mousedown', handleLabelMouseDown);
+        el.removeEventListener('pointerdown', handleLabelPointerDown);
       });
     };
   }, [
@@ -484,7 +486,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   // Legend drag handlers - optimized with CSS transforms and requestAnimationFrame
   const handleLegendMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
       if (position !== LEGEND_POSITIONS.floating) return;
       e.stopPropagation();
       e.preventDefault();
@@ -509,7 +511,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   }, [isLegendDragging]);
 
   const handleLegendMouseMove = useCallback(
-    (e: MouseEvent) => {
+    (e: PointerEvent) => {
       if (isLegendDragging && containerRef.current && legendRef.current) {
         const containerRect = containerRef.current.getBoundingClientRect();
         const legendRect = legendRef.current.getBoundingClientRect();
@@ -617,7 +619,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
   // Legend resize handler
   const handleResizeMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
@@ -643,11 +645,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   // Add global mouse event listeners for legend drag/resize
   useEffect(() => {
     if (isLegendDragging || isLegendResizing) {
-      window.addEventListener('mousemove', handleLegendMouseMove);
-      window.addEventListener('mouseup', handleLegendMouseUp);
+      window.addEventListener('pointermove', handleLegendMouseMove);
+      window.addEventListener('pointerup', handleLegendMouseUp);
       return () => {
-        window.removeEventListener('mousemove', handleLegendMouseMove);
-        window.removeEventListener('mouseup', handleLegendMouseUp);
+        window.removeEventListener('pointermove', handleLegendMouseMove);
+        window.removeEventListener('pointerup', handleLegendMouseUp);
       };
     }
   }, [isLegendDragging, isLegendResizing, handleLegendMouseMove, handleLegendMouseUp]);
@@ -702,9 +704,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
               labelDragMode ? 'cursor-default' : 'cursor-move'
             }`}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            style={{ touchAction: 'none' }}
           >
             {isLoading ? (
               <Spin size="large" />
@@ -784,7 +787,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                     type="button"
                     aria-label="Drag to reposition legend"
                     className="z-10 mb-1 h-8 w-full shrink-0 cursor-move border-none bg-transparent p-0"
-                    onMouseDown={handleLegendMouseDown}
+                    onPointerDown={handleLegendMouseDown}
                   />
                   <div className="z-20 min-h-0 flex-1 overflow-y-auto pr-1">
                     <MapLegendContent
@@ -801,7 +804,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                     type="button"
                     aria-label="Drag to reposition legend"
                     className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
-                    onMouseDown={handleLegendMouseDown}
+                    onPointerDown={handleLegendMouseDown}
                   />
                   <div className="pointer-events-none relative z-20">
                     <MapLegendContent
@@ -818,7 +821,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                 type="button"
                 aria-label="Resize legend width and height"
                 className="absolute -right-1 -bottom-1 z-20 h-6 w-6 cursor-se-resize rounded-bl-lg border-none bg-transparent p-0 transition-colors hover:bg-gray-100"
-                onMouseDown={handleResizeMouseDown}
+                onPointerDown={handleResizeMouseDown}
               >
                 <svg
                   className="h-full w-full p-1 text-gray-400"
@@ -860,7 +863,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           {/* Arrow pan buttons */}
           {zoomControls.show && (
             <>
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div
+                className={`absolute top-0 left-1/2 -translate-x-1/2 transition-opacity duration-200 ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+              >
                 <Tooltip title={t('visualizer.mapStyles.tooltipPanUp')} placement="bottom">
                   <Button
                     type="default"
@@ -872,7 +877,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                   />
                 </Tooltip>
               </div>
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div
+                className={`absolute bottom-0 left-1/2 -translate-x-1/2 transition-opacity duration-200 ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+              >
                 <Tooltip title={t('visualizer.mapStyles.tooltipPanDown')} placement="top">
                   <Button
                     type="default"
@@ -884,7 +891,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                   />
                 </Tooltip>
               </div>
-              <div className="absolute top-1/2 left-0 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div
+                className={`absolute top-1/2 left-0 -translate-y-1/2 transition-opacity duration-200 ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+              >
                 <Tooltip title={t('visualizer.mapStyles.tooltipPanLeft')} placement="right">
                   <Button
                     type="default"
@@ -896,7 +905,9 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                   />
                 </Tooltip>
               </div>
-              <div className="absolute top-1/2 right-0 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <div
+                className={`absolute top-1/2 right-0 -translate-y-1/2 transition-opacity duration-200 ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+              >
                 <Tooltip title={t('visualizer.mapStyles.tooltipPanRight')} placement="left">
                   <Button
                     type="default"

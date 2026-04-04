@@ -292,7 +292,7 @@ const pt: CommonNs = {
       copyFailed: 'Não foi possível copiar',
     },
     exportModal: {
-      title: 'Exportar visualização do mapa',
+      title: 'Configurar exportação',
       cropAndDownload: 'Recortar e baixar',
       nextCropAndDownload: 'Próximo: Recortar e baixar',
       exportTypeLabel: 'Tipo de exportação:',

@@ -162,9 +162,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     setQuality(value);
   }, []);
 
-  const handleQualitySliderChange = useCallback((value: number) => {
-    setQuality(value);
-  }, []);
+  const handleQualitySliderChange = useCallback(
+    (value: number) => {
+      setQuality(Math.min(value, maxQuality));
+    },
+    [maxQuality],
+  );
 
   const handleQualityBlur = useCallback(() => {
     setQuality((q) => {

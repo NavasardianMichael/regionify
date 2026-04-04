@@ -186,7 +186,7 @@ export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
         <Button
           type="primary"
           icon={<RightOutlined />}
-          iconPosition="end"
+          iconPlacement="end"
           onClick={handleNext}
           disabled={isExporting || !selectedCountryId || (isAnimationFormat && !hasTimelineData)}
         >

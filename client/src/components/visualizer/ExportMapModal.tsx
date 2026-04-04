@@ -54,6 +54,9 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       afterOpenChange={state.handleAfterOpenChange}
       footer={null}
       width={isStep2 ? 680 : 400}
+      style={{ maxHeight: '95vh' }}
+      styles={{ body: { overflowY: 'auto', maxHeight: 'calc(95vh - 110px)' } }}
+      classNames={{ body: 'scrollbar-thin' }}
       destroyOnHidden
     >
       {isStep2 ? (
