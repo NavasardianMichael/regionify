@@ -53,7 +53,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
   return (
     <>
       {/* Arrow pan buttons */}
-      <div className={`absolute top-0 left-1/2 -translate-x-1/2 ${visibilityClass}`}>
+      <div className={`top-sm absolute left-1/2 -translate-x-1/2 ${visibilityClass}`}>
         <Tooltip title={t('visualizer.mapStyles.tooltipPanUp')} placement="bottom">
           <Button
             type="default"
@@ -65,7 +65,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
           />
         </Tooltip>
       </div>
-      <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 ${visibilityClass}`}>
+      <div className={`bottom-sm absolute left-1/2 -translate-x-1/2 ${visibilityClass}`}>
         <Tooltip title={t('visualizer.mapStyles.tooltipPanDown')} placement="top">
           <Button
             type="default"
@@ -77,7 +77,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
           />
         </Tooltip>
       </div>
-      <div className={`absolute top-1/2 left-0 -translate-y-1/2 ${visibilityClass}`}>
+      <div className={`left-sm absolute top-1/2 -translate-y-1/2 ${visibilityClass}`}>
         <Tooltip title={t('visualizer.mapStyles.tooltipPanLeft')} placement="right">
           <Button
             type="default"
@@ -89,7 +89,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
           />
         </Tooltip>
       </div>
-      <div className={`absolute top-1/2 right-0 -translate-y-1/2 ${visibilityClass}`}>
+      <div className={`right-sm absolute top-1/2 -translate-y-1/2 ${visibilityClass}`}>
         <Tooltip title={t('visualizer.mapStyles.tooltipPanRight')} placement="left">
           <Button
             type="default"

@@ -294,7 +294,8 @@ export type CommonNs = {
       smoothTransitions: string;
       animationDuration: string;
       aspectRatioLabel: string;
-      outputSizeLabel: string;
+      aspectRatioPresetFree: string;
+      resolutionLabel: string;
       width: string;
       height: string;
       back: string;

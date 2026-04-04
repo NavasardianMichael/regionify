@@ -1,7 +1,6 @@
-import { type FC } from 'react';
+import { type FC, useMemo } from 'react';
 import { Cropper, ImageRestriction } from 'react-advanced-cropper';
-import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
-import { Button, Flex, InputNumber, Segmented, Spin, Typography } from 'antd';
+import { Flex, InputNumber, Segmented, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   ASPECT_RATIO_OPTIONS,
@@ -12,19 +11,9 @@ import 'react-advanced-cropper/dist/style.css';
 
 type Props = {
   crop: ExportCropState;
-  isExporting: boolean;
-  downloadButtonLabel: string;
-  onBack: () => void;
-  onDownload: () => void;
 };
 
-export const ExportCropStep: FC<Props> = ({
-  crop,
-  isExporting,
-  downloadButtonLabel,
-  onBack,
-  onDownload,
-}) => {
+export const ExportCropStep: FC<Props> = ({ crop }) => {
   const { t } = useTypedTranslation();
   const {
     cropperRef,
@@ -40,10 +29,20 @@ export const ExportCropStep: FC<Props> = ({
     handleWidthChange,
     handleHeightChange,
   } = crop;
-  const isDisabled = isExporting || isGeneratingPreview;
+  const isDisabled = isGeneratingPreview;
+
+  const aspectRatioOptions = useMemo(
+    () =>
+      ASPECT_RATIO_OPTIONS.map((option) =>
+        option.value === 'free'
+          ? { ...option, label: t('visualizer.exportModal.aspectRatioPresetFree') }
+          : option,
+      ),
+    [t],
+  );
 
   return (
-    <Flex vertical gap="middle" className="py-md">
+    <Flex vertical gap="middle" className="pt-md pb-md">
       {isGeneratingPreview ? (
         <Flex justify="center" align="center" className="h-80">
           <Spin size="large" />
@@ -76,7 +75,7 @@ export const ExportCropStep: FC<Props> = ({
         <Segmented
           value={aspectRatioPreset}
           onChange={(value: string) => handleAspectRatioChange(value as AspectRatioPreset)}
-          options={ASPECT_RATIO_OPTIONS}
+          options={aspectRatioOptions}
           block
           disabled={isDisabled}
         />
@@ -84,7 +83,7 @@ export const ExportCropStep: FC<Props> = ({
 
       <Flex vertical gap="small">
         <Typography.Text className="text-sm text-gray-600">
-          {t('visualizer.exportModal.outputSizeLabel')}
+          {t('visualizer.exportModal.resolutionLabel')}
         </Typography.Text>
         <Flex gap="small" align="center">
           <Flex align="center" gap="small">
@@ -113,21 +112,6 @@ export const ExportCropStep: FC<Props> = ({
             />
           </Flex>
         </Flex>
-      </Flex>
-
-      <Flex justify="space-between" className="mt-sm">
-        <Button icon={<ArrowLeftOutlined />} onClick={onBack} disabled={isDisabled}>
-          {t('visualizer.exportModal.back')}
-        </Button>
-        <Button
-          type="primary"
-          icon={<DownloadOutlined />}
-          onClick={onDownload}
-          loading={isExporting}
-          disabled={isDisabled || !previewSrc}
-        >
-          {downloadButtonLabel}
-        </Button>
       </Flex>
     </Flex>
   );

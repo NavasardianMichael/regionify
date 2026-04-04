@@ -1,15 +1,10 @@
-import { type FC, lazy, Suspense, useMemo } from 'react';
-import { DownloadOutlined, ScissorOutlined } from '@ant-design/icons';
-import { Flex, Modal, Spin, Typography } from 'antd';
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { type FC } from 'react';
+import { Modal } from 'antd';
+import { ExportMapModalCropFooter } from '@/components/visualizer/ExportMapModal/ExportMapModalCropFooter';
+import { ExportMapModalCropPanel } from '@/components/visualizer/ExportMapModal/ExportMapModalCropPanel';
 import { ExportMapModalForm } from '@/components/visualizer/ExportMapModal/ExportMapModalForm';
+import { ExportMapModalTitle } from '@/components/visualizer/ExportMapModal/ExportMapModalTitle';
 import { useExportMapModal } from '@/components/visualizer/ExportMapModal/useExportMapModal';
-
-const ExportCropStep = lazy(() =>
-  import('@/components/visualizer/ExportMapModal/ExportCropStep').then((m) => ({
-    default: m.ExportCropStep,
-  })),
-);
 
 type Props = {
   open: boolean;
@@ -18,32 +13,16 @@ type Props = {
 
 const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const state = useExportMapModal(open, onClose);
-  const { t } = useTypedTranslation();
-  const isStep2 = state.step === 2;
+  const isCropStep = state.step === 2;
+  const cropStepDisabled = state.isExporting || state.crop.isGeneratingPreview;
 
-  const title = useMemo(() => {
-    const icon = isStep2 ? (
-      <ScissorOutlined className="text-primary" />
-    ) : (
-      <DownloadOutlined className="text-primary" />
-    );
-    const text = isStep2
-      ? t('visualizer.exportModal.cropAndDownload')
-      : t('visualizer.exportModal.title');
-
-    return (
-      <Flex align="center" gap="small" className="mb-6!">
-        {icon}
-        <Typography.Title level={4} className="mb-0!">
-          {text}
-        </Typography.Title>
-      </Flex>
-    );
-  }, [isStep2, t]);
+  const bodyClassName = isCropStep
+    ? 'scrollbar-thin max-h-[calc(95vh-220px)] overflow-y-auto pb-md'
+    : 'scrollbar-thin max-h-[calc(95vh-110px)] overflow-y-auto';
 
   return (
     <Modal
-      title={title}
+      title={<ExportMapModalTitle variant={isCropStep ? 'crop' : 'export'} />}
       open={open}
       onCancel={onClose}
       confirmLoading={state.isExporting}
@@ -52,29 +31,27 @@ const ExportMapModal: FC<Props> = ({ open, onClose }) => {
       closable={{ disabled: state.isExporting }}
       centered
       afterOpenChange={state.handleAfterOpenChange}
-      footer={null}
-      width={isStep2 ? 680 : 400}
-      style={{ maxHeight: '95vh' }}
-      styles={{ body: { overflowY: 'auto', maxHeight: 'calc(95vh - 110px)' } }}
-      classNames={{ body: 'scrollbar-thin' }}
-      destroyOnHidden
-    >
-      {isStep2 ? (
-        <Suspense
-          fallback={
-            <Flex justify="center" align="center" className="h-80">
-              <Spin size="large" />
-            </Flex>
-          }
-        >
-          <ExportCropStep
-            crop={state.crop}
+      footer={
+        isCropStep ? (
+          <ExportMapModalCropFooter
+            disabled={cropStepDisabled}
+            downloadDisabled={!state.crop.previewSrc}
             isExporting={state.isExporting}
-            downloadButtonLabel={state.downloadButtonLabel}
+            downloadLabel={state.downloadButtonLabel}
             onBack={state.handleBack}
             onDownload={state.handleDownload}
           />
-        </Suspense>
+        ) : null
+      }
+      width={isCropStep ? 680 : 400}
+      classNames={{
+        container: 'max-h-[95vh]',
+        body: bodyClassName,
+      }}
+      destroyOnHidden
+    >
+      {isCropStep ? (
+        <ExportMapModalCropPanel crop={state.crop} />
       ) : (
         <ExportMapModalForm {...state} />
       )}

@@ -43,9 +43,10 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
       role="region"
       aria-label="Map legend"
       data-map-export-floating-legend
-      className={`p-sm absolute rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${
-        isFloatingLegendHeightFixed ? 'flex min-h-0 flex-col overflow-hidden' : 'cursor-move'
+      className={`p-sm absolute cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${
+        isFloatingLegendHeightFixed ? 'flex min-h-0 flex-col overflow-hidden' : ''
       }`}
+      onPointerDown={onLegendMouseDown}
       style={{
         left: floatingPosition.x,
         top: floatingPosition.y,
@@ -55,39 +56,21 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
       }}
     >
       {isFloatingLegendHeightFixed ? (
-        <>
-          <button
-            type="button"
-            aria-label="Drag to reposition legend"
-            className="z-10 mb-1 h-8 w-full shrink-0 cursor-move border-none bg-transparent p-0"
-            onPointerDown={onLegendMouseDown}
+        <div className="scrollbar-legend min-h-0 flex-1 overflow-y-auto pr-0.5">
+          <MapLegendContent
+            title={title}
+            labels={labels}
+            legendItems={legendItems}
+            noDataColor={noDataColor}
           />
-          <div className="z-20 min-h-0 flex-1 overflow-y-auto pr-1">
-            <MapLegendContent
-              title={title}
-              labels={labels}
-              legendItems={legendItems}
-              noDataColor={noDataColor}
-            />
-          </div>
-        </>
+        </div>
       ) : (
-        <>
-          <button
-            type="button"
-            aria-label="Drag to reposition legend"
-            className="absolute inset-0 z-10 cursor-move border-none bg-transparent p-0"
-            onPointerDown={onLegendMouseDown}
-          />
-          <div className="pointer-events-none relative z-20">
-            <MapLegendContent
-              title={title}
-              labels={labels}
-              legendItems={legendItems}
-              noDataColor={noDataColor}
-            />
-          </div>
-        </>
+        <MapLegendContent
+          title={title}
+          labels={labels}
+          legendItems={legendItems}
+          noDataColor={noDataColor}
+        />
       )}
       <button
         type="button"
