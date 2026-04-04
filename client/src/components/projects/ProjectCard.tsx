@@ -54,6 +54,19 @@ const ProjectCardCoverLoading = memo(() => (
 ));
 ProjectCardCoverLoading.displayName = 'ProjectCardCoverLoading';
 
+const ProjectCardOpeningOverlay = memo(() => (
+  <Flex
+    align="center"
+    justify="center"
+    className="absolute inset-0 z-10 rounded-lg bg-white/40 backdrop-blur-sm"
+    aria-busy
+    aria-live="polite"
+  >
+    <Spin size="large" />
+  </Flex>
+));
+ProjectCardOpeningOverlay.displayName = 'ProjectCardOpeningOverlay';
+
 type ProjectCardMetaDescriptionProps = {
   countryLabel: string;
   dataSourceLine: string;
@@ -109,25 +122,31 @@ ProjectCardMetaSection.displayName = 'ProjectCardMetaSection';
 type ProjectCardRenameButtonProps = {
   onClick: (e: React.MouseEvent) => void;
   label: string;
+  disabled: boolean;
 };
 
-const ProjectCardRenameButton = memo<ProjectCardRenameButtonProps>(({ onClick, label }) => (
-  <Button type="text" icon={<EditOutlined />} onClick={onClick}>
-    {label}
-  </Button>
-));
+const ProjectCardRenameButton = memo<ProjectCardRenameButtonProps>(
+  ({ onClick, label, disabled }) => (
+    <Button type="text" icon={<EditOutlined />} onClick={onClick} disabled={disabled}>
+      {label}
+    </Button>
+  ),
+);
 ProjectCardRenameButton.displayName = 'ProjectCardRenameButton';
 
 type ProjectCardDeleteButtonProps = {
   onClick: (e: React.MouseEvent) => void;
   label: string;
+  disabled: boolean;
 };
 
-const ProjectCardDeleteButton = memo<ProjectCardDeleteButtonProps>(({ onClick, label }) => (
-  <Button type="text" danger icon={<DeleteOutlined />} onClick={onClick}>
-    {label}
-  </Button>
-));
+const ProjectCardDeleteButton = memo<ProjectCardDeleteButtonProps>(
+  ({ onClick, label, disabled }) => (
+    <Button type="text" danger icon={<DeleteOutlined />} onClick={onClick} disabled={disabled}>
+      {label}
+    </Button>
+  ),
+);
 ProjectCardDeleteButton.displayName = 'ProjectCardDeleteButton';
 
 function datasetFormatLabel(t: TypedT, importDataType: ImportDataType | null | undefined): string {
@@ -209,46 +228,51 @@ const ProjectCard = memo<ProjectCardProps>(
           key="rename"
           onClick={handleRenameClick}
           label={t('common.rename')}
+          disabled={isOpening}
         />,
         <ProjectCardDeleteButton
           key="delete"
           onClick={handleDeleteClick}
           label={t('common.delete')}
+          disabled={isOpening}
         />,
       ],
-      [handleRenameClick, handleDeleteClick, t],
+      [handleRenameClick, handleDeleteClick, isOpening, t],
     );
 
     return (
-      <Card
-        hoverable
-        className="w-full sm:max-w-80"
-        classNames={{ root: 'border-gray-300 border' }}
-        cover={
-          isThumbnailLoading || isOpening ? (
-            <ProjectCardCoverLoading />
-          ) : mapThumbnailUrl ? (
-            <ProjectCardCover
-              mapThumbnailUrl={mapThumbnailUrl}
-              thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
-            />
-          ) : undefined
-        }
-        actions={actions}
-        onClick={handleOpenClick}
-      >
-        <ProjectCardMetaSection
-          projectName={project.name}
-          description={
-            <ProjectCardMetaDescription
-              countryLabel={countryLabel}
-              dataSourceLine={dataSourceLine}
-              createdLine={createdLine}
-              updatedLine={updatedLine}
-            />
+      <div className="relative w-full sm:max-w-80">
+        {isOpening && <ProjectCardOpeningOverlay />}
+        <Card
+          hoverable
+          className="w-full"
+          classNames={{ root: 'border-gray-300 border' }}
+          cover={
+            isThumbnailLoading ? (
+              <ProjectCardCoverLoading />
+            ) : mapThumbnailUrl ? (
+              <ProjectCardCover
+                mapThumbnailUrl={mapThumbnailUrl}
+                thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
+              />
+            ) : undefined
           }
-        />
-      </Card>
+          actions={actions}
+          onClick={handleOpenClick}
+        >
+          <ProjectCardMetaSection
+            projectName={project.name}
+            description={
+              <ProjectCardMetaDescription
+                countryLabel={countryLabel}
+                dataSourceLine={dataSourceLine}
+                createdLine={createdLine}
+                updatedLine={updatedLine}
+              />
+            }
+          />
+        </Card>
+      </div>
     );
   },
 );
