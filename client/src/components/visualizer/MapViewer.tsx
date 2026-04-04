@@ -92,7 +92,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
         <Flex
           align="center"
           justify="center"
-          className="group relative min-h-0 flex-1 overflow-hidden rounded-lg"
+          className="group relative min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200"
           data-map-export-map-area
           style={{
             backgroundColor: picture.transparentBackground

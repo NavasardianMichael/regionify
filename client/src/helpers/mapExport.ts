@@ -4,6 +4,10 @@ import type { LegendLabelsConfig, LegendTitleConfig } from '@/store/legendStyles
 
 const MAP_SVG_SELECTOR = '.map-svg-container svg';
 const MAP_EXPORT_ROOT = '[data-map-export-root]';
+const MAP_EXPORT_MAP_AREA = '[data-map-export-map-area]';
+/** Tailwind `border-gray-200` — map frame in composite export (matches on-screen MapViewer). */
+const MAP_AREA_OUTLINE_COLOR = '#e5e7eb';
+const LEGEND_NO_DATA_SWATCH_BORDER = '#d1d5db';
 const DEFAULT_EXPORT_NAME = 'regionify-map';
 const DEFAULT_WATERMARK_LOGO_SRC = '/favicon-32x32.png';
 
@@ -281,7 +285,7 @@ const drawLegendOnCanvas = (
     cy += Math.max(swatch, fontSize) + rowGap;
   }
 
-  ctx.strokeStyle = '#d1d5db';
+  ctx.strokeStyle = LEGEND_NO_DATA_SWATCH_BORDER;
   ctx.lineWidth = 1;
   ctx.strokeRect(x + pad, cy - swatch / 2, swatch, swatch);
   ctx.fillStyle = legend.noDataColor;
@@ -369,6 +373,23 @@ export const generateMapCanvas = async (
   const svgString = new XMLSerializer().serializeToString(clone);
   const mapCanvas = await svgToCanvas(svgString, 1);
   ctx.drawImage(mapCanvas, sx, sy);
+
+  const mapAreaEl = root.querySelector<HTMLElement>(MAP_EXPORT_MAP_AREA);
+  if (mapAreaEl) {
+    const ar = mapAreaEl.getBoundingClientRect();
+    const ax = (ar.left - rootRect.left) * qs;
+    const ay = (ar.top - rootRect.top) * qs;
+    const aw = Math.max(1, ar.width * qs);
+    const ah = Math.max(1, ar.height * qs);
+    const radius = Math.round(8 * qs);
+    ctx.save();
+    ctx.beginPath();
+    drawRoundedRectPath(ctx, ax, ay, aw, ah, radius);
+    ctx.strokeStyle = MAP_AREA_OUTLINE_COLOR;
+    ctx.lineWidth = Math.max(1, qs);
+    ctx.stroke();
+    ctx.restore();
+  }
 
   const legendEl =
     root.querySelector<HTMLElement>('[data-map-export-floating-legend]') ??
