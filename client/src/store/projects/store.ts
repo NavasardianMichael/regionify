@@ -1,11 +1,12 @@
 import { create } from 'zustand';
+import { IDLE_STATUSES } from '@/constants/loadingStatus';
 import type { ProjectsState } from './types';
 
 export const useProjectsStore = create<ProjectsState>((set) => ({
   projects: [],
   currentProjectId: null,
   savedStateSnapshot: null,
-  isLoading: false,
+  projectsStatus: IDLE_STATUSES.idle,
 
   setProjects: (projects) => set({ projects }),
 
@@ -13,7 +14,7 @@ export const useProjectsStore = create<ProjectsState>((set) => ({
 
   setSavedStateSnapshot: (snapshot) => set({ savedStateSnapshot: snapshot }),
 
-  setLoading: (isLoading) => set({ isLoading }),
+  setProjectsStatus: (projectsStatus) => set({ projectsStatus }),
 
   addProject: (project) =>
     set((state) => ({

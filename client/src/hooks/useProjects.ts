@@ -10,14 +10,15 @@ import { selectIsLoggedIn, selectLogout } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import {
   selectProjects,
-  selectProjectsLoading,
+  selectProjectsStatus,
   selectRemoveProject,
   selectSetProjects,
-  selectSetProjectsLoading,
+  selectSetProjectsStatus,
   selectUpdateProjectInList,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import { useDebounceValue } from '@/hooks/useDebounce';
+import { IDLE_STATUSES, type IdleStatus } from '@/constants/loadingStatus';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { getLocalizedRegionLabel, getRegionDisplayName } from '@/helpers/regionDisplay';
@@ -26,7 +27,7 @@ import { useAppFeedback } from '@/components/shared/useAppFeedback';
 type UseProjectsReturn = {
   projects: Project[];
   filteredProjects: Project[];
-  isLoading: boolean;
+  projectsStatus: IdleStatus;
   isLoggedIn: boolean;
   search: string;
   renamingProject: Project | null;
@@ -48,9 +49,9 @@ export const useProjects = (): UseProjectsReturn => {
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const logout = useProfileStore(selectLogout);
   const projects = useProjectsStore(selectProjects);
-  const isLoading = useProjectsStore(selectProjectsLoading);
+  const projectsStatus = useProjectsStore(selectProjectsStatus);
   const setProjects = useProjectsStore(selectSetProjects);
-  const setLoading = useProjectsStore(selectSetProjectsLoading);
+  const setProjectsStatus = useProjectsStore(selectSetProjectsStatus);
   const removeProject = useProjectsStore(selectRemoveProject);
   const updateProjectInList = useProjectsStore(selectUpdateProjectInList);
 
@@ -64,10 +65,11 @@ export const useProjects = (): UseProjectsReturn => {
     if (!isLoggedIn) return;
 
     const fetchProjects = async () => {
-      setLoading(true);
+      setProjectsStatus(IDLE_STATUSES.pending);
       try {
         const data = await getProjects();
         setProjects(data);
+        setProjectsStatus(IDLE_STATUSES.success);
       } catch (error) {
         const err = error as Error & { code?: string };
         if (err.code === 'UNAUTHORIZED') {
@@ -77,13 +79,12 @@ export const useProjects = (): UseProjectsReturn => {
         } else {
           message.error(t('messages.projectsLoadFailed'), 0);
         }
-      } finally {
-        setLoading(false);
+        setProjectsStatus(IDLE_STATUSES.error);
       }
     };
 
     void fetchProjects();
-  }, [isLoggedIn, setProjects, setLoading, message, t, logout, navigate]);
+  }, [isLoggedIn, setProjects, setProjectsStatus, message, t, logout, navigate]);
 
   const filteredProjects = useMemo(() => {
     if (!debouncedSearch.trim()) return projects;
@@ -148,7 +149,7 @@ export const useProjects = (): UseProjectsReturn => {
   return {
     projects,
     filteredProjects,
-    isLoading,
+    projectsStatus,
     isLoggedIn,
     search,
     renamingProject,

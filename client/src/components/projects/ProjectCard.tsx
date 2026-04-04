@@ -225,7 +225,7 @@ const ProjectCard = memo<ProjectCardProps>(
         className="w-full sm:max-w-80"
         classNames={{ root: 'border-gray-300 border' }}
         cover={
-          isThumbnailLoading ? (
+          isThumbnailLoading || isOpening ? (
             <ProjectCardCoverLoading />
           ) : mapThumbnailUrl ? (
             <ProjectCardCover

@@ -8,6 +8,7 @@ import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { useProjects } from '@/hooks/useProjects';
+import { IDLE_STATUSES } from '@/constants/loadingStatus';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { ProjectCard } from '@/components/projects/ProjectCard';
@@ -25,7 +26,7 @@ const ProjectsPage: FC = () => {
   const {
     projects,
     filteredProjects,
-    isLoading,
+    projectsStatus,
     search,
     renamingProject,
     deletingProject,
@@ -109,7 +110,7 @@ const ProjectsPage: FC = () => {
           )}
         </Flex>
 
-        {isLoading ? (
+        {projectsStatus === IDLE_STATUSES.idle || projectsStatus === IDLE_STATUSES.pending ? (
           <Flex align="center" justify="center" className="flex-1">
             <Spin size="large" />
           </Flex>
