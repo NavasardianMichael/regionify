@@ -61,6 +61,8 @@ const es: CommonNs = {
     subtitle: 'Lo que incluye cada plan en el visualizador (igual que los límites de tu cuenta).',
     paymentNote:
       'Los pagos son seguros a través de Lemon Squeezy. No se almacenan datos de tarjeta en nuestros servidores.',
+    paymentIssueNote: 'Si tienes algún problema con tu pago, por favor',
+    paymentContactUs: 'contáctanos',
     checkoutError: 'No se pudo iniciar el pago. Inténtalo de nuevo.',
     currentPlan: 'Plan actual',
     bestChoice: 'Mejor opción',

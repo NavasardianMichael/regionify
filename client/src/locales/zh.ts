@@ -56,6 +56,8 @@ const zh: CommonNs = {
     title: '选择您的计划',
     subtitle: '各计划在可视化工具中的功能（与账户限制一致）。',
     paymentNote: '通过 Lemon Squeezy 安全支付。我们的服务器不存储卡数据。',
+    paymentIssueNote: '如果您在付款时遇到任何问题，请',
+    paymentContactUs: '联系我们',
     checkoutError: '无法开始结账。请重试。',
     currentPlan: '当前计划',
     bestChoice: '最佳选择',

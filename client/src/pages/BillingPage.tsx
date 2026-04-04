@@ -11,6 +11,7 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import PlanCard from '@/components/billing/PlanCard';
 import type { PayablePlan } from '@/components/billing/types';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 const BillingPage: FC = () => {
   const { message } = useAppFeedback();
@@ -51,7 +52,7 @@ const BillingPage: FC = () => {
         </Typography.Paragraph>
       </header>
 
-      <ul className="m-0 flex w-full min-w-0 list-none flex-wrap justify-center gap-8 p-0 md:items-stretch md:gap-6">
+      <ul className="m-0 flex w-full min-w-0 list-none flex-wrap items-stretch justify-center gap-8 p-0 md:gap-6 lg:items-start">
         {billingPlans.map((plan) => (
           <li key={plan.id} className="w-full flex-col md:w-80 md:shrink-0">
             <PlanCard
@@ -69,6 +70,16 @@ const BillingPage: FC = () => {
         className="relative z-10 mt-10 block w-full px-1 text-center text-sm lg:text-base"
       >
         {t('plans.paymentNote')}
+      </Typography.Text>
+      <Typography.Text
+        type="secondary"
+        className="relative z-10 mt-2 block w-full px-1 text-center text-sm lg:text-base"
+      >
+        {t('plans.paymentIssueNote')}{' '}
+        <AppNavLink className="font-semibold underline!" to={ROUTES.CONTACT}>
+          {t('plans.paymentContactUs')}
+        </AppNavLink>
+        .
       </Typography.Text>
     </div>
   );

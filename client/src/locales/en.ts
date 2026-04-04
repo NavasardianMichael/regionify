@@ -60,6 +60,8 @@ const en: CommonNs = {
     title: 'Choose Your Plan',
     subtitle: 'What each plan unlocks in the visualizer (same rules as your account limits).',
     paymentNote: 'Payments are secure via Lemon Squeezy. No card data is stored on our servers.',
+    paymentIssueNote: 'If you are experiencing any issues with your payment, please',
+    paymentContactUs: 'contact us',
     checkoutError: 'Could not start checkout. Please try again.',
     currentPlan: 'Current Plan',
     bestChoice: 'Best Choice',

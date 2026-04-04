@@ -63,6 +63,8 @@ const de: CommonNs = {
     subtitle: 'Funktionen pro Plan – wie in der App und bei Ihren Kontolimits.',
     paymentNote:
       'Zahlungen sind sicher über Lemon Squeezy. Keine Kartendaten werden auf unseren Servern gespeichert.',
+    paymentIssueNote: 'Wenn Sie Probleme mit Ihrer Zahlung haben, wenden Sie sich bitte an',
+    paymentContactUs: 'uns',
     checkoutError: 'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
     currentPlan: 'Aktueller Plan',
     bestChoice: 'Beste Wahl',

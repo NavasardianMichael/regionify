@@ -62,6 +62,8 @@ const fr: CommonNs = {
     subtitle: 'Fonctions par forfait, comme dans l’appli et les limites du compte.',
     paymentNote:
       "Les paiements sont sécurisés via Lemon Squeezy. Aucune donnée de carte n'est stockée sur nos serveurs.",
+    paymentIssueNote: 'Si vous rencontrez des problèmes avec votre paiement, veuillez',
+    paymentContactUs: 'nous contacter',
     checkoutError: 'Impossible de démarrer le paiement. Veuillez réessayer.',
     currentPlan: 'Plan actuel',
     bestChoice: 'Meilleur choix',

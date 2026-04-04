@@ -62,6 +62,8 @@ export type CommonNs = {
     title: string;
     subtitle: string;
     paymentNote: string;
+    paymentIssueNote: string;
+    paymentContactUs: string;
     checkoutError: string;
     currentPlan: string;
     bestChoice: string;
