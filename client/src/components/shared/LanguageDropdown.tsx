@@ -1,7 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import type { Locale } from '@regionify/shared';
-import { Dropdown, type DropdownProps, Flex, type MenuProps } from 'antd';
+import { Button, Dropdown, type DropdownProps, Flex, type MenuProps, Typography } from 'antd';
 import deFlag from '@/assets/images/flags/de.svg';
 import enFlag from '@/assets/images/flags/en.svg';
 import esFlag from '@/assets/images/flags/es.svg';
@@ -69,7 +69,7 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, placement, classNam
               width={24}
               height={16}
             />
-            <span>{label}</span>
+            <Typography.Text>{label}</Typography.Text>
           </Flex>
         ),
       })),
@@ -91,11 +91,11 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, placement, classNam
       trigger={['click']}
       placement={placement ?? 'bottomRight'}
     >
-      <button
-        type="button"
+      <Button
+        type="text"
         aria-label={t('nav.languageSelectAriaLabel')}
         aria-haspopup="menu"
-        className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100 ${className}`}
+        className={`flex! items-center gap-2 px-2! py-1! ${className}`}
       >
         <img
           src={FLAG_SRC[currentLocale]}
@@ -104,9 +104,11 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, placement, classNam
           width={24}
           height={16}
         />
-        <span className="min-w-0 truncate text-sm font-medium text-gray-700">{currentLabel}</span>
+        <Typography.Text className="min-w-0 truncate text-sm font-medium text-gray-700">
+          {currentLabel}
+        </Typography.Text>
         <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
-      </button>
+      </Button>
     </Dropdown>
   );
 };

@@ -1,6 +1,6 @@
 import { type FC, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Card, Spin, Typography } from 'antd';
+import { Button, Card, Flex, Spin, Typography } from 'antd';
 import { verifyEmail } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -38,7 +38,11 @@ const VerifyEmailPage: FC = () => {
     return (
       <Card className="mx-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+          <Flex
+            align="center"
+            justify="center"
+            className="mx-auto mb-4 h-16 w-16 rounded-full bg-red-100"
+          >
             <svg
               className="h-8 w-8 text-red-600"
               fill="none"
@@ -52,7 +56,7 @@ const VerifyEmailPage: FC = () => {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </div>
+          </Flex>
           <Typography.Title level={2} className="text-primary text-xl font-bold">
             Verification Failed
           </Typography.Title>
@@ -72,10 +76,10 @@ const VerifyEmailPage: FC = () => {
   if (state === 'loading') {
     return (
       <Card className="mx-auto! w-full max-w-144! shadow-sm">
-        <div className="flex flex-col items-center gap-4 py-8 text-center">
+        <Flex vertical align="center" gap={16} className="py-8 text-center">
           <Spin size="large" />
           <Typography.Text className="text-gray-500">Verifying your email...</Typography.Text>
-        </div>
+        </Flex>
       </Card>
     );
   }
@@ -84,7 +88,11 @@ const VerifyEmailPage: FC = () => {
     return (
       <Card className="mx-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+          <Flex
+            align="center"
+            justify="center"
+            className="mx-auto mb-4 h-16 w-16 rounded-full bg-red-100"
+          >
             <svg
               className="h-8 w-8 text-red-600"
               fill="none"
@@ -98,7 +106,7 @@ const VerifyEmailPage: FC = () => {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </div>
+          </Flex>
           <Typography.Title level={2} className="text-primary text-xl font-bold">
             Verification Failed
           </Typography.Title>
@@ -106,7 +114,7 @@ const VerifyEmailPage: FC = () => {
           <Typography.Paragraph className="mt-4 text-sm text-gray-600">
             You can resend a verification email from the login page.
           </Typography.Paragraph>
-          <div className="mt-4 flex flex-col gap-2">
+          <Flex vertical gap={8} className="mt-4">
             <AppNavLink to={ROUTES.LOGIN}>
               <Button type="primary" block>
                 Go to Login
@@ -115,7 +123,7 @@ const VerifyEmailPage: FC = () => {
             <AppNavLink to={ROUTES.SIGN_UP}>
               <Button block>Back to Sign Up</Button>
             </AppNavLink>
-          </div>
+          </Flex>
         </div>
       </Card>
     );
@@ -124,7 +132,11 @@ const VerifyEmailPage: FC = () => {
   return (
     <Card className="mx-auto! w-full max-w-144! shadow-sm">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+        <Flex
+          align="center"
+          justify="center"
+          className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100"
+        >
           <svg
             className="h-8 w-8 text-green-600"
             fill="none"
@@ -133,7 +145,7 @@ const VerifyEmailPage: FC = () => {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-        </div>
+        </Flex>
         <Typography.Title level={2} className="text-primary text-xl font-bold">
           Email Verified
         </Typography.Title>

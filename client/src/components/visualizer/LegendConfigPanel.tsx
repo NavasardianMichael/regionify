@@ -401,14 +401,14 @@ const LegendConfigPanel: FC = () => {
                   key={palette.id}
                   title={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
                 >
-                  <button
-                    type="button"
-                    className="m-0 h-6 w-10 cursor-pointer overflow-hidden rounded border border-gray-200 p-0"
+                  <Button
+                    type="default"
+                    className="m-0! h-6! w-10! min-w-0! overflow-hidden! border-gray-200! p-0!"
                     data-palette-id={palette.id}
                     onClick={handlePaletteSwatchClick}
                     aria-label={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
                   >
-                    <span className="flex h-full w-full">
+                    <Flex className="h-full w-full">
                       {palette.colors.map((color) => (
                         <span
                           key={color}
@@ -416,8 +416,8 @@ const LegendConfigPanel: FC = () => {
                           style={{ backgroundColor: color }}
                         />
                       ))}
-                    </span>
-                  </button>
+                    </Flex>
+                  </Button>
                 </Tooltip>
               ))}
             </Flex>

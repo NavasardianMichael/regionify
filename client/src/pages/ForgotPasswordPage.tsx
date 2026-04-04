@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { Button, Card, Form, Input, Typography } from 'antd';
+import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { forgotPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
@@ -34,7 +34,11 @@ const ForgotPasswordPage: FC = () => {
     return (
       <Card className="mx-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+          <Flex
+            align="center"
+            justify="center"
+            className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100"
+          >
             <svg
               className="h-8 w-8 text-green-600"
               fill="none"
@@ -48,7 +52,7 @@ const ForgotPasswordPage: FC = () => {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-          </div>
+          </Flex>
           <Typography.Title level={2} className="text-primary text-xl font-bold">
             Check Your Email
           </Typography.Title>

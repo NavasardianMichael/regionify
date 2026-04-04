@@ -139,10 +139,7 @@ const VisualizerPage: FC = () => {
       };
       return (
         <Flex vertical gap="small">
-          <Typography.Text
-            className="text-sm text-balance"
-            style={{ color: onTooltip, textWrap: 'balance' }}
-          >
+          <Typography.Text className="text-sm text-balance" style={{ color: onTooltip }}>
             {t('visualizer.embed.tooltipChronographerBody', {
               planName: t('plans.items.chronographer.name'),
             })}
@@ -394,24 +391,27 @@ const VisualizerPage: FC = () => {
             <Radio.Button value="styles">{t('visualizer.tabStyles')}</Radio.Button>
           </Radio.Group>
           <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
-            <div
-              className={`flex h-full min-h-0 w-full flex-col ${mobileSection === 'map' ? '' : 'hidden'}`}
+            <Flex
+              vertical
+              className={`h-full min-h-0 w-full ${mobileSection === 'map' ? '' : 'hidden'}`}
               aria-hidden={mobileSection !== 'map'}
             >
               {mapPanel}
-            </div>
-            <div
-              className={`flex h-full min-h-0 w-full flex-col ${mobileSection === 'data' ? '' : 'hidden'}`}
+            </Flex>
+            <Flex
+              vertical
+              className={`h-full min-h-0 w-full ${mobileSection === 'data' ? '' : 'hidden'}`}
               aria-hidden={mobileSection !== 'data'}
             >
               {dataPanel}
-            </div>
-            <div
-              className={`flex h-full min-h-0 w-full flex-col ${mobileSection === 'styles' ? '' : 'hidden'}`}
+            </Flex>
+            <Flex
+              vertical
+              className={`h-full min-h-0 w-full ${mobileSection === 'styles' ? '' : 'hidden'}`}
               aria-hidden={mobileSection !== 'styles'}
             >
               {stylesPanel}
-            </div>
+            </Flex>
           </div>
         </Flex>
       )}

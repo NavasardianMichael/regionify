@@ -152,10 +152,7 @@ export const Navigation: FC = () => {
       <div className="h-6 w-px bg-gray-200" aria-hidden />
       {isLoggedIn ? (
         <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
-          <button
-            type="button"
-            className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-gray-100"
-          >
+          <Button type="text" className="flex! items-center gap-2 px-2! py-1!">
             {user?.avatarUrl ? (
               <Avatar
                 src={user.avatarUrl}
@@ -163,9 +160,11 @@ export const Navigation: FC = () => {
                 alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
               />
             ) : null}
-            <span className="min-w-0 truncate text-sm font-medium text-gray-700">{user?.name}</span>
+            <Typography.Text className="min-w-0 truncate text-sm font-medium text-gray-700">
+              {user?.name}
+            </Typography.Text>
             <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
-          </button>
+          </Button>
         </Dropdown>
       ) : (
         <Flex component="ul" gap={4}>
@@ -203,7 +202,9 @@ export const Navigation: FC = () => {
                 alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
               />
             ) : null}
-            <span className="text-sm font-medium text-gray-800">{user?.name}</span>
+            <Typography.Text className="text-sm font-medium text-gray-800">
+              {user?.name}
+            </Typography.Text>
           </Flex>
           <Button
             type="text"

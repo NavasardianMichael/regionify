@@ -73,7 +73,7 @@ const BillingPage: FC = () => {
       </Typography.Text>
       <Typography.Text
         type="secondary"
-        className="relative z-10 mt-2 block w-full px-1 text-center text-sm lg:text-base"
+        className="relative z-10 block w-full px-1 text-center text-sm lg:text-base"
       >
         {t('plans.paymentIssueNote')}{' '}
         <AppNavLink className="font-semibold underline!" to={ROUTES.CONTACT}>

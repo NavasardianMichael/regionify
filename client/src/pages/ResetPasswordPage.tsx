@@ -1,7 +1,7 @@
 import { type FC, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
-import { Button, Card, Form, Input, Typography } from 'antd';
+import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { resetPassword } from '@/api/auth';
 import { ROUTES } from '@/constants/routes';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
@@ -25,7 +25,11 @@ const ResetPasswordPage: FC = () => {
     return (
       <Card className="mx-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+          <Flex
+            align="center"
+            justify="center"
+            className="mx-auto mb-4 h-16 w-16 rounded-full bg-red-100"
+          >
             <svg
               className="h-8 w-8 text-red-600"
               fill="none"
@@ -39,7 +43,7 @@ const ResetPasswordPage: FC = () => {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </div>
+          </Flex>
           <Typography.Title level={2} className="text-primary text-xl font-bold">
             Invalid Reset Link
           </Typography.Title>
@@ -60,7 +64,11 @@ const ResetPasswordPage: FC = () => {
     return (
       <Card className="mx-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+          <Flex
+            align="center"
+            justify="center"
+            className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100"
+          >
             <svg
               className="h-8 w-8 text-green-600"
               fill="none"
@@ -74,7 +82,7 @@ const ResetPasswordPage: FC = () => {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-          </div>
+          </Flex>
           <Typography.Title level={2} className="text-primary text-xl font-bold">
             Password Reset Successfully
           </Typography.Title>

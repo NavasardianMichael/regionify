@@ -89,13 +89,7 @@ const ContactPage: FC = () => {
           <Input.TextArea placeholder={t('contact.message')} rows={4} className="resize-none!" />
         </Form.Item>
 
-        <input
-          type="text"
-          name="website"
-          style={{ display: 'none' }}
-          tabIndex={-1}
-          autoComplete="off"
-        />
+        <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
 
         <Form.Item className="mt-8! mb-0!">
           <Button type="primary" htmlType="submit" block loading={loading}>

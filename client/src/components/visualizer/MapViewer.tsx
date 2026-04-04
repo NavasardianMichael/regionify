@@ -681,11 +681,13 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     isGoogleSheetSyncLoading && Boolean(selectedCountryId) && Boolean(svgContent) && !isLoading;
 
   return (
-    <div className={`flex min-h-0 flex-1 flex-col ${className}`} data-map-export-root>
+    <Flex vertical className={`min-h-0 flex-1 ${className}`} data-map-export-root>
       <Flex vertical className="h-full min-h-0 flex-1">
         {/* Map Container */}
-        <div
-          className="group relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-lg"
+        <Flex
+          align="center"
+          justify="center"
+          className="group relative min-h-0 flex-1 overflow-hidden rounded-lg"
           data-map-export-map-area
           style={{
             backgroundColor: picture.transparentBackground
@@ -708,9 +710,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               <Spin size="large" />
             ) : svgContent ? (
               <>
-                <div
+                <Flex
                   ref={mapTransformRef}
-                  className="relative flex h-[80%] w-[80%] items-center justify-center"
+                  align="center"
+                  justify="center"
+                  className="relative h-[80%] w-[80%]"
                   data-map-export-map-transform
                   style={{
                     transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
@@ -726,15 +730,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
                     dangerouslySetInnerHTML={{ __html: svgContent }}
                   />
                   {showSheetSyncOnMap && (
-                    <div
-                      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                    <Flex
+                      align="center"
+                      justify="center"
+                      className="pointer-events-none absolute inset-0 z-20"
                       aria-busy
                       aria-live="polite"
                     >
                       <Spin size="large" />
-                    </div>
+                    </Flex>
                   )}
-                </div>
+                </Flex>
                 {activeTimePeriod && timePeriods.length > 1 && (
                   <div className="pointer-events-none absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1.5 shadow-md">
                     <Typography.Text className="text-sm font-semibold">
@@ -828,8 +834,10 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
 
           {/* Watermark for observer plan — offset when zoom UI is shown so it does not cover controls */}
           {plan === PLANS.observer && (
-            <div
-              className="pointer-events-none absolute z-10 flex items-center gap-1.5 opacity-40 select-none"
+            <Flex
+              align="center"
+              gap={6}
+              className="pointer-events-none absolute z-10 opacity-40 select-none"
               style={
                 zoomControls.show
                   ? {
@@ -846,7 +854,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               <Typography.Text className="text-xs font-semibold tracking-wide text-gray-500">
                 Regionify
               </Typography.Text>
-            </div>
+            </Flex>
           )}
 
           {/* Arrow pan buttons */}
@@ -964,7 +972,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
               </Tooltip>
             </Flex>
           )}
-        </div>
+        </Flex>
 
         {/* Bottom Legend (outside map container, with border separator) */}
         {isBottomLegend && legendItems.length > 0 && (
@@ -982,7 +990,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
           </div>
         )}
       </Flex>
-    </div>
+    </Flex>
   );
 };
 

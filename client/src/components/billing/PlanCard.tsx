@@ -58,11 +58,11 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
     <Card className={cardClassName} styles={cardStyles}>
       <Flex vertical gap="middle" className="min-h-0 flex-1">
         {plan.popular ? (
-          <div className="flex shrink-0 justify-center">
+          <Flex justify="center" className="shrink-0">
             <span className="bg-primary rounded-full px-3 py-1 text-xs font-medium text-white">
               {t('plans.bestChoice')}
             </span>
-          </div>
+          </Flex>
         ) : null}
 
         <Flex
