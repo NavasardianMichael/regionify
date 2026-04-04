@@ -256,6 +256,38 @@ The ${APP_NAME} Team
     return { subject, text, html };
   },
 
+  /**
+   * Account deletion confirmation email
+   */
+  accountDeleted(name: string): { subject: string; text: string; html: string } {
+    const subject = `Your ${APP_NAME} Account Has Been Deleted`;
+
+    const text = `
+Hi ${name},
+
+Your ${APP_NAME} account has been permanently deleted. All your data has been removed from our systems.
+
+If you did not request this deletion, please contact our support team immediately.
+
+We're sorry to see you go. If you ever change your mind, you're welcome to create a new account.
+
+Best regards,
+The ${APP_NAME} Team
+`.trim();
+
+    const html = emailLayout(
+      `
+        ${emailHeading(`Account deleted`)}
+        ${emailParagraph(`Hi ${name}, your ${APP_NAME} account has been permanently deleted. All your data has been removed from our systems.`)}
+        ${emailMuted(`If you did not request this, please contact our support team immediately.`)}
+        ${emailMuted(`We're sorry to see you go. You're always welcome to create a new account in the future.`)}
+      `,
+      { preheader: `Your ${APP_NAME} account has been permanently deleted.` },
+    );
+
+    return { subject, text, html };
+  },
+
   /** Email verification (link expires in 48 hours) */
   verifyEmail(
     name: string,
@@ -371,6 +403,14 @@ export const emailService = {
    */
   async sendPasswordChanged(to: string, name: string): Promise<void> {
     const { subject, text, html } = emailTemplates.passwordChanged(name);
+    await this.send({ to, subject, text, html });
+  },
+
+  /**
+   * Send account deletion confirmation email
+   */
+  async sendAccountDeleted(to: string, name: string): Promise<void> {
+    const { subject, text, html } = emailTemplates.accountDeleted(name);
     await this.send({ to, subject, text, html });
   },
 

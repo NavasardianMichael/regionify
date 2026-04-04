@@ -14,6 +14,11 @@ type AccountDeletionFeedbackData = {
   message: string;
 };
 
+type AccountDetails = {
+  name: string;
+  email: string;
+};
+
 /**
  * Transforms contact form data into API payload format
  */
@@ -28,19 +33,25 @@ export const processContactFormData = (formData: ContactFormData): ContactPayloa
 };
 
 /**
- * Transforms account deletion feedback form data into API payload format
+ * Transforms account deletion feedback form data into API payload format.
+ * Includes original account details in the `details` field when available.
  */
 export const processAccountDeletionFeedback = (
   formData: AccountDeletionFeedbackData,
-): ContactPayload => {
-  return {
-    subject: 'Regionify / Account Deletion Feedback',
-    body: formData.message,
-    email: formData.email,
-    firstName: formData.firstName.trim(),
-    lastName: formData.lastName.trim(),
-  };
-};
+  accountDetails?: AccountDetails,
+): ContactPayload => ({
+  subject: 'Regionify / Account Deletion Feedback',
+  body: formData.message,
+  email: formData.email,
+  firstName: formData.firstName.trim(),
+  lastName: formData.lastName.trim(),
+  ...(accountDetails && {
+    details: {
+      'Account Name': accountDetails.name,
+      'Account Email': accountDetails.email,
+    },
+  }),
+});
 
 /**
  * Extracts user-friendly error message from API response

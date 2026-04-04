@@ -3,12 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AUTH_VALIDATION } from '@regionify/shared';
 import { Button, Divider, Flex, Form, Input, Typography } from 'antd';
 import { deleteAccount, updateProfile } from '@/api/auth';
-import {
-  selectIsLoggedIn,
-  selectLogout,
-  selectSetUser,
-  selectUser,
-} from '@/store/profile/selectors';
+import { selectIsLoggedIn, selectSetUser, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
@@ -26,8 +21,6 @@ const AccountPage: FC = () => {
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const setUser = useProfileStore(selectSetUser);
-  const logout = useProfileStore(selectLogout);
-
   const [profileForm] = Form.useForm<ProfileFormValues>();
   const [profileLoading, setProfileLoading] = useState(false);
   const watchedName = Form.useWatch('name', profileForm);
@@ -77,8 +70,8 @@ const AccountPage: FC = () => {
         try {
           await deleteAccount();
           modalInstance.destroy();
-          logout();
-          navigate(ROUTES.ACCOUNT_DELETED);
+          const { name, email } = user!;
+          navigate(ROUTES.ACCOUNT_DELETED, { state: { name, email } });
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : t('deleteAccountModal.error');

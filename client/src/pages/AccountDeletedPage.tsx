@@ -1,9 +1,13 @@
-import { type FC, useState } from 'react';
-import { Button, Card, Flex, Form, Input, Typography } from 'antd';
+import { type FC, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Button, Flex, Form, Input, Typography } from 'antd';
 import { sendContactMessage } from '@/api/contact';
 import { processAccountDeletionFeedback } from '@/api/contact/processors';
+import { selectLogout } from '@/store/profile/selectors';
+import { useProfileStore } from '@/store/profile/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import { Card } from '@/components/ui/Card';
 
 type FeedbackFormValues = {
   firstName: string;
@@ -12,20 +16,37 @@ type FeedbackFormValues = {
   message: string;
 };
 
+type AccountState = {
+  name: string;
+  email: string;
+} | null;
+
 const AccountDeletedPage: FC = () => {
   const { t } = useTypedTranslation();
+  const location = useLocation();
+  const accountState = location.state as AccountState;
+
+  const nameParts = (accountState?.name ?? '').trim().split(/\s+/);
+  const initialFirstName = nameParts[0] ?? '';
+  const initialLastName = nameParts.slice(1).join(' ');
+
+  const logout = useProfileStore(selectLogout);
+
+  useEffect(() => {
+    logout();
+  }, [logout]);
+
   const [form] = Form.useForm<FeedbackFormValues>();
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const { message } = useAppFeedback();
 
   const handleSubmit = async (values: FeedbackFormValues) => {
     setLoading(true);
     try {
-      const payload = processAccountDeletionFeedback(values);
+      const payload = processAccountDeletionFeedback(values, accountState ?? undefined);
       await sendContactMessage(payload);
-      setSubmitted(true);
       message.success(t('messages.feedbackThankYou'), 5);
+      form.resetFields();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send feedback';
       message.error(errorMessage, 0);
@@ -34,42 +55,8 @@ const AccountDeletedPage: FC = () => {
     }
   };
 
-  if (submitted) {
-    return (
-      <Card className="mx-auto! w-full max-w-144 shadow-sm">
-        <div className="text-center">
-          <Flex
-            align="center"
-            justify="center"
-            className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100"
-          >
-            <svg
-              className="h-8 w-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </Flex>
-          <Typography.Title level={2} className="text-primary mb-0! text-xl font-bold">
-            Thank You
-          </Typography.Title>
-          <Typography.Paragraph className="mt-2 text-gray-500">
-            We appreciate your feedback. Your account has been successfully deleted.
-          </Typography.Paragraph>
-        </div>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="mx-auto! w-full max-w-144 shadow-sm">
+    <Card className="m-auto! w-full max-w-144 shadow-sm">
       <div className="mb-6 text-center">
         <Typography.Title level={1} className="text-primary mb-sm! text-2xl">
           We&apos;re Sorry to See You Go
@@ -79,7 +66,17 @@ const AccountDeletedPage: FC = () => {
         </Typography.Paragraph>
       </div>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        requiredMark={false}
+        initialValues={{
+          firstName: initialFirstName,
+          lastName: initialLastName,
+          email: accountState?.email ?? '',
+        }}
+      >
         <Flex gap="middle">
           <Form.Item
             name="firstName"
@@ -117,7 +114,7 @@ const AccountDeletedPage: FC = () => {
           rules={[{ required: true, message: 'Please share your feedback' }]}
         >
           <Input.TextArea
-            placeholder="What could we have done better? (Optional)"
+            placeholder="What could we have done better?"
             rows={4}
             className="resize-none!"
           />
@@ -125,7 +122,7 @@ const AccountDeletedPage: FC = () => {
 
         <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
 
-        <Form.Item className="mb-0">
+        <Form.Item className="mt-8! mb-0!">
           <Button type="primary" htmlType="submit" block loading={loading}>
             Submit Feedback
           </Button>

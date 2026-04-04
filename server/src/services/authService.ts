@@ -232,6 +232,10 @@ export const authService = {
         'Failed to delete account',
       );
     }
+
+    emailService.sendAccountDeleted(user.email, user.name).catch((error) => {
+      logger.error({ error, userId }, 'Failed to send account deletion email');
+    });
   },
 
   /**

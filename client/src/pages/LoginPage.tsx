@@ -134,7 +134,7 @@ const LoginPage: FC = () => {
   };
 
   return (
-    <Card className="mx-auto! w-full max-w-144! shadow-sm">
+    <Card className="m-auto! w-full max-w-144! shadow-sm">
       <div className="mb-6 text-center">
         <Typography.Title level={1} className="text-primary text-2xl font-bold">
           {t('auth.login.title')}

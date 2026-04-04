@@ -41,7 +41,7 @@ const SignUpPage: FC = () => {
 
   if (submitted) {
     return (
-      <Card className="mx-auto! w-full max-w-144! shadow-sm">
+      <Card className="m-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
           <Flex
             align="center"
@@ -82,7 +82,7 @@ const SignUpPage: FC = () => {
   }
 
   return (
-    <Card className="mx-auto! w-full max-w-144! shadow-sm">
+    <Card className="m-auto! w-full max-w-144! shadow-sm">
       <div className="mb-6 text-center">
         <Typography.Title level={1} className="text-primary mb-0! text-2xl font-bold">
           {t('auth.signUp.title')}

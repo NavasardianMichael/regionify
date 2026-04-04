@@ -36,7 +36,7 @@ const VerifyEmailPage: FC = () => {
 
   if (!token) {
     return (
-      <Card className="mx-auto! w-full max-w-144! shadow-sm">
+      <Card className="m-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
           <Flex
             align="center"
@@ -75,7 +75,7 @@ const VerifyEmailPage: FC = () => {
 
   if (state === 'loading') {
     return (
-      <Card className="mx-auto! w-full max-w-144! shadow-sm">
+      <Card className="m-auto! w-full max-w-144! shadow-sm">
         <Flex vertical align="center" gap={16} className="py-8 text-center">
           <Spin size="large" />
           <Typography.Text className="text-gray-500">Verifying your email...</Typography.Text>
@@ -86,7 +86,7 @@ const VerifyEmailPage: FC = () => {
 
   if (state === 'error') {
     return (
-      <Card className="mx-auto! w-full max-w-144! shadow-sm">
+      <Card className="m-auto! w-full max-w-144! shadow-sm">
         <div className="text-center">
           <Flex
             align="center"
@@ -130,7 +130,7 @@ const VerifyEmailPage: FC = () => {
   }
 
   return (
-    <Card className="mx-auto! w-full max-w-144! shadow-sm">
+    <Card className="m-auto! w-full max-w-144! shadow-sm">
       <div className="text-center">
         <Flex
           align="center"
