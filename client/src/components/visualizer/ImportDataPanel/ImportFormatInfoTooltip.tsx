@@ -26,7 +26,6 @@ export const ImportFormatInfoTooltip: FC = () => {
         </Typography.Text>{' '}
         — {t('visualizer.importFormatTooltip.value')}
       </li>
-      <li>{t('visualizer.importFormatTooltip.labelsOnMap')}</li>
     </ul>
   );
 };

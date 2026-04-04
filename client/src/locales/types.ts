@@ -220,7 +220,6 @@ export type CommonNs = {
       id: string;
       label: string;
       value: string;
-      labelsOnMap: string;
     };
     importFormatExamples: {
       excelColumnsStatic: string;
@@ -377,8 +376,10 @@ export type CommonNs = {
       collapseShadow: string;
       collapseControls: string;
       collapseRegionLabels: string;
-      freePlanNote: string;
-      upgradePlanLink: string;
+      freePlanNoteBeforeUpgrade: string;
+      freePlanUpgradeLink: string;
+      freePlanNoteAfterUpgrade: string;
+      showWatermark: string;
       transparent: string;
       color: string;
       showBorder: string;

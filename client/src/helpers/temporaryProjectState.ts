@@ -72,11 +72,12 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
       position: { x: 20, y: 20 },
     },
     picture: {
-      transparentBackground: true,
-      backgroundColor: '#F5F5F5',
+      transparentBackground: false,
+      backgroundColor: '#FFFFFF',
+      showWatermark: false,
     },
     regionLabels: {
-      show: true,
+      show: false,
       color: '#333333',
       fontSize: 10,
       labelPositionsByRegionId: {},

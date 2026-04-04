@@ -78,6 +78,8 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const regionLabels = useMapStylesStore(selectRegionLabels);
   const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
 
+  const watermarkActive = plan === PLANS.observer || picture.showWatermark;
+
   const [format, setFormat] = useState<AnimationFormat>(EXPORT_TYPES.gif);
   const [quality, setQuality] = useState(60);
   const [secondsPerPeriod, setSecondsPerPeriod] = useState(DEFAULT_SECONDS_PER_PERIOD);
@@ -125,6 +127,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         floatingPosition,
         regionLabels,
         labelPositions: labelPositionsByRegionId,
+        watermark: watermarkActive ? ({ text: 'Regionify' } as const) : undefined,
         onProgress: setProgress,
       };
 
@@ -150,6 +153,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     border,
     shadow,
     picture,
+    watermarkActive,
     legendPosition,
     floatingPosition,
     regionLabels,

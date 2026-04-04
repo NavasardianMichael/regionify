@@ -225,11 +225,9 @@ const de: CommonNs = {
       },
     },
     importFormatTooltip: {
-      id: 'Regions-ID; muss exakt den erwarteten IDs entsprechen (z. B. aus Beispieldaten)',
+      id: 'Regions-ID; muss exakt den erwarteten IDs entsprechen (Beispieldaten herunterladen, um sie zu erhalten)',
       label: 'Anzeigename der Region',
       value: 'Numerischer Wert der Region',
-      labelsOnMap:
-        'Beschriftungen werden auf der Karte angezeigt, wenn „Beschriftungen anzeigen“ in Kartenstilen aktiv ist',
     },
     importFormatExamples: {
       excelColumnsStatic: 'Excel-Datei mit Spalten:',
@@ -396,9 +394,11 @@ const de: CommonNs = {
       collapseShadow: 'Schatten',
       collapseControls: 'Steuerung',
       collapseRegionLabels: 'Regionsbeschriftungen',
-      freePlanNote:
-        'Kostenloser Plan: Hintergrundfarbe änderbar; transparenter Hintergrund und Wasserzeichen-Entfernung erfordern ein Upgrade.',
-      upgradePlanLink: 'Plan upgraden',
+      freePlanNoteBeforeUpgrade:
+        'Sie können weiterhin die Hintergrundfarbe ändern; transparenter Hintergrund und Entfernen des Wasserzeichens erfordern ein ',
+      freePlanUpgradeLink: 'Upgrade',
+      freePlanNoteAfterUpgrade: '.',
+      showWatermark: 'Wasserzeichen anzeigen',
       transparent: 'Transparent',
       color: 'Farbe',
       showBorder: 'Rahmen anzeigen',

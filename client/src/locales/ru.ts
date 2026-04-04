@@ -216,11 +216,9 @@ const ru: CommonNs = {
       },
     },
     importFormatTooltip: {
-      id: 'ID региона; должен точно совпадать с ожидаемыми ID (например из примера)',
+      id: 'ID региона; должен точно совпадать с ожидаемыми ID (скачайте пример данных, чтобы их получить)',
       label: 'Подпись региона на карте',
       value: 'Числовое значение региона',
-      labelsOnMap:
-        'Подписи показываются на карте, когда в стилях карты включено «Показывать подписи»',
     },
     importFormatExamples: {
       excelColumnsStatic: 'Файл Excel со столбцами:',
@@ -384,9 +382,11 @@ const ru: CommonNs = {
       collapseShadow: 'Тень',
       collapseControls: 'Элементы управления',
       collapseRegionLabels: 'Подписи регионов',
-      freePlanNote:
-        'Бесплатный план: можно менять цвет фона; прозрачный фон и снятие водяного знака — в платном плане.',
-      upgradePlanLink: 'Улучшить план',
+      freePlanNoteBeforeUpgrade:
+        'Вы по-прежнему можете менять цвет фона, но прозрачный фон и снятие водяного знака требуют ',
+      freePlanUpgradeLink: 'апгрейда',
+      freePlanNoteAfterUpgrade: '.',
+      showWatermark: 'Показывать водяной знак',
       transparent: 'Прозрачный',
       color: 'Цвет',
       showBorder: 'Показывать границу',

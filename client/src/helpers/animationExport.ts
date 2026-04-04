@@ -10,7 +10,12 @@ import type {
   ShadowConfig,
 } from '@/store/mapStyles/types';
 import { getInterpolatedColorMap, smoothstep01 } from '@/helpers/legendColorInterpolation';
-import { cropCanvas, type CropRect } from '@/helpers/mapExport';
+import {
+  cropCanvas,
+  type CropRect,
+  drawWatermark,
+  type StillExportOpts,
+} from '@/helpers/mapExport';
 import { renderStyledSvg } from './svgRenderer';
 
 const LEGEND_REFERENCE_SIZE = 800;
@@ -53,6 +58,8 @@ type AnimationExportOptions = {
   labelPositions?: RegionLabelPositions;
   /** Optional crop rectangle applied to every frame. */
   cropRect?: CropRect;
+  /** Drawn on each frame after crop (matches static map export watermark). */
+  watermark?: StillExportOpts['watermark'];
   onProgress?: (progress: number) => void;
 };
 
@@ -442,7 +449,8 @@ export const generateAnimationPreviewCanvas = async (
   if (!data) return null;
 
   const spec: FrameSpec = { type: 'hold', periodIndex: 0, label: firstPeriod };
-  return renderFrameForSpec(rawSvg, timelineData, timePeriods, spec, scale, options);
+  const canvas = await renderFrameForSpec(rawSvg, timelineData, timePeriods, spec, scale, options);
+  return finalizeAnimationFrame(canvas, options.cropRect, options.watermark);
 };
 
 /** Apply optional crop to a frame canvas. */
@@ -452,6 +460,26 @@ const maybeApplyCrop = (
 ): HTMLCanvasElement => {
   if (!crop) return canvas;
   return cropCanvas(canvas, crop);
+};
+
+const applyWatermarkIfAny = async (
+  canvas: HTMLCanvasElement,
+  watermark: StillExportOpts['watermark'] | undefined,
+): Promise<void> => {
+  if (!watermark) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  await drawWatermark(ctx, canvas.width, canvas.height, watermark);
+};
+
+const finalizeAnimationFrame = async (
+  canvas: HTMLCanvasElement,
+  cropRect: CropRect | undefined,
+  watermark: StillExportOpts['watermark'] | undefined,
+): Promise<HTMLCanvasElement> => {
+  const cropped = maybeApplyCrop(canvas, cropRect);
+  await applyWatermarkIfAny(cropped, watermark);
+  return cropped;
 };
 
 /** Export animation as GIF using gifenc with smooth color transitions and stable global palette. */
@@ -465,6 +493,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     secondsPerPeriod = DEFAULT_SECONDS_PER_PERIOD,
     smooth = true,
     cropRect,
+    watermark,
     onProgress,
   } = options;
 
@@ -493,7 +522,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
       scale,
       options,
     );
-    sampleCanvases.push(maybeApplyCrop(raw, cropRect));
+    sampleCanvases.push(await finalizeAnimationFrame(raw, cropRect, watermark));
   }
   const { width, height } = sampleCanvases[0];
 
@@ -512,9 +541,10 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
   for (let i = 0; i < totalFrames; i++) {
     const rawCanvas = sampleIndexSet.has(i)
       ? sampleCanvases[sampleIndices.indexOf(i)]
-      : maybeApplyCrop(
+      : await finalizeAnimationFrame(
           await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
           cropRect,
+          watermark,
         );
     const ctx = rawCanvas.getContext('2d');
     if (!ctx) throw new Error('Failed to get canvas context');
@@ -541,6 +571,7 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
     secondsPerPeriod = DEFAULT_SECONDS_PER_PERIOD,
     smooth = true,
     cropRect,
+    watermark,
     onProgress,
   } = options;
 
@@ -555,9 +586,10 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
 
   if (totalFrames === 0) return;
 
-  const firstCanvas = maybeApplyCrop(
+  const firstCanvas = await finalizeAnimationFrame(
     await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[0], scale, options),
     cropRect,
+    watermark,
   );
   const { width, height } = firstCanvas;
 
@@ -617,9 +649,10 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
       onProgress?.(1 / totalFrames);
 
       for (let i = 1; i < totalFrames; i++) {
-        const canvas = maybeApplyCrop(
+        const canvas = await finalizeAnimationFrame(
           await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
           cropRect,
+          watermark,
         );
         await drawAndCapture(canvas);
         onProgress?.((i + 1) / totalFrames);

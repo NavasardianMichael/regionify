@@ -11,12 +11,14 @@ import {
 import type { PictureConfig } from '@/store/mapStyles/types';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type BackgroundSectionProps = {
   plan: string;
   picture: PictureConfig;
   onTransparentChange: NonNullable<SwitchProps['onChange']>;
   onBackgroundColorChange: NonNullable<ColorPickerProps['onChangeComplete']>;
+  onShowWatermarkChange: NonNullable<SwitchProps['onChange']>;
 };
 
 export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
@@ -24,18 +26,22 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
   picture,
   onTransparentChange,
   onBackgroundColorChange,
+  onShowWatermarkChange,
 }) => {
   const { t } = useTypedTranslation();
+  const isObserver = plan === PLANS.observer;
+  const transparentChecked = isObserver ? false : picture.transparentBackground;
+  const watermarkChecked = isObserver ? true : picture.showWatermark;
 
   return (
     <Flex vertical gap="small">
-      {plan === PLANS.observer && (
+      {isObserver && (
         <Typography.Text type="secondary" className="mb-2 text-[13px]">
-          {t('visualizer.mapStyles.freePlanNote')}{' '}
-          <a href={ROUTES.BILLING} className="text-[#1677ff]">
-            {t('visualizer.mapStyles.upgradePlanLink')}
-          </a>
-          .
+          {t('visualizer.mapStyles.freePlanNoteBeforeUpgrade')}
+          <AppNavLink to={ROUTES.BILLING} className="text-[13px] font-medium">
+            {t('visualizer.mapStyles.freePlanUpgradeLink')}
+          </AppNavLink>
+          {t('visualizer.mapStyles.freePlanNoteAfterUpgrade')}
         </Typography.Text>
       )}
       <Flex align="center" justify="space-between">
@@ -43,11 +49,11 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
           {t('visualizer.mapStyles.transparent')}
         </Typography.Text>
         <Switch
-          checked={picture.transparentBackground}
+          checked={transparentChecked}
           size="small"
           onChange={onTransparentChange}
           aria-labelledby="transparent-bg-label"
-          disabled={plan === PLANS.observer}
+          disabled={isObserver}
         />
       </Flex>
       <Flex align="center" justify="space-between">
@@ -59,6 +65,18 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
           onChangeComplete={onBackgroundColorChange}
           size="small"
           disabled={picture.transparentBackground}
+        />
+      </Flex>
+      <Flex align="center" justify="space-between">
+        <Typography.Text className="text-sm text-gray-600" id="show-watermark-label">
+          {t('visualizer.mapStyles.showWatermark')}
+        </Typography.Text>
+        <Switch
+          checked={watermarkChecked}
+          size="small"
+          onChange={onShowWatermarkChange}
+          aria-labelledby="show-watermark-label"
+          disabled={isObserver}
         />
       </Flex>
     </Flex>

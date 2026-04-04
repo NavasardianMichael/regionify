@@ -1,4 +1,4 @@
-import { type FC, useCallback, useMemo, useState } from 'react';
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { BgColorsOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { PLANS } from '@regionify/shared';
 import { Collapse, type ColorPickerProps, Flex, type SwitchProps, Typography } from 'antd';
@@ -53,13 +53,29 @@ const MapStylesPanel: FC = () => {
     DEBOUNCE_MS,
   );
 
+  useEffect(() => {
+    if (plan === PLANS.observer && picture.transparentBackground) {
+      setPicture({ transparentBackground: false });
+    }
+  }, [plan, picture.transparentBackground, setPicture]);
+
   const handleTransparentChange = useCallback<NonNullable<SwitchProps['onChange']>>(
-    (checked) => setPicture({ transparentBackground: checked }),
-    [setPicture],
+    (checked) => {
+      if (plan === PLANS.observer) return;
+      setPicture({ transparentBackground: checked });
+    },
+    [setPicture, plan],
   );
   const handleBackgroundColorChange = useCallback<
     NonNullable<ColorPickerProps['onChangeComplete']>
   >((color) => setPicture({ backgroundColor: color.toHexString() }), [setPicture]);
+  const handleShowWatermarkChange = useCallback<NonNullable<SwitchProps['onChange']>>(
+    (checked) => {
+      if (plan === PLANS.observer) return;
+      setPicture({ showWatermark: checked });
+    },
+    [setPicture, plan],
+  );
 
   const handleBorderShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
     (checked) => setBorder({ show: checked }),
@@ -138,6 +154,7 @@ const MapStylesPanel: FC = () => {
             picture={picture}
             onTransparentChange={handleTransparentChange}
             onBackgroundColorChange={handleBackgroundColorChange}
+            onShowWatermarkChange={handleShowWatermarkChange}
           />
         ),
       },
@@ -227,6 +244,7 @@ const MapStylesPanel: FC = () => {
       regionLabels,
       handleTransparentChange,
       handleBackgroundColorChange,
+      handleShowWatermarkChange,
       handleBorderShowChange,
       handleBorderColorChange,
       handleBorderWidthChange,

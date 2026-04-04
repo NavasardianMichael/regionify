@@ -23,7 +23,7 @@ export type ProjectMapStyles = {
     offsetY: number;
   };
   zoomControls: { show: boolean; position: { x: number; y: number } };
-  picture: { transparentBackground: boolean; backgroundColor: string };
+  picture: { transparentBackground: boolean; backgroundColor: string; showWatermark?: boolean };
   regionLabels: {
     show: boolean;
     color: string;

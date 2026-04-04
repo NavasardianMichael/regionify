@@ -221,11 +221,9 @@ const fr: CommonNs = {
       },
     },
     importFormatTooltip: {
-      id: 'ID de région ; doit correspondre exactement aux ID attendus (ex. depuis l’exemple)',
+      id: 'ID de région ; doit correspondre exactement aux ID attendus (téléchargez les données d’exemple pour les obtenir)',
       label: 'Libellé affiché pour la région',
       value: 'Valeur numérique de la région',
-      labelsOnMap:
-        'Les libellés s’affichent sur la carte lorsque « Afficher les libellés » est activé dans Styles de carte',
     },
     importFormatExamples: {
       excelColumnsStatic: 'Fichier Excel avec colonnes :',
@@ -393,9 +391,11 @@ const fr: CommonNs = {
       collapseShadow: 'Ombre',
       collapseControls: 'Contrôles',
       collapseRegionLabels: 'Libellés des régions',
-      freePlanNote:
-        'Plan gratuit : vous pouvez changer la couleur d’arrière-plan ; fond transparent et suppression du filigrane nécessitent une mise à niveau.',
-      upgradePlanLink: 'Mettre à niveau le plan',
+      freePlanNoteBeforeUpgrade:
+        'Vous pouvez toujours modifier la couleur d’arrière-plan, mais le fond transparent et la suppression du filigrane nécessitent une ',
+      freePlanUpgradeLink: 'mise à niveau',
+      freePlanNoteAfterUpgrade: '.',
+      showWatermark: 'Afficher le filigrane',
       transparent: 'Transparent',
       color: 'Couleur',
       showBorder: 'Afficher la bordure',

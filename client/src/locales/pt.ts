@@ -216,11 +216,9 @@ const pt: CommonNs = {
       },
     },
     importFormatTooltip: {
-      id: 'ID da região; deve corresponder exatamente aos IDs esperados (ex.: dos dados de exemplo)',
+      id: 'ID da região; deve corresponder exatamente aos IDs esperados (descarregue os dados de exemplo para os obter)',
       label: 'Etiqueta apresentada para a região',
       value: 'Valor numérico da região',
-      labelsOnMap:
-        'As etiquetas aparecem no mapa quando «Mostrar etiquetas» está ativo em Estilos do mapa',
     },
     importFormatExamples: {
       excelColumnsStatic: 'Ficheiro Excel com colunas:',
@@ -387,9 +385,11 @@ const pt: CommonNs = {
       collapseShadow: 'Sombra',
       collapseControls: 'Controlos',
       collapseRegionLabels: 'Etiquetas de região',
-      freePlanNote:
-        'Plano gratuito: pode alterar a cor de fundo; fundo transparente e remoção de marca d’água requerem upgrade.',
-      upgradePlanLink: 'Melhorar plano',
+      freePlanNoteBeforeUpgrade:
+        'Ainda pode alterar a cor de fundo, mas fundo transparente e remoção de marca d’água requerem um ',
+      freePlanUpgradeLink: 'upgrade',
+      freePlanNoteAfterUpgrade: '.',
+      showWatermark: 'Mostrar marca d’água',
       transparent: 'Transparente',
       color: 'Cor',
       showBorder: 'Mostrar contorno',

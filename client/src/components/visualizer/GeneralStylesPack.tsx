@@ -26,11 +26,12 @@ const DEFAULT_MAP_STYLES = {
     position: { x: 20, y: 20 },
   },
   picture: {
-    transparentBackground: true,
-    backgroundColor: '#F5F5F5',
+    transparentBackground: false,
+    backgroundColor: '#FFFFFF',
+    showWatermark: false,
   },
   regionLabels: {
-    show: true,
+    show: false,
     color: '#333333',
     fontSize: 10,
     labelPositionsByRegionId: {},
@@ -75,11 +76,11 @@ const GeneralStylesPack: FC = () => {
     try {
       const { pickRandomVisualizerPalette } = await import('@/data/visualizerRandomPalettes');
       const palette = pickRandomVisualizerPalette();
-      const { regionLabels } = useMapStylesStore.getState();
+      const { regionLabels, picture: currentPicture } = useMapStylesStore.getState();
       setMapStylesState({
         border: palette.map.border,
         shadow: palette.map.shadow,
-        picture: palette.map.picture,
+        picture: { ...palette.map.picture, showWatermark: currentPicture.showWatermark },
         regionLabels: {
           ...palette.map.regionLabels,
           labelPositionsByRegionId: regionLabels.labelPositionsByRegionId,

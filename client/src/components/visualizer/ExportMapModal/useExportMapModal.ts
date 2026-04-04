@@ -187,6 +187,8 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     });
   }, []);
 
+  const watermarkActive = plan === PLANS.observer || picture.showWatermark;
+
   const staticStillOpts = useMemo(
     () => ({
       backgroundColor: picture.transparentBackground ? undefined : picture.backgroundColor,
@@ -213,24 +215,18 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     ],
   );
 
-  const observerStillOpts = useMemo(
-    () => ({
-      ...staticStillOpts,
-      backgroundColor: '#f5f5f5',
-      watermark: { text: 'Regionify' } as const,
-    }),
-    [staticStillOpts],
-  );
-
   const resolvedStillOpts = useMemo((): StillExportOpts => {
-    if (exportType === EXPORT_TYPES.jpeg && plan === PLANS.observer) {
-      return observerStillOpts;
-    }
+    const withWatermark = (base: StillExportOpts): StillExportOpts =>
+      watermarkActive ? { ...base, watermark: { text: 'Regionify' } as const } : base;
+
     if (exportType === EXPORT_TYPES.jpeg) {
-      return { ...staticStillOpts, backgroundColor: staticStillOpts.backgroundColor ?? '#ffffff' };
+      return withWatermark({
+        ...staticStillOpts,
+        backgroundColor: staticStillOpts.backgroundColor ?? '#ffffff',
+      });
     }
-    return staticStillOpts;
-  }, [exportType, plan, staticStillOpts, observerStillOpts]);
+    return withWatermark(staticStillOpts);
+  }, [exportType, staticStillOpts, watermarkActive]);
 
   const animationBaseOptions = useMemo(
     () => ({
@@ -253,6 +249,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       floatingPosition,
       regionLabels,
       labelPositions: labelPositionsByRegionId,
+      watermark: watermarkActive ? ({ text: 'Regionify' } as const) : undefined,
     }),
     [
       timePeriods,
@@ -270,6 +267,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       floatingPosition,
       regionLabels,
       labelPositionsByRegionId,
+      watermarkActive,
     ],
   );
 

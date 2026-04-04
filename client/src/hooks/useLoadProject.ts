@@ -75,7 +75,10 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
         border: project.mapStyles.border,
         shadow: project.mapStyles.shadow,
         zoomControls: project.mapStyles.zoomControls,
-        picture: project.mapStyles.picture,
+        picture: {
+          ...project.mapStyles.picture,
+          showWatermark: project.mapStyles.picture.showWatermark ?? false,
+        },
         regionLabels: {
           ...project.mapStyles.regionLabels,
           labelPositionsByRegionId:

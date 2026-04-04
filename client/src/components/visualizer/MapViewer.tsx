@@ -145,6 +145,11 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
   const noDataColor = useLegendStylesStore(selectNoDataColor);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
 
+  const showWatermarkOverlay = useMemo(
+    () => plan === PLANS.observer || picture.showWatermark,
+    [plan, picture.showWatermark],
+  );
+
   const legendItems = useMemo(
     () => legendItemsData.allIds.map((id) => legendItemsData.byId[id]),
     [legendItemsData.allIds, legendItemsData.byId],
@@ -835,8 +840,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
             </div>
           )}
 
-          {/* Watermark for observer plan — offset when zoom UI is shown so it does not cover controls */}
-          {plan === PLANS.observer && (
+          {/* Watermark for observer or when enabled in map styles — offset when zoom UI is shown */}
+          {showWatermarkOverlay && (
             <Flex
               align="center"
               gap={6}

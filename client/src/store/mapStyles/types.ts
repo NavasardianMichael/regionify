@@ -20,6 +20,8 @@ export type ZoomControlsConfig = {
 export type PictureConfig = {
   transparentBackground: boolean;
   backgroundColor: string;
+  /** Paid: optional export/preview watermark. Observer always shows watermark regardless. */
+  showWatermark: boolean;
 };
 
 export type RegionLabelsConfig = {

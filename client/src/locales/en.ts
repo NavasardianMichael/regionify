@@ -216,10 +216,9 @@ const en: CommonNs = {
       },
     },
     importFormatTooltip: {
-      id: 'Region ID; must exactly match the expected IDs (e.g. from sample data)',
+      id: 'Region ID; must exactly match the expected IDs (download sample data to have them)',
       label: 'Display label for the region',
       value: 'Numeric value for the region',
-      labelsOnMap: 'Labels are shown on the map when “Show Labels” is enabled in Map Styles',
     },
     importFormatExamples: {
       excelColumnsStatic: 'Excel file with columns:',
@@ -381,9 +380,11 @@ const en: CommonNs = {
       collapseShadow: 'Shadow',
       collapseControls: 'Controls',
       collapseRegionLabels: 'Region Labels',
-      freePlanNote:
-        'Free plan: You can change the background color, but transparent background and watermark removal require an upgrade.',
-      upgradePlanLink: 'Upgrade your plan',
+      freePlanNoteBeforeUpgrade:
+        'You can still change the background color, but transparent background and watermark removal require an ',
+      freePlanUpgradeLink: 'upgrade',
+      freePlanNoteAfterUpgrade: '.',
+      showWatermark: 'Show watermark',
       transparent: 'Transparent',
       color: 'Color',
       showBorder: 'Show Border',
