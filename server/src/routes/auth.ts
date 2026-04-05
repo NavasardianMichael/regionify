@@ -223,8 +223,6 @@ router.post(
   authLimiter,
   validate(forgotPasswordSchema),
   async (req, res, next) => {
-    console.log('Forgot password request received');
-    console.log({ body: req.body });
     try {
       const result = await authService.forgotPassword(req.body);
 

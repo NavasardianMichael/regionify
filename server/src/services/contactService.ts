@@ -1,5 +1,4 @@
 import { type ContactInput } from '@regionify/shared';
-
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
 
@@ -37,7 +36,7 @@ export const contactService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(env.MAIL_API_KEY && { 'x-api-key': env.MAIL_API_KEY }),
+          'x-api-key': env.MAIL_API_KEY,
         },
         body: JSON.stringify(payload),
       });

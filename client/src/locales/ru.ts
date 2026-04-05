@@ -173,7 +173,8 @@ const ru: CommonNs = {
       placeholder: 'Выберите страну...',
       ariaLabel: 'Выбор страны',
       changeConfirmTitle: 'Сменить страну?',
-      changeConfirmBody: 'Все несохранённые изменения будут потеряны. Продолжить?',
+      changeConfirmBody:
+        'Все несохранённые изменения будут потеряны, если вы смените страну и затем сохраните проект.',
       changeOk: 'Сменить страну',
     },
     importData: {

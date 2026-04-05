@@ -226,6 +226,53 @@ The ${APP_NAME} Team
   },
 
   /**
+   * Forgot-password request for an OAuth-only account (no password stored)
+   */
+  passwordResetOAuthOnly(
+    name: string,
+    signInWithLabel: string,
+    loginUrl: string,
+  ): {
+    subject: string;
+    text: string;
+    html: string;
+  } {
+    const subject = `How to sign in to ${APP_NAME}`;
+
+    const text = `
+Hi ${name},
+
+We received a request to reset a password for your ${APP_NAME} account, but this email is linked to ${signInWithLabel} sign-in. There is no password on file for this account.
+
+To access your account, open the login page and use "${signInWithLabel}" instead of email and password for this email address.
+
+${loginUrl}
+
+If you didn't request this, you can ignore this email.
+
+Best regards,
+The ${APP_NAME} Team
+`.trim();
+
+    const html = emailLayout(
+      `
+        ${emailHeading('Sign in without a password')}
+        ${emailParagraph(
+          `Hi ${name}, you asked to reset a password, but this account uses ${signInWithLabel} sign-in — no password is stored.`,
+        )}
+        ${emailParagraph(
+          `To access your account, open the login page and use <strong>${signInWithLabel}</strong> instead of email and password for this email address.`,
+        )}
+        ${emailButton(`Go to sign in`, loginUrl)}
+        ${emailMuted(`If you didn't request this, you can ignore this email.`)}
+      `,
+      { preheader: `Your ${APP_NAME} account uses ${signInWithLabel} sign-in.` },
+    );
+
+    return { subject, text, html };
+  },
+
+  /**
    * Password changed confirmation email
    */
   passwordChanged(name: string): { subject: string; text: string; html: string } {
@@ -352,7 +399,7 @@ export const emailService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(env.MAIL_API_KEY && { 'x-api-key': env.MAIL_API_KEY }),
+          'x-api-key': env.MAIL_API_KEY,
         },
         body: JSON.stringify(payload),
       });
@@ -395,6 +442,15 @@ export const emailService = {
     const resetUrl = `${env.CLIENT_URL}/reset-password?token=${resetToken}`;
     const expiresInMinutes = 30; // 30 minutes - improved security per OWASP recommendations
     const { subject, text, html } = emailTemplates.passwordReset(name, resetUrl, expiresInMinutes);
+    await this.send({ to, subject, text, html });
+  },
+
+  /**
+   * OAuth-only account: user requested password reset but has no password (e.g. signed up with Google).
+   */
+  async sendPasswordResetOAuthNotice(to: string, name: string): Promise<void> {
+    const loginUrl = `${env.CLIENT_URL.replace(/\/$/, '')}/login`;
+    const { subject, text, html } = emailTemplates.passwordResetOAuthOnly(name, 'Google', loginUrl);
     await this.send({ to, subject, text, html });
   },
 

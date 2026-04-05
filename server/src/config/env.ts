@@ -49,7 +49,7 @@ const envSchema = z.object({
 
   // Mail API (base URL without trailing slash)
   MAIL_API_URL: z.string().url(),
-  MAIL_API_KEY: z.string().optional(),
+  MAIL_API_KEY: z.string(),
 
   // Lemon Squeezy (one-time checkouts; webhook for order_created)
   LEMON_SQUEEZY_API_KEY: z.string().optional(),

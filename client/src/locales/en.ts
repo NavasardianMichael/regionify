@@ -174,7 +174,8 @@ const en: CommonNs = {
       placeholder: 'Select a country...',
       ariaLabel: 'Select a country',
       changeConfirmTitle: 'Change country?',
-      changeConfirmBody: 'All unsaved changes will be lost. Are you sure?',
+      changeConfirmBody:
+        'All unsaved changes will be lost if you change the country and then save the project.',
       changeOk: 'Change country',
     },
     importData: {

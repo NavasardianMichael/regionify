@@ -175,7 +175,8 @@ const es: CommonNs = {
       placeholder: 'Selecciona un país...',
       ariaLabel: 'Seleccionar un país',
       changeConfirmTitle: '¿Cambiar país?',
-      changeConfirmBody: 'Se perderán todos los cambios no guardados. ¿Seguro?',
+      changeConfirmBody:
+        'Se perderán todos los cambios no guardados si cambias el país y luego guardas el proyecto.',
       changeOk: 'Cambiar país',
     },
     importData: {

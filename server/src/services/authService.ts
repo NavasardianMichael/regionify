@@ -253,12 +253,17 @@ export const authService = {
       };
     }
 
-    // Don't allow password reset for OAuth-only accounts
+    // OAuth-only accounts have no password; send guidance email (same anti-enumeration response)
     if (user.provider !== 'local' && !user.passwordHash) {
       logger.info(
         { email: input.email, provider: user.provider },
-        'Password reset requested for OAuth account',
+        'Password reset requested for OAuth-only account',
       );
+      try {
+        await emailService.sendPasswordResetOAuthNotice(user.email, user.name);
+      } catch (error) {
+        logger.error({ error, userId: user.id }, 'Failed to send OAuth sign-in notice email');
+      }
       return {
         message: 'If an account exists with this email, you will receive a password reset link',
       };

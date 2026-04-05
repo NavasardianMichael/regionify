@@ -166,7 +166,7 @@ const zh: CommonNs = {
       placeholder: '请选择国家...',
       ariaLabel: '选择国家',
       changeConfirmTitle: '更换国家？',
-      changeConfirmBody: '所有未保存的更改将丢失。确定吗？',
+      changeConfirmBody: '若更换国家后保存项目，所有未保存的更改将丢失。',
       changeOk: '更换国家',
     },
     importData: {
