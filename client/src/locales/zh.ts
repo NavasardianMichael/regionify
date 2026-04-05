@@ -172,8 +172,8 @@ const zh: CommonNs = {
     importData: {
       sectionTitle: '导入数据',
       downloadTooltipEmpty: '添加或导入数据后可下载当前数据集',
-      downloadTooltip: '下载当前数据集',
-      downloadAria: '下载当前数据集',
+      downloadTooltip: '下载当前（示例）数据集',
+      downloadAria: '下载当前（示例）数据集',
       manualTooltip: '手动输入数据',
       manualTooltipNoCountry: '请先选择国家',
       manualAria: '手动输入数据',
@@ -203,7 +203,7 @@ const zh: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: '表格',
+        sheets: 'Google 表格',
         manual: '手动',
       },
     },
@@ -328,6 +328,14 @@ const zh: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         '本项目会从已关联的 Google 表格同步数据，因此无法在此手动编辑数值。请在电子表格中修改数据；若需在应用内编辑，请改用其他导入类型。',
+      modeTable: '表格',
+      modeText: '文本',
+      pastePlaceholder: '粘贴以制表符或逗号分隔的行（例如从 Excel 或 CSV 复制）',
+      pasteFormatTooltip:
+        '列应为：id、label、value — 或包含时间列（year、time、period 等）。\n\n示例：\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\n含时间：\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: '粘贴内容格式说明',
+      pasteFormatError: '文本与预期格式不符。',
+      pasteMissingId: '首行需要包含 id 列（见示例）。',
     },
     legendConfig: {
       sectionTitle: '图例配置',
@@ -369,7 +377,7 @@ const zh: CommonNs = {
       collapseControls: '控件',
       collapseRegionLabels: '区域标签',
       freePlanNoteBeforeUpgrade: '您仍可更改背景色，但透明背景和去除水印需要',
-      freePlanUpgradeLink: '升级',
+      freePlanUpgradeLink: '徽章升级',
       freePlanNoteAfterUpgrade: '。',
       showWatermark: '显示水印',
       transparent: '透明',

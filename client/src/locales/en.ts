@@ -180,8 +180,8 @@ const en: CommonNs = {
     importData: {
       sectionTitle: 'Import Data',
       downloadTooltipEmpty: 'Add or import data to download the current dataset',
-      downloadTooltip: 'Download current dataset',
-      downloadAria: 'Download current dataset',
+      downloadTooltip: 'Download current (sample) dataset',
+      downloadAria: 'Download current (sample) dataset',
       manualTooltip: 'Enter data manually',
       manualTooltipNoCountry: 'Select a country first',
       manualAria: 'Enter data manually',
@@ -211,7 +211,7 @@ const en: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: 'Sheets',
+        sheets: 'Google Sheets',
         manual: 'Manual',
       },
     },
@@ -341,6 +341,14 @@ const en: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'This project syncs data from your linked Google Sheet, so you cannot edit values manually here. Change data in the spreadsheet, or switch import type if you need to edit in app.',
+      modeTable: 'Table',
+      modeText: 'Text',
+      pastePlaceholder: 'Paste tab- or comma-separated rows (e.g. copied from Excel or a CSV file)',
+      pasteFormatTooltip:
+        'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nWith time:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: 'Expected paste format',
+      pasteFormatError: 'The text does not match the expected format.',
+      pasteMissingId: 'An id column is required in the first row (see the format example).',
     },
     legendConfig: {
       sectionTitle: 'Legend Configuration',
@@ -383,7 +391,7 @@ const en: CommonNs = {
       collapseRegionLabels: 'Region Labels',
       freePlanNoteBeforeUpgrade:
         'You can still change the background color, but transparent background and watermark removal require an ',
-      freePlanUpgradeLink: 'upgrade',
+      freePlanUpgradeLink: 'upgrade of badge',
       freePlanNoteAfterUpgrade: '.',
       showWatermark: 'Show watermark',
       transparent: 'Transparent',

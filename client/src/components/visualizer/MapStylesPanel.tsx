@@ -1,5 +1,5 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { BgColorsOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { BgColorsOutlined } from '@ant-design/icons';
 import { PLANS } from '@regionify/shared';
 import { Collapse, type ColorPickerProps, Flex, type SwitchProps, Typography } from 'antd';
 import {
@@ -145,7 +145,6 @@ const MapStylesPanel: FC = () => {
             <Typography.Text className="font-semibold">
               {t('visualizer.mapStyles.collapseBackground')}
             </Typography.Text>
-            {plan === PLANS.observer && <InfoCircleOutlined className="ml-1 text-gray-500" />}
           </Flex>
         ),
         children: (

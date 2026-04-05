@@ -42,14 +42,25 @@ import {
   selectSetSavedStateSnapshot,
 } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
+import { useGuestDraftAutosave } from '@/hooks/useGuestDraftAutosave';
 import { useIsMdUp } from '@/hooks/useIsMdUp';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import { useVisualizerPage } from '@/hooks/useVisualizerPage';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
-import { saveReturnUrl } from '@/helpers/temporaryProjectState';
+import {
+  applyFullTemporaryProjectState,
+  resetVisualizerToDefaultState,
+} from '@/helpers/applyFullTemporaryProjectState';
+import {
+  clearTemporaryProjectState,
+  consumeSkipNewProjectResetOnce,
+  isGuestSnapshotExpired,
+  mergeTemporaryStateWithDefaults,
+  readGuestProjectSnapshotEnvelope,
+  saveReturnUrl,
+} from '@/helpers/temporaryProjectState';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
@@ -76,6 +87,7 @@ const VisualizerPage: FC = () => {
   const location = useLocation();
   const { projectId: urlProjectId } = useParams<{ projectId: string }>();
   const logout = useProfileStore(selectLogout);
+  useGuestDraftAutosave();
   const currentProjectId = useProjectsStore(selectCurrentProjectId);
   const setCurrentProjectId = useProjectsStore(selectSetCurrentProjectId);
   const setSavedStateSnapshot = useProjectsStore(selectSetSavedStateSnapshot);
@@ -232,7 +244,33 @@ const VisualizerPage: FC = () => {
   // Run before child useEffects (e.g. ImportDataPanel async region loader) so the store is cleared first.
   useLayoutEffect(() => {
     if (location.pathname !== ROUTES.PROJECT_NEW) return;
-    resetVisualizerToDefaultState();
+
+    if (consumeSkipNewProjectResetOnce()) {
+      setCurrentProjectId(null);
+      requestAnimationFrame(() => {
+        setSavedStateSnapshot(captureStateSnapshot());
+      });
+      return;
+    }
+
+    const loggedIn = useProfileStore.getState().isLoggedIn;
+    if (loggedIn) {
+      resetVisualizerToDefaultState();
+      clearTemporaryProjectState();
+      setCurrentProjectId(null);
+      requestAnimationFrame(() => {
+        setSavedStateSnapshot(captureStateSnapshot());
+      });
+      return;
+    }
+
+    const envelope = readGuestProjectSnapshotEnvelope();
+    if (envelope && !isGuestSnapshotExpired(envelope)) {
+      applyFullTemporaryProjectState(mergeTemporaryStateWithDefaults(envelope.partial));
+    } else {
+      if (envelope) clearTemporaryProjectState();
+      resetVisualizerToDefaultState();
+    }
     setCurrentProjectId(null);
     requestAnimationFrame(() => {
       setSavedStateSnapshot(captureStateSnapshot());
@@ -334,7 +372,16 @@ const VisualizerPage: FC = () => {
         </Flex>
       ) : (
         <Suspense fallback={<Spin className="m-auto flex-1" />}>
-          <MapViewer className="min-h-0 flex-1" />
+          <MapViewer
+            className="min-h-0 flex-1"
+            showPlanRibbon={
+              isLoggedIn &&
+              Boolean(currentProject) &&
+              urlProjectId != null &&
+              urlProjectId !== 'new' &&
+              !isAwaitingProjectFromUrl
+            }
+          />
         </Suspense>
       )}
     </CardLayout>

@@ -187,8 +187,8 @@ const de: CommonNs = {
       sectionTitle: 'Daten importieren',
       downloadTooltipEmpty:
         'Fügen Sie Daten hinzu oder importieren Sie sie, um den aktuellen Datensatz herunterzuladen',
-      downloadTooltip: 'Aktuellen Datensatz herunterladen',
-      downloadAria: 'Aktuellen Datensatz herunterladen',
+      downloadTooltip: 'Aktuellen (Beispiel-)Datensatz herunterladen',
+      downloadAria: 'Aktuellen (Beispiel-)Datensatz herunterladen',
       manualTooltip: 'Daten manuell eingeben',
       manualTooltipNoCountry: 'Zuerst ein Land auswählen',
       manualAria: 'Daten manuell eingeben',
@@ -220,7 +220,7 @@ const de: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: 'Tabellen',
+        sheets: 'Google Sheets',
         manual: 'Manuell',
       },
     },
@@ -355,6 +355,15 @@ const de: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Dieses Projekt synchronisiert Daten mit Ihrer verknüpften Google-Tabelle. Werte lassen sich daher hier nicht manuell bearbeiten. Ändern Sie die Daten in der Tabelle, oder wechseln Sie den Importtyp, wenn Sie in der App bearbeiten möchten.',
+      modeTable: 'Tabelle',
+      modeText: 'Text',
+      pastePlaceholder:
+        'Tab- oder kommagetrennte Zeilen einfügen (z. B. aus Excel oder einer CSV-Datei)',
+      pasteFormatTooltip:
+        'Erwartete Spalten: id, label, value — oder eine Zeitspalte (year, time, period, …).\n\nBeispiel:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nMit Zeit:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: 'Erwartetes Einfügeformat',
+      pasteFormatError: 'Der Text entspricht nicht dem erwarteten Format.',
+      pasteMissingId: 'In der ersten Zeile ist eine id-Spalte erforderlich (siehe Beispiel).',
     },
     legendConfig: {
       sectionTitle: 'Legendenkonfiguration',
@@ -397,7 +406,7 @@ const de: CommonNs = {
       collapseRegionLabels: 'Regionsbeschriftungen',
       freePlanNoteBeforeUpgrade:
         'Sie können weiterhin die Hintergrundfarbe ändern; transparenter Hintergrund und Entfernen des Wasserzeichens erfordern ein ',
-      freePlanUpgradeLink: 'Upgrade',
+      freePlanUpgradeLink: 'Upgrade des Badges',
       freePlanNoteAfterUpgrade: '.',
       showWatermark: 'Wasserzeichen anzeigen',
       transparent: 'Transparent',

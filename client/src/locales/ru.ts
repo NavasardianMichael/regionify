@@ -179,8 +179,8 @@ const ru: CommonNs = {
     importData: {
       sectionTitle: 'Импорт данных',
       downloadTooltipEmpty: 'Добавьте или импортируйте данные, чтобы скачать текущий набор',
-      downloadTooltip: 'Скачать текущий набор данных',
-      downloadAria: 'Скачать текущий набор данных',
+      downloadTooltip: 'Скачать текущий (примерный) набор данных',
+      downloadAria: 'Скачать текущий (примерный) набор данных',
       manualTooltip: 'Ввести данные вручную',
       manualTooltipNoCountry: 'Сначала выберите страну',
       manualAria: 'Ввести данные вручную',
@@ -211,7 +211,7 @@ const ru: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: 'Таблицы',
+        sheets: 'Google Sheets',
         manual: 'Вручную',
       },
     },
@@ -343,6 +343,15 @@ const ru: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Проект синхронизирует данные с привязанной Google-таблицей, поэтому здесь нельзя вручную редактировать значения. Изменяйте данные в таблице или выберите другой тип импорта, если нужно редактировать в приложении.',
+      modeTable: 'Таблица',
+      modeText: 'Текст',
+      pastePlaceholder:
+        'Вставьте строки с разделителями табуляции или запятой (например, из Excel или CSV)',
+      pasteFormatTooltip:
+        'Ожидаемые столбцы: id, label, value — или столбец времени (year, time, period, …).\n\nПример:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nСо временем:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: 'Ожидаемый формат вставки',
+      pasteFormatError: 'Текст не соответствует ожидаемому формату.',
+      pasteMissingId: 'В первой строке нужен столбец id (см. пример).',
     },
     legendConfig: {
       sectionTitle: 'Настройка легенды',
@@ -385,7 +394,7 @@ const ru: CommonNs = {
       collapseRegionLabels: 'Подписи регионов',
       freePlanNoteBeforeUpgrade:
         'Вы по-прежнему можете менять цвет фона, но прозрачный фон и снятие водяного знака требуют ',
-      freePlanUpgradeLink: 'апгрейда',
+      freePlanUpgradeLink: 'апгрейда значка',
       freePlanNoteAfterUpgrade: '.',
       showWatermark: 'Показывать водяной знак',
       transparent: 'Прозрачный',

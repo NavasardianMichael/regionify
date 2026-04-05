@@ -181,8 +181,8 @@ const fr: CommonNs = {
     importData: {
       sectionTitle: 'Importer des données',
       downloadTooltipEmpty: 'Ajoutez ou importez des données pour télécharger le jeu actuel',
-      downloadTooltip: 'Télécharger le jeu de données actuel',
-      downloadAria: 'Télécharger le jeu de données actuel',
+      downloadTooltip: 'Télécharger le jeu de données actuel (exemple)',
+      downloadAria: 'Télécharger le jeu de données actuel (exemple)',
       manualTooltip: 'Saisir les données manuellement',
       manualTooltipNoCountry: 'Sélectionnez d’abord un pays',
       manualAria: 'Saisir les données manuellement',
@@ -216,7 +216,7 @@ const fr: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: 'Sheets',
+        sheets: 'Google Sheets',
         manual: 'Manuel',
       },
     },
@@ -352,6 +352,15 @@ const fr: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Ce projet synchronise les données avec votre feuille Google liée : vous ne pouvez donc pas modifier les valeurs manuellement ici. Modifiez les données dans le tableur ou changez le type d’import si vous devez éditer dans l’application.',
+      modeTable: 'Tableau',
+      modeText: 'Texte',
+      pastePlaceholder:
+        'Collez des lignes séparées par des tabulations ou des virgules (ex. copiées depuis Excel ou un CSV)',
+      pasteFormatTooltip:
+        'Colonnes attendues : id, label, value — ou incluez une colonne temps (year, time, period, …).\n\nExemple :\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nAvec temps :\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: 'Format attendu pour le collage',
+      pasteFormatError: 'Le texte ne correspond pas au format attendu.',
+      pasteMissingId: 'Une colonne id est requise sur la première ligne (voir l’exemple).',
     },
     legendConfig: {
       sectionTitle: 'Configuration de la légende',
@@ -394,7 +403,7 @@ const fr: CommonNs = {
       collapseRegionLabels: 'Libellés des régions',
       freePlanNoteBeforeUpgrade:
         'Vous pouvez toujours modifier la couleur d’arrière-plan, mais le fond transparent et la suppression du filigrane nécessitent une ',
-      freePlanUpgradeLink: 'mise à niveau',
+      freePlanUpgradeLink: 'mise à niveau du badge',
       freePlanNoteAfterUpgrade: '.',
       showWatermark: 'Afficher le filigrane',
       transparent: 'Transparent',

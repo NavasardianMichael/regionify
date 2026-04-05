@@ -11,6 +11,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { IDLE_STATUSES } from '@/constants/loadingStatus';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { clearReturnUrl, clearTemporaryProjectState } from '@/helpers/temporaryProjectState';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
@@ -84,6 +85,8 @@ const ProjectsPage: FC = () => {
       });
       return;
     }
+    clearTemporaryProjectState();
+    clearReturnUrl();
     navigate(ROUTES.PROJECT_NEW);
   }, [navigate, projects.length, user, t]);
 

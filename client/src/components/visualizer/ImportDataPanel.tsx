@@ -742,24 +742,14 @@ export const ImportDataPanel: FC = () => {
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
       manual: (
-        <Tooltip
-          title={
-            selectedCountryId
-              ? t('visualizer.importData.manualTooltip')
-              : t('visualizer.importData.manualTooltipNoCountry')
-          }
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() => setIsManualModalOpen(true)}
+          disabled={!selectedCountryId}
         >
-          <span>
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              onClick={() => setIsManualModalOpen(true)}
-              disabled={!selectedCountryId}
-            >
-              {t('visualizer.importData.enterManually')}
-            </Button>
-          </span>
-        </Tooltip>
+          {t('visualizer.importData.enterManually')}
+        </Button>
       ),
       sheets: (
         <Flex vertical gap="small" className="min-w-0">
@@ -876,25 +866,15 @@ export const ImportDataPanel: FC = () => {
             />
           </Tooltip>
 
-          <Tooltip
-            title={
-              selectedCountryId
-                ? t('visualizer.importData.manualTooltip')
-                : t('visualizer.importData.manualTooltipNoCountry')
-            }
-          >
-            <span>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                size="small"
-                onClick={() => setIsManualModalOpen(true)}
-                className="text-gray-500"
-                disabled={!selectedCountryId}
-                aria-label={t('visualizer.importData.manualAria')}
-              />
-            </span>
-          </Tooltip>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => setIsManualModalOpen(true)}
+            className="text-gray-500"
+            disabled={!selectedCountryId}
+            aria-label={t('visualizer.importData.manualAria')}
+          />
           {limits.historicalDataImport && (
             <Tooltip
               title={

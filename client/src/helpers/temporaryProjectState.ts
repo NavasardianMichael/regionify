@@ -12,6 +12,23 @@ import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 
 const TEMP_PROJECT_STATE_KEY = 'regionify-temp-project-state';
 const RETURN_URL_KEY = 'regionify-return-url';
+const SKIP_NEW_PROJECT_RESET_KEY = 'regionify-skip-new-project-reset-once';
+
+/** Max age for guest / pre-login visualizer snapshots (1 hour since last persist). */
+export const GUEST_PROJECT_SNAPSHOT_MAX_AGE_MS = 60 * 60 * 1000;
+
+export type GuestProjectSnapshotEnvelope = {
+  updatedAt: number;
+  partial: TemporaryProjectState;
+};
+
+function isGuestSnapshotEnvelope(value: unknown): value is GuestProjectSnapshotEnvelope {
+  if (value === null || typeof value !== 'object') return false;
+  const o = value as Record<string, unknown>;
+  return (
+    typeof o.updatedAt === 'number' && o.partial !== undefined && typeof o.partial === 'object'
+  );
+}
 
 export type TemporaryProjectState = Partial<
   Pick<
@@ -161,28 +178,57 @@ export function mergeTemporaryStateWithDefaults(
 }
 
 /**
- * Save temporary project state to localStorage (only pass changed/partial data).
+ * Read raw envelope from localStorage (migrates legacy flat partial shape once).
+ */
+export function readGuestProjectSnapshotEnvelope(): GuestProjectSnapshotEnvelope | null {
+  try {
+    const stored = localStorage.getItem(TEMP_PROJECT_STATE_KEY);
+    if (!stored) return null;
+    const parsed: unknown = JSON.parse(stored);
+    if (isGuestSnapshotEnvelope(parsed)) {
+      return parsed;
+    }
+    if (parsed !== null && typeof parsed === 'object' && !('updatedAt' in parsed)) {
+      saveTemporaryProjectState(parsed as TemporaryProjectState);
+      const migrated = localStorage.getItem(TEMP_PROJECT_STATE_KEY);
+      if (!migrated) return null;
+      const again: unknown = JSON.parse(migrated);
+      return isGuestSnapshotEnvelope(again) ? again : null;
+    }
+    return null;
+  } catch (error) {
+    console.error('Failed to read guest project snapshot:', error);
+    return null;
+  }
+}
+
+export function isGuestSnapshotExpired(envelope: GuestProjectSnapshotEnvelope): boolean {
+  return Date.now() - envelope.updatedAt > GUEST_PROJECT_SNAPSHOT_MAX_AGE_MS;
+}
+
+/**
+ * Save temporary project state to localStorage (partial + timestamp for TTL).
  */
 export function saveTemporaryProjectState(state: TemporaryProjectState): void {
   try {
-    localStorage.setItem(TEMP_PROJECT_STATE_KEY, JSON.stringify(state));
+    const envelope: GuestProjectSnapshotEnvelope = { updatedAt: Date.now(), partial: state };
+    localStorage.setItem(TEMP_PROJECT_STATE_KEY, JSON.stringify(envelope));
   } catch (error) {
     console.error('Failed to save temporary project state:', error);
   }
 }
 
 /**
- * Get temporary project state from localStorage (partial; merge with defaults when applying).
+ * Get temporary project state if still valid (not expired). Clears storage when expired.
  */
 export function getTemporaryProjectState(): TemporaryProjectState | null {
-  try {
-    const stored = localStorage.getItem(TEMP_PROJECT_STATE_KEY);
-    if (!stored) return null;
-    return JSON.parse(stored) as TemporaryProjectState;
-  } catch (error) {
-    console.error('Failed to get temporary project state:', error);
+  const envelope = readGuestProjectSnapshotEnvelope();
+  if (!envelope) return null;
+  if (isGuestSnapshotExpired(envelope)) {
+    clearTemporaryProjectState();
     return null;
   }
+  return envelope.partial;
 }
 
 /**
@@ -227,5 +273,28 @@ export function clearReturnUrl(): void {
     localStorage.removeItem(RETURN_URL_KEY);
   } catch (error) {
     console.error('Failed to clear return URL:', error);
+  }
+}
+
+/** After login/OAuth restore, skip wiping stores on the next `/projects/new` layout effect. */
+export function setSkipNewProjectResetOnce(): void {
+  try {
+    sessionStorage.setItem(SKIP_NEW_PROJECT_RESET_KEY, '1');
+  } catch (error) {
+    console.error('Failed to set skip new project reset flag:', error);
+  }
+}
+
+export function consumeSkipNewProjectResetOnce(): boolean {
+  try {
+    const v = sessionStorage.getItem(SKIP_NEW_PROJECT_RESET_KEY);
+    if (v === '1') {
+      sessionStorage.removeItem(SKIP_NEW_PROJECT_RESET_KEY);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Failed to read skip new project reset flag:', error);
+    return false;
   }
 }

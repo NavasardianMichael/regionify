@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   deleteProject as deleteProjectApi,
@@ -60,6 +60,13 @@ export const useProjects = (): UseProjectsReturn => {
   const [renamingProject, setRenamingProject] = useState<Project | null>(null);
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  /** Guests never fetch; keep list empty and use success so the projects UI can render (empty state + new project). */
+  useLayoutEffect(() => {
+    if (isLoggedIn) return;
+    setProjects([]);
+    setProjectsStatus(IDLE_STATUSES.success);
+  }, [isLoggedIn, setProjects, setProjectsStatus]);
 
   useEffect(() => {
     if (!isLoggedIn) return;

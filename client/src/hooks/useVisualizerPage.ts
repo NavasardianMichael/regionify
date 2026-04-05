@@ -2,11 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PLAN_DETAILS, PLANS } from '@regionify/shared';
 import { createProject, deleteProject as deleteProjectApi, updateProject } from '@/api/projects';
-import { useLegendDataStore } from '@/store/legendData/store';
-import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { selectSelectedCountryId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import {
@@ -26,43 +23,15 @@ import {
 } from '@/hooks/useProjectState';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { captureFullTemporaryProjectState } from '@/helpers/captureFullTemporaryProjectState';
 import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
 import {
   buildPartialTemporaryState,
-  type FullTemporaryProjectState,
+  clearTemporaryProjectState,
   saveReturnUrl,
   saveTemporaryProjectState,
 } from '@/helpers/temporaryProjectState';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
-
-function buildFullTemporaryState(): FullTemporaryProjectState {
-  const visualizerState = useVisualizerStore.getState();
-  const mapStylesState = useMapStylesStore.getState();
-  const legendStylesState = useLegendStylesStore.getState();
-  const legendDataState = useLegendDataStore.getState();
-  return {
-    selectedCountryId: visualizerState.selectedCountryId ?? null,
-    importDataType: visualizerState.importDataType,
-    data: visualizerState.data,
-    google: visualizerState.google,
-    timelineData: visualizerState.timelineData,
-    timePeriods: visualizerState.timePeriods,
-    activeTimePeriod: visualizerState.activeTimePeriod,
-    border: mapStylesState.border,
-    shadow: mapStylesState.shadow,
-    zoomControls: mapStylesState.zoomControls,
-    picture: mapStylesState.picture,
-    regionLabels: mapStylesState.regionLabels,
-    labels: legendStylesState.labels,
-    title: legendStylesState.title,
-    position: legendStylesState.position,
-    floatingPosition: legendStylesState.floatingPosition,
-    floatingSize: legendStylesState.floatingSize,
-    backgroundColor: legendStylesState.backgroundColor,
-    noDataColor: legendStylesState.noDataColor,
-    items: legendDataState.items,
-  };
-}
 
 export function useVisualizerPage() {
   const { t, i18n } = useTypedTranslation();
@@ -99,15 +68,8 @@ export function useVisualizerPage() {
   }, [user?.plan]);
 
   const handleOpenExportModal = useCallback(() => {
-    if (!isLoggedIn) {
-      const fullCurrent = buildFullTemporaryState();
-      saveTemporaryProjectState(buildPartialTemporaryState(fullCurrent));
-      saveReturnUrl(window.location.pathname);
-      navigate(ROUTES.LOGIN);
-      return;
-    }
     setIsExportModalOpen(true);
-  }, [isLoggedIn, navigate]);
+  }, []);
 
   const handleCloseExportModal = useCallback(() => {
     setIsExportModalOpen(false);
@@ -116,7 +78,7 @@ export function useVisualizerPage() {
   const handleOpenEmbedModal = useCallback(() => {
     if (!canUseEmbed) return;
     if (!isLoggedIn) {
-      const fullCurrent = buildFullTemporaryState();
+      const fullCurrent = captureFullTemporaryProjectState();
       saveTemporaryProjectState(buildPartialTemporaryState(fullCurrent));
       saveReturnUrl(window.location.pathname);
       navigate(ROUTES.LOGIN);
@@ -132,7 +94,7 @@ export function useVisualizerPage() {
 
   const handleSave = useCallback(async () => {
     if (isFreePlan && !isLoggedIn) {
-      saveTemporaryProjectState(buildPartialTemporaryState(buildFullTemporaryState()));
+      saveTemporaryProjectState(buildPartialTemporaryState(captureFullTemporaryProjectState()));
       saveReturnUrl(window.location.pathname);
       navigate(ROUTES.LOGIN);
       return;
@@ -153,6 +115,7 @@ export function useVisualizerPage() {
       const updated = await updateProject(currentProjectId, payload);
       updateProjectInList(updated);
       setSavedStateSnapshot(captureStateSnapshot());
+      clearTemporaryProjectState();
       message.success(t('messages.projectSaved'), 5);
     } catch {
       message.error(t('messages.projectSaveFailed'), 0);
@@ -184,6 +147,7 @@ export function useVisualizerPage() {
       addProject(created);
       setCurrentProjectId(created.id);
       setSavedStateSnapshot(captureStateSnapshot());
+      clearTemporaryProjectState();
       navigate(getProjectRoute(created.id), { replace: true });
       message.success(t('messages.projectCreated'), 5);
       setProjectName('');
@@ -262,10 +226,7 @@ export function useVisualizerPage() {
     return currentProjectId ? t('visualizer.save') : t('visualizer.saveAs');
   }, [isFreePlan, isLoggedIn, currentProjectId, t]);
 
-  const exportButtonText = useMemo(
-    () => (isLoggedIn ? t('visualizer.export') : t('visualizer.loginToExport')),
-    [isLoggedIn, t],
-  );
+  const exportButtonText = useMemo(() => t('visualizer.export'), [t]);
 
   const embedButtonText = useMemo(
     () => (isLoggedIn ? t('visualizer.embed.openButton') : t('visualizer.loginToExport')),

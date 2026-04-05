@@ -181,8 +181,8 @@ const es: CommonNs = {
     importData: {
       sectionTitle: 'Importar datos',
       downloadTooltipEmpty: 'Añade o importa datos para descargar el conjunto actual',
-      downloadTooltip: 'Descargar conjunto de datos actual',
-      downloadAria: 'Descargar conjunto de datos actual',
+      downloadTooltip: 'Descargar conjunto de datos actual (de ejemplo)',
+      downloadAria: 'Descargar conjunto de datos actual (de ejemplo)',
       manualTooltip: 'Introducir datos manualmente',
       manualTooltipNoCountry: 'Selecciona un país primero',
       manualAria: 'Introducir datos manualmente',
@@ -214,7 +214,7 @@ const es: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: 'Hojas',
+        sheets: 'Google Sheets',
         manual: 'Manual',
       },
     },
@@ -350,6 +350,15 @@ const es: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Este proyecto sincroniza los datos con tu hoja de Google vinculada, por lo que no puedes editar los valores manualmente aquí. Modifica los datos en la hoja de cálculo o cambia el tipo de importación si necesitas editar en la aplicación.',
+      modeTable: 'Tabla',
+      modeText: 'Texto',
+      pastePlaceholder:
+        'Pega filas separadas por tabulaciones o comas (por ejemplo, copiadas de Excel o un CSV)',
+      pasteFormatTooltip:
+        'Columnas esperadas: id, label, value — o incluye una columna de tiempo (year, time, period, …).\n\nEjemplo:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nCon tiempo:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: 'Formato esperado al pegar',
+      pasteFormatError: 'El texto no coincide con el formato esperado.',
+      pasteMissingId: 'Se requiere una columna id en la primera fila (ver ejemplo).',
     },
     legendConfig: {
       sectionTitle: 'Configuración de leyenda',
@@ -392,7 +401,7 @@ const es: CommonNs = {
       collapseRegionLabels: 'Etiquetas de región',
       freePlanNoteBeforeUpgrade:
         'Puedes seguir cambiando el color de fondo, pero el fondo transparente y quitar la marca de agua requieren una ',
-      freePlanUpgradeLink: 'mejora',
+      freePlanUpgradeLink: 'mejora de insignia',
       freePlanNoteAfterUpgrade: '.',
       showWatermark: 'Mostrar marca de agua',
       transparent: 'Transparente',

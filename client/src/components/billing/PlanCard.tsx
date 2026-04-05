@@ -43,25 +43,27 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
         flexDirection: 'column' as const,
         height: '100%',
         minHeight: 0,
+        ...(plan.popular ? { overflow: 'visible' as const } : {}),
       },
       body: {
         flex: 1,
         display: 'flex' as const,
         flexDirection: 'column' as const,
         minHeight: 0,
+        ...(plan.popular ? { overflow: 'visible' as const } : {}),
       },
     }),
-    [],
+    [plan.popular],
   );
 
   return (
-    <Card className={`relative ${cardClassName}`} styles={cardStyles}>
+    <Card className={`relative overflow-visible ${cardClassName}`} styles={cardStyles}>
       {plan.popular ? (
-        <span className="bg-primary absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white">
+        <span className="bg-primary pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white shadow-sm">
           {t('plans.bestChoice')}
         </span>
       ) : null}
-      <Flex vertical gap="middle" className="min-h-0 flex-1">
+      <Flex vertical gap="middle" className={`min-h-0 flex-1 ${plan.popular ? 'pt-3' : ''}`}>
         <Flex
           vertical
           align="center"
@@ -95,6 +97,8 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
 
         <Button
           type={buttonType}
+          variant={isCurrentPlan ? 'outlined' : 'solid'}
+          color={isCurrentPlan ? 'default' : 'primary'}
           block
           className="mt-auto shrink-0"
           disabled={isCurrentPlan}

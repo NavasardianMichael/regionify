@@ -1,6 +1,6 @@
 import { type FC, useCallback, useMemo, useRef, useState } from 'react';
 import { PLANS } from '@regionify/shared';
-import { Flex } from 'antd';
+import { Badge, Flex } from 'antd';
 import { selectPosition } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { selectSelectedCountryId } from '@/store/mapData/selectors';
@@ -11,6 +11,7 @@ import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { planRibbonColor, planRibbonNameKey } from '@/helpers/planRibbonColor';
 import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
 import { MapBottomLegend } from '@/components/visualizer/MapViewer/MapBottomLegend';
 import { MapFloatingLegend } from '@/components/visualizer/MapViewer/MapFloatingLegend';
@@ -24,9 +25,14 @@ import { useMapSvg } from '@/components/visualizer/MapViewer/useMapSvg';
 
 type MapViewerProps = {
   className?: string;
+  /** When true (e.g. saved project in app), show plan ribbon on the map export root block. */
+  showPlanRibbon?: boolean;
 };
 
-const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
+/** `Badge.Ribbon` puts `className` on the ribbon tab; `rootClassName` targets `.ant-ribbon-wrapper`. */
+const RIBBON_ROOT_CLASSNAME = 'flex h-full min-h-0 min-w-0 flex-1 flex-col';
+
+const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false }) => {
   const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
@@ -86,7 +92,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
     [plan, picture.showWatermark],
   );
 
-  return (
+  const mapExportRoot = (
     <Flex vertical className={`min-h-0 flex-1 ${className}`} data-map-export-root>
       <Flex vertical className="h-full min-h-0 flex-1">
         <Flex
@@ -141,6 +147,22 @@ const MapViewer: FC<MapViewerProps> = ({ className = '' }) => {
       </Flex>
     </Flex>
   );
+
+  if (showPlanRibbon && user) {
+    return (
+      <Badge.Ribbon
+        text={t(planRibbonNameKey(plan))}
+        color={planRibbonColor(plan)}
+        placement="end"
+        rootClassName={RIBBON_ROOT_CLASSNAME}
+        className="top-2! font-medium"
+      >
+        {mapExportRoot}
+      </Badge.Ribbon>
+    );
+  }
+
+  return mapExportRoot;
 };
 
 export default MapViewer;

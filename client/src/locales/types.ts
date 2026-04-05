@@ -337,6 +337,13 @@ export type CommonNs = {
         time: string;
       };
       googleSheetsSyncReadOnlyNote: string;
+      modeTable: string;
+      modeText: string;
+      pastePlaceholder: string;
+      pasteFormatTooltip: string;
+      pasteFormatAria: string;
+      pasteFormatError: string;
+      pasteMissingId: string;
     };
     legendConfig: {
       sectionTitle: string;

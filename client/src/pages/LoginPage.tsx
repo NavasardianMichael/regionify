@@ -18,6 +18,7 @@ import {
   getReturnUrl,
   getTemporaryProjectState,
   mergeTemporaryStateWithDefaults,
+  setSkipNewProjectResetOnce,
 } from '@/helpers/temporaryProjectState';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -56,9 +57,11 @@ const LoginPage: FC = () => {
       const response = await login(values);
       setUser(response.user);
 
-      // Restore temporary project state: merge partial with defaults, then apply
+      const pendingReturnUrl = getReturnUrl();
       const partial = getTemporaryProjectState();
-      if (partial && Object.keys(partial).length > 0) {
+      const hadGuestDraft = Boolean(partial && Object.keys(partial).length > 0);
+
+      if (hadGuestDraft && partial) {
         const merged = mergeTemporaryStateWithDefaults(partial);
         const { setVisualizerState } = useVisualizerStore.getState();
         const { setMapStylesState } = useMapStylesStore.getState();
@@ -94,17 +97,32 @@ const LoginPage: FC = () => {
         setItems(merged.items.allIds.map((id) => merged.items.byId[id]));
 
         clearTemporaryProjectState();
-      }
 
-      message.success(t('messages.loggedInSuccess'), 5);
+        message.success(t('messages.loggedInSuccess'), 5);
 
-      // Redirect to return URL or home
-      const returnUrl = getReturnUrl();
-      if (returnUrl) {
-        clearReturnUrl();
-        navigate(returnUrl, { replace: true });
+        if (pendingReturnUrl) {
+          clearReturnUrl();
+          if (
+            pendingReturnUrl === ROUTES.PROJECT_NEW ||
+            pendingReturnUrl.startsWith(`${ROUTES.PROJECT_NEW}?`)
+          ) {
+            setSkipNewProjectResetOnce();
+          }
+          navigate(pendingReturnUrl, { replace: true });
+        } else {
+          setSkipNewProjectResetOnce();
+          navigate(ROUTES.PROJECT_NEW, { replace: true });
+        }
       } else {
-        navigate(ROUTES.HOME);
+        message.success(t('messages.loggedInSuccess'), 5);
+
+        const returnUrl = pendingReturnUrl ?? getReturnUrl();
+        if (returnUrl) {
+          clearReturnUrl();
+          navigate(returnUrl, { replace: true });
+        } else {
+          navigate(ROUTES.HOME);
+        }
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('messages.loginFailed');

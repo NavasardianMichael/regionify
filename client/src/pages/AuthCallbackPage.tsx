@@ -12,6 +12,7 @@ import {
   getReturnUrl,
   getTemporaryProjectState,
   mergeTemporaryStateWithDefaults,
+  setSkipNewProjectResetOnce,
 } from '@/helpers/temporaryProjectState';
 
 const AuthCallbackPage: FC = () => {
@@ -27,21 +28,36 @@ const AuthCallbackPage: FC = () => {
         const user = JSON.parse(atob(userParam)) as UserPublic;
         setUser(user);
 
-        // Restore temporary project state: merge partial with defaults, then apply
+        const pendingReturnUrl = getReturnUrl();
         const partial = getTemporaryProjectState();
-        if (partial && Object.keys(partial).length > 0) {
+        const hadGuestDraft = Boolean(partial && Object.keys(partial).length > 0);
+
+        if (hadGuestDraft && partial) {
           const merged = mergeTemporaryStateWithDefaults(partial);
           applyFullTemporaryProjectState(merged);
           clearTemporaryProjectState();
-        }
 
-        // Redirect to return URL or home
-        const returnUrl = getReturnUrl();
-        if (returnUrl) {
-          clearReturnUrl();
-          navigate(returnUrl, { replace: true });
+          if (pendingReturnUrl) {
+            clearReturnUrl();
+            if (
+              pendingReturnUrl === ROUTES.PROJECT_NEW ||
+              pendingReturnUrl.startsWith(`${ROUTES.PROJECT_NEW}?`)
+            ) {
+              setSkipNewProjectResetOnce();
+            }
+            navigate(pendingReturnUrl, { replace: true });
+          } else {
+            setSkipNewProjectResetOnce();
+            navigate(ROUTES.PROJECT_NEW, { replace: true });
+          }
         } else {
-          navigate(ROUTES.HOME, { replace: true });
+          const returnUrl = pendingReturnUrl ?? getReturnUrl();
+          if (returnUrl) {
+            clearReturnUrl();
+            navigate(returnUrl, { replace: true });
+          } else {
+            navigate(ROUTES.HOME, { replace: true });
+          }
         }
       } catch {
         setUser(null);

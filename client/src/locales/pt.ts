@@ -179,8 +179,8 @@ const pt: CommonNs = {
     importData: {
       sectionTitle: 'Importar dados',
       downloadTooltipEmpty: 'Adicione ou importe dados para transferir o conjunto atual',
-      downloadTooltip: 'Transferir conjunto de dados atual',
-      downloadAria: 'Transferir conjunto de dados atual',
+      downloadTooltip: 'Transferir conjunto de dados atual (exemplo)',
+      downloadAria: 'Transferir conjunto de dados atual (exemplo)',
       manualTooltip: 'Introduzir dados manualmente',
       manualTooltipNoCountry: 'Selecione primeiro um país',
       manualAria: 'Introduzir dados manualmente',
@@ -211,7 +211,7 @@ const pt: CommonNs = {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
-        sheets: 'Sheets',
+        sheets: 'Google Sheets',
         manual: 'Manual',
       },
     },
@@ -346,6 +346,15 @@ const pt: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Este projeto sincroniza dados com a sua folha Google associada, pelo que não pode editar valores manualmente aqui. Altere os dados na folha de cálculo ou mude o tipo de importação se precisar de editar na aplicação.',
+      modeTable: 'Tabela',
+      modeText: 'Texto',
+      pastePlaceholder:
+        'Cole linhas separadas por tabulação ou vírgulas (por exemplo, copiadas do Excel ou de um CSV)',
+      pasteFormatTooltip:
+        'Colunas esperadas: id, label, value — ou inclua uma coluna de tempo (year, time, period, …).\n\nExemplo:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nCom tempo:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+      pasteFormatAria: 'Formato esperado ao colar',
+      pasteFormatError: 'O texto não corresponde ao formato esperado.',
+      pasteMissingId: 'É necessária uma coluna id na primeira linha (veja o exemplo).',
     },
     legendConfig: {
       sectionTitle: 'Configuração da legenda',
@@ -388,7 +397,7 @@ const pt: CommonNs = {
       collapseRegionLabels: 'Etiquetas de região',
       freePlanNoteBeforeUpgrade:
         'Ainda pode alterar a cor de fundo, mas fundo transparente e remoção de marca d’água requerem um ',
-      freePlanUpgradeLink: 'upgrade',
+      freePlanUpgradeLink: 'upgrade do distintivo',
       freePlanNoteAfterUpgrade: '.',
       showWatermark: 'Mostrar marca d’água',
       transparent: 'Transparente',
