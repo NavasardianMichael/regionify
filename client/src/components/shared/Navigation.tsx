@@ -57,19 +57,15 @@ export const Navigation: FC = () => {
   const publicNavItems: NavItem[] = useMemo(
     () => [
       { path: ROUTES.HOME, label: t('nav.home'), icon: HomeOutlined },
-      ...(isLoggedIn
-        ? [
-            {
-              path: ROUTES.PROJECTS,
-              label: t('nav.projects'),
-              icon: FolderOutlined,
-            } satisfies NavItem,
-          ]
-        : []),
+      {
+        path: ROUTES.PROJECTS,
+        label: t('nav.projects'),
+        icon: FolderOutlined,
+      } satisfies NavItem,
       { path: ROUTES.CONTACT, label: t('nav.contact'), icon: MailOutlined },
       { path: ROUTES.BILLING, label: t('nav.plans'), icon: CreditCardOutlined },
     ],
-    [isLoggedIn, t],
+    [t],
   );
 
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);

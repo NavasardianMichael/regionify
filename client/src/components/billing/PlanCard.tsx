@@ -28,7 +28,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
     return t('plans.priceOneTime', { price: `$${plan.price}` });
   }, [plan.price, t]);
 
-  const buttonType = useMemo(() => (plan.popular ? 'primary' : 'default'), [plan.popular]);
+  const buttonType = useMemo(() => (isCurrentPlan ? 'default' : 'primary'), [isCurrentPlan]);
 
   const cardClassName = useMemo(
     () =>
@@ -55,16 +55,13 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   );
 
   return (
-    <Card className={cardClassName} styles={cardStyles}>
+    <Card className={`relative ${cardClassName}`} styles={cardStyles}>
+      {plan.popular ? (
+        <span className="bg-primary absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white">
+          {t('plans.bestChoice')}
+        </span>
+      ) : null}
       <Flex vertical gap="middle" className="min-h-0 flex-1">
-        {plan.popular ? (
-          <Flex justify="center" className="shrink-0">
-            <span className="bg-primary rounded-full px-3 py-1 text-xs font-medium text-white">
-              {t('plans.bestChoice')}
-            </span>
-          </Flex>
-        ) : null}
-
         <Flex
           vertical
           align="center"
