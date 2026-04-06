@@ -1,37 +1,17 @@
-import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { type FC, useCallback, useMemo } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
 import { DndContext } from '@dnd-kit/core';
 import type { TablePaginationConfig, TableProps } from 'antd';
-import {
-  Alert,
-  Button,
-  ConfigProvider,
-  Flex,
-  Input,
-  Modal,
-  Radio,
-  type RadioChangeEvent,
-  Table,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Alert, Button, ConfigProvider, Flex, Modal, Table, Typography } from 'antd';
 import type { FilterValue, SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
-import { useVisualizerStore } from '@/store/mapData/store';
-import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { commitParsedImport } from '@/helpers/commitParsedImport';
-import { parseCSV } from '@/helpers/importDataParsers';
 import type { DataRow } from '@/helpers/manualDataEntryHelpers';
-import { useAppFeedback } from '@/components/shared/useAppFeedback';
-import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
 import { SelectColumnHeader } from './SelectColumnHeader';
 import { createSortableTbodyWrapper, SortableBodyRow, useTableDnd } from './tableDnD';
 import { tableTheme } from './tableTheme';
 import { useModalState } from './useModalState';
 import { useTableColumns } from './useTableColumns';
 import styles from './Modal.module.css';
-
-type EntryMode = 'table' | 'text';
 
 type Props = {
   open: boolean;
@@ -52,21 +32,6 @@ const ManualDataEntryModal: FC<Props> = ({
   googleSheetsSyncReadOnly = false,
 }) => {
   const { t } = useTypedTranslation();
-  const { message: messageApi } = useAppFeedback();
-  const setVisualizerState = useVisualizerStore((s) => s.setVisualizerState);
-
-  const [entryMode, setEntryMode] = useState<EntryMode>('table');
-  const [pastedText, setPastedText] = useState('');
-  const [pasteError, setPasteError] = useState<string | null>(null);
-  const [pasteSaving, setPasteSaving] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    setEntryMode('table');
-    setPastedText('');
-    setPasteError(null);
-    setPasteSaving(false);
-  }, [open]);
 
   const state = useModalState({
     mapRegionIds,
@@ -92,76 +57,6 @@ const ManualDataEntryModal: FC<Props> = ({
     bulkMenuItems,
     onBulkMenuClick,
   } = state;
-
-  const handleApplyPastedText = useCallback(async () => {
-    setPasteError(null);
-    const trimmed = pastedText.trim();
-    if (!trimmed) {
-      setPasteError(t('visualizer.manualEntry.pasteFormatError'));
-      return;
-    }
-
-    setPasteSaving(true);
-    try {
-      const result = parseCSV(trimmed);
-      if (typeof result === 'object' && 'error' in result) {
-        setPasteError(t('visualizer.manualEntry.pasteMissingId'));
-        return;
-      }
-      if (result.length === 0) {
-        setPasteError(t('visualizer.manualEntry.pasteFormatError'));
-        return;
-      }
-
-      const outcome = commitParsedImport(result, mapRegionIds, historicalDataImport);
-      if (!outcome.ok) {
-        setPasteError(t('visualizer.manualEntry.pasteFormatError'));
-        return;
-      }
-
-      if (outcome.variant === 'timeline') {
-        showMessageWithClose(
-          messageApi,
-          'success',
-          t('messages.importedRowsPeriods', {
-            count: outcome.rowCount,
-            periods: outcome.periodCount,
-          }),
-        );
-      } else {
-        if (outcome.sideEffect === 'info_time_on_observer') {
-          showMessageWithClose(
-            messageApi,
-            'info',
-            t('messages.timeSeriesDetected', { planName: t('plans.items.chronographer.name') }),
-          );
-        }
-        if (outcome.sideEffect === 'warn_no_time_chronographer') {
-          showMessageWithClose(messageApi, 'warning', t('messages.noTimeColumnDetected'));
-        }
-        showMessageWithClose(
-          messageApi,
-          'success',
-          t('messages.importedRegions', { count: outcome.rowCount }),
-        );
-      }
-
-      setVisualizerState({ importDataType: IMPORT_DATA_TYPES.manual });
-      onSave?.();
-      onClose();
-    } finally {
-      setPasteSaving(false);
-    }
-  }, [
-    pastedText,
-    mapRegionIds,
-    historicalDataImport,
-    messageApi,
-    onSave,
-    onClose,
-    setVisualizerState,
-    t,
-  ]);
 
   const tableColumns = useTableColumns(state);
 
@@ -279,20 +174,9 @@ const ManualDataEntryModal: FC<Props> = ({
     ],
   );
 
-  const onEntryModeChange = useCallback((e: RadioChangeEvent) => {
-    setEntryMode(e.target.value as EntryMode);
-    setPasteError(null);
-  }, []);
-
   const handleFooterSave = useCallback(() => {
-    if (entryMode === 'text') {
-      void handleApplyPastedText();
-      return;
-    }
     handleApplyData();
-  }, [entryMode, handleApplyData, handleApplyPastedText]);
-
-  const saveLoading = entryMode === 'text' && pasteSaving;
+  }, [handleApplyData]);
 
   return (
     <Modal
@@ -305,7 +189,7 @@ const ManualDataEntryModal: FC<Props> = ({
         <Flex justify="flex-end" gap="small">
           <Button onClick={handleCancel}>{t('nav.cancel')}</Button>
           {isGoogleSheetsReadOnly ? null : (
-            <Button type="primary" onClick={handleFooterSave} loading={saveLoading}>
+            <Button type="primary" onClick={handleFooterSave}>
               {t('visualizer.save')}
             </Button>
           )}
@@ -318,17 +202,6 @@ const ManualDataEntryModal: FC<Props> = ({
     >
       <ConfigProvider theme={tableTheme}>
         <Flex vertical gap="small" className="py-md">
-          {isGoogleSheetsReadOnly ? null : (
-            <Radio.Group
-              value={entryMode}
-              onChange={onEntryModeChange}
-              options={[
-                { value: 'table', label: t('visualizer.manualEntry.modeTable') },
-                { value: 'text', label: t('visualizer.manualEntry.modeText') },
-              ]}
-            />
-          )}
-
           {isGoogleSheetsReadOnly ? (
             <Alert
               type="info"
@@ -342,59 +215,24 @@ const ManualDataEntryModal: FC<Props> = ({
             />
           ) : null}
 
-          {entryMode === 'text' && !isGoogleSheetsReadOnly ? (
-            <Flex vertical gap="small" className="w-full">
-              <div className="relative w-full">
-                <Tooltip title={t('visualizer.manualEntry.pasteFormatTooltip')}>
-                  <Button
-                    type="text"
-                    size="small"
-                    icon={<InfoCircleOutlined />}
-                    className="absolute end-2 top-2 z-10 text-gray-500"
-                    aria-label={t('visualizer.manualEntry.pasteFormatAria')}
-                  />
-                </Tooltip>
-                <Input.TextArea
-                  value={pastedText}
-                  onChange={(e) => {
-                    setPastedText(e.target.value);
-                    if (pasteError) setPasteError(null);
-                  }}
-                  placeholder={t('visualizer.manualEntry.pastePlaceholder')}
-                  rows={14}
-                  className="pe-10 font-mono text-sm"
-                />
-              </div>
-              {pasteError ? (
-                <Typography.Text type="danger" className="text-sm">
-                  {pasteError}
-                </Typography.Text>
-              ) : null}
-            </Flex>
-          ) : null}
+          {isGoogleSheetsReadOnly ? (
+            dataTable
+          ) : (
+            <DndContext sensors={sensors} onDragEnd={onDragEnd}>
+              {dataTable}
+            </DndContext>
+          )}
 
-          {entryMode === 'table' || isGoogleSheetsReadOnly ? (
-            <>
-              {isGoogleSheetsReadOnly ? (
-                dataTable
-              ) : (
-                <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-                  {dataTable}
-                </DndContext>
-              )}
-
-              {canAddMissing && !isGoogleSheetsReadOnly ? (
-                <Button
-                  type="dashed"
-                  icon={<PlusOutlined />}
-                  onClick={handleAddMissingRow}
-                  className="mt-1! w-fit self-start"
-                  aria-label={t('visualizer.manualEntry.addMissingRow')}
-                >
-                  {t('visualizer.manualEntry.addMissingRow')}
-                </Button>
-              ) : null}
-            </>
+          {canAddMissing && !isGoogleSheetsReadOnly ? (
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={handleAddMissingRow}
+              className="mt-1! w-fit self-start"
+              aria-label={t('visualizer.manualEntry.addMissingRow')}
+            >
+              {t('visualizer.manualEntry.addMissingRow')}
+            </Button>
           ) : null}
         </Flex>
       </ConfigProvider>

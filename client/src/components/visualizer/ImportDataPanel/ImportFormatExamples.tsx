@@ -60,9 +60,19 @@ Saint Petersburg,St. Petersburg,1800`}
         </div>
       </Flex>
     ),
-    manual: (
+    table: (
       <Typography.Text className="text-xs text-gray-600">
         {t('visualizer.importFormatExamples.manualStatic')}
+      </Typography.Text>
+    ),
+    tab_delimited: (
+      <Typography.Text className="text-xs text-gray-600">
+        {t('visualizer.importFormatExamples.tabDelimitedStatic')}
+      </Typography.Text>
+    ),
+    ai_parser: (
+      <Typography.Text className="text-xs text-gray-600">
+        {t('visualizer.importFormatExamples.aiParserStatic')}
       </Typography.Text>
     ),
   };
@@ -117,9 +127,19 @@ Saint Petersburg,St. Petersburg,1800`}
         </div>
       </Flex>
     ),
-    manual: (
+    table: (
       <Typography.Text className="text-xs text-gray-600">
         {t('visualizer.importFormatExamples.manualHistorical')}
+      </Typography.Text>
+    ),
+    tab_delimited: (
+      <Typography.Text className="text-xs text-gray-600">
+        {t('visualizer.importFormatExamples.tabDelimitedHistorical')}
+      </Typography.Text>
+    ),
+    ai_parser: (
+      <Typography.Text className="text-xs text-gray-600">
+        {t('visualizer.importFormatExamples.aiParserStatic')}
       </Typography.Text>
     ),
   };

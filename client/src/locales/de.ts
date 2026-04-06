@@ -211,18 +211,20 @@ const de: CommonNs = {
       sheetsCopyUrlTooltip: 'URL in die Zwischenablage kopieren',
       sheetsUrlCopied: 'URL kopiert',
       sheetsTabId: 'Tabellenregister (gid): {{gid}}',
-      enterManually: 'Daten manuell eingeben',
+      editManuallyInTable: 'Manuell in Tabelle bearbeiten',
       connectSheets: 'Google Tabellen verbinden',
       changeSheetsSource: 'Google-Tabellenquelle ändern',
-      chooseCsv: 'CSV-Datei wählen',
-      chooseExcel: 'Excel-Datei wählen',
-      chooseJson: 'JSON-Datei wählen',
+      uploadCsv: 'CSV-Datei hochladen',
+      uploadExcel: 'Excel-Datei hochladen',
+      uploadJson: 'JSON-Datei hochladen',
       format: {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
         sheets: 'Google Sheets',
-        manual: 'Manuell',
+        table: 'Tabelle (manuell)',
+        tabDelimited: 'Tab-getrennter Text (manuell)',
+        aiParser: 'KI-Parser',
       },
     },
     importFormatTooltip: {
@@ -238,6 +240,10 @@ const de: CommonNs = {
       manualStatic: 'Geben Sie Regions-IDs, Beschriftungen und Werte über das Formular ein.',
       manualHistorical:
         'Geben Sie Regions-IDs, Beschriftungen und Werte mit Zeiträumen über das Formular ein.',
+      tabDelimitedStatic: 'Edit tab-separated rows. Existing data is pre-loaded for editing.',
+      tabDelimitedHistorical:
+        'Edit tab-separated rows with a time column. Existing data is pre-loaded for editing.',
+      aiParserStatic: 'Describe your data or paste raw text and let AI structure it for you.',
     },
     switchMode: {
       body: 'Alle Änderungen am Datensatz gehen verloren. Fortfahren?',
@@ -356,15 +362,21 @@ const de: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Dieses Projekt synchronisiert Daten mit Ihrer verknüpften Google-Tabelle. Werte lassen sich daher hier nicht manuell bearbeiten. Ändern Sie die Daten in der Tabelle, oder wechseln Sie den Importtyp, wenn Sie in der App bearbeiten möchten.',
-      modeTable: 'Tabelle',
-      modeText: 'Text',
-      pastePlaceholder:
-        'Tab- oder kommagetrennte Zeilen einfügen (z. B. aus Excel oder einer CSV-Datei)',
+    },
+    tabDelimitedModal: {
+      title: 'Tab-getrennter Text',
+      placeholder: 'Tab-getrennte Zeilen bearbeiten (id, label, value – eine pro Zeile)',
       pasteFormatTooltip:
-        'Erwartete Spalten: id, label, value — oder eine Zeitspalte (year, time, period, …).\n\nBeispiel:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nMit Zeit:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+        'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Erwartetes Einfügeformat',
       pasteFormatError: 'Der Text entspricht nicht dem erwarteten Format.',
       pasteMissingId: 'In der ersten Zeile ist eine id-Spalte erforderlich (siehe Beispiel).',
+    },
+    aiParserModal: {
+      title: 'KI-Parser',
+      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      placeholder: 'Describe your data or paste raw text for the AI to structure…',
+      submit: 'Mit KI analysieren',
     },
     legendConfig: {
       sectionTitle: 'Legendenkonfiguration',

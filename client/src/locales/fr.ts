@@ -207,18 +207,20 @@ const fr: CommonNs = {
       sheetsCopyUrlTooltip: 'Copier l’URL dans le presse-papiers',
       sheetsUrlCopied: 'URL copiée',
       sheetsTabId: 'Onglet de la feuille (gid) : {{gid}}',
-      enterManually: 'Saisir les données manuellement',
+      editManuallyInTable: 'Modifier manuellement dans le tableau',
       connectSheets: 'Connecter Google Sheets',
       changeSheetsSource: 'Changer la source Google Sheets',
-      chooseCsv: 'Choisir un fichier CSV',
-      chooseExcel: 'Choisir un fichier Excel',
-      chooseJson: 'Choisir un fichier JSON',
+      uploadCsv: 'Téléverser un fichier CSV',
+      uploadExcel: 'Téléverser un fichier Excel',
+      uploadJson: 'Téléverser un fichier JSON',
       format: {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
         sheets: 'Google Sheets',
-        manual: 'Manuel',
+        table: 'Tableau (manuel)',
+        tabDelimited: 'Texte délimité par tabulations (manuel)',
+        aiParser: 'Analyseur IA',
       },
     },
     importFormatTooltip: {
@@ -234,6 +236,10 @@ const fr: CommonNs = {
       manualStatic: 'Saisissez les ID de région, libellés et valeurs via le formulaire.',
       manualHistorical:
         'Saisissez les ID de région, libellés et valeurs avec périodes temporelles via le formulaire.',
+      tabDelimitedStatic: 'Edit tab-separated rows. Existing data is pre-loaded for editing.',
+      tabDelimitedHistorical:
+        'Edit tab-separated rows with a time column. Existing data is pre-loaded for editing.',
+      aiParserStatic: 'Describe your data or paste raw text and let AI structure it for you.',
     },
     switchMode: {
       body: 'Toutes les modifications du jeu de données seront perdues. Continuer ?',
@@ -353,15 +359,22 @@ const fr: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Ce projet synchronise les données avec votre feuille Google liée : vous ne pouvez donc pas modifier les valeurs manuellement ici. Modifiez les données dans le tableur ou changez le type d’import si vous devez éditer dans l’application.',
-      modeTable: 'Tableau',
-      modeText: 'Texte',
-      pastePlaceholder:
-        'Collez des lignes séparées par des tabulations ou des virgules (ex. copiées depuis Excel ou un CSV)',
+    },
+    tabDelimitedModal: {
+      title: 'Texte délimité par tabulations',
+      placeholder:
+        'Modifier les lignes séparées par tabulations (id, label, value — une par ligne)',
       pasteFormatTooltip:
-        'Colonnes attendues : id, label, value — ou incluez une colonne temps (year, time, period, …).\n\nExemple :\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nAvec temps :\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+        'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Format attendu pour le collage',
       pasteFormatError: 'Le texte ne correspond pas au format attendu.',
       pasteMissingId: 'Une colonne id est requise sur la première ligne (voir l’exemple).',
+    },
+    aiParserModal: {
+      title: 'Analyseur IA',
+      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      placeholder: 'Describe your data or paste raw text for the AI to structure…',
+      submit: 'Analyser avec l’IA',
     },
     legendConfig: {
       sectionTitle: 'Configuration de la légende',

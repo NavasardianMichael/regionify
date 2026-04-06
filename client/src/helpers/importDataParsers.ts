@@ -13,7 +13,15 @@ export type ParsedRow = { id: string; label: string; value: number; timePeriod?:
 export const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
 
 /** Order of import format tabs in the visualizer; labels come from `visualizer.importData.format.*` in locales. */
-export const IMPORT_FORMAT_ORDER: ImportDataType[] = ['csv', 'excel', 'json', 'sheets', 'manual'];
+export const IMPORT_FORMAT_ORDER: ImportDataType[] = [
+  'csv',
+  'excel',
+  'json',
+  'sheets',
+  'table',
+  'tab_delimited',
+  'ai_parser',
+];
 
 export const hasTimeColumn = (header: string): boolean => {
   const parts = header.split(/[,;\t]/).map((s) => s.trim());

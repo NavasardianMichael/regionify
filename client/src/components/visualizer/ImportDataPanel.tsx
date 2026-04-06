@@ -68,12 +68,16 @@ import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
 const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal/Modal'));
 const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
+const TabDelimitedTextModal = lazy(() => import('./TabDelimitedTextModal'));
+const AiParserModal = lazy(() => import('./AiParserModal'));
 
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
   const { modal, message: messageApi } = useAppFeedback();
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
+  const [isTabDelimitedModalOpen, setIsTabDelimitedModalOpen] = useState(false);
+  const [isAiParserModalOpen, setIsAiParserModalOpen] = useState(false);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
@@ -337,7 +341,9 @@ export const ImportDataPanel: FC = () => {
       excel: t('visualizer.importData.format.excel'),
       json: t('visualizer.importData.format.json'),
       sheets: t('visualizer.importData.format.sheets'),
-      manual: t('visualizer.importData.format.manual'),
+      table: t('visualizer.importData.format.table'),
+      tab_delimited: t('visualizer.importData.format.tabDelimited'),
+      ai_parser: t('visualizer.importData.format.aiParser'),
     };
     return IMPORT_FORMAT_ORDER.map((value) => ({
       label: labelByType[value],
@@ -741,14 +747,33 @@ export const ImportDataPanel: FC = () => {
 
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
-      manual: (
+      table: (
         <Button
           type="primary"
           icon={<EditOutlined />}
           onClick={() => setIsManualModalOpen(true)}
           disabled={!selectedCountryId}
         >
-          {t('visualizer.importData.enterManually')}
+          {t('visualizer.importData.editManuallyInTable')}
+        </Button>
+      ),
+      tab_delimited: (
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() => setIsTabDelimitedModalOpen(true)}
+          disabled={!selectedCountryId}
+        >
+          {t('visualizer.importData.editManuallyInTable')}
+        </Button>
+      ),
+      ai_parser: (
+        <Button
+          type="primary"
+          onClick={() => setIsAiParserModalOpen(true)}
+          disabled={!selectedCountryId}
+        >
+          {t('visualizer.aiParserModal.submit')}
         </Button>
       ),
       sheets: (
@@ -805,7 +830,7 @@ export const ImportDataPanel: FC = () => {
       csv: (
         <Upload accept=".csv" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
           <Button type="primary" icon={<CloudUploadOutlined />}>
-            {t('visualizer.importData.chooseCsv')}
+            {t('visualizer.importData.uploadCsv')}
           </Button>
         </Upload>
       ),
@@ -817,14 +842,14 @@ export const ImportDataPanel: FC = () => {
           maxCount={1}
         >
           <Button type="primary" icon={<CloudUploadOutlined />} block>
-            {t('visualizer.importData.chooseExcel')}
+            {t('visualizer.importData.uploadExcel')}
           </Button>
         </Upload>
       ),
       json: (
         <Upload accept=".json" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
           <Button type="primary" icon={<CloudUploadOutlined />} block>
-            {t('visualizer.importData.chooseJson')}
+            {t('visualizer.importData.uploadJson')}
           </Button>
         </Upload>
       ),
@@ -866,15 +891,25 @@ export const ImportDataPanel: FC = () => {
             />
           </Tooltip>
 
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => setIsManualModalOpen(true)}
-            className="text-gray-500"
-            disabled={!selectedCountryId}
-            aria-label={t('visualizer.importData.manualAria')}
-          />
+          <Tooltip
+            title={
+              selectedCountryId
+                ? t('visualizer.importData.manualTooltip')
+                : t('visualizer.importData.manualTooltipNoCountry')
+            }
+          >
+            <span>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                size="small"
+                onClick={() => setIsManualModalOpen(true)}
+                className="text-gray-500"
+                disabled={!selectedCountryId}
+                aria-label={t('visualizer.importData.manualAria')}
+              />
+            </span>
+          </Tooltip>
           {limits.historicalDataImport && (
             <Tooltip
               title={
@@ -978,6 +1013,23 @@ export const ImportDataPanel: FC = () => {
             onImport={handleSheetImport}
             initialUrl={googleUrl}
           />
+        </Suspense>
+      )}
+
+      {isTabDelimitedModalOpen && (
+        <Suspense fallback={<Spin />}>
+          <TabDelimitedTextModal
+            open={isTabDelimitedModalOpen}
+            onClose={() => setIsTabDelimitedModalOpen(false)}
+            mapRegionIds={svgTitles}
+            historicalDataImport={limits.historicalDataImport}
+          />
+        </Suspense>
+      )}
+
+      {isAiParserModalOpen && (
+        <Suspense fallback={<Spin />}>
+          <AiParserModal open={isAiParserModalOpen} onClose={() => setIsAiParserModalOpen(false)} />
         </Suspense>
       )}
     </Flex>

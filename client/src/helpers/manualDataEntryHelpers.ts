@@ -193,3 +193,34 @@ export const buildInitialRows = (
   }
   return rowsFromStaticData(storeData);
 };
+
+/**
+ * Serialize current store data to a tab-delimited text string suitable for the
+ * Tab Delimited Text modal textarea. Produces `id\tlabel\tvalue` rows for static
+ * data or `id\tlabel\tvalue\ttime` rows for timeline data.
+ */
+export const serializeToTabDelimited = (
+  storeData: LocalDataState,
+  timelineData: Record<string, DataSet>,
+  timePeriods: string[],
+): string => {
+  if (timePeriods.length > 0 && Object.keys(timelineData).length > 0) {
+    const lines: string[] = ['id\tlabel\tvalue\ttime'];
+    for (const period of timePeriods) {
+      const ds = timelineData[period];
+      if (!ds) continue;
+      for (const id of ds.allIds) {
+        const r = ds.byId[id];
+        if (r) lines.push(`${r.id}\t${r.label}\t${r.value}\t${period}`);
+      }
+    }
+    return lines.join('\n');
+  }
+
+  const lines: string[] = ['id\tlabel\tvalue'];
+  for (const id of storeData.allIds) {
+    const r = storeData.byId[id];
+    if (r) lines.push(`${r.id}\t${r.label}\t${r.value}`);
+  }
+  return lines.join('\n');
+};

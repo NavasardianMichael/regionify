@@ -202,18 +202,20 @@ const ru: CommonNs = {
       sheetsCopyUrlTooltip: 'Копировать URL в буфер обмена',
       sheetsUrlCopied: 'URL скопирован',
       sheetsTabId: 'Вкладка таблицы (gid): {{gid}}',
-      enterManually: 'Ввести данные вручную',
+      editManuallyInTable: 'Редактировать вручную в таблице',
       connectSheets: 'Подключить Google Таблицы',
       changeSheetsSource: 'Сменить источник Google Таблиц',
-      chooseCsv: 'Выбрать CSV-файл',
-      chooseExcel: 'Выбрать Excel-файл',
-      chooseJson: 'Выбрать JSON-файл',
+      uploadCsv: 'Загрузить CSV-файл',
+      uploadExcel: 'Загрузить Excel-файл',
+      uploadJson: 'Загрузить JSON-файл',
       format: {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
         sheets: 'Google Sheets',
-        manual: 'Вручную',
+        table: 'Таблица (вручную)',
+        tabDelimited: 'Текст с разделителями (вручную)',
+        aiParser: 'ИИ-парсер',
       },
     },
     importFormatTooltip: {
@@ -228,6 +230,10 @@ const ru: CommonNs = {
       sheetsColumnsTime: 'Google Таблица со столбцом времени:',
       manualStatic: 'Введите ID регионов, подписи и значения в форме.',
       manualHistorical: 'Введите ID регионов, подписи и значения с периодами времени в форме.',
+      tabDelimitedStatic: 'Edit tab-separated rows. Existing data is pre-loaded for editing.',
+      tabDelimitedHistorical:
+        'Edit tab-separated rows with a time column. Existing data is pre-loaded for editing.',
+      aiParserStatic: 'Describe your data or paste raw text and let AI structure it for you.',
     },
     switchMode: {
       body: 'Все изменения набора данных будут потеряны. Продолжить?',
@@ -344,15 +350,21 @@ const ru: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         'Проект синхронизирует данные с привязанной Google-таблицей, поэтому здесь нельзя вручную редактировать значения. Изменяйте данные в таблице или выберите другой тип импорта, если нужно редактировать в приложении.',
-      modeTable: 'Таблица',
-      modeText: 'Текст',
-      pastePlaceholder:
-        'Вставьте строки с разделителями табуляции или запятой (например, из Excel или CSV)',
+    },
+    tabDelimitedModal: {
+      title: 'Текст с разделителями-табуляцией',
+      placeholder: 'Редактируйте строки с табуляцией (id, label, value — по одной в строке)',
       pasteFormatTooltip:
-        'Ожидаемые столбцы: id, label, value — или столбец времени (year, time, period, …).\n\nПример:\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\nСо временем:\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+        'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Ожидаемый формат вставки',
       pasteFormatError: 'Текст не соответствует ожидаемому формату.',
       pasteMissingId: 'В первой строке нужен столбец id (см. пример).',
+    },
+    aiParserModal: {
+      title: 'ИИ-парсер',
+      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      placeholder: 'Describe your data or paste raw text for the AI to structure…',
+      submit: 'Анализировать с ИИ',
     },
     legendConfig: {
       sectionTitle: 'Настройка легенды',

@@ -193,18 +193,20 @@ const zh: CommonNs = {
       sheetsCopyUrlTooltip: '复制链接到剪贴板',
       sheetsUrlCopied: '已复制链接',
       sheetsTabId: '表格标签页 (gid)：{{gid}}',
-      enterManually: '手动输入数据',
+      editManuallyInTable: '在表格中手动编辑',
       connectSheets: '连接 Google 表格',
       changeSheetsSource: '更改 Google 表格来源',
-      chooseCsv: '选择 CSV 文件',
-      chooseExcel: '选择 Excel 文件',
-      chooseJson: '选择 JSON 文件',
+      uploadCsv: '上传 CSV 文件',
+      uploadExcel: '上传 Excel 文件',
+      uploadJson: '上传 JSON 文件',
       format: {
         csv: 'CSV',
         excel: 'Excel',
         json: 'JSON',
         sheets: 'Google 表格',
-        manual: '手动',
+        table: '表格（手动）',
+        tabDelimited: '制表符分隔文本（手动）',
+        aiParser: 'AI 解析器',
       },
     },
     importFormatTooltip: {
@@ -219,6 +221,10 @@ const zh: CommonNs = {
       sheetsColumnsTime: '包含时间列的 Google 表格：',
       manualStatic: '在表单中输入区域 ID、标签和对应数值。',
       manualHistorical: '在表单中输入区域 ID、标签、时间段和数值。',
+      tabDelimitedStatic: 'Edit tab-separated rows. Existing data is pre-loaded for editing.',
+      tabDelimitedHistorical:
+        'Edit tab-separated rows with a time column. Existing data is pre-loaded for editing.',
+      aiParserStatic: 'Describe your data or paste raw text and let AI structure it for you.',
     },
     switchMode: {
       body: '数据集的更改将丢失。确定继续吗？',
@@ -328,14 +334,21 @@ const zh: CommonNs = {
       },
       googleSheetsSyncReadOnlyNote:
         '本项目会从已关联的 Google 表格同步数据，因此无法在此手动编辑数值。请在电子表格中修改数据；若需在应用内编辑，请改用其他导入类型。',
-      modeTable: '表格',
-      modeText: '文本',
-      pastePlaceholder: '粘贴以制表符或逗号分隔的行（例如从 Excel 或 CSV 复制）',
+    },
+    tabDelimitedModal: {
+      title: '制表符分隔文本',
+      placeholder: '编辑制表符分隔的行（id、label、value — 每行一条）',
       pasteFormatTooltip:
-        '列应为：id、label、value — 或包含时间列（year、time、period 等）。\n\n示例：\nid,label,value\nUS-TX,Texas,42\nUS-CA,California,100\n\n含时间：\nid,label,value,year\nUS-TX,Texas,40,2020\nUS-TX,Texas,42,2021',
+        'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: '粘贴内容格式说明',
       pasteFormatError: '文本与预期格式不符。',
       pasteMissingId: '首行需要包含 id 列（见示例）。',
+    },
+    aiParserModal: {
+      title: 'AI 解析器',
+      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      placeholder: 'Describe your data or paste raw text for the AI to structure…',
+      submit: '使用 AI 解析',
     },
     legendConfig: {
       sectionTitle: '图例配置',

@@ -202,18 +202,20 @@ export type CommonNs = {
       sheetsCopyUrlTooltip: string;
       sheetsUrlCopied: string;
       sheetsTabId: string;
-      enterManually: string;
+      editManuallyInTable: string;
       connectSheets: string;
       changeSheetsSource: string;
-      chooseCsv: string;
-      chooseExcel: string;
-      chooseJson: string;
+      uploadCsv: string;
+      uploadExcel: string;
+      uploadJson: string;
       format: {
         csv: string;
         excel: string;
         json: string;
         sheets: string;
-        manual: string;
+        table: string;
+        tabDelimited: string;
+        aiParser: string;
       };
     };
     importFormatTooltip: {
@@ -228,6 +230,9 @@ export type CommonNs = {
       sheetsColumnsTime: string;
       manualStatic: string;
       manualHistorical: string;
+      tabDelimitedStatic: string;
+      tabDelimitedHistorical: string;
+      aiParserStatic: string;
     };
     switchMode: {
       body: string;
@@ -337,13 +342,20 @@ export type CommonNs = {
         time: string;
       };
       googleSheetsSyncReadOnlyNote: string;
-      modeTable: string;
-      modeText: string;
-      pastePlaceholder: string;
+    };
+    tabDelimitedModal: {
+      title: string;
+      placeholder: string;
       pasteFormatTooltip: string;
       pasteFormatAria: string;
       pasteFormatError: string;
       pasteMissingId: string;
+    };
+    aiParserModal: {
+      title: string;
+      limitedRequestsNote: string;
+      placeholder: string;
+      submit: string;
     };
     legendConfig: {
       sectionTitle: string;

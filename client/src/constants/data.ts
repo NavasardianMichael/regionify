@@ -3,7 +3,9 @@ export const IMPORT_DATA_TYPES = {
   excel: 'excel',
   json: 'json',
   sheets: 'sheets',
-  manual: 'manual',
+  table: 'table',
+  tabDelimited: 'tab_delimited',
+  aiParser: 'ai_parser',
 } as const;
 
 /** Same union as `VisualizerState.importDataType` / persisted `ProjectDataset.importDataType`. */
@@ -15,7 +17,9 @@ export const IMPORT_FORMAT_LABEL_I18N_KEYS = {
   [IMPORT_DATA_TYPES.excel]: 'visualizer.importData.format.excel',
   [IMPORT_DATA_TYPES.json]: 'visualizer.importData.format.json',
   [IMPORT_DATA_TYPES.sheets]: 'visualizer.importData.format.sheets',
-  [IMPORT_DATA_TYPES.manual]: 'visualizer.importData.format.manual',
+  [IMPORT_DATA_TYPES.table]: 'visualizer.importData.format.table',
+  [IMPORT_DATA_TYPES.tabDelimited]: 'visualizer.importData.format.tabDelimited',
+  [IMPORT_DATA_TYPES.aiParser]: 'visualizer.importData.format.aiParser',
 } as const satisfies Record<ImportDataType, string>;
 
 /** Matches uppercase letters to split camelCase country IDs into spaced words. */
