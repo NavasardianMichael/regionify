@@ -67,7 +67,12 @@ function displayNameForRegionCode(
   const intlLocale = APP_LOCALE_TO_INTL[appLocale] ?? appLocale;
   try {
     const dn = new Intl.DisplayNames([intlLocale, 'en'], { type: 'region' });
-    return dn.of(code) ?? englishFallback;
+    const name = dn.of(code);
+    // Some engines return the UN M.49 code (e.g. "002") instead of "Africa" — use app label.
+    if (!name || name === code) {
+      return englishFallback;
+    }
+    return name;
   } catch {
     return englishFallback;
   }

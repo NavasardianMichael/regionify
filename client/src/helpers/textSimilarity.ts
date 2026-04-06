@@ -4,7 +4,7 @@
  * Uses Levenshtein distance and normalization to match user-provided region labels
  * with SVG path titles. Handles variations like:
  * - "Gegharkunik" matching "Geġark'unik'"
- * - "Turkey" matching "Türkiye"
+ * - alternate spellings of the same place name
  * - "Russian Federation" matching "Russia"
  */
 

@@ -7,7 +7,6 @@ const PAN_STEP = 50;
 type UseMapPanParams = {
   containerRef: RefObject<HTMLButtonElement | null>;
   mapTransformRef: RefObject<HTMLDivElement | null>;
-  labelDragMode: boolean;
   onResetLabelPositions: () => void;
 };
 
@@ -30,7 +29,6 @@ type UseMapPanReturn = {
 export function useMapPan({
   containerRef,
   mapTransformRef,
-  labelDragMode,
   onResetLabelPositions,
 }: UseMapPanParams): UseMapPanReturn {
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
@@ -133,7 +131,7 @@ export function useMapPan({
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      if (labelDragMode || mapPanListenersActiveRef.current) return;
+      if (mapPanListenersActiveRef.current) return;
 
       const p = panRef.current;
       mapPanDragStartRef.current = {
@@ -153,7 +151,7 @@ export function useMapPan({
         window.addEventListener('pointerup', endMapPanDragRef.current);
       }
     },
-    [labelDragMode, handleMapPanWindowMove, mapTransformRef],
+    [handleMapPanWindowMove, mapTransformRef],
   );
 
   const handlePointerUp = useCallback(() => {

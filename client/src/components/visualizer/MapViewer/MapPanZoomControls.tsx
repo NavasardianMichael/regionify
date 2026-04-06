@@ -4,7 +4,6 @@ import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
   ArrowUpOutlined,
-  DragOutlined,
   FullscreenOutlined,
   MinusOutlined,
   PlusOutlined,
@@ -18,7 +17,6 @@ import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type MapPanZoomControlsProps = {
-  labelDragMode: boolean;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onPanUp: () => void;
@@ -26,11 +24,9 @@ type MapPanZoomControlsProps = {
   onPanLeft: () => void;
   onPanRight: () => void;
   onResetView: () => void;
-  onToggleLabelDragMode: () => void;
 };
 
 export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function MapPanZoomControls({
-  labelDragMode,
   onZoomIn,
   onZoomOut,
   onPanUp,
@@ -38,7 +34,6 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
   onPanLeft,
   onPanRight,
   onResetView,
-  onToggleLabelDragMode,
 }) {
   const { t } = useTypedTranslation();
   const isTouchDevice = useIsTouchDevice();
@@ -137,27 +132,6 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipResetMapAndLabels')}
-          />
-        </Tooltip>
-        <Tooltip
-          title={
-            labelDragMode
-              ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
-              : t('visualizer.mapStyles.tooltipEnableLabelDragging')
-          }
-          placement="left"
-        >
-          <Button
-            type={labelDragMode ? 'primary' : 'default'}
-            icon={<DragOutlined />}
-            onClick={onToggleLabelDragMode}
-            disabled={isDisabled}
-            className="shadow-md"
-            aria-label={
-              labelDragMode
-                ? t('visualizer.mapStyles.tooltipDisableLabelDragging')
-                : t('visualizer.mapStyles.tooltipEnableLabelDragging')
-            }
           />
         </Tooltip>
       </Flex>

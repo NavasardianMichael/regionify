@@ -42,7 +42,7 @@ const BillingPage: FC = () => {
   );
 
   return (
-    <div className="mx-auto w-full max-w-5xl shrink-0 pb-10">
+    <div className="m-auto w-full max-w-5xl shrink-0">
       <header className="mb-8 flex flex-col items-center gap-2 text-center">
         <Typography.Title level={1} className="text-primary mb-0! w-full text-3xl font-bold">
           {t('plans.title')}

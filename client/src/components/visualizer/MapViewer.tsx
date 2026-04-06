@@ -1,6 +1,9 @@
-import { type FC, useCallback, useMemo, useRef, useState } from 'react';
+import { type FC, useCallback, useMemo, useRef } from 'react';
 import { PLANS } from '@regionify/shared';
 import { Badge, Flex } from 'antd';
+import { useShallow } from 'zustand/react/shallow';
+import { selectItemsList } from '@/store/legendData/selectors';
+import { useLegendDataStore } from '@/store/legendData/store';
 import { selectPosition } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { selectSelectedCountryId } from '@/store/mapData/selectors';
@@ -40,12 +43,12 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
   const picture = useMapStylesStore(selectPicture);
   const setLabelPositionsByRegionId = useMapStylesStore(selectSetLabelPositionsByRegionId);
   const position = useLegendStylesStore(selectPosition);
+  const legendItems = useLegendDataStore(useShallow(selectItemsList));
+  const showBottomLegend = position === LEGEND_POSITIONS.bottom && legendItems.length > 0;
 
   const containerRef = useRef<HTMLButtonElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
   const mapTransformRef = useRef<HTMLDivElement>(null);
-
-  const [labelDragMode, setLabelDragMode] = useState(false);
 
   const { svgContent, isLoading, labelPositionsRef } = useMapSvg();
 
@@ -67,18 +70,14 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
     handlePanLeft,
     handlePanRight,
     handleResetView,
-  } = useMapPan({ containerRef, mapTransformRef, labelDragMode, onResetLabelPositions });
+  } = useMapPan({ containerRef, mapTransformRef, onResetLabelPositions });
 
-  useLabelDrag({ containerRef, svgContent, labelPositionsRef, labelDragMode, zoom, pan });
+  useLabelDrag({ containerRef, svgContent, labelPositionsRef, zoom, pan });
 
   const { handleLegendMouseDown, handleResizeMouseDown } = useLegendDrag({
     containerRef,
     legendRef,
   });
-
-  const handleToggleLabelDragMode = useCallback(() => {
-    setLabelDragMode((prev) => !prev);
-  }, []);
 
   const dateLocale = i18n.resolvedLanguage ?? i18n.language;
   const mapInteractiveAriaLabel = useMemo(() => {
@@ -92,58 +91,84 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
     [plan, picture.showWatermark],
   );
 
+  const mapBackgroundStyle = useMemo(
+    () => ({
+      backgroundColor: picture.transparentBackground ? 'transparent' : picture.backgroundColor,
+    }),
+    [picture.backgroundColor, picture.transparentBackground],
+  );
+
+  const mapInterior = (
+    <>
+      <MapSvgCanvas
+        containerRef={containerRef}
+        mapTransformRef={mapTransformRef}
+        svgContent={svgContent}
+        isLoading={isLoading}
+        isDragging={isDragging}
+        zoom={zoom}
+        pan={pan}
+        ariaLabel={mapInteractiveAriaLabel}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      />
+
+      {position === LEGEND_POSITIONS.floating && (
+        <MapFloatingLegend
+          legendRef={legendRef}
+          onLegendMouseDown={handleLegendMouseDown}
+          onResizeMouseDown={handleResizeMouseDown}
+        />
+      )}
+
+      {!showBottomLegend && <MapWatermark show={showWatermarkOverlay} />}
+
+      <MapPanZoomControls
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onPanUp={handlePanUp}
+        onPanDown={handlePanDown}
+        onPanLeft={handlePanLeft}
+        onPanRight={handlePanRight}
+        onResetView={handleResetView}
+      />
+    </>
+  );
+
   const mapExportRoot = (
     <Flex vertical className={`min-h-0 flex-1 ${className}`} data-map-export-root>
       <Flex vertical className="h-full min-h-0 flex-1">
-        <Flex
-          align="center"
-          justify="center"
-          className="group relative min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200"
-          data-map-export-map-area
-          style={{
-            backgroundColor: picture.transparentBackground
-              ? 'transparent'
-              : picture.backgroundColor,
-          }}
-        >
-          <MapSvgCanvas
-            containerRef={containerRef}
-            mapTransformRef={mapTransformRef}
-            svgContent={svgContent}
-            isLoading={isLoading}
-            isDragging={isDragging}
-            zoom={zoom}
-            pan={pan}
-            labelDragMode={labelDragMode}
-            ariaLabel={mapInteractiveAriaLabel}
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-          />
-
-          {position === LEGEND_POSITIONS.floating && (
-            <MapFloatingLegend
-              legendRef={legendRef}
-              onLegendMouseDown={handleLegendMouseDown}
-              onResizeMouseDown={handleResizeMouseDown}
-            />
-          )}
-
-          <MapWatermark show={showWatermarkOverlay} />
-
-          <MapPanZoomControls
-            labelDragMode={labelDragMode}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onPanUp={handlePanUp}
-            onPanDown={handlePanDown}
-            onPanLeft={handlePanLeft}
-            onPanRight={handlePanRight}
-            onResetView={handleResetView}
-            onToggleLabelDragMode={handleToggleLabelDragMode}
-          />
-        </Flex>
-
-        <MapBottomLegend />
+        {showBottomLegend ? (
+          <Flex
+            vertical
+            className="relative min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-gray-200"
+            data-map-export-map-area
+          >
+            <Flex
+              align="center"
+              justify="center"
+              className="group relative min-h-0 flex-1 overflow-hidden"
+              style={mapBackgroundStyle}
+            >
+              {mapInterior}
+            </Flex>
+            <MapBottomLegend />
+            <MapWatermark show={showWatermarkOverlay} pinToExportFrame />
+          </Flex>
+        ) : (
+          <>
+            <Flex
+              align="center"
+              justify="center"
+              className="group relative min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200"
+              data-map-export-map-area
+              style={mapBackgroundStyle}
+            >
+              {mapInterior}
+            </Flex>
+            <MapBottomLegend />
+          </>
+        )}
       </Flex>
     </Flex>
   );

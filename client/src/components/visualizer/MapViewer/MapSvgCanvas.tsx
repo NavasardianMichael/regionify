@@ -19,7 +19,6 @@ type MapSvgCanvasProps = {
   isDragging: boolean;
   zoom: number;
   pan: { x: number; y: number };
-  labelDragMode: boolean;
   ariaLabel: string;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerUp: () => void;
@@ -33,7 +32,6 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
   isDragging,
   zoom,
   pan,
-  labelDragMode,
   ariaLabel,
   onPointerDown,
   onPointerUp,
@@ -52,9 +50,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
       type="button"
       ref={containerRef}
       aria-label={ariaLabel}
-      className={`absolute inset-0 flex items-center justify-center border-none bg-transparent p-0 ${
-        labelDragMode ? 'cursor-default' : 'cursor-move'
-      }`}
+      className="absolute inset-0 flex cursor-move items-center justify-center border-none bg-transparent p-0"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
@@ -68,7 +64,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
             ref={mapTransformRef}
             align="center"
             justify="center"
-            className="relative h-[80%] w-[80%]"
+            className="relative h-full min-h-0 w-full min-w-0"
             data-map-export-map-transform
             style={{
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
@@ -76,11 +72,9 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
             }}
           >
             <div
-              className={`map-svg-container h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain ${
-                labelDragMode && regionLabels.show ? styles.labelDragHoverTarget : ''
-              } ${!labelDragMode ? styles.mapPanCursor : ''} ${
-                showSheetSyncOnMap ? 'blur-[3px]' : ''
-              }`}
+              className={`map-svg-container h-full min-h-0 w-full min-w-0 [&>svg]:h-full [&>svg]:w-full [&>svg]:overflow-visible [&>svg]:object-contain ${styles.mapPanCursor} ${
+                regionLabels.show ? styles.labelDragHoverTarget : ''
+              } ${showSheetSyncOnMap ? 'blur-[3px]' : ''}`}
               dangerouslySetInnerHTML={{ __html: svgContent }}
             />
             {showSheetSyncOnMap && (

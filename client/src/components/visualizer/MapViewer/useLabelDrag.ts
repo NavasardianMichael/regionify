@@ -6,7 +6,6 @@ type UseLabelDragParams = {
   containerRef: RefObject<HTMLButtonElement | null>;
   svgContent: string;
   labelPositionsRef: RefObject<Record<string, { x: number; y: number }>>;
-  labelDragMode: boolean;
   zoom: number;
   pan: { x: number; y: number };
 };
@@ -15,7 +14,6 @@ export function useLabelDrag({
   containerRef,
   svgContent,
   labelPositionsRef,
-  labelDragMode,
   zoom,
   pan,
 }: UseLabelDragParams): void {
@@ -67,6 +65,7 @@ export function useLabelDrag({
       }
 
       draggingLabelRef.current = null;
+      document.body.style.cursor = '';
       window.removeEventListener('pointermove', handleLabelDragMove);
       if (handleLabelDragEndRef.current) {
         window.removeEventListener('pointerup', handleLabelDragEndRef.current);
@@ -81,7 +80,7 @@ export function useLabelDrag({
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !svgContent || !regionLabels.show || !labelDragMode) return;
+    if (!container || !svgContent || !regionLabels.show) return;
 
     const textElements = container.querySelectorAll<SVGTextElement>('text[data-region-id]');
 
@@ -102,6 +101,7 @@ export function useLabelDrag({
         regionId,
       };
 
+      document.body.style.cursor = 'grabbing';
       window.addEventListener('pointermove', handleLabelDragMove);
       if (handleLabelDragEndRef.current) {
         window.addEventListener('pointerup', handleLabelDragEndRef.current);
@@ -121,7 +121,6 @@ export function useLabelDrag({
     containerRef,
     svgContent,
     regionLabels.show,
-    labelDragMode,
     handleLabelDragMove,
     handleLabelDragEnd,
     zoom,

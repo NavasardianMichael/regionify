@@ -24,19 +24,18 @@
 }
 
 /**
- * When label-drag mode is on, labels show a clear hover affordance (map pan is off).
+ * Labels are always draggable when visible — no mode toggle needed.
  */
 .labelDragHoverTarget :global(svg text[data-region-id]) {
   cursor: grab;
+  transform-box: fill-box;
+  transform-origin: center;
   transition:
-    filter 0.15s ease,
-    outline-color 0.15s ease;
+    transform 0.15s ease,
+    filter 0.15s ease;
 }
 
-/** Dashed box around the `<text>` fragment (not per-glyph stroke). */
 .labelDragHoverTarget :global(svg text[data-region-id]:hover) {
-  filter: drop-shadow(0 0 5px rgba(24, 41, 77, 0.55)) brightness(1.08);
-  outline: 1px dashed #18294d;
-  outline-offset: 4px;
-  transition: outline-color 0.15s ease;
+  transform: scale(2);
+  /* filter: drop-shadow(0 0 5px rgba(24, 41, 77, 0.55)) brightness(1.08); */
 }
