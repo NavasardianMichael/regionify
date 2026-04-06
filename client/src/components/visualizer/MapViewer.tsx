@@ -13,6 +13,7 @@ import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { OBSERVER_PLAN_ZOOM_STACK_LIFT_PX } from '@/constants/mapViewer';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { planRibbonColor, planRibbonNameKey } from '@/helpers/planRibbonColor';
 import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
@@ -72,7 +73,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
     handleResetView,
   } = useMapPan({ containerRef, mapTransformRef, onResetLabelPositions });
 
-  useLabelDrag({ containerRef, svgContent, labelPositionsRef, zoom, pan });
+  useLabelDrag({ containerRef, svgContent, labelPositionsRef });
 
   const { handleLegendMouseDown, handleResizeMouseDown } = useLegendDrag({
     containerRef,
@@ -90,6 +91,8 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
     () => plan === PLANS.observer || picture.showWatermark,
     [plan, picture.showWatermark],
   );
+
+  const zoomStackExtraBottomPx = plan === PLANS.observer ? OBSERVER_PLAN_ZOOM_STACK_LIFT_PX : 0;
 
   const mapBackgroundStyle = useMemo(
     () => ({
@@ -131,6 +134,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
         onPanLeft={handlePanLeft}
         onPanRight={handlePanRight}
         onResetView={handleResetView}
+        zoomStackExtraBottomPx={zoomStackExtraBottomPx}
       />
     </>
   );
@@ -153,7 +157,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
               {mapInterior}
             </Flex>
             <MapBottomLegend />
-            <MapWatermark show={showWatermarkOverlay} pinToExportFrame />
+            <MapWatermark show={showWatermarkOverlay} />
           </Flex>
         ) : (
           <>

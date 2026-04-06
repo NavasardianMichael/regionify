@@ -133,6 +133,11 @@ export function useMapPan({
     (e: React.PointerEvent) => {
       if (mapPanListenersActiveRef.current) return;
 
+      const t = e.target;
+      if (t instanceof Element && t.closest('text[data-region-id]')) {
+        return;
+      }
+
       const p = panRef.current;
       mapPanDragStartRef.current = {
         x: e.clientX - p.x,

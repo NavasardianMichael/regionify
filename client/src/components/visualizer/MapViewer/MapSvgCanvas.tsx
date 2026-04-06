@@ -64,7 +64,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
             ref={mapTransformRef}
             align="center"
             justify="center"
-            className="relative h-full min-h-0 w-full min-w-0"
+            className="relative h-[80%] w-[80%]"
             data-map-export-map-transform
             style={{
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
@@ -72,7 +72,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
             }}
           >
             <div
-              className={`map-svg-container h-full min-h-0 w-full min-w-0 [&>svg]:h-full [&>svg]:w-full [&>svg]:overflow-visible [&>svg]:object-contain ${styles.mapPanCursor} ${
+              className={`map-svg-container h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:overflow-visible [&>svg]:object-contain ${styles.mapPanCursor} ${
                 regionLabels.show ? styles.labelDragHoverTarget : ''
               } ${showSheetSyncOnMap ? 'blur-[3px]' : ''}`}
               dangerouslySetInnerHTML={{ __html: svgContent }}

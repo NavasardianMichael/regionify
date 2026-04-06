@@ -24,6 +24,10 @@ type MapPanZoomControlsProps = {
   onPanLeft: () => void;
   onPanRight: () => void;
   onResetView: () => void;
+  /**
+   * Added to the store-driven `bottom` offset (Observer plan: clears fixed-corner watermark).
+   */
+  zoomStackExtraBottomPx?: number;
 };
 
 export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function MapPanZoomControls({
@@ -34,6 +38,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
   onPanLeft,
   onPanRight,
   onResetView,
+  zoomStackExtraBottomPx = 0,
 }) {
   const { t } = useTypedTranslation();
   const isTouchDevice = useIsTouchDevice();
@@ -102,7 +107,10 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
         vertical
         gap={4}
         className="absolute"
-        style={{ right: zoomControls.position.x, bottom: zoomControls.position.y }}
+        style={{
+          right: zoomControls.position.x,
+          bottom: zoomControls.position.y + zoomStackExtraBottomPx,
+        }}
       >
         <Tooltip title={t('visualizer.mapStyles.tooltipZoomIn')} placement="left">
           <Button

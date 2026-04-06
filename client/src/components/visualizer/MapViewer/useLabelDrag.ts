@@ -6,16 +6,12 @@ type UseLabelDragParams = {
   containerRef: RefObject<HTMLButtonElement | null>;
   svgContent: string;
   labelPositionsRef: RefObject<Record<string, { x: number; y: number }>>;
-  zoom: number;
-  pan: { x: number; y: number };
 };
 
 export function useLabelDrag({
   containerRef,
   svgContent,
   labelPositionsRef,
-  zoom,
-  pan,
 }: UseLabelDragParams): void {
   const regionLabels = useMapStylesStore(selectRegionLabels);
   const setLabelPositionsByRegionId = useMapStylesStore(selectSetLabelPositionsByRegionId);
@@ -25,7 +21,17 @@ export function useLabelDrag({
     svgElement: SVGSVGElement;
     regionId: string;
   } | null>(null);
-  const handleLabelDragEndRef = useRef<((e: PointerEvent) => void) | null>(null);
+
+  const labelDragMoveImplRef = useRef<(e: PointerEvent) => void>(() => {});
+  const labelDragEndImplRef = useRef<(e: PointerEvent) => void>(() => {});
+
+  const stableWindowPointerMove = useCallback((e: PointerEvent) => {
+    labelDragMoveImplRef.current(e);
+  }, []);
+
+  const stableWindowPointerUpOrCancel = useCallback((e: PointerEvent) => {
+    labelDragEndImplRef.current(e);
+  }, []);
 
   const screenToSvgCoords = useCallback(
     (svgEl: SVGSVGElement, clientX: number, clientY: number) => {
@@ -39,8 +45,8 @@ export function useLabelDrag({
     [],
   );
 
-  const handleLabelDragMove = useCallback(
-    (e: PointerEvent) => {
+  useLayoutEffect(() => {
+    labelDragMoveImplRef.current = (e: PointerEvent) => {
       const dragging = draggingLabelRef.current;
       if (!dragging) return;
 
@@ -49,34 +55,33 @@ export function useLabelDrag({
 
       dragging.element.setAttribute('x', String(svgCoords.x));
       dragging.element.setAttribute('y', String(svgCoords.y));
-    },
-    [screenToSvgCoords],
-  );
+    };
+  }, [screenToSvgCoords]);
 
-  const handleLabelDragEnd = useCallback(
-    (e: PointerEvent) => {
+  useLayoutEffect(() => {
+    labelDragEndImplRef.current = (e: PointerEvent) => {
       const dragging = draggingLabelRef.current;
-      if (!dragging) return;
-
-      const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
-      if (svgCoords) {
-        labelPositionsRef.current[dragging.regionId] = { x: svgCoords.x, y: svgCoords.y };
-        setLabelPositionsByRegionId({ ...labelPositionsRef.current });
+      if (dragging) {
+        const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
+        if (svgCoords) {
+          labelPositionsRef.current[dragging.regionId] = { x: svgCoords.x, y: svgCoords.y };
+          setLabelPositionsByRegionId({ ...labelPositionsRef.current });
+        }
       }
 
       draggingLabelRef.current = null;
       document.body.style.cursor = '';
-      window.removeEventListener('pointermove', handleLabelDragMove);
-      if (handleLabelDragEndRef.current) {
-        window.removeEventListener('pointerup', handleLabelDragEndRef.current);
-      }
-    },
-    [screenToSvgCoords, handleLabelDragMove, setLabelPositionsByRegionId, labelPositionsRef],
-  );
-
-  useLayoutEffect(() => {
-    handleLabelDragEndRef.current = handleLabelDragEnd;
-  }, [handleLabelDragEnd]);
+      window.removeEventListener('pointermove', stableWindowPointerMove);
+      window.removeEventListener('pointerup', stableWindowPointerUpOrCancel);
+      window.removeEventListener('pointercancel', stableWindowPointerUpOrCancel);
+    };
+  }, [
+    labelPositionsRef,
+    screenToSvgCoords,
+    setLabelPositionsByRegionId,
+    stableWindowPointerMove,
+    stableWindowPointerUpOrCancel,
+  ]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -102,10 +107,9 @@ export function useLabelDrag({
       };
 
       document.body.style.cursor = 'grabbing';
-      window.addEventListener('pointermove', handleLabelDragMove);
-      if (handleLabelDragEndRef.current) {
-        window.addEventListener('pointerup', handleLabelDragEndRef.current);
-      }
+      window.addEventListener('pointermove', stableWindowPointerMove);
+      window.addEventListener('pointerup', stableWindowPointerUpOrCancel);
+      window.addEventListener('pointercancel', stableWindowPointerUpOrCancel);
     };
 
     textElements.forEach((el) => {
@@ -116,14 +120,17 @@ export function useLabelDrag({
       textElements.forEach((el) => {
         el.removeEventListener('pointerdown', handleLabelPointerDown);
       });
+      window.removeEventListener('pointermove', stableWindowPointerMove);
+      window.removeEventListener('pointerup', stableWindowPointerUpOrCancel);
+      window.removeEventListener('pointercancel', stableWindowPointerUpOrCancel);
+      draggingLabelRef.current = null;
+      document.body.style.cursor = '';
     };
   }, [
     containerRef,
     svgContent,
     regionLabels.show,
-    handleLabelDragMove,
-    handleLabelDragEnd,
-    zoom,
-    pan,
+    stableWindowPointerMove,
+    stableWindowPointerUpOrCancel,
   ]);
 }
