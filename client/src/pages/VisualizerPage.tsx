@@ -72,7 +72,7 @@ import MapViewer from '@/components/visualizer/MapViewer';
 import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
 const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
-const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal'));
+const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal/Modal'));
 const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
 const DeleteProjectModal = lazy(() => import('@/components/projects/DeleteProjectModal'));
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
