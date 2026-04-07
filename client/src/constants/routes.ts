@@ -1,3 +1,8 @@
+/** True for public map embed URLs (`/embed/:token`), which should not load app analytics. */
+export function isEmbedPathname(pathname: string): boolean {
+  return /^\/embed\/[^/]+$/.test(pathname);
+}
+
 export const ROUTES = {
   HOME: '/',
   PROJECTS: '/projects',

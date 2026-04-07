@@ -2,7 +2,8 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
-import { ROUTES } from '@/constants/routes';
+import { isEmbedPathname, ROUTES } from '@/constants/routes';
+import { GoogleAnalytics } from '@/components/shared/GoogleAnalytics';
 import { Navigation } from '@/components/shared/Navigation';
 import { PageLoader } from '@/components/shared/PageLoader';
 
@@ -26,7 +27,7 @@ const EmbedPage = lazy(() => import('@/pages/EmbedPage'));
 
 function AppRoutesLayout() {
   const location = useLocation();
-  const isEmbedRoute = /^\/embed\/[^/]+$/.test(location.pathname);
+  const isEmbedRoute = isEmbedPathname(location.pathname);
   const MainOrRegion = isEmbedRoute ? 'div' : 'main';
 
   return (
@@ -77,6 +78,7 @@ function AppRoutesLayout() {
 export function AppRouter() {
   return (
     <BrowserRouter>
+      <GoogleAnalytics />
       <AppRoutesLayout />
     </BrowserRouter>
   );
