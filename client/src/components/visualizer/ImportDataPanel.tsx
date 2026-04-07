@@ -14,6 +14,7 @@ import {
   CopyOutlined,
   DownloadOutlined,
   EditOutlined,
+  ExperimentOutlined,
   FileExcelOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
@@ -21,8 +22,9 @@ import {
 } from '@ant-design/icons';
 import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { RadioChangeEvent, UploadProps } from 'antd';
-import { Button, Flex, Radio, Spin, Tooltip, Typography, Upload } from 'antd';
+import { Badge, Button, Flex, Modal, Radio, Spin, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
+import { fetchAiRemaining } from '@/api/ai';
 import {
   selectClearTimelineData,
   selectData,
@@ -40,7 +42,8 @@ import { useProfileStore } from '@/store/profile/store';
 import { selectCurrentProject } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
-import { IMPORT_DATA_TYPES } from '@/constants/data';
+import { IMPORT_DATA_TYPES, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@/constants/data';
+import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   convertToRegionData,
@@ -55,6 +58,7 @@ import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 import type { GoogleSheetImportMode } from '@/components/visualizer/GoogleSheetsModal';
 import {
   showMessageWithClose,
@@ -71,6 +75,14 @@ const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
 const TabDelimitedTextModal = lazy(() => import('./TabDelimitedTextModal'));
 const AiParserModal = lazy(() => import('./AiParserModal'));
 
+const ModalLoadingFallback: FC = () => (
+  <Modal open centered footer={null} closable={false}>
+    <Flex justify="center" align="center" className="min-h-40">
+      <Spin />
+    </Flex>
+  </Modal>
+);
+
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
   const { modal, message: messageApi } = useAppFeedback();
@@ -78,6 +90,7 @@ export const ImportDataPanel: FC = () => {
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [isTabDelimitedModalOpen, setIsTabDelimitedModalOpen] = useState(false);
   const [isAiParserModalOpen, setIsAiParserModalOpen] = useState(false);
+  const [aiRemaining, setAiRemaining] = useState(MAX_AI_PARSE_REQUESTS_PER_DAY);
   const [svgTitles, setSvgTitles] = useState<string[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
@@ -101,6 +114,14 @@ export const ImportDataPanel: FC = () => {
   const isGoogleSheetSyncLoading = useVisualizerStore((s) => s.isGoogleSheetSyncLoading);
 
   const isGoogleSheetsLiveSync = importDataType === IMPORT_DATA_TYPES.sheets && Boolean(googleUrl);
+
+  // Fetch remaining AI parse requests on mount for Chronographer plan users
+  useEffect(() => {
+    if (plan !== PLANS.chronographer) return;
+    fetchAiRemaining()
+      .then(setAiRemaining)
+      .catch(() => undefined);
+  }, [plan]);
 
   /** Auto-detected: current data is panel/dynamic (has time dimension). */
   const hasHistoricalFormat = useMemo(() => {
@@ -336,20 +357,52 @@ export const ImportDataPanel: FC = () => {
   const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
 
   const importFormatOptions = useMemo(() => {
-    const labelByType: Record<ImportDataType, string> = {
+    const labelByType: Record<ImportDataType, JSX.Element | string> = {
       csv: t('visualizer.importData.format.csv'),
       excel: t('visualizer.importData.format.excel'),
       json: t('visualizer.importData.format.json'),
       sheets: t('visualizer.importData.format.sheets'),
       table: t('visualizer.importData.format.table'),
       tab_delimited: t('visualizer.importData.format.tabDelimited'),
-      ai_parser: t('visualizer.importData.format.aiParser'),
+      ai_parser:
+        plan === PLANS.chronographer ? (
+          <Badge
+            count={aiRemaining}
+            showZero
+            size="small"
+            color={aiRemaining > 0 ? 'blue' : 'red'}
+            offset={[6, 0]}
+          >
+            {t('visualizer.importData.format.aiParser')}
+          </Badge>
+        ) : (
+          <Tooltip
+            title={
+              <Flex vertical gap={4}>
+                <Typography.Text className="text-xs text-white">
+                  {t('visualizer.importData.aiParserChronographerTooltip', {
+                    planName: t('plans.items.chronographer.name'),
+                  })}
+                </Typography.Text>
+                <AppNavLink
+                  to={ROUTES.BILLING}
+                  className="text-xs font-semibold text-white! underline"
+                >
+                  {t('visualizer.embed.upgradePlansLink')}
+                </AppNavLink>
+              </Flex>
+            }
+          >
+            <span>{t('visualizer.importData.format.aiParser')}</span>
+          </Tooltip>
+        ),
     };
     return IMPORT_FORMAT_ORDER.map((value) => ({
       label: labelByType[value],
       value,
+      disabled: value === IMPORT_DATA_TYPES.aiParser && plan !== PLANS.chronographer,
     }));
-  }, [t]);
+  }, [t, plan, aiRemaining]);
 
   const handleImportDataTypeChange = useCallback(
     (e: RadioChangeEvent) => {
@@ -748,33 +801,40 @@ export const ImportDataPanel: FC = () => {
   const importActionComponents: Record<ImportDataType, JSX.Element> = useMemo(
     () => ({
       table: (
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={() => setIsManualModalOpen(true)}
-          disabled={!selectedCountryId}
-        >
-          {t('visualizer.importData.editManuallyInTable')}
-        </Button>
+        <Flex>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => setIsManualModalOpen(true)}
+            disabled={!selectedCountryId}
+          >
+            {t('visualizer.importData.editManuallyInTable')}
+          </Button>
+        </Flex>
       ),
       tab_delimited: (
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={() => setIsTabDelimitedModalOpen(true)}
-          disabled={!selectedCountryId}
-        >
-          {t('visualizer.importData.editManuallyInTable')}
-        </Button>
+        <Flex>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => setIsTabDelimitedModalOpen(true)}
+            disabled={!selectedCountryId}
+          >
+            {t('visualizer.importData.editManuallyInText')}
+          </Button>
+        </Flex>
       ),
       ai_parser: (
-        <Button
-          type="primary"
-          onClick={() => setIsAiParserModalOpen(true)}
-          disabled={!selectedCountryId}
-        >
-          {t('visualizer.aiParserModal.submit')}
-        </Button>
+        <Flex>
+          <Button
+            type="primary"
+            icon={<ExperimentOutlined />}
+            onClick={() => setIsAiParserModalOpen(true)}
+            disabled={!selectedCountryId}
+          >
+            {t('visualizer.aiParserModal.submit')}
+          </Button>
+        </Flex>
       ),
       sheets: (
         <Flex vertical gap="small" className="min-w-0">
@@ -994,7 +1054,7 @@ export const ImportDataPanel: FC = () => {
       </Flex>
 
       {isManualModalOpen && (
-        <Suspense fallback={<Spin />}>
+        <Suspense fallback={<ModalLoadingFallback />}>
           <ManualDataEntryModal
             open={isManualModalOpen}
             onClose={() => setIsManualModalOpen(false)}
@@ -1017,7 +1077,7 @@ export const ImportDataPanel: FC = () => {
       )}
 
       {isTabDelimitedModalOpen && (
-        <Suspense fallback={<Spin />}>
+        <Suspense fallback={<ModalLoadingFallback />}>
           <TabDelimitedTextModal
             open={isTabDelimitedModalOpen}
             onClose={() => setIsTabDelimitedModalOpen(false)}
@@ -1028,8 +1088,15 @@ export const ImportDataPanel: FC = () => {
       )}
 
       {isAiParserModalOpen && (
-        <Suspense fallback={<Spin />}>
-          <AiParserModal open={isAiParserModalOpen} onClose={() => setIsAiParserModalOpen(false)} />
+        <Suspense fallback={<ModalLoadingFallback />}>
+          <AiParserModal
+            open={isAiParserModalOpen}
+            onClose={() => setIsAiParserModalOpen(false)}
+            mapRegionIds={svgTitles}
+            historicalDataImport={limits.historicalDataImport}
+            remaining={aiRemaining}
+            onRemainingChange={setAiRemaining}
+          />
         </Suspense>
       )}
     </Flex>

@@ -203,6 +203,9 @@ const pt: CommonNs = {
       sheetsUrlCopied: 'URL copiado',
       sheetsTabId: 'Separador da folha (gid): {{gid}}',
       editManuallyInTable: 'Editar manualmente na tabela',
+      editManuallyInText: 'Editar manualmente em texto',
+      aiParserChronographerTooltip:
+        'O Analisador de IA est\u00e1 dispon\u00edvel apenas no plano {{planName}}.',
       connectSheets: 'Ligar Google Sheets',
       changeSheetsSource: 'Alterar origem do Google Sheets',
       uploadCsv: 'Carregar ficheiro CSV',
@@ -360,6 +363,9 @@ const pt: CommonNs = {
       pasteFormatTooltip:
         'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Formato esperado ao colar',
+      pasteFormatNote:
+        'Colunas esperadas: id, label, value \u2014 ou inclua uma coluna de tempo (year, time, period, \u2026).',
+      copyExampleTooltip: 'Copiar exemplo',
       pasteFormatError: 'O texto não corresponde ao formato esperado.',
       pasteMissingId: 'É necessária uma coluna id na primeira linha (veja o exemplo).',
     },
@@ -368,6 +374,11 @@ const pt: CommonNs = {
       limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Analisar com IA',
+      parsing: 'Analisando…',
+      parseError: 'Análise de IA falhou. Por favor, tente novamente.',
+      requestsRemaining: '{{count}} solicitação(ões) restante(s) hoje',
+      limitReached: 'Limite diário de análise de IA atingido. Redefine em 24 horas.',
+      inputTooLong: 'A entrada excede {{max}} caracteres.',
     },
     legendConfig: {
       sectionTitle: 'Configuração da legenda',

@@ -194,6 +194,9 @@ const zh: CommonNs = {
       sheetsUrlCopied: '已复制链接',
       sheetsTabId: '表格标签页 (gid)：{{gid}}',
       editManuallyInTable: '在表格中手动编辑',
+      editManuallyInText: '\u624b\u52a8\u7f16\u8f91\u6587\u672c',
+      aiParserChronographerTooltip:
+        'AI \u89e3\u6790\u5668\u4ec5\u5728 {{planName}} \u8ba1\u5212\u4e2d\u53ef\u7528\u3002',
       connectSheets: '连接 Google 表格',
       changeSheetsSource: '更改 Google 表格来源',
       uploadCsv: '上传 CSV 文件',
@@ -341,6 +344,9 @@ const zh: CommonNs = {
       pasteFormatTooltip:
         'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: '粘贴内容格式说明',
+      pasteFormatNote:
+        '\u9884\u671f\u5217\uff1aid\u3001label\u3001value\uff0c\u5982\u6709\u65f6\u95f4\u7ef4\u5ea6\u53ef\u52a0\u5165\u65f6\u95f4\u5217\uff08year\u3001time\u3001period\u2026\uff09\u3002',
+      copyExampleTooltip: '\u590d\u5236\u793a\u4f8b',
       pasteFormatError: '文本与预期格式不符。',
       pasteMissingId: '首行需要包含 id 列（见示例）。',
     },
@@ -349,6 +355,11 @@ const zh: CommonNs = {
       limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: '使用 AI 解析',
+      parsing: '解析中…',
+      parseError: 'AI 解析失败，请重试。',
+      requestsRemaining: '今日剩余 {{count}} 次请求',
+      limitReached: '已达到每日 AI 解析限制。24 小时后重置。',
+      inputTooLong: '输入超过 {{max}} 个字符。',
     },
     legendConfig: {
       sectionTitle: '图例配置',

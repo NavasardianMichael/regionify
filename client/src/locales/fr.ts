@@ -208,6 +208,9 @@ const fr: CommonNs = {
       sheetsUrlCopied: 'URL copiée',
       sheetsTabId: 'Onglet de la feuille (gid) : {{gid}}',
       editManuallyInTable: 'Modifier manuellement dans le tableau',
+      editManuallyInText: 'Modifier manuellement en texte',
+      aiParserChronographerTooltip:
+        'L\u2019analyseur IA est disponible uniquement avec le forfait {{planName}}.',
       connectSheets: 'Connecter Google Sheets',
       changeSheetsSource: 'Changer la source Google Sheets',
       uploadCsv: 'Téléverser un fichier CSV',
@@ -367,14 +370,23 @@ const fr: CommonNs = {
       pasteFormatTooltip:
         'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Format attendu pour le collage',
+      pasteFormatNote:
+        'Colonnes attendues\u00a0: id, label, value \u2014 ou inclure une colonne temporelle (year, time, period, \u2026).',
+      copyExampleTooltip: 'Copier l\u2019exemple',
       pasteFormatError: 'Le texte ne correspond pas au format attendu.',
       pasteMissingId: 'Une colonne id est requise sur la première ligne (voir l’exemple).',
     },
     aiParserModal: {
       title: 'Analyseur IA',
       limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
-      placeholder: 'Describe your data or paste raw text for the AI to structure…',
-      submit: 'Analyser avec l’IA',
+      placeholder: 'Describe your data or paste raw text for the AI to structure\u2026',
+      submit: 'Analyser avec l\u2019IA',
+      parsing: 'Analyse en cours\u2026',
+      parseError: 'L\u2019analyse IA a \u00e9chou\u00e9. Veuillez r\u00e9essayer.',
+      requestsRemaining: '{{count}} requ\u00eate(s) restante(s) aujourd\u2019hui',
+      limitReached:
+        'Limite quotidienne d\u2019analyse IA atteinte. R\u00e9initialisation dans 24 heures.',
+      inputTooLong: 'La saisie d\u00e9passe {{max}} caract\u00e8res.',
     },
     legendConfig: {
       sectionTitle: 'Configuration de la légende',

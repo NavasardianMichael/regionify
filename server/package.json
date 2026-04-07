@@ -22,6 +22,7 @@
     "envtobase64": "node scripts/env-to-base64.cjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.82.0",
     "@prisma/client": "~6.19.0",
     "@regionify/shared": "workspace:*",
     "argon2": "^0.41.1",

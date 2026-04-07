@@ -212,6 +212,8 @@ const de: CommonNs = {
       sheetsUrlCopied: 'URL kopiert',
       sheetsTabId: 'Tabellenregister (gid): {{gid}}',
       editManuallyInTable: 'Manuell in Tabelle bearbeiten',
+      editManuallyInText: 'Manuell im Text bearbeiten',
+      aiParserChronographerTooltip: 'Der KI-Parser ist nur im {{planName}}-Tarif verf\u00fcgbar.',
       connectSheets: 'Google Tabellen verbinden',
       changeSheetsSource: 'Google-Tabellenquelle ändern',
       uploadCsv: 'CSV-Datei hochladen',
@@ -369,6 +371,9 @@ const de: CommonNs = {
       pasteFormatTooltip:
         'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Erwartetes Einfügeformat',
+      pasteFormatNote:
+        'Erwartete Spalten: id, label, value \u2014 oder eine Zeitspalte (year, time, period, \u2026).',
+      copyExampleTooltip: 'Beispiel kopieren',
       pasteFormatError: 'Der Text entspricht nicht dem erwarteten Format.',
       pasteMissingId: 'In der ersten Zeile ist eine id-Spalte erforderlich (siehe Beispiel).',
     },
@@ -377,6 +382,11 @@ const de: CommonNs = {
       limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Mit KI analysieren',
+      parsing: 'Analysiere…',
+      parseError: 'KI-Analyse fehlgeschlagen. Bitte versuchen Sie es erneut.',
+      requestsRemaining: 'Noch {{count}} Anfrage(n) heute',
+      limitReached: 'Tägliches KI-Analyselimit erreicht. Wird in 24 Stunden zurückgesetzt.',
+      inputTooLong: 'Eingabe überschreitet {{max}} Zeichen.',
     },
     legendConfig: {
       sectionTitle: 'Legendenkonfiguration',

@@ -203,6 +203,8 @@ export type CommonNs = {
       sheetsUrlCopied: string;
       sheetsTabId: string;
       editManuallyInTable: string;
+      editManuallyInText: string;
+      aiParserChronographerTooltip: string;
       connectSheets: string;
       changeSheetsSource: string;
       uploadCsv: string;
@@ -348,6 +350,8 @@ export type CommonNs = {
       placeholder: string;
       pasteFormatTooltip: string;
       pasteFormatAria: string;
+      pasteFormatNote: string;
+      copyExampleTooltip: string;
       pasteFormatError: string;
       pasteMissingId: string;
     };
@@ -356,6 +360,11 @@ export type CommonNs = {
       limitedRequestsNote: string;
       placeholder: string;
       submit: string;
+      parsing: string;
+      parseError: string;
+      requestsRemaining: string;
+      limitReached: string;
+      inputTooLong: string;
     };
     legendConfig: {
       sectionTitle: string;

@@ -1,5 +1,5 @@
 import { type FC, useCallback, useEffect, useState } from 'react';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { CopyOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, Modal, Tooltip, Typography } from 'antd';
 import {
   selectData,
@@ -15,6 +15,8 @@ import { parseCSV } from '@/helpers/importDataParsers';
 import { serializeToTabDelimited } from '@/helpers/manualDataEntryHelpers';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
+
+const TAB_DELIMITED_EXAMPLE = 'id\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100';
 
 type Props = {
   open: boolean;
@@ -47,6 +49,10 @@ const TabDelimitedTextModal: FC<Props> = ({
     setError(null);
     setSaving(false);
   }, [open, data, timelineData, timePeriods]);
+
+  const handleCopyExample = useCallback(() => {
+    navigator.clipboard.writeText(TAB_DELIMITED_EXAMPLE).catch(() => undefined);
+  }, []);
 
   const handleSave = useCallback(async () => {
     setError(null);
@@ -128,27 +134,31 @@ const TabDelimitedTextModal: FC<Props> = ({
       focusable={{ trap: false }}
     >
       <Flex vertical gap="small" className="py-md">
-        <div className="relative w-full">
-          <Tooltip title={t('visualizer.tabDelimitedModal.pasteFormatTooltip')}>
+        <Flex justify="space-between" align="center">
+          <Typography.Text type="secondary" className="text-xs">
+            {t('visualizer.tabDelimitedModal.pasteFormatNote')}
+          </Typography.Text>
+          <Tooltip title={t('visualizer.tabDelimitedModal.copyExampleTooltip')}>
             <Button
               type="text"
               size="small"
-              icon={<InfoCircleOutlined />}
-              className="absolute end-2 top-2 z-10 text-gray-500"
-              aria-label={t('visualizer.tabDelimitedModal.pasteFormatAria')}
+              icon={<CopyOutlined />}
+              onClick={handleCopyExample}
+              aria-label={t('visualizer.tabDelimitedModal.copyExampleTooltip')}
+              className="shrink-0 text-gray-500"
             />
           </Tooltip>
-          <Input.TextArea
-            value={text}
-            onChange={(e) => {
-              setText(e.target.value);
-              if (error) setError(null);
-            }}
-            placeholder={t('visualizer.tabDelimitedModal.placeholder')}
-            rows={14}
-            className="pe-10 font-mono text-sm"
-          />
-        </div>
+        </Flex>
+        <Input.TextArea
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value);
+            if (error) setError(null);
+          }}
+          placeholder={t('visualizer.tabDelimitedModal.placeholder')}
+          rows={14}
+          className="resize-none font-mono text-sm"
+        />
         {error ? (
           <Typography.Text type="danger" className="text-sm">
             {error}

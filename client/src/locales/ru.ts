@@ -203,6 +203,10 @@ const ru: CommonNs = {
       sheetsUrlCopied: 'URL скопирован',
       sheetsTabId: 'Вкладка таблицы (gid): {{gid}}',
       editManuallyInTable: 'Редактировать вручную в таблице',
+      editManuallyInText:
+        '\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432\u0440\u0443\u0447\u043d\u0443\u044e \u0432 \u0442\u0435\u043a\u0441\u0442\u0435',
+      aiParserChronographerTooltip:
+        '\u0418\u0418-\u043f\u0430\u0440\u0441\u0435\u0440 \u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d \u0442\u043e\u043b\u044c\u043a\u043e \u043d\u0430 \u0442\u0430\u0440\u0438\u0444\u0435 {{planName}}.',
       connectSheets: 'Подключить Google Таблицы',
       changeSheetsSource: 'Сменить источник Google Таблиц',
       uploadCsv: 'Загрузить CSV-файл',
@@ -357,6 +361,10 @@ const ru: CommonNs = {
       pasteFormatTooltip:
         'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Ожидаемый формат вставки',
+      pasteFormatNote:
+        '\u041e\u0436\u0438\u0434\u0430\u0435\u043c\u044b\u0435 \u0441\u0442\u043e\u043b\u0431\u0446\u044b: id, label, value \u2014 \u0438\u043b\u0438 \u0434\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0441\u0442\u043e\u043b\u0431\u0435\u0446 \u0432\u0440\u0435\u043c\u0435\u043d\u0438 (year, time, period, \u2026).',
+      copyExampleTooltip:
+        '\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043f\u0440\u0438\u043c\u0435\u0440',
       pasteFormatError: 'Текст не соответствует ожидаемому формату.',
       pasteMissingId: 'В первой строке нужен столбец id (см. пример).',
     },
@@ -365,6 +373,11 @@ const ru: CommonNs = {
       limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Анализировать с ИИ',
+      parsing: 'Обработка…',
+      parseError: 'Ошибка ИИ-анализа. Пожалуйста, попробуйте снова.',
+      requestsRemaining: 'Осталось {{count}} запрос(а/ов) сегодня',
+      limitReached: 'Достигнут дневной лимит ИИ-анализа. Сбрасывается через 24 часа.',
+      inputTooLong: 'Ввод превышает {{max}} символов.',
     },
     legendConfig: {
       sectionTitle: 'Настройка легенды',

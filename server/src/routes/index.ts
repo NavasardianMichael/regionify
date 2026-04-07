@@ -1,5 +1,6 @@
 import { type Router as ExpressRouter, Router } from 'express';
 
+import { aiRoutes } from '@/routes/ai.js';
 import { authRoutes } from '@/routes/auth.js';
 import { contactRoutes } from '@/routes/contact.js';
 import { embedDataRoutes } from '@/routes/embedData.js';
@@ -35,5 +36,8 @@ router.use('/projects', projectRoutes);
 
 // Google Sheets routes
 router.use('/sheets', sheetsRoutes);
+
+// AI routes (Chronographer plan only)
+router.use('/ai', aiRoutes);
 
 export const apiRoutes: ExpressRouter = router;

@@ -51,6 +51,9 @@ const envSchema = z.object({
   MAIL_API_URL: z.string().url(),
   MAIL_API_KEY: z.string(),
 
+  // Anthropic (AI parser feature — Chronographer plan only)
+  ANTHROPIC_API_KEY: z.string().optional(),
+
   // Lemon Squeezy (one-time checkouts; webhook for order_created)
   LEMON_SQUEEZY_API_KEY: z.string().optional(),
   LEMON_SQUEEZY_STORE_ID: z.string().optional(),

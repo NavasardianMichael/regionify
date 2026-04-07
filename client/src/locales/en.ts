@@ -203,6 +203,8 @@ const en: CommonNs = {
       sheetsUrlCopied: 'URL copied to clipboard',
       sheetsTabId: 'Spreadsheet tab (gid): {{gid}}',
       editManuallyInTable: 'Edit manually in table',
+      editManuallyInText: 'Edit manually in text',
+      aiParserChronographerTooltip: 'AI Parser is available on the {{planName}} plan only.',
       connectSheets: 'Connect Google Sheets',
       changeSheetsSource: 'Change Google Sheets source',
       uploadCsv: 'Upload CSV File',
@@ -355,6 +357,9 @@ const en: CommonNs = {
       pasteFormatTooltip:
         'Expected columns: id, label, value — or include a time column (year, time, period, …).\n\nExample:\nid\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100\n\nWith time:\nid\tlabel\tvalue\tyear\nUS-TX\tTexas\t40\t2020\nUS-TX\tTexas\t42\t2021',
       pasteFormatAria: 'Expected paste format',
+      pasteFormatNote:
+        'Expected columns: id, label, value \u2014 or include a time column (year, time, period, \u2026).',
+      copyExampleTooltip: 'Copy example',
       pasteFormatError: 'The text does not match the expected format.',
       pasteMissingId: 'An id column is required in the first row (see the format example).',
     },
@@ -363,6 +368,11 @@ const en: CommonNs = {
       limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Parse with AI',
+      parsing: 'Parsing…',
+      parseError: 'AI parsing failed. Please try again.',
+      requestsRemaining: '{{count}} request(s) remaining today',
+      limitReached: 'Daily AI parse limit reached. Resets in 24 hours.',
+      inputTooLong: 'Input exceeds {{max}} characters.',
     },
     legendConfig: {
       sectionTitle: 'Legend Configuration',
