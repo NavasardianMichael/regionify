@@ -14,8 +14,16 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { clearReturnUrl, clearTemporaryProjectState } from '@/helpers/temporaryProjectState';
 import { ProjectCard } from '@/components/projects/ProjectCard';
 
-const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
-const DeleteProjectModal = lazy(() => import('@/components/projects/DeleteProjectModal'));
+const RenameProjectModal = lazy(() =>
+  import('@/components/projects/RenameProjectModal/Modal').then((m) => ({
+    default: m.RenameProjectModal,
+  })),
+);
+const DeleteProjectModal = lazy(() =>
+  import('@/components/projects/DeleteProjectModal/Modal').then((m) => ({
+    default: m.DeleteProjectModal,
+  })),
+);
 
 const ProjectsPage: FC = () => {
   const { t } = useTypedTranslation();

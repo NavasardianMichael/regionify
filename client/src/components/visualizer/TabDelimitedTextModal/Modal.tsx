@@ -1,5 +1,5 @@
 import { type FC, useCallback, useEffect, useState } from 'react';
-import { Button, Flex, Input, Modal, Typography } from 'antd';
+import { Modal as AntModal } from 'antd';
 import {
   selectData,
   selectSetVisualizerState,
@@ -15,6 +15,8 @@ import { serializeToTabDelimited } from '@/helpers/manualDataEntryHelpers';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
 import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
+import { Body } from './Body';
+import { Footer } from './Footer';
 
 type Props = {
   open: boolean;
@@ -23,7 +25,7 @@ type Props = {
   historicalDataImport: boolean;
 };
 
-const TabDelimitedTextModal: FC<Props> = ({
+export const TabDelimitedTextModal: FC<Props> = ({
   open,
   onClose,
   mapRegionIds,
@@ -47,6 +49,11 @@ const TabDelimitedTextModal: FC<Props> = ({
     setError(null);
     setSaving(false);
   }, [open, data, timelineData, timePeriods]);
+
+  const handleTextChange = useCallback((value: string) => {
+    setText(value);
+    setError((prev) => (prev != null ? null : prev));
+  }, []);
 
   const handleSave = useCallback(async () => {
     setError(null);
@@ -109,7 +116,7 @@ const TabDelimitedTextModal: FC<Props> = ({
   }, [text, mapRegionIds, historicalDataImport, messageApi, setVisualizerState, onClose, t]);
 
   return (
-    <Modal
+    <AntModal
       title={t('visualizer.tabDelimitedModal.title')}
       open={open}
       onCancel={onClose}
@@ -117,37 +124,24 @@ const TabDelimitedTextModal: FC<Props> = ({
       className={bodyScrollbarStyles.bodyScrollbar}
       maskClosable={false}
       footer={
-        <Flex justify="flex-end" gap="small">
-          <Button onClick={onClose}>{t('nav.cancel')}</Button>
-          <Button type="primary" onClick={() => void handleSave()} loading={saving}>
-            {t('visualizer.save')}
-          </Button>
-        </Flex>
+        <Footer
+          cancelLabel={t('nav.cancel')}
+          saveLabel={t('visualizer.save')}
+          saving={saving}
+          onCancel={onClose}
+          onSave={handleSave}
+        />
       }
       centered
       destroyOnHidden
       focusable={{ trap: false }}
     >
-      <Flex vertical gap="small" className="py-md">
-        <Input.TextArea
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            if (error) setError(null);
-          }}
-          placeholder={t('visualizer.tabDelimitedModal.placeholder')}
-          rows={14}
-          className="font-mono text-sm"
-          styles={{ textarea: { resize: 'none' } }}
-        />
-        {error ? (
-          <Typography.Text type="danger" className="text-sm">
-            {error}
-          </Typography.Text>
-        ) : null}
-      </Flex>
-    </Modal>
+      <Body
+        text={text}
+        placeholder={t('visualizer.tabDelimitedModal.placeholder')}
+        error={error}
+        onTextChange={handleTextChange}
+      />
+    </AntModal>
   );
 };
-
-export default TabDelimitedTextModal;

@@ -1,5 +1,5 @@
 import { type FC, useCallback, useRef, useState } from 'react';
-import { Badge, Button, Flex, Input, Modal, Spin, Typography } from 'antd';
+import { Modal as AntModal } from 'antd';
 import { streamAiParse } from '@/api/ai';
 import { selectSetVisualizerState } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
@@ -10,8 +10,9 @@ import { parseCSV } from '@/helpers/importDataParsers';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
 import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
+import { Body } from './Body';
+import { Footer } from './Footer';
 
-// The assistant prefill sent to Claude; the response continues from this point.
 const ASSISTANT_PREFILL = 'id\t';
 
 type Phase = 'input' | 'streaming' | 'result' | 'error';
@@ -25,7 +26,7 @@ type Props = {
   onRemainingChange: (count: number) => void;
 };
 
-const AiParserModal: FC<Props> = ({
+export const AiParserModal: FC<Props> = ({
   open,
   onClose,
   mapRegionIds,
@@ -39,7 +40,6 @@ const AiParserModal: FC<Props> = ({
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
 
   const [inputText, setInputText] = useState('');
-  // outputText starts with the assistant prefill so the user sees the full tab-delimited output
   const [outputText, setOutputText] = useState('');
   const [phase, setPhase] = useState<Phase>('input');
 
@@ -55,7 +55,6 @@ const AiParserModal: FC<Props> = ({
     if (!trimmed) return;
 
     setPhase('streaming');
-    // Prepend the assistant prefill so the textarea shows the full tab-delimited output
     setOutputText(ASSISTANT_PREFILL);
 
     const controller = new AbortController();
@@ -130,36 +129,8 @@ const AiParserModal: FC<Props> = ({
   const isStreaming = phase === 'streaming';
   const showOutput = phase === 'streaming' || phase === 'result';
 
-  const footerButtons = (() => {
-    if (phase === 'result') {
-      return (
-        <>
-          <Button onClick={handleClose}>{t('nav.cancel')}</Button>
-          <Button type="primary" onClick={handleApply}>
-            {t('visualizer.save')}
-          </Button>
-        </>
-      );
-    }
-    return (
-      <>
-        <Button onClick={handleClose}>{t('nav.cancel')}</Button>
-        <Button
-          type="primary"
-          onClick={() => void handleSubmit()}
-          loading={isStreaming}
-          disabled={isStreaming || !inputText.trim()}
-        >
-          {isStreaming
-            ? t('visualizer.aiParserModal.parsing')
-            : t('visualizer.aiParserModal.submit')}
-        </Button>
-      </>
-    );
-  })();
-
   return (
-    <Modal
+    <AntModal
       title={t('visualizer.aiParserModal.title')}
       open={open}
       onCancel={handleClose}
@@ -167,54 +138,36 @@ const AiParserModal: FC<Props> = ({
       className={bodyScrollbarStyles.bodyScrollbar}
       maskClosable={false}
       footer={
-        <Flex justify="flex-end" gap="small">
-          {footerButtons}
-        </Flex>
+        <Footer
+          phase={phase}
+          isStreaming={isStreaming}
+          hasInput={Boolean(inputText.trim())}
+          cancelLabel={t('nav.cancel')}
+          saveLabel={t('visualizer.save')}
+          parsingLabel={t('visualizer.aiParserModal.parsing')}
+          submitLabel={t('visualizer.aiParserModal.submit')}
+          onClose={handleClose}
+          onSubmit={handleSubmit}
+          onApply={handleApply}
+        />
       }
       centered
       destroyOnHidden
       focusable={{ trap: false }}
     >
-      <Flex vertical gap="small" className="py-md">
-        <Flex justify="space-between" align="center">
-          <Typography.Text type="secondary" className="text-xs">
-            {t('visualizer.aiParserModal.limitedRequestsNote')}
-          </Typography.Text>
-          <Badge
-            count={remaining}
-            showZero
-            color={remaining > 0 ? 'blue' : 'red'}
-            size="small"
-            title={t('visualizer.aiParserModal.requestsRemaining', { count: remaining })}
-          />
-        </Flex>
-        {showOutput ? (
-          <Flex vertical gap="xs">
-            <Input.TextArea
-              value={outputText}
-              readOnly
-              rows={14}
-              className="font-mono text-sm"
-              styles={{ textarea: { resize: 'none' } }}
-            />
-            {isStreaming && (
-              <Flex justify="center">
-                <Spin size="small" />
-              </Flex>
-            )}
-          </Flex>
-        ) : (
-          <Input.TextArea
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={t('visualizer.aiParserModal.placeholder')}
-            rows={14}
-            className="resize-none font-mono text-sm"
-          />
-        )}
-      </Flex>
-    </Modal>
+      <Body
+        limitedRequestsNote={t('visualizer.aiParserModal.limitedRequestsNote')}
+        requestsRemainingTitle={t('visualizer.aiParserModal.requestsRemaining', {
+          count: remaining,
+        })}
+        remaining={remaining}
+        placeholder={t('visualizer.aiParserModal.placeholder')}
+        inputText={inputText}
+        onInputChange={setInputText}
+        showOutput={showOutput}
+        outputText={outputText}
+        isStreaming={isStreaming}
+      />
+    </AntModal>
   );
 };
-
-export default AiParserModal;

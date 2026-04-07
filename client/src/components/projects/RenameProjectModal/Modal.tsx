@@ -1,7 +1,8 @@
 import { type FC, useCallback, useState } from 'react';
-import { Flex, Input, Modal, Typography } from 'antd';
+import { Modal as AntModal } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { Body } from './Body';
 
 type Props = {
   project: Project | null;
@@ -10,7 +11,7 @@ type Props = {
   confirmLoading?: boolean;
 };
 
-const RenameProjectModal: FC<Props> = ({
+export const RenameProjectModal: FC<Props> = ({
   project,
   onConfirm,
   onCancel,
@@ -45,7 +46,7 @@ const RenameProjectModal: FC<Props> = ({
   }, []);
 
   return (
-    <Modal
+    <AntModal
       title={t('visualizer.renameProjectTitle')}
       open={isOpen}
       afterOpenChange={handleAfterOpenChange}
@@ -60,18 +61,12 @@ const RenameProjectModal: FC<Props> = ({
         disabled: !draftName.trim() || draftName.trim() === project?.name,
       }}
     >
-      <Flex vertical gap="small" className="py-sm">
-        <Typography.Text>{t('visualizer.renameProjectPrompt')}</Typography.Text>
-        <Input
-          value={draftName}
-          onChange={handleInputChange}
-          onPressEnter={handleSubmit}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-        />
-      </Flex>
-    </Modal>
+      <Body
+        prompt={t('visualizer.renameProjectPrompt')}
+        draftName={draftName}
+        onDraftNameChange={handleInputChange}
+        onPressEnter={handleSubmit}
+      />
+    </AntModal>
   );
 };
-
-export default RenameProjectModal;

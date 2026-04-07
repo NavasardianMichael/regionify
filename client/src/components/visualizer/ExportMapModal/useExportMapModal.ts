@@ -50,7 +50,7 @@ import {
 } from '@/helpers/mapExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
-import { useExportCrop } from './useExportCrop';
+import { useExportCrop } from './Crop/useExportCrop';
 
 type ExportTypeOption = { value: ExportType; label: string };
 
@@ -447,4 +447,4 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   };
 }
 
-export type ExportMapModalFormProps = ReturnType<typeof useExportMapModal>;
+export type FormProps = ReturnType<typeof useExportMapModal>;

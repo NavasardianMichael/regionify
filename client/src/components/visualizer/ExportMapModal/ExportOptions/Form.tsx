@@ -15,9 +15,9 @@ import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { getAnimationTotalFrames } from '@/helpers/animationExport';
 import { AppNavLink } from '@/components/ui/AppNavLink';
-import { EXPORT_FPS, type ExportMapModalFormProps } from './useExportMapModal';
+import { EXPORT_FPS, type FormProps } from '../useExportMapModal';
 
-export const ExportMapModalForm: FC<ExportMapModalFormProps> = (props) => {
+export const Form: FC<FormProps> = (props) => {
   const { t } = useTypedTranslation();
   const explorerUpgradeLabel = t('visualizer.exportModal.upgradeToExplorer', {
     planName: t('plans.items.explorer.name'),

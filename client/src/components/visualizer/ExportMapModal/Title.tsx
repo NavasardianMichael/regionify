@@ -3,13 +3,13 @@ import { DownloadOutlined, ScissorOutlined } from '@ant-design/icons';
 import { Flex, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
-export type ExportMapModalTitleVariant = 'export' | 'crop';
+export type TitleVariant = 'export' | 'crop';
 
-type ExportMapModalTitleProps = {
-  variant: ExportMapModalTitleVariant;
+type TitleProps = {
+  variant: TitleVariant;
 };
 
-export const ExportMapModalTitle: FC<ExportMapModalTitleProps> = ({ variant }) => {
+export const Title: FC<TitleProps> = ({ variant }) => {
   const { t } = useTypedTranslation();
   const isCrop = variant === 'crop';
 

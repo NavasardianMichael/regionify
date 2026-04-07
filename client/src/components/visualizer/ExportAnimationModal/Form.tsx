@@ -10,7 +10,7 @@ type AnimationFormat = typeof EXPORT_TYPES.gif | typeof EXPORT_TYPES.mp4;
 
 type FormatOption = { value: AnimationFormat; label: string };
 
-export type ExportAnimationModalFormProps = {
+export type FormProps = {
   format: AnimationFormat;
   quality: number;
   secondsPerPeriod: number;
@@ -26,7 +26,7 @@ export type ExportAnimationModalFormProps = {
   onExport: () => void;
 };
 
-export const ExportAnimationModalForm: FC<ExportAnimationModalFormProps> = ({
+export const Form: FC<FormProps> = ({
   format,
   quality,
   secondsPerPeriod,

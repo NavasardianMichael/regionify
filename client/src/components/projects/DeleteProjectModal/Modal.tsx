@@ -1,7 +1,8 @@
 import { type FC } from 'react';
-import { Modal, Typography } from 'antd';
+import { Modal as AntModal } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { Body } from './Body';
 
 type Props = {
   project: Project | null;
@@ -10,7 +11,7 @@ type Props = {
   confirmLoading?: boolean;
 };
 
-const DeleteProjectModal: FC<Props> = ({
+export const DeleteProjectModal: FC<Props> = ({
   project,
   onConfirm,
   onCancel,
@@ -19,7 +20,7 @@ const DeleteProjectModal: FC<Props> = ({
   const { t } = useTypedTranslation();
 
   return (
-    <Modal
+    <AntModal
       title={t('messages.deleteProjectTitle')}
       open={project !== null}
       onOk={onConfirm}
@@ -31,11 +32,7 @@ const DeleteProjectModal: FC<Props> = ({
       centered
       maskClosable={false}
     >
-      <Typography.Paragraph className="py-sm mb-0!">
-        {t('messages.deleteProjectContent', { name: project?.name ?? '' })}
-      </Typography.Paragraph>
-    </Modal>
+      <Body content={t('messages.deleteProjectContent', { name: project?.name ?? '' })} />
+    </AntModal>
   );
 };
-
-export default DeleteProjectModal;

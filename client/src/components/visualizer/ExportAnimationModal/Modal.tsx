@@ -1,7 +1,6 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
-import { VideoCameraOutlined } from '@ant-design/icons';
 import { EXPORT_TYPES, PLAN_DETAILS, PLANS } from '@regionify/shared';
-import { Flex, Modal, Typography } from 'antd';
+import { Modal as AntModal } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -37,7 +36,8 @@ import {
   type LegendPositionExport,
 } from '@/helpers/animationExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
-import { ExportAnimationModalForm } from '@/components/visualizer/ExportAnimationModal/ExportAnimationModalForm';
+import { Form } from './Form';
+import { Title } from './Title';
 
 type AnimationFormat = typeof EXPORT_TYPES.gif | typeof EXPORT_TYPES.mp4;
 
@@ -56,7 +56,7 @@ type Props = {
   onClose: () => void;
 };
 
-const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
+export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const timePeriods = useVisualizerStore(selectTimePeriods);
   const timelineData = useVisualizerStore(selectTimelineData);
@@ -169,15 +169,8 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   ]);
 
   return (
-    <Modal
-      title={
-        <Flex align="center" gap="small" className="mb-4!">
-          <VideoCameraOutlined className="text-primary" />
-          <Typography.Title level={4} className="mb-0!">
-            Export Animation
-          </Typography.Title>
-        </Flex>
-      }
+    <AntModal
+      title={<Title />}
       open={open}
       onCancel={onClose}
       confirmLoading={isExporting}
@@ -189,7 +182,7 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
       width={420}
       destroyOnHidden
     >
-      <ExportAnimationModalForm
+      <Form
         format={format}
         quality={quality}
         secondsPerPeriod={secondsPerPeriod}
@@ -204,8 +197,6 @@ const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         onSmoothTransitionsChange={setSmoothTransitions}
         onExport={handleExport}
       />
-    </Modal>
+    </AntModal>
   );
 };
-
-export default ExportAnimationModal;

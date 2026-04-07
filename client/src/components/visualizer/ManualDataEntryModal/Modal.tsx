@@ -1,12 +1,12 @@
 import { type FC, useCallback, useMemo } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { DndContext } from '@dnd-kit/core';
 import type { TablePaginationConfig, TableProps } from 'antd';
-import { Alert, Button, ConfigProvider, Flex, Modal, Table, Typography } from 'antd';
+import { ConfigProvider, Modal as AntModal, Table } from 'antd';
 import type { FilterValue, SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import type { DataRow } from '@/helpers/manualDataEntryHelpers';
 import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
+import { Body } from './Body';
+import { Footer } from './Footer';
 import { SelectColumnHeader } from './SelectColumnHeader';
 import { createSortableTbodyWrapper, SortableBodyRow, useTableDnd } from './tableDnD';
 import { tableTheme } from './tableTheme';
@@ -24,7 +24,7 @@ type Props = {
   googleSheetsSyncReadOnly?: boolean;
 };
 
-const ManualDataEntryModal: FC<Props> = ({
+export const ManualDataEntryModal: FC<Props> = ({
   open,
   onClose,
   onSave,
@@ -180,21 +180,20 @@ const ManualDataEntryModal: FC<Props> = ({
   }, [handleApplyData]);
 
   return (
-    <Modal
+    <AntModal
       title={t('visualizer.manualEntry.title')}
       open={open}
       onCancel={handleCancel}
       closable
       maskClosable={false}
       footer={
-        <Flex justify="flex-end" gap="small">
-          <Button onClick={handleCancel}>{t('nav.cancel')}</Button>
-          {isGoogleSheetsReadOnly ? null : (
-            <Button type="primary" onClick={handleFooterSave}>
-              {t('visualizer.save')}
-            </Button>
-          )}
-        </Flex>
+        <Footer
+          showSave={!isGoogleSheetsReadOnly}
+          cancelLabel={t('nav.cancel')}
+          saveLabel={t('visualizer.save')}
+          onCancel={handleCancel}
+          onSave={handleFooterSave}
+        />
       }
       centered
       className={`${bodyScrollbarStyles.bodyScrollbar} ${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
@@ -202,43 +201,15 @@ const ManualDataEntryModal: FC<Props> = ({
       focusable={{ trap: false }}
     >
       <ConfigProvider theme={tableTheme}>
-        <Flex vertical gap="small" className="py-md">
-          {isGoogleSheetsReadOnly ? (
-            <Alert
-              type="info"
-              showIcon
-              className="manual-entry-google-sync-alert border-primary/30! bg-primary/10! [&_.ant-alert-icon]:text-primary! [&_.ant-alert-title]:text-primary [&_.ant-alert-info]:bg-transparent! [&_.ant-alert-title]:mb-0!"
-              title={
-                <Typography.Text className="text-primary text-sm">
-                  {t('visualizer.manualEntry.googleSheetsSyncReadOnlyNote')}
-                </Typography.Text>
-              }
-            />
-          ) : null}
-
-          {isGoogleSheetsReadOnly ? (
-            dataTable
-          ) : (
-            <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-              {dataTable}
-            </DndContext>
-          )}
-
-          {canAddMissing && !isGoogleSheetsReadOnly ? (
-            <Button
-              type="dashed"
-              icon={<PlusOutlined />}
-              onClick={handleAddMissingRow}
-              className="mt-1! w-fit self-start"
-              aria-label={t('visualizer.manualEntry.addMissingRow')}
-            >
-              {t('visualizer.manualEntry.addMissingRow')}
-            </Button>
-          ) : null}
-        </Flex>
+        <Body
+          isGoogleSheetsReadOnly={isGoogleSheetsReadOnly}
+          dataTable={dataTable}
+          sensors={sensors}
+          onDragEnd={onDragEnd}
+          canAddMissing={canAddMissing}
+          onAddMissingRow={handleAddMissingRow}
+        />
       </ConfigProvider>
-    </Modal>
+    </AntModal>
   );
 };
-
-export default ManualDataEntryModal;

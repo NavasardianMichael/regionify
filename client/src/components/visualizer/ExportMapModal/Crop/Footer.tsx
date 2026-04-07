@@ -3,7 +3,7 @@ import { ArrowLeftOutlined, DownloadOutlined } from '@ant-design/icons';
 import { Button, Flex } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
-type ExportMapModalCropFooterProps = {
+type FooterProps = {
   disabled: boolean;
   downloadDisabled: boolean;
   isExporting: boolean;
@@ -12,7 +12,7 @@ type ExportMapModalCropFooterProps = {
   onDownload: () => void;
 };
 
-export const ExportMapModalCropFooter: FC<ExportMapModalCropFooterProps> = ({
+export const Footer: FC<FooterProps> = ({
   disabled,
   downloadDisabled,
   isExporting,

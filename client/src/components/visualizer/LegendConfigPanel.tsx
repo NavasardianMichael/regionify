@@ -35,7 +35,9 @@ import { samplePaletteColor } from '@/helpers/samplePaletteColor';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
-const EditLegendModal = lazy(() => import('./EditLegendModal'));
+const EditLegendModal = lazy(() =>
+  import('./EditLegendModal/Modal').then((m) => ({ default: m.EditLegendModal })),
+);
 
 const GRID_COLS = 'grid-cols-[24px_minmax(80px,1fr)_60px_60px_36px_32px]';
 

@@ -20,8 +20,6 @@ import {
   Button,
   Divider,
   Flex,
-  Input,
-  Modal,
   Radio,
   type RadioChangeEvent,
   Spin,
@@ -61,6 +59,7 @@ import {
   readGuestProjectSnapshotEnvelope,
   saveReturnUrl,
 } from '@/helpers/temporaryProjectState';
+import { SaveProjectNameModal } from '@/components/projects/SaveProjectNameModal/Modal';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
@@ -71,10 +70,22 @@ import MapStylesPanel from '@/components/visualizer/MapStylesPanel';
 import MapViewer from '@/components/visualizer/MapViewer';
 import { RegionSelect } from '@/components/visualizer/RegionSelect';
 
-const ExportMapModal = lazy(() => import('@/components/visualizer/ExportMapModal'));
+const ExportMapModal = lazy(() =>
+  import('@/components/visualizer/ExportMapModal/Modal').then((m) => ({
+    default: m.ExportMapModal,
+  })),
+);
 const ProjectEmbedModal = lazy(() => import('@/components/visualizer/ProjectEmbedModal/Modal'));
-const RenameProjectModal = lazy(() => import('@/components/projects/RenameProjectModal'));
-const DeleteProjectModal = lazy(() => import('@/components/projects/DeleteProjectModal'));
+const RenameProjectModal = lazy(() =>
+  import('@/components/projects/RenameProjectModal/Modal').then((m) => ({
+    default: m.RenameProjectModal,
+  })),
+);
+const DeleteProjectModal = lazy(() =>
+  import('@/components/projects/DeleteProjectModal/Modal').then((m) => ({
+    default: m.DeleteProjectModal,
+  })),
+);
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
 
 type MobileVisualizerSection = 'map' | 'data' | 'styles';
@@ -504,25 +515,18 @@ const VisualizerPage: FC = () => {
         />
       </Suspense>
 
-      <Modal
-        title={t('visualizer.saveModalTitle')}
+      <SaveProjectNameModal
         open={isNameModalOpen}
+        title={t('visualizer.saveModalTitle')}
+        prompt={t('visualizer.saveModalPrompt')}
+        placeholder={t('visualizer.saveModalPlaceholder')}
+        okText={t('visualizer.saveModalCreate')}
+        projectName={projectName}
+        okDisabled={!projectName.trim()}
+        onProjectNameChange={handleNameChange}
         onOk={handleCreateProject}
         onCancel={handleNameModalCancel}
-        okText={t('visualizer.saveModalCreate')}
-        okButtonProps={{ disabled: !projectName.trim() }}
-        centered
-      >
-        <Flex vertical gap="small" className="py-sm">
-          <Typography.Text>{t('visualizer.saveModalPrompt')}</Typography.Text>
-          <Input
-            placeholder={t('visualizer.saveModalPlaceholder')}
-            value={projectName}
-            onChange={handleNameChange}
-            onPressEnter={handleCreateProject}
-          />
-        </Flex>
-      </Modal>
+      />
     </>
   );
 };

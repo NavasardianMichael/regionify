@@ -2,17 +2,13 @@ import { type FC, lazy, Suspense } from 'react';
 import { Flex, Spin } from 'antd';
 import { type ExportCropState } from './useExportCrop';
 
-const ExportCropStepAsync = lazy(() =>
-  import('@/components/visualizer/ExportMapModal/ExportCropStep').then((m) => ({
-    default: m.ExportCropStep,
-  })),
-);
+const StepAsync = lazy(() => import('./Step').then((m) => ({ default: m.Step })));
 
-type ExportMapModalCropPanelProps = {
+type PanelProps = {
   crop: ExportCropState;
 };
 
-export const ExportMapModalCropPanel: FC<ExportMapModalCropPanelProps> = ({ crop }) => (
+export const Panel: FC<PanelProps> = ({ crop }) => (
   <Suspense
     fallback={
       <Flex justify="center" align="center" className="h-80">
@@ -20,6 +16,6 @@ export const ExportMapModalCropPanel: FC<ExportMapModalCropPanelProps> = ({ crop
       </Flex>
     }
   >
-    <ExportCropStepAsync crop={crop} />
+    <StepAsync crop={crop} />
   </Suspense>
 );

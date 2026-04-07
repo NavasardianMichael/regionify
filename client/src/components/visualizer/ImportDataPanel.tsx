@@ -60,7 +60,7 @@ import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
-import type { GoogleSheetImportMode } from '@/components/visualizer/GoogleSheetsModal';
+import type { GoogleSheetImportMode } from '@/components/visualizer/GoogleSheetsModal/types';
 import {
   showMessageWithClose,
   storeDataMatchesMapTitles,
@@ -71,10 +71,18 @@ import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPane
 import { useGoogleSheetSyncEffect } from '@/components/visualizer/ImportDataPanel/useGoogleSheetSyncEffect';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
-const ManualDataEntryModal = lazy(() => import('./ManualDataEntryModal/Modal'));
-const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
-const TabDelimitedTextModal = lazy(() => import('./TabDelimitedTextModal'));
-const AiParserModal = lazy(() => import('./AiParserModal'));
+const ManualDataEntryModal = lazy(() =>
+  import('./ManualDataEntryModal/Modal').then((m) => ({ default: m.ManualDataEntryModal })),
+);
+const GoogleSheetsModal = lazy(() =>
+  import('./GoogleSheetsModal/Modal').then((m) => ({ default: m.GoogleSheetsModal })),
+);
+const TabDelimitedTextModal = lazy(() =>
+  import('./TabDelimitedTextModal/Modal').then((m) => ({ default: m.TabDelimitedTextModal })),
+);
+const AiParserModal = lazy(() =>
+  import('./AiParserModal/Modal').then((m) => ({ default: m.AiParserModal })),
+);
 
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
