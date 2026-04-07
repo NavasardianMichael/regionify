@@ -157,7 +157,8 @@ const TabDelimitedTextModal: FC<Props> = ({
           }}
           placeholder={t('visualizer.tabDelimitedModal.placeholder')}
           rows={14}
-          className="resize-none font-mono text-sm"
+          className="font-mono text-sm"
+          styles={{ textarea: { resize: 'none' } }}
         />
         {error ? (
           <Typography.Text type="danger" className="text-sm">

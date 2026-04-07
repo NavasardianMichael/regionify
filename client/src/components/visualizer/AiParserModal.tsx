@@ -192,7 +192,8 @@ const AiParserModal: FC<Props> = ({
               value={outputText}
               readOnly
               rows={14}
-              className="resize-none font-mono text-sm"
+              className="font-mono text-sm"
+              styles={{ textarea: { resize: 'none' } }}
             />
             {isStreaming && (
               <Flex justify="center">

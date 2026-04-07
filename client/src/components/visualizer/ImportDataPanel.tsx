@@ -1,4 +1,5 @@
 import {
+  type CSSProperties,
   type FC,
   type JSX,
   lazy,
@@ -9,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Link } from 'react-router';
 import {
   CloudUploadOutlined,
   CopyOutlined,
@@ -22,7 +24,7 @@ import {
 } from '@ant-design/icons';
 import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { RadioChangeEvent, UploadProps } from 'antd';
-import { Badge, Button, Flex, Modal, Radio, Spin, Tooltip, Typography, Upload } from 'antd';
+import { Badge, Button, Flex, Radio, Spin, theme, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import { fetchAiRemaining } from '@/api/ai';
 import {
@@ -58,7 +60,6 @@ import { loadMapSvg } from '@/helpers/mapLoader';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
-import { AppNavLink } from '@/components/ui/AppNavLink';
 import type { GoogleSheetImportMode } from '@/components/visualizer/GoogleSheetsModal';
 import {
   showMessageWithClose,
@@ -75,17 +76,10 @@ const GoogleSheetsModal = lazy(() => import('./GoogleSheetsModal'));
 const TabDelimitedTextModal = lazy(() => import('./TabDelimitedTextModal'));
 const AiParserModal = lazy(() => import('./AiParserModal'));
 
-const ModalLoadingFallback: FC = () => (
-  <Modal open centered footer={null} closable={false}>
-    <Flex justify="center" align="center" className="min-h-40">
-      <Spin />
-    </Flex>
-  </Modal>
-);
-
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
   const { modal, message: messageApi } = useAppFeedback();
+  const { token } = theme.useToken();
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [isTabDelimitedModalOpen, setIsTabDelimitedModalOpen] = useState(false);
@@ -377,21 +371,28 @@ export const ImportDataPanel: FC = () => {
           </Badge>
         ) : (
           <Tooltip
-            title={
-              <Flex vertical gap={4}>
-                <Typography.Text className="text-xs text-white">
-                  {t('visualizer.importData.aiParserChronographerTooltip', {
-                    planName: t('plans.items.chronographer.name'),
-                  })}
-                </Typography.Text>
-                <AppNavLink
-                  to={ROUTES.BILLING}
-                  className="text-xs font-semibold text-white! underline"
-                >
-                  {t('visualizer.embed.upgradePlansLink')}
-                </AppNavLink>
-              </Flex>
-            }
+            title={(() => {
+              const onTooltip = token.colorTextLightSolid;
+              const linkStyle: CSSProperties = {
+                color: onTooltip,
+                textDecoration: 'underline',
+                textDecorationThickness: 'from-font',
+                textUnderlineOffset: 4,
+                fontWeight: 600,
+              };
+              return (
+                <Flex vertical gap="small">
+                  <Typography.Text className="text-sm text-balance" style={{ color: onTooltip }}>
+                    {t('visualizer.importData.aiParserChronographerTooltip', {
+                      planName: t('plans.items.chronographer.name'),
+                    })}
+                  </Typography.Text>
+                  <Link to={ROUTES.BILLING} className="text-sm" style={linkStyle}>
+                    {t('visualizer.embed.upgradePlansLink')}
+                  </Link>
+                </Flex>
+              );
+            })()}
           >
             <span>{t('visualizer.importData.format.aiParser')}</span>
           </Tooltip>
@@ -402,7 +403,7 @@ export const ImportDataPanel: FC = () => {
       value,
       disabled: value === IMPORT_DATA_TYPES.aiParser && plan !== PLANS.chronographer,
     }));
-  }, [t, plan, aiRemaining]);
+  }, [t, plan, aiRemaining, token.colorTextLightSolid]);
 
   const handleImportDataTypeChange = useCallback(
     (e: RadioChangeEvent) => {
@@ -1054,7 +1055,7 @@ export const ImportDataPanel: FC = () => {
       </Flex>
 
       {isManualModalOpen && (
-        <Suspense fallback={<ModalLoadingFallback />}>
+        <Suspense fallback={<Spin />}>
           <ManualDataEntryModal
             open={isManualModalOpen}
             onClose={() => setIsManualModalOpen(false)}
@@ -1077,7 +1078,7 @@ export const ImportDataPanel: FC = () => {
       )}
 
       {isTabDelimitedModalOpen && (
-        <Suspense fallback={<ModalLoadingFallback />}>
+        <Suspense fallback={<Spin />}>
           <TabDelimitedTextModal
             open={isTabDelimitedModalOpen}
             onClose={() => setIsTabDelimitedModalOpen(false)}
@@ -1088,7 +1089,7 @@ export const ImportDataPanel: FC = () => {
       )}
 
       {isAiParserModalOpen && (
-        <Suspense fallback={<ModalLoadingFallback />}>
+        <Suspense fallback={<Spin />}>
           <AiParserModal
             open={isAiParserModalOpen}
             onClose={() => setIsAiParserModalOpen(false)}
