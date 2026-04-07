@@ -30,6 +30,7 @@ import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   exportAnimationAsGif,
@@ -191,7 +192,9 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
   const staticStillOpts = useMemo(
     () => ({
-      backgroundColor: picture.transparentBackground ? undefined : picture.backgroundColor,
+      backgroundColor: picture.transparentBackground
+        ? undefined
+        : resolveOpaqueMapBackgroundColor(picture),
       legendDraw:
         legendPosition !== LEGEND_POSITIONS.hidden && legendItems.length > 0
           ? {
@@ -204,8 +207,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
           : null,
     }),
     [
-      picture.transparentBackground,
-      picture.backgroundColor,
+      picture,
       legendPosition,
       legendItems,
       legendTitle,

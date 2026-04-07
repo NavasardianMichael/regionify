@@ -1,6 +1,5 @@
 import { type FC, useCallback, useEffect, useState } from 'react';
-import { CopyOutlined } from '@ant-design/icons';
-import { Button, Flex, Input, Modal, Tooltip, Typography } from 'antd';
+import { Button, Flex, Input, Modal, Typography } from 'antd';
 import {
   selectData,
   selectSetVisualizerState,
@@ -15,8 +14,7 @@ import { parseCSV } from '@/helpers/importDataParsers';
 import { serializeToTabDelimited } from '@/helpers/manualDataEntryHelpers';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
-
-const TAB_DELIMITED_EXAMPLE = 'id\tlabel\tvalue\nUS-TX\tTexas\t42\nUS-CA\tCalifornia\t100';
+import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 
 type Props = {
   open: boolean;
@@ -49,10 +47,6 @@ const TabDelimitedTextModal: FC<Props> = ({
     setError(null);
     setSaving(false);
   }, [open, data, timelineData, timePeriods]);
-
-  const handleCopyExample = useCallback(() => {
-    navigator.clipboard.writeText(TAB_DELIMITED_EXAMPLE).catch(() => undefined);
-  }, []);
 
   const handleSave = useCallback(async () => {
     setError(null);
@@ -120,6 +114,7 @@ const TabDelimitedTextModal: FC<Props> = ({
       open={open}
       onCancel={onClose}
       closable
+      className={bodyScrollbarStyles.bodyScrollbar}
       maskClosable={false}
       footer={
         <Flex justify="flex-end" gap="small">
@@ -134,21 +129,6 @@ const TabDelimitedTextModal: FC<Props> = ({
       focusable={{ trap: false }}
     >
       <Flex vertical gap="small" className="py-md">
-        <Flex justify="space-between" align="center">
-          <Typography.Text type="secondary" className="text-xs">
-            {t('visualizer.tabDelimitedModal.pasteFormatNote')}
-          </Typography.Text>
-          <Tooltip title={t('visualizer.tabDelimitedModal.copyExampleTooltip')}>
-            <Button
-              type="text"
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={handleCopyExample}
-              aria-label={t('visualizer.tabDelimitedModal.copyExampleTooltip')}
-              className="shrink-0 text-gray-500"
-            />
-          </Tooltip>
-        </Flex>
         <Input.TextArea
           value={text}
           onChange={(e) => {

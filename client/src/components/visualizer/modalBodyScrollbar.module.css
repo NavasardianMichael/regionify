@@ -1,0 +1,41 @@
+/*
+ * Thin scrollbars aligned with ManualDataEntryModal (modal body, table scroll, textareas).
+ * Add `className={modalBodyScrollbar.bodyScrollbar}` on Ant Design Modal.
+ */
+.bodyScrollbar :global(.ant-modal-body),
+.bodyScrollbar :global(.ant-table-body),
+.bodyScrollbar :global(.ant-table-content),
+.bodyScrollbar :global(.ant-modal-body textarea) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 2px;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-400);
+}

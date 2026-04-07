@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { DEFAULT_MAP_PICTURE } from '@/constants/mapStyles';
 import type { MapStylesState } from './types';
 
 export const useMapStylesStore = create<MapStylesState>((set) => ({
@@ -18,11 +19,7 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
     show: true,
     position: { x: 20, y: 20 },
   },
-  picture: {
-    transparentBackground: false,
-    backgroundColor: '#FFFFFF',
-    showWatermark: false,
-  },
+  picture: { ...DEFAULT_MAP_PICTURE },
   regionLabels: {
     show: false,
     color: '#333333',

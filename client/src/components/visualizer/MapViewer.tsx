@@ -13,6 +13,7 @@ import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
 import { OBSERVER_PLAN_ZOOM_STACK_LIFT_PX } from '@/constants/mapViewer';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { planRibbonColor, planRibbonNameKey } from '@/helpers/planRibbonColor';
@@ -92,13 +93,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
     [plan, picture.showWatermark],
   );
 
-  const zoomStackExtraBottomPx = plan === PLANS.observer ? OBSERVER_PLAN_ZOOM_STACK_LIFT_PX : 0;
+  /** Lift only when watermark is drawn inside the map frame (not with bottom legend — see layout below). */
+  const zoomStackExtraBottomPx =
+    plan === PLANS.observer && !showBottomLegend ? OBSERVER_PLAN_ZOOM_STACK_LIFT_PX : 0;
 
   const mapBackgroundStyle = useMemo(
     () => ({
-      backgroundColor: picture.transparentBackground ? 'transparent' : picture.backgroundColor,
+      backgroundColor: picture.transparentBackground
+        ? 'transparent'
+        : resolveOpaqueMapBackgroundColor(picture),
     }),
-    [picture.backgroundColor, picture.transparentBackground],
+    [picture],
   );
 
   const mapInterior = (

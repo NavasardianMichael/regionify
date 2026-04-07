@@ -9,6 +9,7 @@ import type { VisualizerState } from '@/store/mapData/types';
 import type { MapStylesState } from '@/store/mapStyles/types';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { DEFAULT_MAP_PICTURE } from '@/constants/mapStyles';
 
 const TEMP_PROJECT_STATE_KEY = 'regionify-temp-project-state';
 const RETURN_URL_KEY = 'regionify-return-url';
@@ -88,11 +89,7 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
       show: true,
       position: { x: 20, y: 20 },
     },
-    picture: {
-      transparentBackground: false,
-      backgroundColor: '#FFFFFF',
-      showWatermark: false,
-    },
+    picture: { ...DEFAULT_MAP_PICTURE },
     regionLabels: {
       show: false,
       color: '#333333',

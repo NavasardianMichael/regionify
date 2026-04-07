@@ -10,6 +10,7 @@ import type {
   RegionLabelsConfig,
   ShadowConfig,
 } from '@/store/mapStyles/types';
+import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
 import {
   CSS_STROKE_PROP_REGEX,
   CSS_STROKE_WIDTH_PROP_REGEX,
@@ -187,7 +188,7 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
     bgRect.setAttribute('y', String(viewBoxY));
     bgRect.setAttribute('width', String(viewBoxWidth));
     bgRect.setAttribute('height', String(viewBoxHeight));
-    bgRect.setAttribute('fill', picture.backgroundColor);
+    bgRect.setAttribute('fill', resolveOpaqueMapBackgroundColor(picture));
     svgElement.insertBefore(bgRect, svgElement.firstChild);
   }
 

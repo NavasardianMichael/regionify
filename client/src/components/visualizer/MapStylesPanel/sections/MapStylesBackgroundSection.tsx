@@ -9,6 +9,7 @@ import {
   Typography,
 } from 'antd';
 import type { PictureConfig } from '@/store/mapStyles/types';
+import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -61,7 +62,7 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
           {t('visualizer.mapStyles.color')}
         </Typography.Text>
         <ColorPicker
-          value={picture.backgroundColor}
+          value={resolveOpaqueMapBackgroundColor(picture)}
           onChangeComplete={onBackgroundColorChange}
           size="small"
           disabled={picture.transparentBackground}

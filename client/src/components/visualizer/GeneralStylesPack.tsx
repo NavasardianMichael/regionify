@@ -5,6 +5,7 @@ import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { DEFAULT_MAP_PICTURE } from '@/constants/mapStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { samplePaletteColor } from '@/helpers/samplePaletteColor';
 
@@ -25,11 +26,7 @@ const DEFAULT_MAP_STYLES = {
     show: true,
     position: { x: 20, y: 20 },
   },
-  picture: {
-    transparentBackground: false,
-    backgroundColor: '#FFFFFF',
-    showWatermark: false,
-  },
+  picture: { ...DEFAULT_MAP_PICTURE },
   regionLabels: {
     show: false,
     color: '#333333',

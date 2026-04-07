@@ -9,6 +9,7 @@ import { useProjectsStore } from '@/store/projects/store';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import type { CountryId } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
+import { DEFAULT_MAP_PICTURE } from '@/constants/mapStyles';
 import { readGoogleFromDataset } from '@/helpers/readGoogleFromDataset';
 
 type LegacyRegionRow = RegionData & { hiddenFromChart?: boolean };
@@ -76,7 +77,10 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
         shadow: project.mapStyles.shadow,
         zoomControls: project.mapStyles.zoomControls,
         picture: {
+          ...DEFAULT_MAP_PICTURE,
           ...project.mapStyles.picture,
+          backgroundColor:
+            project.mapStyles.picture.backgroundColor || DEFAULT_MAP_PICTURE.backgroundColor,
           showWatermark: project.mapStyles.picture.showWatermark ?? false,
         },
         regionLabels: {

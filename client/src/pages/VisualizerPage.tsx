@@ -438,27 +438,32 @@ const VisualizerPage: FC = () => {
             <Radio.Button value="styles">{t('visualizer.tabStyles')}</Radio.Button>
           </Radio.Group>
           <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
-            <Flex
-              vertical
-              className={`h-full min-h-0 w-full ${mobileSection === 'map' ? '' : 'hidden'}`}
+            {/*
+              Use native div + Tailwind for show/hide — antd Flex adds `display: flex` with
+              stylesheet order that can override `hidden`, so inactive panels stayed visible on mobile.
+            */}
+            <div
+              className={mobileSection === 'map' ? 'flex h-full min-h-0 w-full flex-col' : 'hidden'}
               aria-hidden={mobileSection !== 'map'}
             >
               {mapPanel}
-            </Flex>
-            <Flex
-              vertical
-              className={`h-full min-h-0 w-full ${mobileSection === 'data' ? '' : 'hidden'}`}
+            </div>
+            <div
+              className={
+                mobileSection === 'data' ? 'flex h-full min-h-0 w-full flex-col' : 'hidden'
+              }
               aria-hidden={mobileSection !== 'data'}
             >
               {dataPanel}
-            </Flex>
-            <Flex
-              vertical
-              className={`h-full min-h-0 w-full ${mobileSection === 'styles' ? '' : 'hidden'}`}
+            </div>
+            <div
+              className={
+                mobileSection === 'styles' ? 'flex h-full min-h-0 w-full flex-col' : 'hidden'
+              }
               aria-hidden={mobileSection !== 'styles'}
             >
               {stylesPanel}
-            </Flex>
+            </div>
           </div>
         </Flex>
       )}

@@ -6,6 +6,7 @@ import { Alert, Button, ConfigProvider, Flex, Modal, Table, Typography } from 'a
 import type { FilterValue, SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import type { DataRow } from '@/helpers/manualDataEntryHelpers';
+import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 import { SelectColumnHeader } from './SelectColumnHeader';
 import { createSortableTbodyWrapper, SortableBodyRow, useTableDnd } from './tableDnD';
 import { tableTheme } from './tableTheme';
@@ -196,7 +197,7 @@ const ManualDataEntryModal: FC<Props> = ({
         </Flex>
       }
       centered
-      className={`${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
+      className={`${bodyScrollbarStyles.bodyScrollbar} ${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
       destroyOnHidden
       focusable={{ trap: false }}
     >

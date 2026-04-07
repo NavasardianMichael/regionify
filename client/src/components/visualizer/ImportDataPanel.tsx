@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Link } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import {
   CloudUploadOutlined,
   CopyOutlined,
@@ -371,6 +371,12 @@ export const ImportDataPanel: FC = () => {
           </Badge>
         ) : (
           <Tooltip
+            styles={{
+              container: {
+                width: 'max-content',
+                maxWidth: 'min(calc(100vw - 24px), 22rem)',
+              },
+            }}
             title={(() => {
               const onTooltip = token.colorTextLightSolid;
               const linkStyle: CSSProperties = {
@@ -381,15 +387,15 @@ export const ImportDataPanel: FC = () => {
                 fontWeight: 600,
               };
               return (
-                <Flex vertical gap="small">
+                <Flex vertical gap="small" align="flex-start" className="w-max">
                   <Typography.Text className="text-sm text-balance" style={{ color: onTooltip }}>
                     {t('visualizer.importData.aiParserChronographerTooltip', {
                       planName: t('plans.items.chronographer.name'),
                     })}
                   </Typography.Text>
-                  <Link to={ROUTES.BILLING} className="text-sm" style={linkStyle}>
+                  <NavLink to={ROUTES.BILLING} className="text-sm text-white" style={linkStyle}>
                     {t('visualizer.embed.upgradePlansLink')}
-                  </Link>
+                  </NavLink>
                 </Flex>
               );
             })()}

@@ -9,6 +9,7 @@ import { commitParsedImport } from '@/helpers/commitParsedImport';
 import { parseCSV } from '@/helpers/importDataParsers';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
+import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 
 // The assistant prefill sent to Claude; the response continues from this point.
 const ASSISTANT_PREFILL = 'id\t';
@@ -163,6 +164,7 @@ const AiParserModal: FC<Props> = ({
       open={open}
       onCancel={handleClose}
       closable
+      className={bodyScrollbarStyles.bodyScrollbar}
       maskClosable={false}
       footer={
         <Flex justify="flex-end" gap="small">

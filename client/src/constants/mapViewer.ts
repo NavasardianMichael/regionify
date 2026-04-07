@@ -2,7 +2,8 @@
 export const MAP_WATERMARK_CORNER_INSET_PX = 12;
 
 /**
- * Extra `bottom` offset for the zoom control stack on the Observer plan so it clears
- * the branded watermark (~12px inset + row height). Keep small so the stack stays low.
+ * Extra `bottom` offset for the zoom control stack on the Observer plan when the watermark
+ * sits inside the map frame (floating/hidden legend). With a bottom legend, the watermark
+ * is laid out under the legend — no lift. (~12px inset + row height.)
  */
 export const OBSERVER_PLAN_ZOOM_STACK_LIFT_PX = 24;
