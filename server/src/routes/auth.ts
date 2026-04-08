@@ -108,11 +108,14 @@ router.post('/logout', (req, res, next) => {
   });
 });
 
-// GET /api/auth/google
+// GET /api/auth/google — prompt=select_account so users can pick another Google account after logout
 router.get(
   '/google',
   authLimiter,
-  passport.authenticate('google', { scope: ['profile', 'email'] }),
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    prompt: 'select_account',
+  }),
 );
 
 // GET /api/auth/google/callback
