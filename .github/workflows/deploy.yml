@@ -3,9 +3,19 @@
 # ==============================================================================
 # REQUIRED GITHUB SECRETS:
 # - SSH_HOST, SSH_USER, SSH_KEY, SSH_PORT (optional, default 22)
-# - APP_DIR: Deployment directory (e.g., /home/user/apps/regionify)
-# - ENV_FILE_BASE64: Base64-encoded server .env.production (must include POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
-# - VITE_API_BASE_URL: Client API base URL
+# - APP_DIR: Deployment root (e.g. /home/user/apps/regionify)
+# - ENV_FILE_BASE64: Base64-encoded server .env.production (POSTGRES_*, app vars)
+# - VITE_API_BASE_URL: Client API base URL (client builds only)
+#
+# On-host layout after deploy:
+#   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
+#   $APP_DIR/server/.env.production  (persistent; not inside a release)
+#   $APP_DIR/server/releases/<sha>/  and  $APP_DIR/server/current -> releases/<sha>
+# Run: cd $APP_DIR/server/current && docker compose -f docker-compose.prod.yml ...
+#
+# Migration: if you used $APP_DIR/docker before, compose down from there once, deploy
+# from CI, then remove the old docker/ tree. Align docker volume project name with
+# compose `name:` (see docker-compose.prod.yml) so Postgres/Redis data stay attached.
 # ==============================================================================
 
 name: Deploy to Production
@@ -13,6 +23,15 @@ name: Deploy to Production
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.cursorrules'
+
+permissions:
+  contents: read
+  actions: write
 
 env:
   NODE_VERSION: '24'
@@ -20,12 +39,61 @@ env:
   KEEP_RELEASES: 5
 
 jobs:
-  build:
-    name: Build
+  changes:
+    name: Detect changes
     runs-on: ubuntu-latest
     outputs:
+      deploy_client: ${{ steps.flags.outputs.deploy_client }}
+      deploy_server: ${{ steps.flags.outputs.deploy_server }}
       release_name: ${{ github.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Path filters
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            client_pkg:
+              - 'client/**'
+            server_pkg:
+              - 'server/**'
+            shared_pkg:
+              - 'shared/**'
+            workspace:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'tsconfig.json'
+              - 'docker-compose.prod.yml'
+              - 'server/Dockerfile'
+              - '.github/workflows/deploy.yml'
+
+      - name: Set deploy flags
+        id: flags
+        run: |
+          deploy_client=false
+          deploy_server=false
+          if [ "${{ steps.filter.outputs.client_pkg }}" = "true" ] || \
+             [ "${{ steps.filter.outputs.shared_pkg }}" = "true" ] || \
+             [ "${{ steps.filter.outputs.workspace }}" = "true" ]; then
+            deploy_client=true
+          fi
+          if [ "${{ steps.filter.outputs.server_pkg }}" = "true" ] || \
+             [ "${{ steps.filter.outputs.shared_pkg }}" = "true" ] || \
+             [ "${{ steps.filter.outputs.workspace }}" = "true" ]; then
+            deploy_server=true
+          fi
+          echo "deploy_client=$deploy_client" >> "$GITHUB_OUTPUT"
+          echo "deploy_server=$deploy_server" >> "$GITHUB_OUTPUT"
+          echo "deploy_client=$deploy_client deploy_server=$deploy_server"
+
+  build-client:
+    name: Build / client
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.deploy_client == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,17 +112,64 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all packages
-        run: pnpm build
+      - name: Build client (and shared)
+        run: pnpm run build:client
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
-      # Same Dockerfile as on the production host (`Deploy server` runs docker compose there; logs show here).
-      - name: Verify server Docker image builds
-        run: docker build -f server/Dockerfile .
-
       - name: Create client archive
         run: tar -czf client-build.tar.gz -C client/dist/client .
+
+      - name: Upload client artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: client-build.tar.gz
+          retention-days: 1
+
+  build-server:
+    name: Build / server
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.deploy_server == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build client and server (Docker needs client/dist)
+        run: |
+          pnpm run build:client
+          pnpm run build:server
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Verify server Docker image builds
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: server/Dockerfile
+          push: false
+          load: true
+          tags: regionify-server:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create server archive
         run: |
@@ -64,25 +179,36 @@ jobs:
             --exclude='.git' \
             server shared client docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
 
-      - name: Upload artifacts
+      - name: Upload server artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
-          path: |
-            client-build.tar.gz
-            server-build.tar.gz
+          name: server-build
+          path: server-build.tar.gz
           retention-days: 1
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: build
-
+    needs: [changes, build-client, build-server]
+    if: |
+      always() &&
+      (needs.changes.outputs.deploy_client == 'true' || needs.changes.outputs.deploy_server == 'true') &&
+      (needs.build-client.result == 'success' || needs.build-client.result == 'skipped') &&
+      (needs.build-server.result == 'success' || needs.build-server.result == 'skipped') &&
+      needs.build-client.result != 'failure' &&
+      needs.build-server.result != 'failure'
     steps:
-      - name: Download artifacts
+      - name: Download client artifact
+        if: needs.changes.outputs.deploy_client == 'true'
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: client-build
+
+      - name: Download server artifact
+        if: needs.changes.outputs.deploy_server == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: server-build
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -94,84 +220,107 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Copy archives to server
-        run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" \
-            client-build.tar.gz server-build.tar.gz \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
-
-      - name: Deploy client
-        run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
-            "${{ secrets.APP_DIR }}" \
-            "${{ needs.build.outputs.release_name }}" \
-            "${{ env.KEEP_RELEASES }}" << 'EOF'
-          set -e
-          APP_DIR="$1"; RELEASE_NAME="$2"; KEEP_RELEASES="$3"
-          RELEASES_DIR="$APP_DIR/client/releases"
-          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
-
-          echo "🎨 Deploying client: $RELEASE_NAME"
-          mkdir -p "$NEW_RELEASE"
-          tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
-          chmod -R 755 "$NEW_RELEASE"
-          ln -sfn "$NEW_RELEASE" "$APP_DIR/client/current"
-
-          # Cleanup old releases
-          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
-          echo "✅ Client deployed"
-          EOF
-
       - name: Prepare server env file
+        if: needs.changes.outputs.deploy_server == 'true'
         run: |
           echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d | tr -d '\r' > /tmp/env.production
-          echo "📋 Env file: $(wc -c < /tmp/env.production) bytes, $(wc -l < /tmp/env.production) lines"
+          echo "Env file: $(wc -c < /tmp/env.production) bytes, $(wc -l < /tmp/env.production) lines"
 
-      - name: Copy env file to server
+      - name: Copy server bundle to host
+        if: needs.changes.outputs.deploy_server == 'true'
+        run: |
+          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+            server-build.tar.gz \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
+
+      - name: Copy env to host
+        if: needs.changes.outputs.deploy_server == 'true'
         run: |
           scp -P "${{ secrets.SSH_PORT || 22 }}" \
             /tmp/env.production \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/env.production"
 
       - name: Deploy server
+        if: needs.changes.outputs.deploy_server == 'true'
         run: |
           ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
-            "${{ secrets.APP_DIR }}" << 'EOF'
+            "${{ secrets.APP_DIR }}" \
+            "${{ needs.changes.outputs.release_name }}" \
+            "${{ env.KEEP_RELEASES }}" << 'EOF'
           set -e
           APP_DIR="$1"
-          DOCKER_DIR="$APP_DIR/docker"
+          RELEASE_NAME="$2"
+          KEEP_RELEASES="$3"
+          RELEASES_DIR="$APP_DIR/server/releases"
+          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
+          ENV_TARGET="$APP_DIR/server/.env.production"
 
-          echo "🖥️ Deploying server..."
-          mkdir -p "$DOCKER_DIR"
-          tar -xzf /tmp/server-build.tar.gz -C "$DOCKER_DIR"
-          cd "$DOCKER_DIR"
+          echo "Deploying server release: $RELEASE_NAME"
+          mkdir -p "$APP_DIR/server" "$RELEASES_DIR"
+          mkdir -p "$NEW_RELEASE"
+          tar -xzf /tmp/server-build.tar.gz -C "$NEW_RELEASE"
+          install -m 600 /tmp/env.production "$ENV_TARGET"
+          ln -sfn "$NEW_RELEASE" "$APP_DIR/server/current"
+          cd "$APP_DIR/server/current"
 
-          mv /tmp/env.production server/.env.production
-          chmod 600 server/.env.production
-
-          # Verify env file
-          echo "📋 Verifying server env file..."
-          ENV_LINES=$(wc -l < server/.env.production)
-          ENV_SIZE=$(wc -c < server/.env.production)
+          echo "Verifying env file at $ENV_TARGET"
+          ENV_LINES=$(wc -l < "$ENV_TARGET")
+          ENV_SIZE=$(wc -c < "$ENV_TARGET")
           echo "  Lines: $ENV_LINES, Size: $ENV_SIZE bytes"
           echo "  Variables found:"
-          sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
+          sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' "$ENV_TARGET"
 
-          # Docker build runs on this host (not on GitHub runners). Keep server/Dockerfile in sync with CI verify step.
-          docker compose -f docker-compose.prod.yml build --no-cache server
+          docker compose -f docker-compose.prod.yml build server
           docker compose -f docker-compose.prod.yml down server --remove-orphans || true
           docker compose -f docker-compose.prod.yml up -d
 
-          # Cleanup
           docker image prune -f
-          rm -f /tmp/client-build.tar.gz /tmp/server-build.tar.gz
-          echo "✅ Server deployed"
+          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          rm -f /tmp/server-build.tar.gz /tmp/env.production
+          echo "Server deployed"
+          EOF
+
+      - name: Copy client bundle to host
+        if: needs.changes.outputs.deploy_client == 'true'
+        run: |
+          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+            client-build.tar.gz \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
+
+      - name: Deploy client
+        if: needs.changes.outputs.deploy_client == 'true'
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+            "${{ secrets.APP_DIR }}" \
+            "${{ needs.changes.outputs.release_name }}" \
+            "${{ env.KEEP_RELEASES }}" << 'EOF'
+          set -e
+          APP_DIR="$1"; RELEASE_NAME="$2"; KEEP_RELEASES="$3"
+          RELEASES_DIR="$APP_DIR/client/releases"
+          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
+
+          echo "Deploying client: $RELEASE_NAME"
+          mkdir -p "$NEW_RELEASE"
+          tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
+          chmod -R 755 "$NEW_RELEASE"
+          ln -sfn "$NEW_RELEASE" "$APP_DIR/client/current"
+
+          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          rm -f /tmp/client-build.tar.gz
+          echo "Client deployed"
           EOF
 
       - name: Deployment summary
         run: |
-          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "**Release:** \`${{ needs.build.outputs.release_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Client (static files)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Server (Docker)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Database migrations" >> $GITHUB_STEP_SUMMARY
+          echo "## Deployment complete" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Release:** \`${{ needs.changes.outputs.release_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ needs.changes.outputs.deploy_server }}" = "true" ]; then
+            echo "- Server (Docker under \`server/current\`)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "${{ needs.changes.outputs.deploy_client }}" = "true" ]; then
+            echo "- Client (static files under \`client/current\`)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "${{ needs.changes.outputs.deploy_server }}" = "true" ]; then
+            echo "- Database migrations (container entrypoint)" >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -11,12 +11,16 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+  actions: write
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  lint-and-typecheck:
-    name: Lint & Type Check
+  ci:
+    name: CI
     runs-on: ubuntu-latest
 
     steps:
@@ -46,31 +50,19 @@ jobs:
       - name: Run TypeScript type check
         run: pnpm typecheck
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: lint-and-typecheck
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Build all packages
         run: pnpm build
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Verify server Docker image builds
-        run: docker build -f server/Dockerfile .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: server/Dockerfile
+          push: false
+          load: true
+          tags: regionify-server:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
