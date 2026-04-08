@@ -8,12 +8,13 @@ This document explains **workflow changes** made to reduce GitHub Actions time a
 
 ## Summary
 
-| Change                                             | Where                                     | Why                                                                                                     |
-| -------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Single CI job instead of two sequential jobs       | `ci.yml`                                  | One checkout, one `pnpm install`, one runner per PR — less wall time and fewer billable minutes.        |
-| `permissions: actions: write`                      | `ci.yml`, `deploy.yml`                    | Required so Docker BuildKit can **write** GitHub Actions cache entries when using `cache-to: type=gha`. |
-| Docker Buildx + `build-push-action` with GHA cache | `ci.yml`, `deploy.yml` (build job)        | Reuses image layers between runs when the Dockerfile and copied files are unchanged.                    |
-| `docker compose build` **without** `--no-cache`    | `deploy.yml` (SSH “Deploy server” script) | Lets the production host reuse Docker layer cache between deploys when inputs are unchanged.            |
+| Change                                              | Where                                     | Why                                                                                                     |
+| --------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Single CI job instead of two sequential jobs        | `ci.yml`                                  | One checkout, one `pnpm install`, one runner per PR — less wall time and fewer billable minutes.        |
+| `permissions: actions: write`                       | `ci.yml`, `deploy.yml`                    | Required so Docker BuildKit can **write** GitHub Actions cache entries when using `cache-to: type=gha`. |
+| Docker Buildx + `build-push-action` with GHA cache  | `ci.yml`, `deploy.yml` (`build-server`)   | Reuses image layers between runs when the Dockerfile and copied files are unchanged.                    |
+| `docker compose build` **without** `--no-cache`     | `deploy.yml` (SSH “Deploy server” script) | Lets the production host reuse Docker layer cache between deploys when inputs are unchanged.            |
+| Path filters + `build-client` / `build-server` jobs | `deploy.yml`                              | Deploy only the side that changed (with shared/workspace rules); server deploy uses `server/releases`.  |
 
 ---
 
@@ -62,7 +63,7 @@ permissions:
 
 ### Deploy workflow
 
-- The **`deploy`** job only uses SSH and artifacts; it does not need `actions: write` for its own steps. The permission is declared at **workflow** level, so it applies to all jobs. That is slightly broader than the minimum for the deploy job alone, but keeps the file simple and matches what the **build** job needs.
+- The **`deploy`** job only uses SSH and artifacts; it does not need `actions: write` for its own steps. The permission is declared at **workflow** level, so it applies to all jobs. That is slightly broader than the minimum for the deploy job alone, but keeps the file simple and matches what **`build-server`** needs for Docker GHA cache.
 
 ---
 
@@ -121,18 +122,18 @@ docker compose -f docker-compose.prod.yml build server
 
 ### Unchanged around it
 
-- Still: extract tarball → place `.env.production` → `docker compose build server` → `docker compose down server` → `docker compose up -d` → `docker image prune -f`.
+- Still: extract tarball under `$APP_DIR/server/releases/<sha>` → symlink `server/current` → install `.env.production` at `$APP_DIR/server/.env.production` → `cd server/current` → `docker compose build server` → `docker compose down server` → `docker compose up -d` → `docker image prune -f`.
 
 ---
 
 ## Quick reference: files touched
 
-| File                                                              | Role                                                                                                                  |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)         | PR CI: lint, typecheck, build, Docker verify with GHA cache.                                                          |
-| [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) | Push to `master`: build + Docker verify with GHA cache, artifacts, SSH deploy; production `compose build` uses cache. |
-| [`server/Dockerfile`](../server/Dockerfile)                       | Unchanged by this optimization; still the image built in CI and on the server.                                        |
-| [`docker-compose.prod.yml`](../docker-compose.prod.yml)           | Unchanged; defines the `server` build context and Dockerfile path.                                                    |
+| File                                                              | Role                                                                                                              |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)         | PR CI: lint, typecheck, build, Docker verify with GHA cache.                                                      |
+| [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) | Push to `master`: path filters, conditional client/server builds, SSH deploy (server under `server/current`).     |
+| [`server/Dockerfile`](../server/Dockerfile)                       | Image built in CI (`build-server`) and on the server.                                                             |
+| [`docker-compose.prod.yml`](../docker-compose.prod.yml)           | Top-level `name:` for stable volumes; `env_file` points at `server/.env.production` relative to each release dir. |
 
 ---
 

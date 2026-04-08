@@ -149,40 +149,39 @@ Runs on pull requests to `master`:
 
 ### Continuous Deployment (`.github/workflows/deploy.yml`)
 
-Automated deployment on push to `master`:
+Automated deployment on push to `master` (with path filters: client-only / server-only / both; see workflow file):
 
-1. **Build** — In Actions: install deps, build client + server, create archives
-2. **Deploy client** — Static assets to `$APP_DIR/client/releases/<sha>` and `current` symlink
-3. **Deploy server** — Extract `server-build.tar.gz` into **`$APP_DIR/docker`**, then **`docker compose -f docker-compose.prod.yml build`** and **`up`**
-4. **Migrate** — `docker compose … run --rm server pnpm exec prisma migrate deploy`
-5. **Runtime** — API container (e.g. port **9002**), Postgres, Redis
+1. **Detect changes** — Which of client / server (or both) need a deploy
+2. **Build / client** (if needed) — `pnpm build:client`, static tarball
+3. **Build / server** (if needed) — Client + server build for Docker, image verify, server tarball
+4. **Deploy** — Server first (when applicable), then client: see layout below
+5. **Migrate** — Container `entrypoint.sh` runs `prisma migrate deploy` before Node starts
+6. **Runtime** — API container (e.g. port **9002**), Postgres, Redis
 
 ### Server directory structure (production)
 
-`APP_DIR` is the secret you set in GitHub (e.g. `/home/michael/apps/regionify`). All Docker commands run from **`$APP_DIR/docker`** (that directory contains `docker-compose.prod.yml` after each deploy).
+`APP_DIR` is the secret you set in GitHub (e.g. `/home/michael/apps/regionify`). Run Docker Compose from **`$APP_DIR/server/current`** (symlink to `server/releases/<git-sha>`).
 
 ```
 $APP_DIR/
 ├── client/
 │   ├── releases/<git-sha>/   # Static files (index.html, assets/)
 │   └── current -> releases/<git-sha>
-└── docker/                     # Extracted server bundle + compose
-    ├── docker-compose.prod.yml
-    ├── package.json            # workspace root from tarball
-    ├── server/
-    │   ├── .env.production     # copied from /tmp during deploy
-    │   ├── prisma/
-    │   └── …
-    ├── shared/
-    └── client/                  # package.json + dist for the image build
-        ├── package.json
-        └── dist/
+└── server/
+    ├── .env.production       # persistent; updated each server deploy
+    ├── releases/<git-sha>/   # extracted server tarball (compose root)
+    │   ├── docker-compose.prod.yml
+    │   ├── package.json
+    │   ├── server/
+    │   ├── shared/
+    │   └── client/           # dist (+ package) for the image build
+    └── current -> releases/<git-sha>
 ```
 
 Useful checks (SSH in, then):
 
 ```bash
-cd "$APP_DIR/docker"
+cd "$APP_DIR/server/current"
 docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml exec server printenv CLIENT_STATIC_DIR
 curl -sS http://127.0.0.1:9002/health
@@ -211,7 +210,7 @@ sudo tail -20 /var/log/nginx/error.log
 ### Server setup
 
 1. Install Docker with Compose plugin, and Nginx (for TLS + static SPA + reverse proxy to the API).
-2. Create layout: `mkdir -p $APP_DIR/client/releases $APP_DIR/docker` (the first deploy extracts into `docker/`).
+2. Create layout: `mkdir -p $APP_DIR/client/releases $APP_DIR/server/releases` (the first server deploy fills `server/releases/<sha>` and `server/current`).
 3. Configure Nginx to serve the SPA from `$APP_DIR/client/current` and proxy API traffic to **`127.0.0.1:9002`** (see `deployment/nginx-spa-and-api.example.conf`; adjust if `PORT` or paths differ). Avoid combining `error_page 404 = /index.html` with `try_files … /index.html` in a way that internally loops on `/index.html`.
 4. **Public embed SSR:** `GET /embed/<token>` is rendered by Express with the project’s SEO title, description, keywords, `<h1>`, and JSON-LD. The example Nginx config proxies `^/embed/[^/]+$` to Node **before** the `location /` `try_files` block so embed URLs are not served as the generic SPA `index.html`.
 5. **Verify embed HTML (production):** `curl -sS 'https://your-domain/embed/<token>' | head -c 2500` — expect `<main>`, an `<h1>` matching the embed SEO title, and `application/ld+json` with the same `name` / `description` (and `keywords` when set). If the response matches your static home `index.html` title instead, the embed `location` is not proxying to Node.
@@ -220,20 +219,54 @@ sudo tail -20 /var/log/nginx/error.log
 ### Rollback
 
 Client static files: repoint `current` to a previous release under `$APP_DIR/client/releases/`.  
-Server: rebuild/redeploy a previous git SHA from CI, or restore a known-good image/tag on the VPS and `docker compose up -d server` from `$APP_DIR/docker`.
+Server: rebuild/redeploy a previous git SHA from CI, or repoint `server/current` to `releases/<old-sha>` and `docker compose up -d` from `$APP_DIR/server/current`.
 
 ## Project Structure
 
+pnpm monorepo (see root `package.json` and `pnpm-workspace.yaml`). Build outputs (`dist/`, `node_modules/`) are omitted.
+
 ```
-src/
-├── api/           # API modules
-├── assets/        # Static assets (images, maps)
-├── components/    # Reusable UI components
-├── constants/     # Application constants
-├── helpers/       # Utility functions
-├── hooks/         # Custom React hooks
-├── pages/         # Route page components
-├── store/         # Zustand state management
-├── styles/        # Global styles and themes
-└── types/         # TypeScript types
+regionify/
+├── .github/              # GitHub Actions workflows
+├── client/               # React 19 + Vite SPA (@regionify/client)
+│   └── src/
+│       ├── api/          # API client modules
+│       ├── assets/       # Static assets (images, maps, …)
+│       ├── components/   # Reusable UI
+│       ├── constants/
+│       ├── data/
+│       ├── helpers/
+│       ├── hooks/
+│       ├── i18n/
+│       ├── locales/      # i18n message catalogs
+│       ├── pages/        # Route-level pages
+│       ├── store/        # Zustand
+│       ├── styles/       # Global styles / theme hooks
+│       └── types/
+├── server/               # Express API + Prisma (@regionify/server)
+│   ├── prisma/
+│   ├── scripts/
+│   └── src/
+│       ├── auth/
+│       ├── config/
+│       ├── db/
+│       ├── lib/
+│       ├── middleware/
+│       ├── repositories/
+│       ├── routes/
+│       ├── services/
+│       ├── types/
+│       └── web/          # Embed / SSR HTML helpers
+├── shared/               # Shared package (@regionify/shared)
+│   └── src/
+│       ├── constants/
+│       ├── schemas/
+│       └── types/
+├── deployment/           # Example production nginx config
+├── docs/                 # Additional documentation
+├── scripts/              # Root tooling (e.g. lint-staged helpers)
+├── docker-compose.prod.yml
+├── package.json
+├── pnpm-workspace.yaml
+└── tsconfig.json
 ```
