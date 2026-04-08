@@ -14,6 +14,10 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: read
+  actions: write
+
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10'
@@ -50,8 +54,19 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
       # Same Dockerfile as on the production host (`Deploy server` runs docker compose there; logs show here).
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Verify server Docker image builds
-        run: docker build -f server/Dockerfile .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: server/Dockerfile
+          push: false
+          load: true
+          tags: regionify-server:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create client archive
         run: tar -czf client-build.tar.gz -C client/dist/client .
@@ -158,7 +173,7 @@ jobs:
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' server/.env.production
 
           # Docker build runs on this host (not on GitHub runners). Keep server/Dockerfile in sync with CI verify step.
-          docker compose -f docker-compose.prod.yml build --no-cache server
+          docker compose -f docker-compose.prod.yml build server
           docker compose -f docker-compose.prod.yml down server --remove-orphans || true
           docker compose -f docker-compose.prod.yml up -d
 
