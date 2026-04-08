@@ -17,10 +17,11 @@ Checkout sends that id as Lemon Squeezy **`checkout_data.custom.user_id`**; the 
 ## 2. Application logs on the VPS (Docker)
 
 ```bash
-docker logs regionify-server --since 48h 2>&1
+cd "$APP_DIR/server/current" && export REGIONIFY_ENV_FILE="$APP_DIR/server/.env.production"
+docker compose -f docker-compose.prod.yml logs server --since 48h 2>&1
 ```
 
-Adjust container name if yours differs (`docker-compose.prod.yml` uses `regionify-server`).
+Or: `docker ps` and `docker logs <server-container-id> --since 48h` (Compose names the server container under project `regionify`, not a fixed `container_name`).
 
 Routes: webhook is **`POST /payments/webhook`** and **`POST /api/payments/webhook`** (mounted in both places).
 

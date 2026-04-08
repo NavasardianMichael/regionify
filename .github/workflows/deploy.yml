@@ -271,11 +271,12 @@ jobs:
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' "$ENV_TARGET"
 
-          # Do not run `docker compose down server` here: it removes only the server
-          # container while Postgres/Redis keep running. A following `up -d` can then
-          # try to *create* new redis/postgres containers; fixed container_name values
-          # (regionify-redis, regionify-postgres) already exist → "Conflict ... already in use".
+          # Compose-managed containers only: `down` does not remove orphans that lost
+          # project labels (e.g. old fixed container_name). Those still block names or
+          # volumes. Drop legacy names explicitly; named volumes are preserved (no -v).
           export COMPOSE_PROJECT_NAME=regionify
+          docker compose -f docker-compose.prod.yml down --remove-orphans || true
+          docker rm -f regionify-redis regionify-postgres regionify-server 2>/dev/null || true
           docker compose -f docker-compose.prod.yml build server
           docker compose -f docker-compose.prod.yml up -d --remove-orphans
 

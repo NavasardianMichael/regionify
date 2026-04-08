@@ -3,7 +3,6 @@ name: regionify
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: regionify-postgres
     restart: unless-stopped
     env_file:
       - "${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}"
@@ -19,7 +18,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: regionify-redis
     restart: unless-stopped
     volumes:
       - redis_data:/data
@@ -36,7 +34,6 @@ services:
     build:
       context: .
       dockerfile: server/Dockerfile
-    container_name: regionify-server
     restart: unless-stopped
     ports:
       - '9002:9002'
