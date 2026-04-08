@@ -3,10 +3,9 @@ import type { Application, Request, Response } from 'express';
 import express from 'express';
 
 import { env, isProd } from '@/config/env.js';
-import { escapeHtml } from '@/lib/htmlEscape.js';
 import { logger } from '@/lib/logger.js';
 import { projectEmbedService } from '@/services/projectEmbedService.js';
-import { HOME_PAGE_DEFAULT } from '@/web/homeCopy.js';
+import { HOME_PAGE_DEFAULT, homeRootInnerHtml } from '@/web/homeCopy.js';
 import { readClientEntryAssets } from '@/web/readClientManifest.js';
 import { renderHtmlDocument } from '@/web/renderHtmlDocument.js';
 import { buildRobotsTxt, buildSitemapXml } from '@/web/sitemap.js';
@@ -33,19 +32,6 @@ const API_PATH_PREFIXES = [
 
 function isApiPath(path: string): boolean {
   return API_PATH_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
-}
-
-function homeRootInnerHtml(): string {
-  const { heading, welcome } = HOME_PAGE_DEFAULT;
-  const h = escapeHtml(heading);
-  const w = escapeHtml(welcome);
-  return `
-    <div class="flex h-full min-h-0 w-full flex-col items-center">
-      <div class="flex w-full max-w-4xl flex-col gap-4 p-6">
-        <h1 class="text-primary text-3xl font-bold">${h}</h1>
-        <p class="text-gray-600">${w}</p>
-      </div>
-    </div>`;
 }
 
 /**

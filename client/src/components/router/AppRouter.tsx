@@ -12,6 +12,7 @@ const VisualizerPage = lazy(() => import('@/pages/VisualizerPage'));
 const ProjectsPage = lazy(() => import('@/pages/ProjectsPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
+const FaqPage = lazy(() => import('@/pages/FaqPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const SignUpPage = lazy(() => import('@/pages/SignUpPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
@@ -56,6 +57,7 @@ function AppRoutesLayout() {
               <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
               <Route path={ROUTES.CONTACT} element={<ContactPage />} />
               <Route path={ROUTES.ABOUT} element={<AboutPage />} />
+              <Route path={ROUTES.FAQ} element={<FaqPage />} />
               <Route path={ROUTES.LOGIN} element={<LoginPage />} />
               <Route path={ROUTES.SIGN_UP} element={<SignUpPage />} />
               <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />

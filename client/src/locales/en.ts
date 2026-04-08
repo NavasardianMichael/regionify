@@ -6,6 +6,7 @@ const en: CommonNs = {
     home: 'Home',
     projects: 'Projects',
     contact: 'Contact',
+    faq: 'FAQ',
     plans: 'Plans',
     about: 'About',
     login: 'Login',
@@ -53,8 +54,56 @@ const en: CommonNs = {
     ctaBottomSubtitle: 'Create your first visualization in minutes — no credit card required.',
   },
   about: {
-    title: 'About',
-    description: 'Learn more about this application.',
+    title: 'About Regionify',
+    description:
+      'Regionify is a browser-based tool for choropleth maps: connect CSV, Excel, JSON, or Google Sheets to regional SVG maps, tune legends and colors, then export images or animations for reports and the web. Higher tiers add time-series, GIF/MP4 export, and optional public embed pages.',
+  },
+  faq: {
+    title: 'Frequently asked questions',
+    intro:
+      'Straight answers about choropleth mapping with Regionify—imports, exports, plans, embeds, and how region matching works.',
+    items: [
+      {
+        question: 'What is Regionify?',
+        answer:
+          'Regionify is a web application for building interactive choropleth maps from your own data. You pick a regional map (countries, states, provinces, and more), import values from CSV, Excel, JSON, or Google Sheets, style the legend, and export high-quality images or animations depending on your plan.',
+      },
+      {
+        question: 'What is a choropleth map?',
+        answer:
+          'A choropleth map uses colors or shading on predefined regions to show how a numeric value varies geographically—for example population density, sales by state, or survey results by country. Regionify focuses on this workflow end to end: data import, region matching, styling, and export.',
+      },
+      {
+        question: 'Which file formats can I import?',
+        answer:
+          'You can import CSV and Excel spreadsheets, JSON data, and connect a Google Sheet for live sync on supported plans. Regionify uses fuzzy text matching to associate rows in your data with regions on the map when names are close but not identical.',
+      },
+      {
+        question: 'Which export formats are available?',
+        answer:
+          'Export options depend on your plan. The free Observer plan includes JPEG export with core maps and legends. Paid plans add PNG and SVG, higher quality settings, advanced styling, time-series support, and animated exports (GIF and MP4) on the Chronographer plan.',
+      },
+      {
+        question: 'Can I embed a map on my website?',
+        answer:
+          'Public embed and iframe embedding are available on the Chronographer plan. You can enable a public page per project with optional SEO title and description so visitors and search engines see meaningful context around the map.',
+      },
+      {
+        question: 'How does region matching work?',
+        answer:
+          'After import, Regionify compares your data labels to the map’s region names using text similarity. You can adjust associations in the visualizer when automatic matching needs a correction, so the right values land on the right regions.',
+      },
+      {
+        question: 'Do I need an account?',
+        answer:
+          'Yes. Regionify uses accounts for saving projects, billing, and optional Google sign-in. You can review current plans and limits on the Plans page inside the app.',
+      },
+      {
+        question: 'How do I get help or send feedback?',
+        answer:
+          'Use the Contact page in the app to send a message to the team. For billing issues, the Plans page includes guidance and a link to reach out if something went wrong with checkout.',
+      },
+    ],
   },
   plans: {
     title: 'Choose Your Plan',

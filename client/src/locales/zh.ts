@@ -6,6 +6,7 @@ const zh: CommonNs = {
     home: '首页',
     projects: '项目',
     contact: '联系我们',
+    faq: '常见问题',
     plans: '计划',
     about: '关于',
     login: '登录',
@@ -49,8 +50,54 @@ const zh: CommonNs = {
     ctaBottomSubtitle: '几分钟内创建您的第一个可视化——无需信用卡。',
   },
   about: {
-    title: '关于',
-    description: '了解更多关于本应用的信息。',
+    title: '关于 Regionify',
+    description:
+      'Regionify 是一款在浏览器中制作分级统计地图的工具：将 CSV、Excel、JSON 或 Google 表格连接到区域 SVG 地图，调整图例与配色，并导出用于报告与网页的图像或动画。更高套餐支持时间序列、GIF/MP4 导出及可嵌入的公开页面。',
+  },
+  faq: {
+    title: '常见问题',
+    intro: '关于使用 Regionify 制作分级统计地图的简明解答：导入、导出、套餐、嵌入与区域匹配。',
+    items: [
+      {
+        question: 'Regionify 是什么？',
+        answer:
+          'Regionify 是一款网页应用，可用您的数据制作交互式分级统计地图。选择区域底图，从 CSV、Excel、JSON 或 Google 表格导入数值，设置图例，并按套餐导出高质量图片或动画。',
+      },
+      {
+        question: '什么是分级统计地图（choropleth）？',
+        answer:
+          '分级统计地图用颜色或深浅在既定行政区上表现数值，例如人口密度或各州销售额。Regionify 覆盖导入、匹配区域、样式与导出全流程。',
+      },
+      {
+        question: '可以导入哪些格式？',
+        answer:
+          '支持 CSV、Excel 表格、JSON，以及在部分套餐下与 Google 表格实时同步。系统会用模糊文本匹配将行标签与地图区域名称对应。',
+      },
+      {
+        question: '支持哪些导出格式？',
+        answer:
+          '取决于套餐。免费 Observer 含 JPEG 导出；付费方案增加 PNG、SVG、更高画质与高级样式、时间序列；Chronographer 还提供 GIF 与 MP4 动画导出。',
+      },
+      {
+        question: '能把地图嵌入自己的网站吗？',
+        answer:
+          'Chronographer 套餐支持公开嵌入与 iframe。每个项目可开启公开页面，并设置利于 SEO 的标题与描述。',
+      },
+      {
+        question: '区域匹配如何工作？',
+        answer:
+          '导入后，Regionify 会按文本相似度比较您的标签与地图区域名。可在可视化编辑器中手动修正对应关系。',
+      },
+      {
+        question: '需要注册账户吗？',
+        answer:
+          '需要。账户用于保存项目、计费以及可选的 Google 登录。具体限制请查看应用内的「计划」页面。',
+      },
+      {
+        question: '如何获取帮助？',
+        answer: '请使用应用内的「联系我们」页面。若与付款相关，「计划」页面也提供联系指引。',
+      },
+    ],
   },
   plans: {
     title: '选择您的计划',

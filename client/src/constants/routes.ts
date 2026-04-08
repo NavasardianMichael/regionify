@@ -13,6 +13,7 @@ export const ROUTES = {
   EMBED_BY_TOKEN: '/embed/:token',
   CONTACT: '/contact',
   ABOUT: '/about',
+  FAQ: '/faq',
   BILLING: '/billing',
 
   // Auth routes

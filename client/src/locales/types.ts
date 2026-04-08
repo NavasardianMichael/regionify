@@ -8,6 +8,7 @@ export type CommonNs = {
     home: string;
     projects: string;
     contact: string;
+    faq: string;
     plans: string;
     about: string;
     login: string;
@@ -57,6 +58,11 @@ export type CommonNs = {
   about: {
     title: string;
     description: string;
+  };
+  faq: {
+    title: string;
+    intro: string;
+    items: ReadonlyArray<{ question: string; answer: string }>;
   };
   plans: {
     title: string;
