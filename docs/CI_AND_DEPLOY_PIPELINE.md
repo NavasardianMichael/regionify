@@ -122,18 +122,18 @@ docker compose -f docker-compose.prod.yml build server
 
 ### Unchanged around it
 
-- Still: extract tarball under `$APP_DIR/server/releases/<sha>` → symlink `server/current` → install `.env.production` at `$APP_DIR/server/.env.production` → `cd server/current` → `docker compose build server` → `docker compose down server` → `docker compose up -d` → `docker image prune -f`.
+- Still: extract tarball → symlink `server/current` → install `.env.production` at `$APP_DIR/server/.env.production` → `cd server/current` → `export REGIONIFY_ENV_FILE="$APP_DIR/server/.env.production"` → `docker compose …` → `docker image prune -f`.
 
 ---
 
 ## Quick reference: files touched
 
-| File                                                              | Role                                                                                                              |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)         | PR CI: lint, typecheck, build, Docker verify with GHA cache.                                                      |
-| [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) | Push to `master`: path filters, conditional client/server builds, SSH deploy (server under `server/current`).     |
-| [`server/Dockerfile`](../server/Dockerfile)                       | Image built in CI (`build-server`) and on the server.                                                             |
-| [`docker-compose.prod.yml`](../docker-compose.prod.yml)           | Top-level `name:` for stable volumes; `env_file` points at `server/.env.production` relative to each release dir. |
+| File                                                              | Role                                                                                                                   |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)         | PR CI: lint, typecheck, build, Docker verify with GHA cache.                                                           |
+| [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) | Push to `master`: path filters, conditional client/server builds, SSH deploy (server under `server/current`).          |
+| [`server/Dockerfile`](../server/Dockerfile)                       | Image built in CI (`build-server`) and on the server.                                                                  |
+| [`docker-compose.prod.yml`](../docker-compose.prod.yml)           | Top-level `name:` for stable volumes; `env_file` uses `$REGIONIFY_ENV_FILE` (absolute path; deploy script exports it). |
 
 ---
 

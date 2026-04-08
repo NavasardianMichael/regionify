@@ -182,6 +182,7 @@ Useful checks (SSH in, then):
 
 ```bash
 cd "$APP_DIR/server/current"
+export REGIONIFY_ENV_FILE="$APP_DIR/server/.env.production"
 docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml exec server printenv CLIENT_STATIC_DIR
 curl -sS http://127.0.0.1:9002/health
