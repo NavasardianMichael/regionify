@@ -213,7 +213,9 @@ sudo tail -20 /var/log/nginx/error.log
 1. Install Docker with Compose plugin, and Nginx (for TLS + static SPA + reverse proxy to the API).
 2. Create layout: `mkdir -p $APP_DIR/client/releases $APP_DIR/docker` (the first deploy extracts into `docker/`).
 3. Configure Nginx to serve the SPA from `$APP_DIR/client/current` and proxy API traffic to **`127.0.0.1:9002`** (see `deployment/nginx-spa-and-api.example.conf`; adjust if `PORT` or paths differ). Avoid combining `error_page 404 = /index.html` with `try_files … /index.html` in a way that internally loops on `/index.html`.
-4. Set GitHub secrets (`APP_DIR`, `SSH_*`, `ENV_FILE_BASE64`, `VITE_API_BASE_URL`, …) and push to `master`.
+4. **Public embed SSR:** `GET /embed/<token>` is rendered by Express with the project’s SEO title, description, keywords, `<h1>`, and JSON-LD. The example Nginx config proxies `^/embed/[^/]+$` to Node **before** the `location /` `try_files` block so embed URLs are not served as the generic SPA `index.html`.
+5. **Verify embed HTML (production):** `curl -sS 'https://your-domain/embed/<token>' | head -c 2500` — expect `<main>`, an `<h1>` matching the embed SEO title, and `application/ld+json` with the same `name` / `description` (and `keywords` when set). If the response matches your static home `index.html` title instead, the embed `location` is not proxying to Node.
+6. Set GitHub secrets (`APP_DIR`, `SSH_*`, `ENV_FILE_BASE64`, `VITE_API_BASE_URL`, …) and push to `master`.
 
 ### Rollback
 

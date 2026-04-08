@@ -24,24 +24,31 @@ function renderEmbedJsonLd(opts: {
   pageName: string;
   pageDescription: string;
   inLanguage: string;
+  /** Comma-separated keywords; mirrors `<meta name="keywords">` when set. */
+  keywords?: string | null;
 }): string {
-  const { origin, canonicalUrl, pageName, pageDescription, inLanguage } = opts;
+  const { origin, canonicalUrl, pageName, pageDescription, inLanguage, keywords } = opts;
   const websiteId = `${origin}#website`;
   const orgId = `${origin}#organization`;
   const pageId = `${canonicalUrl}#webpage`;
+  const keywordsText = keywords?.trim() ?? '';
+  const webPageNode: Record<string, unknown> = {
+    '@type': 'WebPage',
+    '@id': pageId,
+    url: canonicalUrl,
+    name: pageName,
+    description: pageDescription,
+    inLanguage,
+    isPartOf: { '@id': websiteId },
+    publisher: { '@id': orgId },
+  };
+  if (keywordsText.length > 0) {
+    webPageNode.keywords = keywordsText;
+  }
   const graph = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': 'WebPage',
-        '@id': pageId,
-        url: canonicalUrl,
-        name: pageName,
-        description: pageDescription,
-        inLanguage,
-        isPartOf: { '@id': websiteId },
-        publisher: { '@id': orgId },
-      },
+      webPageNode,
       {
         '@type': 'WebSite',
         '@id': websiteId,
@@ -104,6 +111,7 @@ export function renderHtmlDocument(opts: {
         pageName: meta.documentTitle,
         pageDescription: meta.description,
         inLanguage: htmlLang,
+        keywords: kw ?? null,
       })
     : '';
 
@@ -172,7 +180,7 @@ function renderEmbedBody(opts: {
   const intro = escapeHtml(opts.embedSemantic.intro);
   const root = opts.rootInnerHtml;
   return `    <a href="#embed-app" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-white focus:px-3 focus:py-2 focus:shadow-md">Skip to map</a>
-    <main class="flex min-h-screen min-h-0 w-full flex-col bg-gray-100">
+    <main class="flex min-h-screen w-full flex-col bg-gray-100">
       <header class="shrink-0 border-b border-solid border-gray-200 bg-white px-4 py-4 shadow-sm">
         <div class="mx-auto flex w-full max-w-6xl flex-col gap-1">
           <h1 class="text-primary m-0 text-xl font-semibold tracking-tight md:text-2xl">${h}</h1>
