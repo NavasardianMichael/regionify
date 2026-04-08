@@ -11,7 +11,7 @@
 #   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
 #   $APP_DIR/server/.env.production  (persistent; not inside a release)
 #   $APP_DIR/server/releases/<sha>/  and  $APP_DIR/server/current -> releases/<sha>
-# Run: cd $APP_DIR/server/current && docker compose -f docker-compose.prod.yml ...
+# Run: cd $APP_DIR/server/current && export REGIONIFY_ENV_FILE=$APP_DIR/server/.env.production && docker compose -f docker-compose.prod.yml ...
 #
 # Migration: if you used $APP_DIR/docker before, compose down from there once, deploy
 # from CI, then remove the old docker/ tree. Align docker volume project name with
@@ -262,6 +262,7 @@ jobs:
           install -m 600 /tmp/env.production "$ENV_TARGET"
           ln -sfn "$NEW_RELEASE" "$APP_DIR/server/current"
           cd "$APP_DIR/server/current"
+          export REGIONIFY_ENV_FILE="$ENV_TARGET"
 
           echo "Verifying env file at $ENV_TARGET"
           ENV_LINES=$(wc -l < "$ENV_TARGET")
