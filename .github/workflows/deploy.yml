@@ -271,9 +271,13 @@ jobs:
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' "$ENV_TARGET"
 
+          # Do not run `docker compose down server` here: it removes only the server
+          # container while Postgres/Redis keep running. A following `up -d` can then
+          # try to *create* new redis/postgres containers; fixed container_name values
+          # (regionify-redis, regionify-postgres) already exist → "Conflict ... already in use".
+          export COMPOSE_PROJECT_NAME=regionify
           docker compose -f docker-compose.prod.yml build server
-          docker compose -f docker-compose.prod.yml down server --remove-orphans || true
-          docker compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
           docker image prune -f
           cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
