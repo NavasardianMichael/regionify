@@ -276,7 +276,8 @@ jobs:
           # volumes. Drop legacy names explicitly; named volumes are preserved (no -v).
           export COMPOSE_PROJECT_NAME=regionify
           docker compose -f docker-compose.prod.yml down --remove-orphans || true
-          docker rm -f regionify-redis regionify-postgres regionify-server 2>/dev/null || true
+          docker rm -f regionify-redis regionify-postgres regionify-server \
+                      regionify-redis-1 regionify-postgres-1 regionify-server-1 2>/dev/null || true
           docker compose -f docker-compose.prod.yml build server
           docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
