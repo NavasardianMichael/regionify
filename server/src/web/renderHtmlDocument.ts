@@ -23,6 +23,13 @@ function escapeJsonForScript(value: unknown): string {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+/** Full URL for Vite assets so `/embed/...` pages never fetch `/embed/assets/...` (HTML fallback → MIME error). */
+function absoluteClientAssetUrl(originRoot: string, href: string): string {
+  const o = originRoot.replace(/\/$/, '');
+  const h = href.startsWith('/') ? href : `/${href}`;
+  return `${o}${h}`;
+}
+
 function renderEmbedJsonLd(opts: {
   origin: string;
   canonicalUrl: string;
@@ -151,11 +158,16 @@ export function renderHtmlDocument(opts: {
       })
     : '';
 
+  const baseHref = `${base}/`;
+  const entryJsAbs = absoluteClientAssetUrl(base, entryJs);
   const cssLinks = entryCss
-    .map((href) => `    <link rel="stylesheet" crossorigin href="${escapeHtml(href)}" />`)
+    .map(
+      (href) =>
+        `    <link rel="stylesheet" crossorigin href="${escapeHtml(absoluteClientAssetUrl(base, href))}" />`,
+    )
     .join('\n');
 
-  /** Embed: class hooks + layout live in client `tailwind.css` (Tailwind does not scan server/src). */
+  /** Embed: shell CSS is a separate Vite chunk linked only for `/embed/:token` (see `client/src/embed/embed-shell.css`). */
   const embedPageClass = embedSemantic ? ' class="embed-page"' : '';
 
   return `<!DOCTYPE html>
@@ -163,6 +175,7 @@ export function renderHtmlDocument(opts: {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="${escapeHtml(baseHref)}" />
     <title>${escapeHtml(meta.documentTitle)}</title>
     <meta name="title" content="${escapeHtml(meta.documentTitle)}" />
     <meta name="description" content="${escapeHtml(meta.description)}" />
@@ -205,7 +218,7 @@ ${
     : `    <div id="root">${rootInnerHtml}</div>
 `
 }
-    <script type="module" crossorigin src="${escapeHtml(entryJs)}"></script>
+    <script type="module" crossorigin src="${escapeHtml(entryJsAbs)}"></script>
   </body>
 </html>
 `;
@@ -221,13 +234,11 @@ function renderEmbedBody(opts: {
   return `    <a href="#embed-app" class="embed-skip-to-map">Skip to map</a>
     <main class="embed-shell-main">
       <header class="embed-shell-header">
-        <div class="embed-shell-header-inner">
-          <h1 class="embed-shell-title">${h}</h1>
-          <p class="embed-shell-intro">${intro}</p>
-        </div>
+        <h1 class="embed-shell-title">${h}</h1>
+        <p class="embed-shell-intro">${intro}</p>
       </header>
-      <div id="embed-app" class="embed-shell-app">
-        <div id="root" class="embed-shell-root">${root}</div>
+      <div id="embed-app" class="embed-shell-fill">
+        <div id="root" class="embed-shell-fill">${root}</div>
       </div>
     </main>
 `;

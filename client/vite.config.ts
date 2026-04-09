@@ -19,5 +19,11 @@ export default defineConfig({
     outDir: 'dist/client',
     manifest: true,
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        embedShell: path.resolve(__dirname, 'src/embed/embed-shell.css'),
+      },
+    },
   },
 });

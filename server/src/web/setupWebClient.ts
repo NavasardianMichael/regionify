@@ -88,6 +88,8 @@ export function setupWebClient(app: Application): void {
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
   });
 
+  const embedEntryCss = [...assets.css, assets.embedShellCss];
+
   app.get('/embed/:token', async (req: Request, res: Response, next) => {
     try {
       const rawToken = req.params.token;
@@ -105,7 +107,7 @@ export function setupWebClient(app: Application): void {
         },
         rootInnerHtml: '',
         entryJs: assets.js,
-        entryCss: assets.css,
+        entryCss: embedEntryCss,
         htmlLang: meta.htmlLang,
         ogLocale: meta.ogLocale,
         includeEmbedJsonLd: true,
