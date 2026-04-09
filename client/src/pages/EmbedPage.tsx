@@ -100,8 +100,8 @@ const EmbedPage: FC = () => {
 
   return (
     <Flex vertical className="h-full min-h-0 w-full min-w-0 flex-1 overflow-hidden">
-      <Flex className="min-h-0 min-w-0 flex-1 overflow-hidden px-4 pt-0 pb-4 md:px-6 md:pb-6">
-        <MapViewer className="min-h-0 min-w-0 flex-1" />
+      <Flex className="min-h-0 min-w-0 flex-1 overflow-hidden">
+        <MapViewer className="min-h-0 min-w-0 flex-1" flatEmbedChrome />
       </Flex>
     </Flex>
   );

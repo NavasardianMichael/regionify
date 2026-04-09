@@ -155,11 +155,11 @@ export function renderHtmlDocument(opts: {
     .map((href) => `    <link rel="stylesheet" crossorigin href="${escapeHtml(href)}" />`)
     .join('\n');
 
-  const embedRootClasses = embedSemantic ? 'h-screen min-h-0 overflow-hidden' : '';
-  const htmlClassAttr = embedRootClasses ? ` class="${embedRootClasses}"` : '';
+  /** Embed: class hooks + layout live in client `tailwind.css` (Tailwind does not scan server/src). */
+  const embedPageClass = embedSemantic ? ' class="embed-page"' : '';
 
   return `<!DOCTYPE html>
-<html lang="${escapeHtml(htmlLang)}"${htmlClassAttr}>
+<html lang="${escapeHtml(htmlLang)}"${embedPageClass}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -198,7 +198,7 @@ ${keywordsTag}${geoPlacenameTag}    <link rel="icon" type="image/x-icon" href="/
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Regionify" />
 ${jsonLdBlock}${cssLinks ? `${cssLinks}\n` : ''}  </head>
-  <body${embedSemantic ? ' class="m-0 h-screen min-h-0 overflow-hidden"' : ''}>
+  <body${embedSemantic ? ' class="embed-page"' : ''}>
 ${
   embedSemantic
     ? renderEmbedBody({ rootInnerHtml, embedSemantic })
@@ -219,15 +219,15 @@ function renderEmbedBody(opts: {
   const intro = escapeHtml(opts.embedSemantic.intro);
   const root = opts.rootInnerHtml;
   return `    <a href="#embed-app" class="embed-skip-to-map">Skip to map</a>
-    <main class="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-gray-100">
-      <header class="shrink-0 bg-white px-4 py-6 md:px-6 md:py-8">
-        <div class="mx-auto flex w-full max-w-6xl flex-col gap-1">
-          <h1 class="text-primary m-0 text-xl font-semibold tracking-tight md:text-2xl">${h}</h1>
-          <p class="m-0 max-w-3xl text-sm leading-relaxed text-gray-600">${intro}</p>
+    <main class="embed-shell-main">
+      <header class="embed-shell-header">
+        <div class="embed-shell-header-inner">
+          <h1 class="embed-shell-title">${h}</h1>
+          <p class="embed-shell-intro">${intro}</p>
         </div>
       </header>
-      <div id="embed-app" class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-        <div id="root" class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">${root}</div>
+      <div id="embed-app" class="embed-shell-app">
+        <div id="root" class="embed-shell-root">${root}</div>
       </div>
     </main>
 `;

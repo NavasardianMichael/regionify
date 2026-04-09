@@ -35,7 +35,9 @@ function AppRoutesLayout() {
     <Flex
       vertical
       className={
-        isEmbedRoute ? 'h-full min-h-0 overflow-hidden' : 'h-screen min-h-0 overflow-hidden'
+        isEmbedRoute
+          ? 'embed-route-root h-full min-h-0 overflow-hidden'
+          : 'h-screen min-h-0 overflow-hidden'
       }
     >
       {!isEmbedRoute && <Navigation />}

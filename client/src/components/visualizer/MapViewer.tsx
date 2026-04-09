@@ -32,12 +32,23 @@ type MapViewerProps = {
   className?: string;
   /** When true (e.g. saved project in app), show plan ribbon on the map export root block. */
   showPlanRibbon?: boolean;
+  /** Public embed: no card border or radius on the map frame. */
+  flatEmbedChrome?: boolean;
 };
 
 /** `Badge.Ribbon` puts `className` on the ribbon tab; `rootClassName` targets `.ant-ribbon-wrapper`. */
 const RIBBON_ROOT_CLASSNAME = 'flex h-full min-h-0 min-w-0 flex-1 flex-col';
 
-const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false }) => {
+const mapFrameClassNames = (flat: boolean): string =>
+  flat
+    ? 'group relative min-h-0 flex-1 overflow-hidden'
+    : 'group relative min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200';
+
+const MapViewer: FC<MapViewerProps> = ({
+  className = '',
+  showPlanRibbon = false,
+  flatEmbedChrome = false,
+}) => {
   const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
@@ -150,13 +161,17 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
         {showBottomLegend ? (
           <Flex
             vertical
-            className="relative min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-gray-200"
+            className={
+              flatEmbedChrome
+                ? 'relative min-h-0 flex-1 flex-col overflow-hidden'
+                : 'relative min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-gray-200'
+            }
             data-map-export-map-area
           >
             <Flex
               align="center"
               justify="center"
-              className="group relative min-h-0 flex-1 overflow-hidden"
+              className={mapFrameClassNames(flatEmbedChrome)}
               style={mapBackgroundStyle}
             >
               {mapInterior}
@@ -169,7 +184,7 @@ const MapViewer: FC<MapViewerProps> = ({ className = '', showPlanRibbon = false 
             <Flex
               align="center"
               justify="center"
-              className="group relative min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200"
+              className={mapFrameClassNames(flatEmbedChrome)}
               data-map-export-map-area
               style={mapBackgroundStyle}
             >
