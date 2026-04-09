@@ -68,42 +68,42 @@ const de: CommonNs = {
       {
         question: 'Was ist Regionify?',
         answer:
-          'Regionify ist eine Webanwendung für interaktive Choroplethenkarten aus Ihren Daten. Sie wählen eine Regionskarte, importieren Werte aus CSV, Excel, JSON oder Google Sheets, gestalten die Legende und exportieren je nach Plan hochwertige Bilder oder Animationen.',
+          'Regionify ist eine Webanwendung für interaktive **Choroplethenkarten** aus Ihren Daten. Sie wählen eine Regionskarte, importieren Werte aus **CSV**, **Excel**, **JSON** oder **Google Sheets**, gestalten die Legende und exportieren je nach Plan hochwertige Bilder oder Animationen.',
       },
       {
         question: 'Was ist eine Choroplethenkarte?',
         answer:
-          'Eine Choroplethenkarte färbt oder schattiert vordefinierte Regionen nach einem numerischen Wert—z. B. Bevölkerungsdichte oder Umsatz pro Bundesland. Regionify begleitet den gesamten Ablauf: Import, Zuordnung, Styling und Export.',
+          'Eine **Choroplethenkarte** färbt oder schattiert vordefinierte **Regionen** nach einem numerischen Wert—z. B. Bevölkerungsdichte oder Umsatz pro Bundesland. **Regionify** begleitet den gesamten Ablauf: Import, Zuordnung, Styling und Export.',
       },
       {
         question: 'Welche Dateiformate kann ich importieren?',
         answer:
-          'CSV- und Excel-Tabellen, JSON sowie Google Sheets mit Live-Sync auf unterstützten Plänen. Regionify nutzt unscharfe Textzuordnung, damit Zeilenbeschriftungen nicht exakt den Kartennamen entsprechen müssen.',
+          '**CSV**- und **Excel**-Tabellen, **JSON** sowie **Google Sheets** mit Live-Sync auf unterstützten Plänen. Regionify nutzt **unscharfe Textzuordnung**, damit Zeilenbeschriftungen nicht exakt den Kartennamen entsprechen müssen.',
       },
       {
         question: 'Welche Exportformate gibt es?',
         answer:
-          'Das hängt vom Plan ab. Der kostenlose Observer-Plan enthält JPEG-Export. Bezahlpläne ergänzen PNG und SVG, höhere Qualität, erweiterte Stile, Zeitreihen und auf Chronographer animierte GIF- und MP4-Exports.',
+          'Das hängt vom Plan ab. Der kostenlose **Observer**-Plan enthält **JPEG**-Export. Bezahlpläne ergänzen **PNG** und **SVG**, höhere Qualität, erweiterte Stile, Zeitreihen und auf **Chronographer** animierte **GIF**- und **MP4**-Exports.',
       },
       {
         question: 'Kann ich eine Karte in meine Website einbetten?',
         answer:
-          'Öffentliche Einbettung und iframe sind im Chronographer-Plan möglich. Pro Projekt können Sie eine öffentliche Seite mit SEO-Titel und -Beschreibung aktivieren.',
+          'Öffentliche Einbettung und **iframe** sind im **Chronographer**-Plan möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
       },
       {
         question: 'Wie funktioniert die Regionszuordnung?',
         answer:
-          'Nach dem Import vergleicht Regionify Ihre Beschriftungen mit den Kartennamen per Textähnlichkeit. Im Visualizer können Sie Zuordnungen bei Bedarf korrigieren.',
+          'Nach dem Import vergleicht Regionify Ihre Beschriftungen mit den Kartennamen per **Textähnlichkeit**. Im **Visualizer** können Sie Zuordnungen bei Bedarf korrigieren.',
       },
       {
         question: 'Brauche ich ein Konto?',
         answer:
-          'Ja. Konten sichern Projekte, Abrechnung und optional Google-Login. Aktuelle Pläne und Limits finden Sie unter Pläne in der App.',
+          'Ja. Konten sichern Projekte, Abrechnung und optional Google-Login. Aktuelle Pläne und Limits finden Sie unter **Pläne** in der App.',
       },
       {
         question: 'Wie erhalte ich Hilfe oder Feedback?',
         answer:
-          'Nutzen Sie die Kontaktseite in der App. Bei Abrechnungsproblemen finden Sie auf der Pläne-Seite Hinweise und einen Link zum Team.',
+          'Nutzen Sie die **Kontaktseite** in der App. Bei Abrechnungsproblemen finden Sie auf der **Pläne**-Seite Hinweise und einen Link zum Team.',
       },
     ],
   },

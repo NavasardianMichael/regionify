@@ -62,6 +62,7 @@ export type CommonNs = {
   faq: {
     title: string;
     intro: string;
+    /** Answers may use **term** markers around real keywords; see `renderFaqAnswer`. */
     items: ReadonlyArray<{ question: string; answer: string }>;
   };
   plans: {

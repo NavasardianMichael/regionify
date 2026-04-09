@@ -13,6 +13,7 @@ import {
   MenuOutlined,
   QuestionCircleOutlined,
   SettingOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import type { Locale } from '@regionify/shared';
@@ -44,6 +45,23 @@ type NavItem = {
     Omit<AntdIconProps, 'ref'> & React.RefAttributes<HTMLSpanElement>
   >;
 };
+
+type UserNavAvatarProps = {
+  avatarUrl?: string | null;
+  displayName: string;
+};
+
+const UserNavAvatar: FC<UserNavAvatarProps> = ({ avatarUrl, displayName }) => (
+  <Avatar
+    size="small"
+    src={avatarUrl || undefined}
+    icon={displayName ? undefined : <UserOutlined />}
+    alt={displayName ? `${displayName}'s avatar` : 'User avatar'}
+    className="shrink-0"
+  >
+    {displayName ? displayName.charAt(0).toUpperCase() : undefined}
+  </Avatar>
+);
 
 export const Navigation: FC = () => {
   const location = useLocation();
@@ -90,6 +108,13 @@ export const Navigation: FC = () => {
       message.error(text, 0);
     }
   }, [logout, navigate, message, t]);
+
+  const userDisplayName = user?.name?.trim() ?? '';
+  const userNameTextProps = {
+    ellipsis: { tooltip: userDisplayName || undefined },
+    className: 'mb-0! min-w-0 text-sm font-medium text-gray-700',
+    style: { maxWidth: 200 },
+  };
 
   const userMenuItems: DropdownProps['menu'] = useMemo(
     () => ({
@@ -160,17 +185,9 @@ export const Navigation: FC = () => {
       <div className="h-6 w-px bg-gray-200" aria-hidden />
       {isLoggedIn ? (
         <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
-          <Button type="text" className="flex! items-center gap-2 px-2! py-1!">
-            {user?.avatarUrl ? (
-              <Avatar
-                src={user.avatarUrl}
-                size="small"
-                alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
-              />
-            ) : null}
-            <Typography.Text className="min-w-0 truncate text-sm font-medium text-gray-700">
-              {user?.name}
-            </Typography.Text>
+          <Button type="text" className="flex! max-w-full min-w-0 items-center gap-2 px-2! py-1!">
+            <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
+            <Typography.Text {...userNameTextProps}>{user?.name}</Typography.Text>
             <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
           </Button>
         </Dropdown>
@@ -202,15 +219,13 @@ export const Navigation: FC = () => {
       <Divider className="my-2!" />
       {isLoggedIn ? (
         <Flex vertical gap="small">
-          <Flex align="center" gap="small" className="min-h-10 px-1">
-            {user?.avatarUrl ? (
-              <Avatar
-                src={user.avatarUrl}
-                size="small"
-                alt={user.name ? `${user.name}'s avatar` : 'User avatar'}
-              />
-            ) : null}
-            <Typography.Text className="text-sm font-medium text-gray-800">
+          <Flex align="center" gap="small" className="min-h-10 min-w-0 px-1">
+            <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
+            <Typography.Text
+              ellipsis={{ tooltip: userDisplayName || undefined }}
+              className="mb-0! min-w-0 text-sm font-medium text-gray-800"
+              style={{ maxWidth: 200 }}
+            >
               {user?.name}
             </Typography.Text>
           </Flex>

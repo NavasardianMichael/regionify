@@ -66,42 +66,42 @@ const es: CommonNs = {
       {
         question: '¿Qué es Regionify?',
         answer:
-          'Regionify es una aplicación web para crear mapas coropléticos interactivos con tus datos. Eliges un mapa regional, importas valores desde CSV, Excel, JSON o Google Sheets, personalizas la leyenda y exportas imágenes o animaciones según tu plan.',
+          'Regionify es una aplicación web para crear **mapas coropléticos** interactivos con tus datos. Eliges un mapa regional, importas valores desde **CSV**, **Excel**, **JSON** o **Google Sheets**, personalizas la leyenda y exportas imágenes o animaciones según tu plan.',
       },
       {
         question: '¿Qué es un mapa coroplético?',
         answer:
-          'Un mapa coroplético colorea u ombréa regiones predefinidas según un valor numérico (densidad, ventas por estado, etc.). Regionify cubre importación, emparejamiento, estilo y exportación.',
+          'Un **mapa coroplético** colorea u ombréa **regiones** predefinidas según un valor numérico (densidad, ventas por estado, etc.). **Regionify** cubre importación, emparejamiento, estilo y exportación.',
       },
       {
         question: '¿Qué formatos puedo importar?',
         answer:
-          'Hojas CSV y Excel, JSON y Google Sheets con sincronización en vivo en planes compatibles. Regionify usa coincidencia difusa de texto entre tus etiquetas y los nombres de región.',
+          'Hojas **CSV** y **Excel**, **JSON** y **Google Sheets** con sincronización en vivo en planes compatibles. Regionify usa **coincidencia difusa de texto** entre tus etiquetas y los nombres de región.',
       },
       {
         question: '¿Qué formatos de exportación hay?',
         answer:
-          'Depende del plan. El plan gratuito Observer incluye exportación JPEG. Los de pago añaden PNG y SVG, mayor calidad, estilos avanzados, series temporales y en Chronographer exportes GIF y MP4 animados.',
+          'Depende del plan. El plan gratuito **Observer** incluye exportación **JPEG**. Los de pago añaden **PNG** y **SVG**, mayor calidad, estilos avanzados, series temporales y en **Chronographer** exportes **GIF** y **MP4** animados.',
       },
       {
         question: '¿Puedo incrustar un mapa en mi sitio?',
         answer:
-          'La incrustación pública e iframe están en el plan Chronographer. Puedes activar una página pública por proyecto con título y meta descripción SEO.',
+          'La incrustación pública e **iframe** están en el plan **Chronographer**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
       },
       {
         question: '¿Cómo funciona la coincidencia de regiones?',
         answer:
-          'Tras importar, Regionify compara tus etiquetas con los nombres del mapa por similitud de texto. Puedes corregir asociaciones en el visualizador.',
+          'Tras importar, Regionify compara tus etiquetas con los nombres del mapa por **similitud de texto**. Puedes corregir asociaciones en el **visualizador**.',
       },
       {
         question: '¿Necesito una cuenta?',
         answer:
-          'Sí. Las cuentas guardan proyectos, facturación y el inicio de sesión opcional con Google. Consulta la página Planes para límites actuales.',
+          'Sí. Las cuentas guardan proyectos, facturación y el inicio de sesión opcional con Google. Consulta la página **Planes** para límites actuales.',
       },
       {
         question: '¿Cómo pido ayuda?',
         answer:
-          'Usa la página Contacto en la app. Para facturación, la página Planes indica cómo contactarnos si hay problemas.',
+          'Usa la página **Contacto** en la app. Para facturación, la página **Planes** indica cómo contactarnos si hay problemas.',
       },
     ],
   },

@@ -1,10 +1,15 @@
 import type { FC } from 'react';
 import { useMemo } from 'react';
 import type { Locale } from '@regionify/shared';
-import { Collapse, Flex, Typography } from 'antd';
+import { Collapse, type CollapseProps, Flex, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { renderFaqAnswer } from '@/helpers/faqAnswer';
 
 import { resources } from '@/locales';
+
+const faqCollapseClassNames: NonNullable<CollapseProps['classNames']> = {
+  body: 'bg-white px-5 py-3 rounded-[4px]',
+};
 
 const FaqPage: FC = () => {
   const { t, i18n } = useTypedTranslation();
@@ -13,9 +18,15 @@ const FaqPage: FC = () => {
     const items = resources[i18n.language as Locale].common.faq.items;
     return items.map((item, index) => ({
       key: `faq-${String(index)}`,
-      label: item.question,
+      label: (
+        <Typography.Text className="mb-0! font-semibold text-gray-900">
+          {item.question}
+        </Typography.Text>
+      ),
       children: (
-        <Typography.Paragraph className="mb-0! text-gray-600">{item.answer}</Typography.Paragraph>
+        <Typography.Paragraph className="mb-0! text-gray-600">
+          {renderFaqAnswer(item.answer)}
+        </Typography.Paragraph>
       ),
     }));
   }, [i18n.language]);
@@ -26,7 +37,12 @@ const FaqPage: FC = () => {
         {t('faq.title')}
       </Typography.Title>
       <Typography.Paragraph className="text-gray-600">{t('faq.intro')}</Typography.Paragraph>
-      <Collapse bordered={false} className="bg-transparent!" items={collapseItems} />
+      <Collapse
+        bordered={false}
+        className="bg-transparent!"
+        classNames={faqCollapseClassNames}
+        items={collapseItems}
+      />
     </Flex>
   );
 };

@@ -67,42 +67,42 @@ const fr: CommonNs = {
       {
         question: "Qu'est-ce que Regionify ?",
         answer:
-          'Regionify est une application web pour créer des cartes choroplèthes interactives à partir de vos données. Vous choisissez une carte régionale, importez des valeurs depuis CSV, Excel, JSON ou Google Sheets, stylisez la légende et exportez des images ou animations selon votre forfait.',
+          'Regionify est une application web pour créer des **cartes choroplèthes** interactives à partir de vos données. Vous choisissez une carte régionale, importez des valeurs depuis **CSV**, **Excel**, **JSON** ou **Google Sheets**, stylisez la légende et exportez des images ou animations selon votre forfait.',
       },
       {
         question: "Qu'est-ce qu'une carte choroplèthe ?",
         answer:
-          'Une carte choroplèthe colore ou ombrage des régions prédéfinies selon une valeur numérique—densité de population, ventes par région, etc. Regionify couvre import, correspondance, style et export.',
+          'Une **carte choroplèthe** colore ou ombrage des **régions** prédéfinies selon une valeur numérique—densité de population, ventes par région, etc. **Regionify** couvre import, correspondance, style et export.',
       },
       {
         question: 'Quels formats puis-je importer ?',
         answer:
-          'Tableurs CSV et Excel, JSON et Google Sheets avec synchronisation en direct sur les forfaits concernés. Regionify utilise une correspondance textuelle floue pour relier vos libellés aux noms des régions.',
+          'Tableurs **CSV** et **Excel**, **JSON** et **Google Sheets** avec synchronisation en direct sur les forfaits concernés. Regionify utilise une **correspondance textuelle floue** pour relier vos libellés aux noms des régions.',
       },
       {
         question: 'Quels formats d’export sont disponibles ?',
         answer:
-          "Cela dépend du forfait. L'offre gratuite Observer inclut l'export JPEG. Les offres payantes ajoutent PNG et SVG, une qualité plus élevée, des styles avancés, les séries temporelles et sur Chronographer des exports GIF et MP4 animés.",
+          "Cela dépend du forfait. L'offre gratuite **Observer** inclut l'export **JPEG**. Les offres payantes ajoutent **PNG** et **SVG**, une qualité plus élevée, des styles avancés, les séries temporelles et sur **Chronographer** des exports **GIF** et **MP4** animés.",
       },
       {
         question: 'Puis-je intégrer une carte sur mon site ?',
         answer:
-          "L'intégration publique et l'iframe sont disponibles avec le forfait Chronographer. Vous pouvez activer une page publique par projet avec titre et meta description SEO.",
+          "L'intégration publique et l'**iframe** sont disponibles avec le forfait **Chronographer**. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.",
       },
       {
         question: 'Comment fonctionne l’appariement des régions ?',
         answer:
-          "Après l'import, Regionify compare vos libellés aux noms des régions par similarité de texte. Vous pouvez corriger les associations dans le visualiseur.",
+          "Après l'import, Regionify compare vos libellés aux noms des régions par **similarité de texte**. Vous pouvez corriger les associations dans le **visualiseur**.",
       },
       {
         question: 'Ai-je besoin d’un compte ?',
         answer:
-          "Oui. Les comptes servent à enregistrer les projets, la facturation et la connexion Google optionnelle. Consultez la page Plans dans l'application pour les limites actuelles.",
+          "Oui. Les comptes servent à enregistrer les projets, la facturation et la connexion Google optionnelle. Consultez la page **Plans** dans l'application pour les limites actuelles.",
       },
       {
         question: 'Comment obtenir de l’aide ?',
         answer:
-          "Utilisez la page Contact dans l'application. Pour la facturation, la page Plans indique comment nous joindre en cas de problème.",
+          "Utilisez la page **Contact** dans l'application. Pour la facturation, la page **Plans** indique comment nous joindre en cas de problème.",
       },
     ],
   },
