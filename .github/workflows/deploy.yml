@@ -37,6 +37,7 @@ env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10'
   KEEP_RELEASES: 5
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   changes:
