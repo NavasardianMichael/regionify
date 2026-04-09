@@ -23,9 +23,27 @@ export function createApp(): express.Application {
   app.set('trust proxy', 1);
 
   // Security headers
+  const apiUrl = env.API_URL ?? env.CLIENT_URL;
   app.use(
     helmet({
-      contentSecurityPolicy: isProd,
+      contentSecurityPolicy: isProd
+        ? {
+            directives: {
+              defaultSrc: ["'self'"],
+              baseUri: ["'self'"],
+              fontSrc: ["'self'", 'https:', 'data:'],
+              formAction: ["'self'"],
+              frameAncestors: ["'self'"],
+              imgSrc: ["'self'", 'data:'],
+              objectSrc: ["'none'"],
+              scriptSrc: ["'self'"],
+              scriptSrcAttr: ["'none'"],
+              styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+              connectSrc: ["'self'", apiUrl],
+              upgradeInsecureRequests: [],
+            },
+          }
+        : false,
       crossOriginEmbedderPolicy: false,
     }),
   );

@@ -38,6 +38,9 @@ const envSchema = z.object({
   // Client URL
   CLIENT_URL: z.string().url(),
 
+  // Public API base URL (used for CSP connect-src; defaults to CLIENT_URL)
+  API_URL: z.string().url().optional(),
+
   // Static client directory (set in Docker image for SSR HTML shells)
   CLIENT_STATIC_DIR: z.string().optional(),
 
