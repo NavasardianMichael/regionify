@@ -8,7 +8,7 @@ import { renderFaqAnswer } from '@/helpers/faqAnswer';
 import { resources } from '@/locales';
 
 const faqCollapseClassNames: NonNullable<CollapseProps['classNames']> = {
-  body: 'bg-white px-5 py-3 rounded-[4px]',
+  body: 'bg-white px-5! py-3! rounded',
 };
 
 const FaqPage: FC = () => {
@@ -32,7 +32,7 @@ const FaqPage: FC = () => {
   }, [i18n.language]);
 
   return (
-    <Flex vertical gap="middle" className="mx-auto w-full max-w-4xl">
+    <Flex vertical gap="middle" className="mx-auto w-full max-w-4xl pb-6!">
       <Typography.Title level={1} className="text-primary text-2xl font-bold md:text-3xl">
         {t('faq.title')}
       </Typography.Title>
