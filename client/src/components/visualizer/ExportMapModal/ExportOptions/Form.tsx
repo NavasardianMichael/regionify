@@ -56,7 +56,7 @@ export const Form: FC<FormProps> = (props) => {
   } = props;
 
   return (
-    <Flex vertical gap="middle" className="py-md">
+    <Flex vertical gap="middle" className="py-md px-sm">
       <Flex vertical gap="small">
         <Flex align="center" gap="small">
           <Typography.Text className="text-sm text-gray-600">
@@ -112,14 +112,19 @@ export const Form: FC<FormProps> = (props) => {
               disabled={isExporting}
             />
           </Flex>
-          <Slider
-            min={1}
-            max={100}
-            value={quality ?? resolvedQuality}
-            onChange={handleQualitySliderChange}
-            aria-label="Export quality"
-            disabled={isExporting}
-          />
+          <div className="min-w-0">
+            <Slider
+              min={1}
+              max={100}
+              value={quality ?? resolvedQuality}
+              onChange={handleQualitySliderChange}
+              aria-label="Export quality"
+              disabled={isExporting}
+              styles={{
+                root: { marginInline: 0 },
+              }}
+            />
+          </div>
         </Flex>
       )}
 

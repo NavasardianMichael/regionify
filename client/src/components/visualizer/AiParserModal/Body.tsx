@@ -44,6 +44,7 @@ export const Body: FC<BodyProps> = ({
           readOnly
           rows={14}
           className="font-mono text-sm"
+          classNames={{ textarea: 'scrollbar-thin' }}
           styles={{ textarea: { resize: 'none' } }}
         />
         {isStreaming && (
@@ -58,7 +59,9 @@ export const Body: FC<BodyProps> = ({
         onChange={(e) => onInputChange(e.target.value)}
         placeholder={placeholder}
         rows={14}
-        className="resize-none font-mono text-sm"
+        className="font-mono text-sm"
+        classNames={{ textarea: 'scrollbar-thin' }}
+        styles={{ textarea: { resize: 'none' } }}
       />
     )}
   </Flex>

@@ -16,6 +16,7 @@ export const Body: FC<BodyProps> = ({ text, placeholder, error, onTextChange }) 
       placeholder={placeholder}
       rows={14}
       className="font-mono text-sm"
+      classNames={{ textarea: 'scrollbar-thin' }}
       styles={{ textarea: { resize: 'none' } }}
     />
     {error ? (
