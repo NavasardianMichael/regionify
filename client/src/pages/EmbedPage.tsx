@@ -99,13 +99,10 @@ const EmbedPage: FC = () => {
   }
 
   return (
-    <Flex vertical className="h-full min-h-0 w-full gap-2 p-4">
-      <Flex className="min-h-0 flex-1">
-        <MapViewer className="min-h-0 flex-1" />
+    <Flex vertical className="h-full min-h-0 w-full min-w-0 flex-1 overflow-hidden">
+      <Flex className="min-h-0 min-w-0 flex-1 overflow-hidden px-4 pt-0 pb-4 md:px-6 md:pb-6">
+        <MapViewer className="min-h-0 min-w-0 flex-1" />
       </Flex>
-      <Typography.Text type="secondary" className="shrink-0 text-center text-xs">
-        Map by Regionify
-      </Typography.Text>
     </Flex>
   );
 };

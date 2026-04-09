@@ -32,7 +32,12 @@ function AppRoutesLayout() {
   const MainOrRegion = isEmbedRoute ? 'div' : 'main';
 
   return (
-    <Flex vertical className="h-screen min-h-0 overflow-hidden">
+    <Flex
+      vertical
+      className={
+        isEmbedRoute ? 'h-full min-h-0 overflow-hidden' : 'h-screen min-h-0 overflow-hidden'
+      }
+    >
       {!isEmbedRoute && <Navigation />}
       {/* Embed: SSR already outputs document <main> + <header>; use a region div to avoid nested <main>. */}
       <MainOrRegion

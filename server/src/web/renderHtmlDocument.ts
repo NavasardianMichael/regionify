@@ -5,6 +5,11 @@ export type PageMeta = {
   description: string;
   keywords?: string | null;
   canonicalPath: string;
+  /**
+   * English map region label (from project `countryId`) for embed SEO:
+   * `geo.placename`, keywords, and JSON-LD `Place` when set.
+   */
+  regionDisplayNameEn?: string | null;
 };
 
 /** Semantic SEO block outside `#root` so it survives client mount (embed only). */
@@ -26,12 +31,23 @@ function renderEmbedJsonLd(opts: {
   inLanguage: string;
   /** Comma-separated keywords; mirrors `<meta name="keywords">` when set. */
   keywords?: string | null;
+  /** Resolved map region label in English (country or area). */
+  regionDisplayNameEn?: string | null;
 }): string {
-  const { origin, canonicalUrl, pageName, pageDescription, inLanguage, keywords } = opts;
+  const {
+    origin,
+    canonicalUrl,
+    pageName,
+    pageDescription,
+    inLanguage,
+    keywords,
+    regionDisplayNameEn,
+  } = opts;
   const websiteId = `${origin}#website`;
   const orgId = `${origin}#organization`;
   const pageId = `${canonicalUrl}#webpage`;
   const keywordsText = keywords?.trim() ?? '';
+  const placeName = regionDisplayNameEn?.trim() ?? '';
   const webPageNode: Record<string, unknown> = {
     '@type': 'WebPage',
     '@id': pageId,
@@ -44,6 +60,9 @@ function renderEmbedJsonLd(opts: {
   };
   if (keywordsText.length > 0) {
     webPageNode.keywords = keywordsText;
+  }
+  if (placeName.length > 0) {
+    webPageNode.about = { '@type': 'Place', name: placeName };
   }
   const graph = {
     '@context': 'https://schema.org',
@@ -101,8 +120,24 @@ export function renderHtmlDocument(opts: {
   const canonical = `${base}${meta.canonicalPath}`;
   const ogImage = `${base}/og-image.jpg`;
 
-  const kw = meta.keywords?.trim();
+  const regionEn = meta.regionDisplayNameEn?.trim() ?? '';
+  const baseKw = meta.keywords?.trim() ?? '';
+  const kwMerged =
+    regionEn.length > 0
+      ? baseKw.length > 0
+        ? baseKw.toLowerCase().includes(regionEn.toLowerCase())
+          ? baseKw
+          : `${baseKw}, ${regionEn}`
+        : regionEn
+      : baseKw.length > 0
+        ? baseKw
+        : '';
+  const kw = kwMerged.length > 0 ? kwMerged : undefined;
   const keywordsTag = kw ? `    <meta name="keywords" content="${escapeHtml(kw)}" />\n` : '';
+  const geoPlacenameTag =
+    regionEn.length > 0
+      ? `    <meta name="geo.placename" content="${escapeHtml(regionEn)}" />\n`
+      : '';
 
   const jsonLdBlock = includeEmbedJsonLd
     ? renderEmbedJsonLd({
@@ -112,6 +147,7 @@ export function renderHtmlDocument(opts: {
         pageDescription: meta.description,
         inLanguage: htmlLang,
         keywords: kw ?? null,
+        regionDisplayNameEn: regionEn.length > 0 ? regionEn : null,
       })
     : '';
 
@@ -119,15 +155,18 @@ export function renderHtmlDocument(opts: {
     .map((href) => `    <link rel="stylesheet" crossorigin href="${escapeHtml(href)}" />`)
     .join('\n');
 
+  const embedRootClasses = embedSemantic ? 'h-screen min-h-0 overflow-hidden' : '';
+  const htmlClassAttr = embedRootClasses ? ` class="${embedRootClasses}"` : '';
+
   return `<!DOCTYPE html>
-<html lang="${escapeHtml(htmlLang)}">
+<html lang="${escapeHtml(htmlLang)}"${htmlClassAttr}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(meta.documentTitle)}</title>
     <meta name="title" content="${escapeHtml(meta.documentTitle)}" />
     <meta name="description" content="${escapeHtml(meta.description)}" />
-${keywordsTag}    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+${keywordsTag}${geoPlacenameTag}    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
@@ -159,7 +198,7 @@ ${keywordsTag}    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Regionify" />
 ${jsonLdBlock}${cssLinks ? `${cssLinks}\n` : ''}  </head>
-  <body>
+  <body${embedSemantic ? ' class="m-0 h-screen min-h-0 overflow-hidden"' : ''}>
 ${
   embedSemantic
     ? renderEmbedBody({ rootInnerHtml, embedSemantic })
@@ -180,15 +219,15 @@ function renderEmbedBody(opts: {
   const intro = escapeHtml(opts.embedSemantic.intro);
   const root = opts.rootInnerHtml;
   return `    <a href="#embed-app" class="embed-skip-to-map">Skip to map</a>
-    <main class="flex min-h-screen w-full flex-col bg-gray-100">
-      <header class="shrink-0 border-b border-solid border-gray-200 bg-white px-4 py-4 shadow-sm">
+    <main class="flex h-screen min-h-0 w-full flex-col overflow-hidden bg-gray-100">
+      <header class="shrink-0 bg-white px-4 py-6 md:px-6 md:py-8">
         <div class="mx-auto flex w-full max-w-6xl flex-col gap-1">
           <h1 class="text-primary m-0 text-xl font-semibold tracking-tight md:text-2xl">${h}</h1>
           <p class="m-0 max-w-3xl text-sm leading-relaxed text-gray-600">${intro}</p>
         </div>
       </header>
-      <div id="embed-app" class="flex min-h-0 flex-1 flex-col">
-        <div id="root">${root}</div>
+      <div id="embed-app" class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <div id="root" class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">${root}</div>
       </div>
     </main>
 `;

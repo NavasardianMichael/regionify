@@ -492,6 +492,7 @@ const fr: CommonNs = {
       tooltipZoomIn: 'Agrandir',
       tooltipZoomOut: 'Réduire',
       tooltipResetMapAndLabels: 'Réinitialiser la carte et les étiquettes',
+      tooltipResetMap: 'Réinitialiser la carte',
       tooltipEnableLabelDragging:
         'Activer le déplacement des étiquettes de région (désactive le déplacement de la carte)',
       tooltipDisableLabelDragging:

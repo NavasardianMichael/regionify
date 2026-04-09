@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const REGIONS_FILE = path.resolve(__dirname, '../src/constants/regions.ts');
+const REGIONS_FILE = path.resolve(__dirname, '../../shared/src/constants/regions.ts');
 
 function updateRegionsFile() {
   let content = fs.readFileSync(REGIONS_FILE, 'utf-8');

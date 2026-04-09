@@ -17,3 +17,5 @@ export * from './constants/plans.js';
 export * from './constants/validation.js';
 export * from './constants/httpStatus.js';
 export * from './constants/exportTypes.js';
+export * from './constants/regions.js';
+export * from './regionMeta.js';

@@ -492,6 +492,7 @@ const de: CommonNs = {
       tooltipZoomIn: 'Vergrößern',
       tooltipZoomOut: 'Verkleinern',
       tooltipResetMapAndLabels: 'Karte und Beschriftungen zurücksetzen',
+      tooltipResetMap: 'Karte zurücksetzen',
       tooltipEnableLabelDragging:
         'Regionsbeschriftungen verschieben aktivieren (deaktiviert das Verschieben der Karte)',
       tooltipDisableLabelDragging:

@@ -1,4 +1,5 @@
-import { type FC, memo } from 'react';
+import { type FC, memo, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   ArrowDownOutlined,
   ArrowLeftOutlined,
@@ -14,6 +15,7 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { selectZoomControls } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { useIsTouchDevice } from '@/hooks/useIsTouchDevice';
+import { isEmbedPathname } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type MapPanZoomControlsProps = {
@@ -41,6 +43,11 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
   zoomStackExtraBottomPx = 0,
 }) {
   const { t } = useTypedTranslation();
+  const { pathname } = useLocation();
+  const isEmbedPage = useMemo(() => isEmbedPathname(pathname), [pathname]);
+  const resetMapTooltip = isEmbedPage
+    ? t('visualizer.mapStyles.tooltipResetMap')
+    : t('visualizer.mapStyles.tooltipResetMapAndLabels');
   const isTouchDevice = useIsTouchDevice();
   const zoomControls = useMapStylesStore(selectZoomControls);
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
@@ -132,14 +139,14 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             aria-label={t('visualizer.mapStyles.tooltipZoomOut')}
           />
         </Tooltip>
-        <Tooltip title={t('visualizer.mapStyles.tooltipResetMapAndLabels')} placement="left">
+        <Tooltip title={resetMapTooltip} placement="left">
           <Button
             type="default"
             icon={<FullscreenOutlined />}
             onClick={onResetView}
             disabled={isDisabled}
             className="shadow-md"
-            aria-label={t('visualizer.mapStyles.tooltipResetMapAndLabels')}
+            aria-label={resetMapTooltip}
           />
         </Tooltip>
       </Flex>

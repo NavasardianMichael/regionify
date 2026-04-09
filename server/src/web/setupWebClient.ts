@@ -101,6 +101,7 @@ export function setupWebClient(app: Application): void {
           description: meta.description,
           keywords: kw,
           canonicalPath: `/embed/${encodeURIComponent(token)}`,
+          regionDisplayNameEn: meta.regionDisplayNameEn,
         },
         rootInnerHtml: '',
         entryJs: assets.js,

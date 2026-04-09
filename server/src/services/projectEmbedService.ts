@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 
 import {
   ErrorCode,
+  getRegionEnglishLabelForMeta,
   HttpStatus,
   PLAN_DETAILS,
   type ProjectEmbedUpdateInput,
@@ -70,6 +71,7 @@ export const projectEmbedService = {
     projectName: string;
     htmlLang: string;
     ogLocale: string;
+    regionDisplayNameEn: string | null;
   }> {
     const project = await projectRepository.findByEmbedToken(token);
 
@@ -87,8 +89,17 @@ export const projectEmbedService = {
     const kw = toKeywordArray(project.embedSeoKeywords);
     const keywords = kw && kw.length > 0 ? kw.join(', ') : null;
     const { htmlLang, ogLocale } = localeToHtmlAndOg(project.user.locale);
+    const regionDisplayNameEn = getRegionEnglishLabelForMeta(project.countryId);
 
-    return { title, description, keywords, projectName: project.name, htmlLang, ogLocale };
+    return {
+      title,
+      description,
+      keywords,
+      projectName: project.name,
+      htmlLang,
+      ogLocale,
+      regionDisplayNameEn,
+    };
   },
 
   async updateEmbedSettings(

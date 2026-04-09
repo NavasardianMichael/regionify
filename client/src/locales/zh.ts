@@ -462,6 +462,7 @@ const zh: CommonNs = {
       tooltipZoomIn: '放大',
       tooltipZoomOut: '缩小',
       tooltipResetMapAndLabels: '重置地图和标签',
+      tooltipResetMap: '重置地图',
       tooltipEnableLabelDragging: '启用区域标签拖动（将禁用地图拖动）',
       tooltipDisableLabelDragging: '禁用区域标签拖动（将恢复地图拖动）',
       tooltipPanUp: '向上平移地图',

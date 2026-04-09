@@ -478,6 +478,7 @@ const en: CommonNs = {
       tooltipZoomIn: 'Zoom in',
       tooltipZoomOut: 'Zoom out',
       tooltipResetMapAndLabels: 'Reset map and labels',
+      tooltipResetMap: 'Reset map',
       tooltipEnableLabelDragging: 'Enable region label dragging (disables map dragging)',
       tooltipDisableLabelDragging: 'Disable region label dragging (enables map dragging)',
       tooltipPanUp: 'Pan up the map',

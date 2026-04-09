@@ -426,6 +426,8 @@ export type CommonNs = {
       tooltipZoomIn: string;
       tooltipZoomOut: string;
       tooltipResetMapAndLabels: string;
+      /** Public embed map only: shorter reset control label. */
+      tooltipResetMap: string;
       tooltipEnableLabelDragging: string;
       tooltipDisableLabelDragging: string;
       tooltipPanUp: string;

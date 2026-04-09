@@ -483,6 +483,7 @@ const ru: CommonNs = {
       tooltipZoomIn: 'Увеличить',
       tooltipZoomOut: 'Уменьшить',
       tooltipResetMapAndLabels: 'Сбросить карту и подписи',
+      tooltipResetMap: 'Сбросить карту',
       tooltipEnableLabelDragging:
         'Включить перетаскивание подписей регионов (перетаскивание карты отключается)',
       tooltipDisableLabelDragging:

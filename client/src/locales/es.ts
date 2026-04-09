@@ -488,6 +488,7 @@ const es: CommonNs = {
       tooltipZoomIn: 'Ampliar',
       tooltipZoomOut: 'Reducir',
       tooltipResetMapAndLabels: 'Restablecer mapa y etiquetas',
+      tooltipResetMap: 'Restablecer mapa',
       tooltipEnableLabelDragging:
         'Activar arrastre de etiquetas de región (se desactiva el arrastre del mapa)',
       tooltipDisableLabelDragging:
