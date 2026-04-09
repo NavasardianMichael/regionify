@@ -6,9 +6,9 @@ services:
     container_name: regionify-postgres
     restart: unless-stopped
     env_file:
-      - "${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}"
+      - '${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}'
     ports:
-      - '127.0.0.1:5433:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -43,7 +43,7 @@ services:
     ports:
       - '9002:9002'
     env_file:
-      - "${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}"
+      - '${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}'
     depends_on:
       postgres:
         condition: service_healthy
