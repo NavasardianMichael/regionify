@@ -1,10 +1,8 @@
 import { type FC } from 'react';
-import { Badge, Flex, Input, Spin, Typography } from 'antd';
+import { Flex, Input, Spin, Typography } from 'antd';
 
 type BodyProps = {
   limitedRequestsNote: string;
-  requestsRemainingTitle: string;
-  remaining: number;
   placeholder: string;
   inputText: string;
   onInputChange: (value: string) => void;
@@ -15,8 +13,6 @@ type BodyProps = {
 
 export const Body: FC<BodyProps> = ({
   limitedRequestsNote,
-  requestsRemainingTitle,
-  remaining,
   placeholder,
   inputText,
   onInputChange,
@@ -25,18 +21,9 @@ export const Body: FC<BodyProps> = ({
   isStreaming,
 }) => (
   <Flex vertical gap="small" className="py-md">
-    <Flex justify="space-between" align="center">
-      <Typography.Text type="secondary" className="text-xs">
-        {limitedRequestsNote}
-      </Typography.Text>
-      <Badge
-        count={remaining}
-        showZero
-        color={remaining > 0 ? 'blue' : 'red'}
-        size="small"
-        title={requestsRemainingTitle}
-      />
-    </Flex>
+    <Typography.Text type="secondary" className="text-xs">
+      {limitedRequestsNote}
+    </Typography.Text>
     {showOutput ? (
       <Flex vertical gap="xs">
         <Input.TextArea

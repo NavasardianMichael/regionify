@@ -81,3 +81,38 @@
 .scrollbar-legend::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-gray-400);
 }
+
+/*
+ * Embed shell HTML is rendered by the server with static class names; Tailwind does not scan
+ * server/src, so utilities like sr-only are not emitted. Keep skip-link styles here.
+ */
+.embed-skip-to-map {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.embed-skip-to-map:focus-visible {
+  position: fixed;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  left: 1rem;
+  top: 1rem;
+  z-index: 9999;
+  border-radius: 0.125rem;
+  background-color: #fff;
+  padding: 0.5rem 0.75rem;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+}

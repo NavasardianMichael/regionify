@@ -328,9 +328,8 @@ const ru: CommonNs = {
       descriptionPlaceholder:
         'напр. Интерактивная региональная карта «{{projectName}}» на Regionify.',
       defaultMetaDescription: 'Интерактивная региональная карта «{{projectName}}» на Regionify.',
-      shareLinkHint:
-        'Включите публичную вставку и нажмите «Сохранить», чтобы получить ссылку, открыть страницу и код iframe.',
-      openInNewTab: 'Открыть страницу вставки',
+      saveToGenerateLink:
+        'Сохраните настройки, чтобы получить ссылку на публичную страницу и код вставки (iframe).',
       planRequired: 'Публичная вставка доступна на тарифе {{planName}}.',
       tooltipChronographerBody:
         'Публичная вставка карты (ссылка общего доступа и iframe) входит в тариф {{planName}}.',
@@ -340,9 +339,9 @@ const ru: CommonNs = {
       tagSelectNoData: 'Нет совпадений. Введите ключевое слово и нажмите Enter.',
       saveSuccess: 'Настройки вставки сохранены',
       saveFailed: 'Не удалось сохранить настройки вставки',
-      shareUrl: 'Ссылка общего доступа',
+      publicPage: 'Публичная страница',
       copyUrl: 'Копировать ссылку',
-      iframe: 'Код iframe',
+      embedIframeCode: 'Код вставки (iframe)',
       copyIframe: 'Копировать iframe',
       copied: '{{label}} скопировано в буфер обмена',
       copyFailed: 'Не удалось скопировать',
@@ -419,12 +418,12 @@ const ru: CommonNs = {
     },
     aiParserModal: {
       title: 'ИИ-парсер',
-      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      limitedRequestsNote:
+        'Не более {{max}} запросов ИИ-парсинга в сутки. Сегодня осталось: {{count}}.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Анализировать с ИИ',
       parsing: 'Обработка…',
       parseError: 'Ошибка ИИ-анализа. Пожалуйста, попробуйте снова.',
-      requestsRemaining: 'Осталось {{count}} запрос(а/ов) сегодня',
       limitReached: 'Достигнут дневной лимит ИИ-анализа. Сбрасывается через 24 часа.',
       inputTooLong: 'Ввод превышает {{max}} символов.',
     },

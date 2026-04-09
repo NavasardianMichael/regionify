@@ -336,9 +336,8 @@ const de: CommonNs = {
       titlePlaceholder: 'z. B. {{example}}',
       descriptionPlaceholder: 'z. B. Interaktive Regionskarte von {{projectName}} auf Regionify.',
       defaultMetaDescription: 'Interaktive Regionskarte von {{projectName}} auf Regionify.',
-      shareLinkHint:
-        'Öffentliche Einbettung aktivieren und auf Speichern tippen, um Freigabe-Link, Seite und iframe-Code zu erhalten.',
-      openInNewTab: 'Einbettungsseite öffnen',
+      saveToGenerateLink:
+        'Speichern Sie die Einstellungen, um den Link zur öffentlichen Seite und den Einbettungscode (iframe) zu erhalten.',
       planRequired: 'Öffentliche Einbettung erfordert den Tarif {{planName}}.',
       tooltipChronographerBody:
         'Öffentliche Karten-Einbettung (Freigabe-Link und iframe) ist im Tarif {{planName}} enthalten.',
@@ -349,9 +348,9 @@ const de: CommonNs = {
       tagSelectNoData: 'Keine Treffer. Schlüsselwort eingeben und Enter drücken.',
       saveSuccess: 'Einbettungseinstellungen gespeichert',
       saveFailed: 'Einbettungseinstellungen konnten nicht gespeichert werden',
-      shareUrl: 'Freigabe-URL',
+      publicPage: 'Öffentliche Seite',
       copyUrl: 'URL kopieren',
-      iframe: 'Iframe-Code',
+      embedIframeCode: 'Einbettungscode (iframe)',
       copyIframe: 'Iframe kopieren',
       copied: '{{label}} in die Zwischenablage kopiert',
       copyFailed: 'Kopieren fehlgeschlagen',
@@ -428,12 +427,12 @@ const de: CommonNs = {
     },
     aiParserModal: {
       title: 'KI-Parser',
-      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      limitedRequestsNote:
+        'Die KI-Analyse ist auf {{max}} Nutzungen pro Tag begrenzt. Heute haben Sie noch {{count}} übrig.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Mit KI analysieren',
       parsing: 'Analysiere…',
       parseError: 'KI-Analyse fehlgeschlagen. Bitte versuchen Sie es erneut.',
-      requestsRemaining: 'Noch {{count}} Anfrage(n) heute',
       limitReached: 'Tägliches KI-Analyselimit erreicht. Wird in 24 Stunden zurückgesetzt.',
       inputTooLong: 'Eingabe überschreitet {{max}} Zeichen.',
     },

@@ -24,7 +24,7 @@ import {
 } from '@ant-design/icons';
 import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import type { RadioChangeEvent, UploadProps } from 'antd';
-import { Badge, Button, Flex, Radio, Spin, theme, Tooltip, Typography, Upload } from 'antd';
+import { Button, Flex, Radio, Spin, theme, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
 import { fetchAiRemaining } from '@/api/ai';
 import {
@@ -368,15 +368,7 @@ export const ImportDataPanel: FC = () => {
       tab_delimited: t('visualizer.importData.format.tabDelimited'),
       ai_parser:
         plan === PLANS.chronographer ? (
-          <Badge
-            count={aiRemaining}
-            showZero
-            size="small"
-            color={aiRemaining > 0 ? 'blue' : 'red'}
-            offset={[6, 0]}
-          >
-            {t('visualizer.importData.format.aiParser')}
-          </Badge>
+          t('visualizer.importData.format.aiParser')
         ) : (
           <Tooltip
             styles={{
@@ -417,7 +409,7 @@ export const ImportDataPanel: FC = () => {
       value,
       disabled: value === IMPORT_DATA_TYPES.aiParser && plan !== PLANS.chronographer,
     }));
-  }, [t, plan, aiRemaining, token.colorTextLightSolid]);
+  }, [t, plan, token.colorTextLightSolid]);
 
   const handleImportDataTypeChange = useCallback(
     (e: RadioChangeEvent) => {

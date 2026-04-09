@@ -282,11 +282,10 @@ export type CommonNs = {
       defaultMetaDescription: string;
       saveSuccess: string;
       saveFailed: string;
-      shareUrl: string;
-      shareLinkHint: string;
-      openInNewTab: string;
+      publicPage: string;
+      saveToGenerateLink: string;
       copyUrl: string;
-      iframe: string;
+      embedIframeCode: string;
       copyIframe: string;
       copied: string;
       copyFailed: string;
@@ -369,7 +368,6 @@ export type CommonNs = {
       submit: string;
       parsing: string;
       parseError: string;
-      requestsRemaining: string;
       limitReached: string;
       inputTooLong: string;
     };

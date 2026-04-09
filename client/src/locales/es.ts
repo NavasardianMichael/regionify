@@ -332,9 +332,8 @@ const es: CommonNs = {
       titlePlaceholder: 'p. ej. {{example}}',
       descriptionPlaceholder: 'p. ej. Mapa regional interactivo de {{projectName}} en Regionify.',
       defaultMetaDescription: 'Mapa regional interactivo de {{projectName}} en Regionify.',
-      shareLinkHint:
-        'Activa la incrustación pública y pulsa Guardar para obtener el enlace, abrir la página y el código iframe.',
-      openInNewTab: 'Abrir página de incrustación',
+      saveToGenerateLink:
+        'Guarda la configuración para generar el enlace de la página pública y el código de incrustación (iframe).',
       planRequired: 'La incrustación pública requiere el plan {{planName}}.',
       tooltipChronographerBody:
         'La incrustación pública del mapa (enlace para compartir e iframe) está incluida en el plan {{planName}}.',
@@ -345,9 +344,9 @@ const es: CommonNs = {
       tagSelectNoData: 'Sin coincidencias. Escribe una palabra clave y pulsa Intro.',
       saveSuccess: 'Ajustes de incrustación guardados',
       saveFailed: 'No se pudieron guardar los ajustes de incrustación',
-      shareUrl: 'URL para compartir',
+      publicPage: 'Página pública',
       copyUrl: 'Copiar URL',
-      iframe: 'Código iframe',
+      embedIframeCode: 'Código de incrustación (iframe)',
       copyIframe: 'Copiar iframe',
       copied: '{{label}} copiado al portapapeles',
       copyFailed: 'No se pudo copiar',
@@ -424,12 +423,12 @@ const es: CommonNs = {
     },
     aiParserModal: {
       title: 'Analizador IA',
-      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      limitedRequestsNote:
+        'El análisis con IA está limitado a {{max}} usos al día. Te quedan {{count}} hoy.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Analizar con IA',
       parsing: 'Analizando…',
       parseError: 'El análisis de IA falló. Por favor, inténtelo de nuevo.',
-      requestsRemaining: '{{count}} solicitud(es) restante(s) hoy',
       limitReached: 'Límite diario de análisis de IA alcanzado. Se restablece en 24 horas.',
       inputTooLong: 'La entrada supera {{max}} caracteres.',
     },

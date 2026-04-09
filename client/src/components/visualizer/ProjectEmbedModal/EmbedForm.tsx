@@ -29,6 +29,9 @@ export const EmbedForm: FC<Props> = ({
 }) => {
   const { t } = useTypedTranslation();
 
+  const embedEnabled = Form.useWatch('enabled', form) === true;
+  const fieldsDisabled = submitting || !embedEnabled;
+
   const tagSelectNoData = useMemo(
     () => (
       <Typography.Text type="secondary" className="text-xs">
@@ -114,7 +117,7 @@ export const EmbedForm: FC<Props> = ({
         <Input
           maxLength={SEO_TITLE_MAX}
           showCount
-          disabled={submitting}
+          disabled={fieldsDisabled}
           placeholder={titlePlaceholder}
         />
       </Form.Item>
@@ -129,7 +132,7 @@ export const EmbedForm: FC<Props> = ({
           rows={3}
           maxLength={SEO_DESCRIPTION_MAX}
           showCount
-          disabled={submitting}
+          disabled={fieldsDisabled}
           styles={TEXTAREA_STYLES}
           placeholder={descriptionPlaceholder}
         />
@@ -148,7 +151,7 @@ export const EmbedForm: FC<Props> = ({
         <Select
           mode="tags"
           placeholder={t('visualizer.embed.keywordPlaceholder')}
-          disabled={submitting}
+          disabled={fieldsDisabled}
           maxCount={KEYWORD_MAX_COUNT}
           tokenSeparators={[',']}
           className="w-full"

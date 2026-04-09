@@ -334,9 +334,8 @@ const fr: CommonNs = {
       titlePlaceholder: 'ex. {{example}}',
       descriptionPlaceholder: 'ex. Carte régionale interactive de {{projectName}} sur Regionify.',
       defaultMetaDescription: 'Carte régionale interactive de {{projectName}} sur Regionify.',
-      shareLinkHint:
-        'Activez l’intégration publique et cliquez sur Enregistrer pour obtenir le lien, ouvrir la page et le code iframe.',
-      openInNewTab: 'Ouvrir la page d’intégration',
+      saveToGenerateLink:
+        'Enregistrez les paramètres pour générer le lien de la page publique et le code d’intégration (iframe).',
       planRequired: 'L’intégration publique nécessite le forfait {{planName}}.',
       tooltipChronographerBody:
         'L’intégration publique de la carte (lien de partage et iframe) est incluse dans le forfait {{planName}}.',
@@ -347,9 +346,9 @@ const fr: CommonNs = {
       tagSelectNoData: 'Aucun résultat. Saisissez un mot-clé et appuyez sur Entrée.',
       saveSuccess: 'Paramètres d’intégration enregistrés',
       saveFailed: 'Impossible d’enregistrer les paramètres d’intégration',
-      shareUrl: 'URL de partage',
+      publicPage: 'Page publique',
       copyUrl: 'Copier l’URL',
-      iframe: 'Code iframe',
+      embedIframeCode: 'Code d’intégration (iframe)',
       copyIframe: 'Copier l’iframe',
       copied: '{{label}} copié dans le presse-papiers',
       copyFailed: 'Impossible de copier',
@@ -427,12 +426,12 @@ const fr: CommonNs = {
     },
     aiParserModal: {
       title: 'Analyseur IA',
-      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      limitedRequestsNote:
+        'L\u2019analyse IA est limit\u00e9e \u00e0 {{max}} utilisations par jour. Il vous en reste {{count}} aujourd\u2019hui.',
       placeholder: 'Describe your data or paste raw text for the AI to structure\u2026',
       submit: 'Analyser avec l\u2019IA',
       parsing: 'Analyse en cours\u2026',
       parseError: 'L\u2019analyse IA a \u00e9chou\u00e9. Veuillez r\u00e9essayer.',
-      requestsRemaining: '{{count}} requ\u00eate(s) restante(s) aujourd\u2019hui',
       limitReached:
         'Limite quotidienne d\u2019analyse IA atteinte. R\u00e9initialisation dans 24 heures.',
       inputTooLong: 'La saisie d\u00e9passe {{max}} caract\u00e8res.',

@@ -8,6 +8,7 @@ import { selectUpdateProjectInList } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 import { EMBED_PLAN_ERROR_EN, MODAL_STYLES, MODAL_WIDTH, SEO_TITLE_MAX } from './constants';
 import { EmbedForm } from './EmbedForm';
 import { Footer } from './Footer';
@@ -40,6 +41,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
 
   const [form] = Form.useForm<ProjectEmbedFormValues>();
   const [submitting, setSubmitting] = useState(false);
+  const embedEnabled = Form.useWatch('enabled', form) === true;
 
   useEffect(() => {
     if (!open) return;
@@ -68,9 +70,9 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       buildEmbedPageUrl({
         origin: window.location.origin,
         token: project.embed.token,
-        enabled: project.embed.enabled,
+        enabled: embedEnabled,
       }),
-    [project.embed.token, project.embed.enabled],
+    [project.embed.token, embedEnabled],
   );
 
   const iframeSnippet = useMemo(() => buildIframeSnippet(embedPageUrl), [embedPageUrl]);
@@ -142,6 +144,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       title={<Title />}
       open={open}
       onCancel={onModalCancel}
+      className={bodyScrollbarStyles.bodyScrollbar}
       maskClosable={false}
       keyboard={!submitting}
       closable={{ disabled: submitting }}
@@ -159,6 +162,8 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         onFinish={onFinish}
       />
       <ShareSection
+        embedEnabled={embedEnabled}
+        embedToken={project.embed.token}
         embedPageUrl={embedPageUrl}
         iframeSnippet={iframeSnippet}
         submitting={submitting}

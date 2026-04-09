@@ -3,7 +3,7 @@ import { Modal as AntModal } from 'antd';
 import { streamAiParse } from '@/api/ai';
 import { selectSetVisualizerState } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { IMPORT_DATA_TYPES } from '@/constants/data';
+import { IMPORT_DATA_TYPES, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@/constants/data';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { commitParsedImport } from '@/helpers/commitParsedImport';
 import { parseCSV } from '@/helpers/importDataParsers';
@@ -156,11 +156,10 @@ export const AiParserModal: FC<Props> = ({
       focusable={{ trap: false }}
     >
       <Body
-        limitedRequestsNote={t('visualizer.aiParserModal.limitedRequestsNote')}
-        requestsRemainingTitle={t('visualizer.aiParserModal.requestsRemaining', {
+        limitedRequestsNote={t('visualizer.aiParserModal.limitedRequestsNote', {
           count: remaining,
+          max: MAX_AI_PARSE_REQUESTS_PER_DAY,
         })}
-        remaining={remaining}
         placeholder={t('visualizer.aiParserModal.placeholder')}
         inputText={inputText}
         onInputChange={setInputText}

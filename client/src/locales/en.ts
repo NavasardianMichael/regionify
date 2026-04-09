@@ -324,9 +324,8 @@ const en: CommonNs = {
       titlePlaceholder: 'e.g. {{example}}',
       descriptionPlaceholder: 'e.g. Interactive regional map of {{projectName}} on Regionify.',
       defaultMetaDescription: 'Interactive regional map of {{projectName}} on Regionify.',
-      shareLinkHint:
-        'Turn on public embed and click Save to get the share link, open the page, and iframe code.',
-      openInNewTab: 'Open embed page',
+      saveToGenerateLink:
+        'Save your settings to generate the public page link and embed (iframe) code.',
       planRequired: 'Public embed requires the {{planName}} plan.',
       tooltipChronographerBody:
         'Public map embed (share link and iframe) is included with the {{planName}} plan.',
@@ -336,9 +335,9 @@ const en: CommonNs = {
       tagSelectNoData: 'No matches. Type a keyword and press Enter.',
       saveSuccess: 'Embed settings saved',
       saveFailed: 'Could not save embed settings',
-      shareUrl: 'Share URL',
+      publicPage: 'Public Page',
       copyUrl: 'Copy URL',
-      iframe: 'Iframe code',
+      embedIframeCode: 'Embed (Iframe) code',
       copyIframe: 'Copy iframe',
       copied: '{{label}} copied to clipboard',
       copyFailed: 'Could not copy',
@@ -414,12 +413,12 @@ const en: CommonNs = {
     },
     aiParserModal: {
       title: 'AI Parser',
-      limitedRequestsNote: 'AI parsing is currently available with limited requests per day.',
+      limitedRequestsNote:
+        'AI parsing is limited to {{max}} uses per day. You have {{count}} left today.',
       placeholder: 'Describe your data or paste raw text for the AI to structure…',
       submit: 'Parse with AI',
       parsing: 'Parsing…',
       parseError: 'AI parsing failed. Please try again.',
-      requestsRemaining: '{{count}} request(s) remaining today',
       limitReached: 'Daily AI parse limit reached. Resets in 24 hours.',
       inputTooLong: 'Input exceeds {{max}} characters.',
     },

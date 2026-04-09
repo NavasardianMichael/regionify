@@ -179,7 +179,7 @@ function renderEmbedBody(opts: {
   const h = escapeHtml(opts.embedSemantic.heading);
   const intro = escapeHtml(opts.embedSemantic.intro);
   const root = opts.rootInnerHtml;
-  return `    <a href="#embed-app" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-white focus:px-3 focus:py-2 focus:shadow-md">Skip to map</a>
+  return `    <a href="#embed-app" class="embed-skip-to-map">Skip to map</a>
     <main class="flex min-h-screen w-full flex-col bg-gray-100">
       <header class="shrink-0 border-b border-solid border-gray-200 bg-white px-4 py-4 shadow-sm">
         <div class="mx-auto flex w-full max-w-6xl flex-col gap-1">
