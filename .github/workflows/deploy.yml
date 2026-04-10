@@ -86,6 +86,12 @@ jobs:
              [ "${{ steps.filter.outputs.workspace }}" = "true" ]; then
             deploy_server=true
           fi
+          # Server Docker image embeds the client build and reads its Vite manifest
+          # at startup.  Any client change produces new hashed filenames, so the
+          # server must also be rebuilt to pick up the updated manifest.
+          if [ "$deploy_client" = "true" ]; then
+            deploy_server=true
+          fi
           # Client must be built when either side deploys (server Docker image includes client/dist).
           needs_client_build=false
           if [ "$deploy_client" = "true" ] || [ "$deploy_server" = "true" ]; then
@@ -239,6 +245,43 @@ jobs:
           echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d | tr -d '\r' > /tmp/env.production
           echo "Env file: $(wc -c < /tmp/env.production) bytes, $(wc -l < /tmp/env.production) lines"
 
+      # ── Deploy client (nginx static files) FIRST ──────────────────────────
+      # Client must be on disk before the server Docker container restarts,
+      # otherwise Express renders HTML referencing JS hashes that nginx
+      # cannot find yet (browser gets text/html instead of JS → MIME error).
+
+      - name: Copy client bundle to host
+        if: needs.changes.outputs.deploy_client == 'true'
+        run: |
+          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+            client-build.tar.gz \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
+
+      - name: Deploy client
+        if: needs.changes.outputs.deploy_client == 'true'
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+            "${{ secrets.APP_DIR }}" \
+            "${{ needs.changes.outputs.release_name }}" \
+            "${{ env.KEEP_RELEASES }}" << 'EOF'
+          set -e
+          APP_DIR="$1"; RELEASE_NAME="$2"; KEEP_RELEASES="$3"
+          RELEASES_DIR="$APP_DIR/client/releases"
+          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
+
+          echo "Deploying client: $RELEASE_NAME"
+          mkdir -p "$NEW_RELEASE"
+          tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
+          chmod -R 755 "$NEW_RELEASE"
+          ln -sfn "$NEW_RELEASE" "$APP_DIR/client/current"
+
+          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          rm -f /tmp/client-build.tar.gz
+          echo "Client deployed"
+          EOF
+
+      # ── Deploy server (Docker) AFTER client is on disk ───────────────────
+
       - name: Copy server bundle to host
         if: needs.changes.outputs.deploy_server == 'true'
         run: |
@@ -298,36 +341,6 @@ jobs:
           cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
           rm -f /tmp/server-build.tar.gz /tmp/env.production
           echo "Server deployed"
-          EOF
-
-      - name: Copy client bundle to host
-        if: needs.changes.outputs.deploy_client == 'true'
-        run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" \
-            client-build.tar.gz \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
-
-      - name: Deploy client
-        if: needs.changes.outputs.deploy_client == 'true'
-        run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
-            "${{ secrets.APP_DIR }}" \
-            "${{ needs.changes.outputs.release_name }}" \
-            "${{ env.KEEP_RELEASES }}" << 'EOF'
-          set -e
-          APP_DIR="$1"; RELEASE_NAME="$2"; KEEP_RELEASES="$3"
-          RELEASES_DIR="$APP_DIR/client/releases"
-          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
-
-          echo "Deploying client: $RELEASE_NAME"
-          mkdir -p "$NEW_RELEASE"
-          tar -xzf /tmp/client-build.tar.gz -C "$NEW_RELEASE"
-          chmod -R 755 "$NEW_RELEASE"
-          ln -sfn "$NEW_RELEASE" "$APP_DIR/client/current"
-
-          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
-          rm -f /tmp/client-build.tar.gz
-          echo "Client deployed"
           EOF
 
       - name: Deployment summary

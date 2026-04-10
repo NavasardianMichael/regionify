@@ -183,6 +183,13 @@ export function setupWebClient(app: Application): void {
       return;
     }
 
+    // Static-asset requests (e.g. .js, .css, .map) must not receive an HTML
+    // fallback — browsers reject the wrong MIME type for module scripts.
+    if (/\.\w{2,}$/.test(req.path)) {
+      next();
+      return;
+    }
+
     const html = renderHtmlDocument({
       siteUrl,
       meta: {
