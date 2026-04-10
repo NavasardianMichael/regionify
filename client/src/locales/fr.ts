@@ -169,6 +169,7 @@ const fr: CommonNs = {
       noAccount: 'Pas encore de compte ?',
       signUpLink: "S'inscrire",
       resendVerification: "Renvoyer l'e-mail de vérification",
+      signInEvictDevices: 'Se connecter et se déconnecter de tous les autres appareils',
     },
     signUp: {
       title: 'Créer un compte',
@@ -625,7 +626,7 @@ const fr: CommonNs = {
     loginFailed: 'Échec de la connexion',
     signUpFailed: 'Échec de la création du compte',
     sessionLimitReached:
-      "Votre compte est déjà actif sur le nombre maximum d'appareils. Veuillez vous déconnecter d'un autre appareil en premier.",
+      "Votre compte est déjà actif sur le nombre maximum d'appareils ({{maxSessions}}). Veuillez vous déconnecter d'un autre appareil en premier.",
     googleAuthFailed: 'La connexion avec Google a échoué. Veuillez réessayer.',
   },
 };

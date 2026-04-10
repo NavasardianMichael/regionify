@@ -32,4 +32,8 @@ export const sessionRepository = {
       where: { userId, expiresAt: { gt: new Date() } },
     });
   },
+
+  async deleteAllSessionsByUserId(userId: string): Promise<void> {
+    await prisma.session.deleteMany({ where: { userId } });
+  },
 };

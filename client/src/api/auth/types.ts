@@ -3,6 +3,7 @@ import type { AuthResponse, Locale, RegisterResponse, UserPublic } from '@region
 export type LoginPayload = {
   email: string;
   password: string;
+  forceLogin?: boolean;
 };
 
 export type RegisterPayload = {

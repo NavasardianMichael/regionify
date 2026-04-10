@@ -160,6 +160,7 @@ const zh: CommonNs = {
       noAccount: '还没有账户？',
       signUpLink: '注册',
       resendVerification: '重新发送验证邮件',
+      signInEvictDevices: '登录并退出所有其他设备',
     },
     signUp: {
       title: '创建账户',
@@ -587,7 +588,8 @@ const zh: CommonNs = {
     deleteProjectOk: '删除',
     loginFailed: '登录失败',
     signUpFailed: '创建账户失败',
-    sessionLimitReached: '您的账户已在最大数量的设备上登录。请先在其他设备上退出登录。',
+    sessionLimitReached:
+      '您的账户已在最大数量 ({{maxSessions}}) 的设备上登录。请先在其他设备上退出登录。',
     googleAuthFailed: 'Google 登录失败，请重试。',
   },
 };

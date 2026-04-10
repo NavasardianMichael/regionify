@@ -169,6 +169,7 @@ const es: CommonNs = {
       noAccount: '¿No tienes cuenta?',
       signUpLink: 'Regístrate',
       resendVerification: 'Reenviar correo de verificación',
+      signInEvictDevices: 'Iniciar sesión y cerrar sesión en todos los otros dispositivos',
     },
     signUp: {
       title: 'Crear cuenta',
@@ -622,7 +623,7 @@ const es: CommonNs = {
     loginFailed: 'Error al iniciar sesión',
     signUpFailed: 'Error al crear la cuenta',
     sessionLimitReached:
-      'Tu cuenta ya está activa en el número máximo de dispositivos. Por favor cierra sesión en otro dispositivo primero.',
+      'Tu cuenta ya está activa en el número máximo de dispositivos ({{maxSessions}}). Por favor cierra sesión en otro dispositivo primero.',
     googleAuthFailed: 'Fallo en el inicio de sesión con Google. Por favor inténtalo de nuevo.',
   },
 };

@@ -125,6 +125,7 @@ export type CommonNs = {
       noAccount: string;
       signUpLink: string;
       resendVerification: string;
+      signInEvictDevices: string;
     };
     signUp: {
       title: string;

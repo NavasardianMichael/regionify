@@ -173,6 +173,7 @@ const de: CommonNs = {
       noAccount: 'Noch kein Konto?',
       signUpLink: 'Registrieren',
       resendVerification: 'Bestätigungs-E-Mail erneut senden',
+      signInEvictDevices: 'Anmelden und von allen anderen Geräten abmelden',
     },
     signUp: {
       title: 'Konto erstellen',
@@ -627,7 +628,7 @@ const de: CommonNs = {
     loginFailed: 'Anmeldung fehlgeschlagen',
     signUpFailed: 'Konto konnte nicht erstellt werden',
     sessionLimitReached:
-      'Ihr Konto ist bereits auf der maximalen Anzahl von Geräten aktiv. Bitte melden Sie sich zuerst von einem anderen Gerät ab.',
+      'Ihr Konto ist bereits auf der maximalen Anzahl von Geräten ({{maxSessions}}) aktiv. Bitte melden Sie sich zuerst von einem anderen Gerät ab.',
     googleAuthFailed: 'Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
   },
 };

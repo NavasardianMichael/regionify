@@ -25,6 +25,17 @@ const getErrorMessage = (data: unknown, fallback: string): string => {
   return fallback;
 };
 
+export class LoginError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly details?: Record<string, string[]>,
+  ) {
+    super(message);
+    this.name = 'LoginError';
+  }
+}
+
 /**
  * Login with email and password
  */
@@ -41,7 +52,12 @@ export const login = async (payload: LoginPayload): Promise<AuthApiResponse> => 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(getErrorMessage(data, 'Failed to login'));
+    const errorData = data as AuthErrorResponse;
+    throw new LoginError(
+      errorData.error?.message ?? 'Failed to login',
+      errorData.error?.code ?? 'UNKNOWN_ERROR',
+      errorData.error?.details,
+    );
   }
 
   return data as AuthApiResponse;

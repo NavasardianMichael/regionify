@@ -49,11 +49,16 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
     const sessionCount = await sessionRepository.countActiveByUserId(result.user.id);
     const sessionLimit = PLAN_DETAILS[result.user.plan].limits.maxConcurrentSessions;
     if (sessionLimit !== null && sessionCount >= sessionLimit) {
-      throw new AppError(
-        HttpStatus.FORBIDDEN,
-        ErrorCode.SESSION_LIMIT_REACHED,
-        `Your account is already active on ${sessionCount} device${sessionCount === 1 ? '' : 's'}. Please log out from another device first.`,
-      );
+      if (req.body.forceLogin) {
+        await sessionRepository.deleteAllSessionsByUserId(result.user.id);
+      } else {
+        throw new AppError(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.SESSION_LIMIT_REACHED,
+          `Your account is already active on ${sessionCount} device${sessionCount === 1 ? '' : 's'}. Please log out from another device first.`,
+          { sessionLimit: [String(sessionLimit)] },
+        );
+      }
     }
 
     // Regenerate session to prevent session fixation
@@ -109,14 +114,15 @@ router.post('/logout', (req, res, next) => {
 });
 
 // GET /api/auth/google — prompt=select_account so users can pick another Google account after logout
-router.get(
-  '/google',
-  authLimiter,
+// Accepts ?force=true to evict all existing sessions on successful login (session limit override)
+router.get('/google', authLimiter, (req, res, next) => {
+  const force = req.query.force === 'true';
   passport.authenticate('google', {
     scope: ['profile', 'email'],
     prompt: 'select_account',
-  }),
-);
+    ...(force && { state: 'force' }),
+  })(req, res, next);
+});
 
 // GET /api/auth/google/callback
 router.get('/google/callback', (req, res, next) => {
@@ -143,7 +149,11 @@ router.get('/google/callback', (req, res, next) => {
     const sessionCount = await sessionRepository.countActiveByUserId(typedUser.id);
     const sessionLimit = PLAN_DETAILS[dbUser.plan].limits.maxConcurrentSessions;
     if (sessionLimit !== null && sessionCount >= sessionLimit) {
-      return res.redirect(`${env.CLIENT_URL}/login?error=session_limit`);
+      if (req.query.state === 'force') {
+        await sessionRepository.deleteAllSessionsByUserId(typedUser.id);
+      } else {
+        return res.redirect(`${env.CLIENT_URL}/login?error=session_limit&max=${sessionLimit}`);
+      }
     }
 
     // Regenerate session and set user ID

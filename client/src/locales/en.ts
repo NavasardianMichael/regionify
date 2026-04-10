@@ -168,6 +168,7 @@ const en: CommonNs = {
       noAccount: "Don't have an account?",
       signUpLink: 'Sign up',
       resendVerification: 'Resend verification email',
+      signInEvictDevices: 'Sign in and log out from all other devices',
     },
     signUp: {
       title: 'Create Account',
@@ -610,7 +611,7 @@ const en: CommonNs = {
     loginFailed: 'Failed to login',
     signUpFailed: 'Failed to create account',
     sessionLimitReached:
-      'Your account is already active on the maximum number of devices. Please log out from another device first.',
+      'Your account is already active on the maximum number of devices ({{maxSessions}}). Please log out from another device first.',
     googleAuthFailed: 'Google sign-in failed. Please try again.',
   },
 };

@@ -1,8 +1,8 @@
 import { type FC, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AUTH_VALIDATION } from '@regionify/shared';
+import { AUTH_VALIDATION, ErrorCode } from '@regionify/shared';
 import { Button, Card, Divider, Form, Input, Typography } from 'antd';
-import { login, resendVerificationEmail } from '@/api/auth';
+import { login, LoginError, resendVerificationEmail } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
@@ -33,6 +33,7 @@ const LoginPage: FC = () => {
   const [form] = Form.useForm<LoginFormValues>();
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginErrorCode, setLoginErrorCode] = useState<string | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
   const { message } = useAppFeedback();
   const navigate = useNavigate();
@@ -40,21 +41,24 @@ const LoginPage: FC = () => {
   const setUser = useProfileStore(selectSetUser);
 
   const errorParam = searchParams.get('error');
+  const maxParam = searchParams.get('max');
   const urlError = useMemo<string | null>(() => {
-    if (errorParam === 'session_limit') return t('messages.sessionLimitReached');
+    if (errorParam === 'session_limit')
+      return t('messages.sessionLimitReached', { maxSessions: maxParam ?? '?' });
     if (errorParam === 'google_auth_failed' || errorParam === 'session_error') {
       return t('messages.googleAuthFailed');
     }
     return null;
-  }, [errorParam, t]);
+  }, [errorParam, maxParam, t]);
 
   const displayError = loginError ?? urlError;
 
-  const handleSubmit = async (values: LoginFormValues) => {
+  const handleSubmit = async (values: LoginFormValues, forceLogin = false) => {
     setLoading(true);
     setLoginError(null);
+    setLoginErrorCode(null);
     try {
-      const response = await login(values);
+      const response = await login({ ...values, ...(forceLogin && { forceLogin: true }) });
       setUser(response.user);
 
       const pendingReturnUrl = getReturnUrl();
@@ -125,14 +129,34 @@ const LoginPage: FC = () => {
         }
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('messages.loginFailed');
-      setLoginError(errorMessage);
+      if (error instanceof LoginError) {
+        if (error.code === ErrorCode.SESSION_LIMIT_REACHED) {
+          const maxSessions = error.details?.sessionLimit?.[0] ?? '?';
+          setLoginError(t('messages.sessionLimitReached', { maxSessions }));
+        } else {
+          setLoginError(error.message);
+        }
+        setLoginErrorCode(error.code);
+      } else {
+        setLoginError(error instanceof Error ? error.message : t('messages.loginFailed'));
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const isUnverifiedError = loginError?.includes('verify your email');
+  const isSessionLimitError =
+    loginErrorCode === ErrorCode.SESSION_LIMIT_REACHED || errorParam === 'session_limit';
+
+  const handleForceLogin = async () => {
+    if (errorParam === 'session_limit') {
+      window.location.href = `${AUTH_ENDPOINTS.google}?force=true`;
+      return;
+    }
+    const values = form.getFieldsValue() as LoginFormValues;
+    await handleSubmit(values, true);
+  };
 
   const handleResendVerification = async () => {
     const email = form.getFieldValue('email');
@@ -195,8 +219,11 @@ const LoginPage: FC = () => {
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleSubmit}
-        onValuesChange={() => setLoginError(null)}
+        onFinish={(values) => handleSubmit(values)}
+        onValuesChange={() => {
+          setLoginError(null);
+          setLoginErrorCode(null);
+        }}
         requiredMark={false}
       >
         <Form.Item
@@ -242,6 +269,19 @@ const LoginPage: FC = () => {
                   className="h-auto! p-0!"
                 >
                   {t('auth.login.resendVerification')}
+                </Button>
+              </div>
+            )}
+            {isSessionLimitError && (
+              <div className="mt-2">
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={handleForceLogin}
+                  loading={loading}
+                  className="h-auto! p-0!"
+                >
+                  {t('auth.login.signInEvictDevices')}
                 </Button>
               </div>
             )}
