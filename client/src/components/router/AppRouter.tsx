@@ -34,7 +34,7 @@ function AppRoutesLayout() {
 
   let mainClassName: string;
   if (isEmbedRoute) {
-    mainClassName = 'min-h-0 min-w-0 grow overflow-hidden bg-gray-100';
+    mainClassName = 'min-h-0 min-w-0 w-full grow overflow-hidden bg-gray-100';
   } else if (isHomeRoute) {
     mainClassName = 'grow overflow-y-auto';
   } else {
