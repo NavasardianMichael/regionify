@@ -350,10 +350,9 @@ const fr: CommonNs = {
       copyEmbed: "Copier l'embed",
       copied: '{{label}} copié dans le presse-papiers',
       copyFailed: 'Impossible de copier',
-      embedNotFoundTitle: "Cette intégration n'est pas disponible",
+      embedNotFoundTitle: "Nous sommes désolés. La page demandée n'est pas disponible.",
       embedNotFoundDescription:
-        "Le lien est peut-être désactivé, expiré ou incorrect. Si le projet existe et que vous y avez accès, essayez de l'ouvrir et de réactiver l'intégration publique.",
-      embedNotFoundOpenProjects: 'Mes projets',
+        "Le lien est peut-être désactivé, expiré ou incorrect. Si le projet existe et que vous y avez accès, essayez d'ouvrir le projet et de réactiver l'intégration publique.",
       embedErrorMessage: 'Une erreur est survenue, veuillez réessayer plus tard ou ',
       embedErrorContactUs: 'nous contacter',
     },

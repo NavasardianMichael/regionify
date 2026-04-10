@@ -349,10 +349,9 @@ const es: CommonNs = {
       copyEmbed: 'Copiar embed',
       copied: '{{label}} copiado al portapapeles',
       copyFailed: 'No se pudo copiar',
-      embedNotFoundTitle: 'Esta incrustación no está disponible',
+      embedNotFoundTitle: 'Lo sentimos. La página solicitada no está disponible.',
       embedNotFoundDescription:
-        'El enlace puede estar desactivado, caducado o ser incorrecto. Si el proyecto existe y tiene acceso, intente abrir el proyecto y volver a activar la incrustación pública.',
-      embedNotFoundOpenProjects: 'Mis proyectos',
+        'El enlace puede estar deshabilitado, caducado o ser incorrecto. Si el proyecto existe y tienes acceso, intenta abrir el proyecto y vuelve a activar la incrustación pública.',
       embedErrorMessage: 'Algo salió mal, por favor inténtelo de nuevo más tarde o ',
       embedErrorContactUs: 'contáctenos',
     },

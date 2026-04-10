@@ -353,10 +353,9 @@ const de: CommonNs = {
       copyEmbed: 'Embed kopieren',
       copied: '{{label}} in die Zwischenablage kopiert',
       copyFailed: 'Kopieren fehlgeschlagen',
-      embedNotFoundTitle: 'Diese Einbettung ist nicht verfügbar',
+      embedNotFoundTitle: 'Es tut uns leid. Die angeforderte Seite ist nicht verfügbar.',
       embedNotFoundDescription:
         'Der Link ist möglicherweise deaktiviert, abgelaufen oder ungültig. Falls das Projekt existiert und Sie Zugriff darauf haben, versuchen Sie, das Projekt zu öffnen und die öffentliche Einbettung wieder zu aktivieren.',
-      embedNotFoundOpenProjects: 'Meine Projekte',
       embedErrorMessage: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es später erneut oder ',
       embedErrorContactUs: 'kontaktieren Sie uns',
     },

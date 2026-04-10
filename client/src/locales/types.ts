@@ -299,7 +299,6 @@ export type CommonNs = {
       /** Standalone embed URL: disabled, wrong token, or plan no longer eligible */
       embedNotFoundTitle: string;
       embedNotFoundDescription: string;
-      embedNotFoundOpenProjects: string;
       embedErrorMessage: string;
       embedErrorContactUs: string;
     };

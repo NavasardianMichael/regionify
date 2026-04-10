@@ -340,10 +340,9 @@ const en: CommonNs = {
       copyEmbed: 'Copy embed',
       copied: '{{label}} copied to clipboard',
       copyFailed: 'Could not copy',
-      embedNotFoundTitle: "This embed isn't available",
+      embedNotFoundTitle: 'We are sorry. The requested page is not available.',
       embedNotFoundDescription:
         'The link may be disabled, expired, or incorrect. If the project exists and you have access to it, try to open the project and turn public embed back on.',
-      embedNotFoundOpenProjects: 'My projects',
       embedErrorMessage: 'Something went wrong, please try again later or ',
       embedErrorContactUs: 'contact us',
     },

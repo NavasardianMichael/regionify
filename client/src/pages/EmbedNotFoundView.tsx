@@ -1,30 +1,30 @@
 import { type FC } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Flex, Typography } from 'antd';
-import { ROUTES } from '@/constants/routes';
+import { Flex, Typography } from 'antd';
+import logoImage from '@/assets/images/logo/logo-high-resolution_small.png';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { Card } from '@/components/ui/Card';
 
 export const EmbedNotFoundView: FC = () => {
   const { t } = useTypedTranslation();
 
   return (
-    <Flex align="center" justify="center" className="min-h-60 w-full flex-1 p-4">
-      <Card className="w-full max-w-lg shadow-sm">
-        <Flex vertical gap="middle" className="w-full">
-          <Typography.Title level={3} className="text-primary mb-0! text-center">
-            {t('visualizer.embed.embedNotFoundTitle')}
-          </Typography.Title>
-          <Typography.Paragraph type="secondary" className="mb-0! text-center wrap-break-word">
-            {t('visualizer.embed.embedNotFoundDescription')}
-          </Typography.Paragraph>
-          <Flex justify="center">
-            <Link to={ROUTES.PROJECTS}>
-              <Button type="primary">{t('visualizer.embed.embedNotFoundOpenProjects')}</Button>
-            </Link>
-          </Flex>
+    <Flex vertical align="center" justify="center" gap="middle" className="w-full flex-1 p-4">
+      <a href="/" target="_blank" rel="noopener noreferrer" className="no-underline">
+        <Flex align="center" gap="small">
+          <img src={logoImage} alt={t('appName')} className="h-10 w-auto object-contain" />
+          <Typography.Text strong className="text-primary text-lg">
+            Regionify
+          </Typography.Text>
         </Flex>
-      </Card>
+      </a>
+      <Typography.Title level={3} className="text-primary mb-0! text-center">
+        {t('visualizer.embed.embedNotFoundTitle')}
+      </Typography.Title>
+      <Typography.Paragraph
+        type="secondary"
+        className="mb-0! max-w-128 text-center wrap-break-word"
+      >
+        {t('visualizer.embed.embedNotFoundDescription')}
+      </Typography.Paragraph>
     </Flex>
   );
 };

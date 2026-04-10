@@ -345,10 +345,9 @@ const pt: CommonNs = {
       copyEmbed: 'Copiar embed',
       copied: '{{label}} copiado para a área de transferência',
       copyFailed: 'Não foi possível copiar',
-      embedNotFoundTitle: 'Esta incorporação não está disponível',
+      embedNotFoundTitle: 'Lamentamos. A página solicitada não está disponível.',
       embedNotFoundDescription:
-        'O link pode estar desativado, expirado ou incorreto. Se o projeto existir e você tiver acesso, tente abrir o projeto e ativar novamente a incorporação pública.',
-      embedNotFoundOpenProjects: 'Meus projetos',
+        'O link pode estar desativado, expirado ou incorreto. Se o projeto existir e você tiver acesso, tente abrir o projeto e reativar a incorporação pública.',
       embedErrorMessage: 'Algo deu errado, por favor tente novamente mais tarde ou ',
       embedErrorContactUs: 'entre em contato',
     },

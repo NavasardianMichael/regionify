@@ -329,10 +329,9 @@ const zh: CommonNs = {
       copyEmbed: '复制嵌入代码',
       copied: '{{label}} 已复制到剪贴板',
       copyFailed: '复制失败',
-      embedNotFoundTitle: '此嵌入不可用',
+      embedNotFoundTitle: '抱歉，请求的页面不可用。',
       embedNotFoundDescription:
         '链接可能已关闭、过期或不正确。如果项目存在且您有访问权限，请尝试打开项目并重新开启公开嵌入。',
-      embedNotFoundOpenProjects: '我的项目',
       embedErrorMessage: '出了点问题，请稍后再试或',
       embedErrorContactUs: '联系我们',
     },
