@@ -111,6 +111,13 @@ export function renderHtmlDocument(opts: {
   ogLocale?: string;
   /** Public embed pages only: inject WebPage / WebSite / Organization JSON-LD. */
   includeEmbedJsonLd?: boolean;
+  /**
+   * When true (and `embedSemantic` is unset), applies `embed-page` shell CSS to `<html>` / `<body>`
+   * with a minimal `<div id="root">` only — for invalid/disabled embed tokens that still need the embed layout.
+   */
+  embedShellLayout?: boolean;
+  /** Value for `<meta name="robots">` (default `index, follow`). */
+  robots?: string;
 }): string {
   const {
     siteUrl,
@@ -122,6 +129,8 @@ export function renderHtmlDocument(opts: {
     htmlLang = 'en',
     ogLocale = 'en_US',
     includeEmbedJsonLd = false,
+    embedShellLayout = false,
+    robots = 'index, follow',
   } = opts;
   const base = siteUrl.replace(/\/$/, '');
   const canonical = `${base}${meta.canonicalPath}`;
@@ -168,7 +177,8 @@ export function renderHtmlDocument(opts: {
     .join('\n');
 
   /** Embed: shell CSS is a separate Vite chunk linked only for `/embed/:token` (see `client/src/embed/embed-shell.css`). */
-  const embedPageClass = embedSemantic ? ' class="embed-page"' : '';
+  const useEmbedPageShell = Boolean(embedSemantic) || embedShellLayout;
+  const embedPageClass = useEmbedPageShell ? ' class="embed-page"' : '';
 
   return `<!DOCTYPE html>
 <html lang="${escapeHtml(htmlLang)}"${embedPageClass}>
@@ -202,7 +212,7 @@ ${keywordsTag}${geoPlacenameTag}    <link rel="icon" type="image/x-icon" href="/
     <meta name="twitter:title" content="${escapeHtml(meta.documentTitle)}" />
     <meta name="twitter:description" content="${escapeHtml(meta.description)}" />
     <meta name="twitter:image" content="${escapeHtml(ogImage)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="${escapeHtml(robots)}" />
     <meta name="author" content="Regionify" />
     <meta name="application-name" content="Regionify" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
@@ -211,7 +221,7 @@ ${keywordsTag}${geoPlacenameTag}    <link rel="icon" type="image/x-icon" href="/
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Regionify" />
 ${jsonLdBlock}${cssLinks ? `${cssLinks}\n` : ''}  </head>
-  <body${embedSemantic ? ' class="embed-page"' : ''}>
+  <body${useEmbedPageShell ? ' class="embed-page"' : ''}>
 ${
   embedSemantic
     ? renderEmbedBody({ rootInnerHtml, embedSemantic })

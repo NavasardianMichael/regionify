@@ -44,8 +44,8 @@ export const ShareSection: FC<Props> = ({
   const publicPagePath = embedToken ? getEmbedRoute(embedToken) : '';
 
   return (
-    <Flex vertical gap="lg" className="mt-6 min-w-0">
-      <Flex vertical gap="small" className="min-w-0">
+    <Flex vertical gap="middle" className="mt-6! min-w-0">
+      <Flex vertical gap="small">
         <Typography.Text className="text-sm font-medium text-neutral-900">
           {t('visualizer.embed.publicPage')}
         </Typography.Text>
@@ -81,7 +81,6 @@ export const ShareSection: FC<Props> = ({
           </Typography.Text>
         )}
       </Flex>
-
       <Flex vertical gap="small" className="min-w-0">
         <Typography.Text className="text-sm font-medium text-neutral-900">
           {t('visualizer.embed.embedIframeCode')}

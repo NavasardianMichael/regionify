@@ -2,7 +2,10 @@ import { existsSync } from 'node:fs';
 import type { Application, Request, Response } from 'express';
 import express from 'express';
 
+import { ErrorCode, HttpStatus } from '@regionify/shared';
+
 import { env, isProd } from '@/config/env.js';
+import { AppError } from '@/middleware/errorHandler.js';
 import { logger } from '@/lib/logger.js';
 import { projectEmbedService } from '@/services/projectEmbedService.js';
 import { HOME_PAGE_DEFAULT, homeRootInnerHtml } from '@/web/homeCopy.js';
@@ -18,6 +21,11 @@ function visibleEmbedIntro(description: string): string {
   if (t.length <= EMBED_VISIBLE_INTRO_MAX_CHARS) return t;
   return `${t.slice(0, EMBED_VISIBLE_INTRO_MAX_CHARS - 1).trimEnd()}\u2026`;
 }
+
+/** HTML shell for `/embed/:token` when the token is missing or disabled — SPA shows `EmbedNotFoundView`. */
+const EMBED_NOT_FOUND_DOCUMENT_TITLE = 'Regionify — Map embed';
+const EMBED_NOT_FOUND_META_DESCRIPTION =
+  'This public map embed is not available. The link may be invalid or the embed was disabled.';
 
 const API_PATH_PREFIXES = [
   '/api',
@@ -118,6 +126,31 @@ export function setupWebClient(app: Application): void {
       });
       res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
     } catch (e) {
+      if (
+        e instanceof AppError &&
+        e.code === ErrorCode.NOT_FOUND &&
+        e.statusCode === HttpStatus.NOT_FOUND
+      ) {
+        const rawToken = req.params.token;
+        const token = Array.isArray(rawToken) ? rawToken[0] : rawToken;
+        const html = renderHtmlDocument({
+          siteUrl,
+          meta: {
+            documentTitle: EMBED_NOT_FOUND_DOCUMENT_TITLE,
+            description: EMBED_NOT_FOUND_META_DESCRIPTION,
+            keywords: null,
+            canonicalPath: `/embed/${encodeURIComponent(token)}`,
+          },
+          rootInnerHtml: '',
+          entryJs: assets.js,
+          entryCss: embedEntryCss,
+          embedShellLayout: true,
+          includeEmbedJsonLd: false,
+          robots: 'noindex, nofollow',
+        });
+        res.status(404).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
+        return;
+      }
       next(e);
     }
   });
