@@ -311,13 +311,11 @@ const pt: CommonNs = {
       title: 'Incorporação pública',
       modalTitle: 'Incorporação pública do mapa',
       openButton: 'Incorporar',
-      intro:
-        'Partilhe o mapa só de leitura com ligação ou iframe. Requer o plano {{planName}}. Os campos SEO aplicam-se à página de incorporação.',
+      intro: 'Partilhe o mapa só de leitura com ligação ou iframe.',
       publicToggle: 'Ativar incorporação pública',
       seoTitle: 'Título da página (SEO)',
       titleMax: 'No máximo 200 caracteres',
       titleRequired: 'O título da página é obrigatório quando a incorporação pública está ativa',
-      titleInitialHint: 'Preenchido com base no nome do projeto; edite antes de guardar.',
       seoDescription: 'Meta descrição (SEO)',
       descriptionMax: 'No máximo 150 caracteres',
       descriptionRequired:
@@ -346,6 +344,10 @@ const pt: CommonNs = {
       copyIframe: 'Copiar iframe',
       copied: '{{label}} copiado para a área de transferência',
       copyFailed: 'Não foi possível copiar',
+      embedNotFoundTitle: 'Esta incorporação não está disponível',
+      embedNotFoundDescription:
+        'O link pode estar desativado, expirado ou incorreto. Se for o seu mapa, abra Projetos e ative novamente a incorporação pública.',
+      embedNotFoundOpenProjects: 'Meus projetos',
     },
     exportModal: {
       title: 'Configurar exportação',

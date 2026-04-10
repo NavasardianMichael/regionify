@@ -91,7 +91,7 @@ export const EmbedForm: FC<Props> = ({
           type="secondary"
           className="mb-0! max-w-[min(100%,20rem)] flex-1 text-xs"
         >
-          {t('visualizer.embed.intro', { planName: t('plans.items.chronographer.name') })}
+          {t('visualizer.embed.intro')}
         </Typography.Paragraph>
         <Flex align="center" gap="small" className="shrink-0">
           <Typography.Text className="text-xs whitespace-nowrap">
@@ -106,11 +106,6 @@ export const EmbedForm: FC<Props> = ({
       <Form.Item
         name="seoTitle"
         label={t('visualizer.embed.seoTitle')}
-        extra={
-          <Typography.Text type="secondary" className="text-xs">
-            {t('visualizer.embed.titleInitialHint')}
-          </Typography.Text>
-        }
         dependencies={['enabled']}
         rules={seoTitleRules}
       >
@@ -142,7 +137,7 @@ export const EmbedForm: FC<Props> = ({
         name="keywords"
         label={t('visualizer.embed.seoKeywords')}
         extra={
-          <Typography.Text type="secondary" className="text-xs">
+          <Typography.Text type="secondary" className="text-[11px]! leading-snug">
             {t('visualizer.embed.keywordsHint')}
           </Typography.Text>
         }

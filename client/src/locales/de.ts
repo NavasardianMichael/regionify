@@ -319,13 +319,11 @@ const de: CommonNs = {
       title: 'Öffentliche Einbettung',
       modalTitle: 'Öffentliche Karten-Einbettung',
       openButton: 'Einbetten',
-      intro:
-        'Karte nur lesend per Link oder iframe teilen. Tarif {{planName}} erforderlich. SEO-Felder gelten für die eigenständige Einbettungsseite.',
+      intro: 'Karte nur lesend per Link oder iframe teilen.',
       publicToggle: 'Öffentliche Einbettung aktivieren',
       seoTitle: 'Seitentitel (SEO)',
       titleMax: 'Höchstens 200 Zeichen',
       titleRequired: 'Seitentitel ist erforderlich, wenn die öffentliche Einbettung aktiv ist',
-      titleInitialHint: 'Vorausgefüllt aus dem Projektnamen; bei Bedarf anpassen.',
       seoDescription: 'Meta-Beschreibung (SEO)',
       descriptionMax: 'Höchstens 150 Zeichen',
       descriptionRequired:
@@ -354,6 +352,10 @@ const de: CommonNs = {
       copyIframe: 'Iframe kopieren',
       copied: '{{label}} in die Zwischenablage kopiert',
       copyFailed: 'Kopieren fehlgeschlagen',
+      embedNotFoundTitle: 'Diese Einbettung ist nicht verfügbar',
+      embedNotFoundDescription:
+        'Der Link ist möglicherweise deaktiviert, abgelaufen oder ungültig. Wenn dies Ihre Karte ist, öffnen Sie Projekte und aktivieren Sie die öffentliche Einbettung erneut.',
+      embedNotFoundOpenProjects: 'Meine Projekte',
     },
     exportModal: {
       title: 'Exporteinstellungen konfigurieren',

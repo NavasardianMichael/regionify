@@ -1,12 +1,13 @@
 import { type FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Flex, Spin, Typography } from 'antd';
-import { fetchPublicEmbedData } from '@/api/embed';
+import { fetchPublicEmbedData, PublicEmbedNotFoundError } from '@/api/embed';
 import type { PublicEmbedApiResponse } from '@/api/embed/types';
 import type { Project } from '@/api/projects/types';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
 import MapViewer from '@/components/visualizer/MapViewer';
+import { EmbedNotFoundView } from '@/pages/EmbedNotFoundView';
 
 function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
   return {
@@ -35,16 +36,22 @@ const EmbedPage: FC = () => {
   const { token } = useParams<{ token: string }>();
   const loadProject = useLoadProject();
   const [error, setError] = useState<string | null>(null);
+  const [embedNotFound, setEmbedNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) {
+      setEmbedNotFound(false);
       setError('Invalid embed link');
       setLoading(false);
       return;
     }
 
     let cancelled = false;
+
+    setLoading(true);
+    setEmbedNotFound(false);
+    setError(null);
 
     const run = async () => {
       try {
@@ -57,7 +64,13 @@ const EmbedPage: FC = () => {
         setError(null);
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : 'Failed to load map');
+          if (e instanceof PublicEmbedNotFoundError) {
+            setEmbedNotFound(true);
+            setError(null);
+          } else {
+            setEmbedNotFound(false);
+            setError(e instanceof Error ? e.message : 'Failed to load map');
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -77,6 +90,10 @@ const EmbedPage: FC = () => {
         <Spin size="large" />
       </Flex>
     );
+  }
+
+  if (embedNotFound) {
+    return <EmbedNotFoundView />;
   }
 
   if (error) {

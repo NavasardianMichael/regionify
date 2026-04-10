@@ -308,13 +308,11 @@ const en: CommonNs = {
       title: 'Public embed',
       modalTitle: 'Public map embed',
       openButton: 'Embed',
-      intro:
-        'Share a read-only map on your site (iframe) or as a link. The {{planName}} plan is required. Optional SEO fields apply to the standalone embed page.',
+      intro: 'Share a read-only map on your site (iframe) or as a link.',
       publicToggle: 'Enable public embed',
       seoTitle: 'Page title (SEO)',
       titleMax: 'Use at most 200 characters',
       titleRequired: 'Page title is required when public embed is enabled',
-      titleInitialHint: 'Pre-filled from your project name; edit as needed before saving.',
       seoDescription: 'Meta description (SEO)',
       descriptionMax: 'Use at most 150 characters',
       descriptionRequired: 'Meta description is required when public embed is enabled',
@@ -341,6 +339,10 @@ const en: CommonNs = {
       copyIframe: 'Copy iframe',
       copied: '{{label}} copied to clipboard',
       copyFailed: 'Could not copy',
+      embedNotFoundTitle: "This embed isn't available",
+      embedNotFoundDescription:
+        'The link may be disabled, expired, or incorrect. If this is your map, open Projects and turn public embed back on.',
+      embedNotFoundOpenProjects: 'My projects',
     },
     exportModal: {
       title: 'Configure Exporting Asset',

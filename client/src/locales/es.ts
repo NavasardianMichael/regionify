@@ -315,13 +315,11 @@ const es: CommonNs = {
       title: 'Incrustación pública',
       modalTitle: 'Incrustación pública del mapa',
       openButton: 'Insertar',
-      intro:
-        'Comparte el mapa de solo lectura con un enlace o iframe. Requiere el plan {{planName}}. Los campos SEO aplican a la página de incrustación.',
+      intro: 'Comparte el mapa de solo lectura con un enlace o iframe.',
       publicToggle: 'Activar incrustación pública',
       seoTitle: 'Título de página (SEO)',
       titleMax: 'Como máximo 200 caracteres',
       titleRequired: 'El título de página es obligatorio si la incrustación pública está activada',
-      titleInitialHint: 'Rellenado con el nombre del proyecto; puedes editarlo antes de guardar.',
       seoDescription: 'Meta descripción (SEO)',
       descriptionMax: 'Como máximo 150 caracteres',
       descriptionRequired:
@@ -350,6 +348,10 @@ const es: CommonNs = {
       copyIframe: 'Copiar iframe',
       copied: '{{label}} copiado al portapapeles',
       copyFailed: 'No se pudo copiar',
+      embedNotFoundTitle: 'Esta incrustación no está disponible',
+      embedNotFoundDescription:
+        'El enlace puede estar desactivado, caducado o ser incorrecto. Si es su mapa, abra Proyectos y vuelva a activar la incrustación pública.',
+      embedNotFoundOpenProjects: 'Mis proyectos',
     },
     exportModal: {
       title: 'Configurar exportación',

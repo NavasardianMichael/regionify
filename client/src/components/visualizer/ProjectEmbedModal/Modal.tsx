@@ -9,7 +9,7 @@ import { useProjectsStore } from '@/store/projects/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
-import { EMBED_PLAN_ERROR_EN, MODAL_STYLES, MODAL_WIDTH, SEO_TITLE_MAX } from './constants';
+import { EMBED_PLAN_ERROR_EN, SEO_TITLE_MAX } from './constants';
 import { EmbedForm } from './EmbedForm';
 import { Footer } from './Footer';
 import { buildEmbedPageUrl, buildIframeSnippet, sanitizeKeywords } from './helpers';
@@ -144,15 +144,17 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       title={<Title />}
       open={open}
       onCancel={onModalCancel}
-      className={bodyScrollbarStyles.bodyScrollbar}
+      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[720px]! lg:w-2/3!`}
+      classNames={{
+        container: 'max-h-[80vh]',
+        body: 'min-h-0 max-h-[calc(80vh-180px)] overflow-y-auto',
+      }}
       maskClosable={false}
       keyboard={!submitting}
       closable={{ disabled: submitting }}
       centered
       footer={<Footer submitting={submitting} onClose={onClose} onSubmit={onFooterSubmit} />}
-      width={MODAL_WIDTH}
       destroyOnHidden
-      styles={MODAL_STYLES}
     >
       <EmbedForm
         form={form}

@@ -270,7 +270,6 @@ export type CommonNs = {
       seoTitle: string;
       titleMax: string;
       titleRequired: string;
-      titleInitialHint: string;
       seoDescription: string;
       descriptionMax: string;
       descriptionRequired: string;
@@ -296,6 +295,10 @@ export type CommonNs = {
       upgradePlansLink: string;
       tooltipNeedSavedProject: string;
       tooltipSelectCountry: string;
+      /** Standalone embed URL: disabled, wrong token, or plan no longer eligible */
+      embedNotFoundTitle: string;
+      embedNotFoundDescription: string;
+      embedNotFoundOpenProjects: string;
     };
     exportModal: {
       title: string;

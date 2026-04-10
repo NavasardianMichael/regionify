@@ -316,14 +316,11 @@ const fr: CommonNs = {
       title: 'Intégration publique',
       modalTitle: 'Intégration publique de la carte',
       openButton: 'Intégrer',
-      intro:
-        'Partagez la carte en lecture seule par lien ou iframe. Le forfait {{planName}} est requis. Les champs SEO s’appliquent à la page d’intégration.',
+      intro: 'Partagez la carte en lecture seule par lien ou iframe.',
       publicToggle: 'Activer l’intégration publique',
       seoTitle: 'Titre de page (SEO)',
       titleMax: '200 caractères maximum',
       titleRequired: 'Le titre de page est obligatoire lorsque l’intégration publique est activée',
-      titleInitialHint:
-        'Prérempli à partir du nom du projet ; modifiez si nécessaire avant d’enregistrer.',
       seoDescription: 'Meta description (SEO)',
       descriptionMax: '150 caractères maximum',
       descriptionRequired:
@@ -352,6 +349,10 @@ const fr: CommonNs = {
       copyIframe: 'Copier l’iframe',
       copied: '{{label}} copié dans le presse-papiers',
       copyFailed: 'Impossible de copier',
+      embedNotFoundTitle: "Cette intégration n'est pas disponible",
+      embedNotFoundDescription:
+        "Le lien est peut-être désactivé, expiré ou incorrect. S'il s'agit de votre carte, ouvrez Projets et réactivez l'intégration publique.",
+      embedNotFoundOpenProjects: 'Mes projets',
     },
     exportModal: {
       title: "Configurer l'exportation",
