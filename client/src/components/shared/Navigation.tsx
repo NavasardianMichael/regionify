@@ -77,13 +77,13 @@ export const Navigation: FC = () => {
   const publicNavItems: NavItem[] = useMemo(
     () => [
       { path: ROUTES.HOME, label: t('nav.home'), icon: HomeOutlined },
-      { path: ROUTES.ABOUT, label: t('nav.about'), icon: InfoCircleOutlined },
       {
         path: ROUTES.PROJECTS,
         label: t('nav.projects'),
         icon: FolderOutlined,
       },
       { path: ROUTES.CONTACT, label: t('nav.contact'), icon: MailOutlined },
+      { path: ROUTES.ABOUT, label: t('nav.about'), icon: InfoCircleOutlined },
       { path: ROUTES.FAQ, label: t('nav.faq'), icon: QuestionCircleOutlined },
       { path: ROUTES.BILLING, label: t('nav.plans'), icon: CreditCardOutlined },
     ],
