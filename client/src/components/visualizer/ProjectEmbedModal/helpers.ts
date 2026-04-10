@@ -45,5 +45,13 @@ export function buildEmbedPageUrl({ origin, token, enabled }: BuildEmbedPageUrlI
 
 export function buildIframeSnippet(embedPageUrl: string): string {
   if (!embedPageUrl) return '';
-  return `<iframe src="${embedPageUrl}" width="100%" height="${IFRAME_HEIGHT_PX}" style="border:0" title="${IFRAME_TITLE}"></iframe>`;
+  return [
+    '<iframe',
+    `  src="${embedPageUrl}"`,
+    '  width="100%"',
+    `  height="${IFRAME_HEIGHT_PX}"`,
+    '  style="border:0"',
+    `  title="${IFRAME_TITLE}"`,
+    '></iframe>',
+  ].join('\n');
 }

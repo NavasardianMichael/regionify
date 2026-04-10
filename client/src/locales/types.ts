@@ -285,7 +285,7 @@ export type CommonNs = {
       saveToGenerateLink: string;
       copyUrl: string;
       embedIframeCode: string;
-      copyIframe: string;
+      copyEmbed: string;
       copied: string;
       copyFailed: string;
       planRequired: string;

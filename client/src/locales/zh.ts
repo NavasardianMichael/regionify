@@ -325,7 +325,7 @@ const zh: CommonNs = {
       publicPage: '公开页面',
       copyUrl: '复制链接',
       embedIframeCode: '嵌入（iframe）代码',
-      copyIframe: '复制 iframe',
+      copyEmbed: '复制嵌入代码',
       copied: '{{label}} 已复制到剪贴板',
       copyFailed: '复制失败',
       embedNotFoundTitle: '此嵌入不可用',

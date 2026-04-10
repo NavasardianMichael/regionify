@@ -341,7 +341,7 @@ const pt: CommonNs = {
       publicPage: 'Página pública',
       copyUrl: 'Copiar URL',
       embedIframeCode: 'Código de incorporação (iframe)',
-      copyIframe: 'Copiar iframe',
+      copyEmbed: 'Copiar embed',
       copied: '{{label}} copiado para a área de transferência',
       copyFailed: 'Não foi possível copiar',
       embedNotFoundTitle: 'Esta incorporação não está disponível',

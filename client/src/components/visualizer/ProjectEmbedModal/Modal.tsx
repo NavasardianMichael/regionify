@@ -78,7 +78,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   const iframeSnippet = useMemo(() => buildIframeSnippet(embedPageUrl), [embedPageUrl]);
 
   const copyLabelUrl = t('visualizer.embed.copyUrl');
-  const copyLabelIframe = t('visualizer.embed.copyIframe');
+  const copyLabelEmbed = t('visualizer.embed.copyEmbed');
 
   const copyText = useCallback(
     async (label: string, text: string) => {
@@ -171,7 +171,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         submitting={submitting}
         copyText={copyText}
         copyLabelUrl={copyLabelUrl}
-        copyLabelIframe={copyLabelIframe}
+        copyLabelEmbed={copyLabelEmbed}
       />
     </Modal>
   );

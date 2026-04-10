@@ -346,7 +346,7 @@ const fr: CommonNs = {
       publicPage: 'Page publique',
       copyUrl: 'Copier l’URL',
       embedIframeCode: 'Code d’intégration (iframe)',
-      copyIframe: 'Copier l’iframe',
+      copyEmbed: "Copier l'embed",
       copied: '{{label}} copié dans le presse-papiers',
       copyFailed: 'Impossible de copier',
       embedNotFoundTitle: "Cette intégration n'est pas disponible",

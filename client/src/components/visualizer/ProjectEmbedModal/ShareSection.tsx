@@ -13,7 +13,7 @@ type Props = {
   submitting: boolean;
   copyText: (label: string, text: string) => Promise<void>;
   copyLabelUrl: string;
-  copyLabelIframe: string;
+  copyLabelEmbed: string;
 };
 
 export const ShareSection: FC<Props> = ({
@@ -24,7 +24,7 @@ export const ShareSection: FC<Props> = ({
   submitting,
   copyText,
   copyLabelUrl,
-  copyLabelIframe,
+  copyLabelEmbed,
 }) => {
   const { t } = useTypedTranslation();
 
@@ -32,9 +32,9 @@ export const ShareSection: FC<Props> = ({
     void copyText(copyLabelUrl, embedPageUrl);
   }, [copyLabelUrl, copyText, embedPageUrl]);
 
-  const handleCopyIframe = useCallback(() => {
-    void copyText(copyLabelIframe, iframeSnippet);
-  }, [copyLabelIframe, copyText, iframeSnippet]);
+  const handleCopyEmbed = useCallback(() => {
+    void copyText(copyLabelEmbed, iframeSnippet);
+  }, [copyLabelEmbed, copyText, iframeSnippet]);
 
   if (!embedEnabled) {
     return null;
@@ -44,27 +44,31 @@ export const ShareSection: FC<Props> = ({
   const publicPagePath = embedToken ? getEmbedRoute(embedToken) : '';
 
   return (
-    <Flex vertical gap="md" className="mt-4 min-w-0">
-      <Flex vertical gap="small" className="min-w-0 rounded-md bg-gray-50 p-4">
-        <Typography.Text className="text-xs font-semibold text-gray-600">
+    <Flex vertical gap="lg" className="mt-6 min-w-0">
+      <Flex vertical gap="small" className="min-w-0">
+        <Typography.Text className="text-sm font-medium text-neutral-900">
           {t('visualizer.embed.publicPage')}
         </Typography.Text>
         {hasPublicUrl ? (
           <>
-            <AppNavLink
-              to={publicPagePath}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block max-w-full min-w-0 truncate text-xs"
-            >
-              {embedPageUrl}
-            </AppNavLink>
-            <Flex wrap gap="small">
+            <div className="w-full min-w-0">
+              <AppNavLink
+                to={publicPagePath}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block max-w-full min-w-0 truncate text-sm"
+                title={embedPageUrl}
+              >
+                {embedPageUrl}
+              </AppNavLink>
+            </div>
+            <Flex>
               <Button
-                type="default"
+                type="dashed"
                 size="small"
                 icon={<LinkOutlined />}
                 disabled={submitting}
+                className="w-fit"
                 onClick={handleCopyUrl}
               >
                 {copyLabelUrl}
@@ -72,34 +76,37 @@ export const ShareSection: FC<Props> = ({
             </Flex>
           </>
         ) : (
-          <Typography.Text type="secondary" className="text-xs">
+          <Typography.Text type="secondary" className="text-sm">
             {t('visualizer.embed.saveToGenerateLink')}
           </Typography.Text>
         )}
       </Flex>
 
-      <Flex vertical gap="small" className="min-w-0 rounded-md bg-gray-50 p-4">
-        <Typography.Text className="text-xs font-semibold text-gray-600">
+      <Flex vertical gap="small" className="min-w-0">
+        <Typography.Text className="text-sm font-medium text-neutral-900">
           {t('visualizer.embed.embedIframeCode')}
         </Typography.Text>
         {iframeSnippet ? (
-          <pre className="mb-0 max-h-40 overflow-x-auto overflow-y-auto rounded border border-neutral-200 bg-neutral-100 px-3 py-2 font-mono text-xs leading-relaxed whitespace-pre text-neutral-800">
+          <pre className="mb-0 max-h-48 min-h-0 overflow-auto rounded border border-neutral-200 bg-white px-3 py-2 font-mono text-sm leading-relaxed whitespace-pre text-neutral-800">
             {iframeSnippet}
           </pre>
         ) : (
-          <Typography.Text type="secondary" className="text-xs">
+          <Typography.Text type="secondary" className="text-sm">
             {t('visualizer.embed.saveToGenerateLink')}
           </Typography.Text>
         )}
-        <Button
-          type="default"
-          size="small"
-          icon={<CopyOutlined />}
-          disabled={submitting || !iframeSnippet}
-          onClick={handleCopyIframe}
-        >
-          {copyLabelIframe}
-        </Button>
+        <Flex>
+          <Button
+            type="dashed"
+            size="small"
+            icon={<CopyOutlined />}
+            disabled={submitting || !iframeSnippet}
+            className="w-fit"
+            onClick={handleCopyEmbed}
+          >
+            {copyLabelEmbed}
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   );

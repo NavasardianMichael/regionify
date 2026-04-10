@@ -336,7 +336,7 @@ const en: CommonNs = {
       publicPage: 'Public Page',
       copyUrl: 'Copy URL',
       embedIframeCode: 'Embed (Iframe) code',
-      copyIframe: 'Copy iframe',
+      copyEmbed: 'Copy embed',
       copied: '{{label}} copied to clipboard',
       copyFailed: 'Could not copy',
       embedNotFoundTitle: "This embed isn't available",

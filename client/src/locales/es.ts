@@ -345,7 +345,7 @@ const es: CommonNs = {
       publicPage: 'Página pública',
       copyUrl: 'Copiar URL',
       embedIframeCode: 'Código de incrustación (iframe)',
-      copyIframe: 'Copiar iframe',
+      copyEmbed: 'Copiar embed',
       copied: '{{label}} copiado al portapapeles',
       copyFailed: 'No se pudo copiar',
       embedNotFoundTitle: 'Esta incrustación no está disponible',

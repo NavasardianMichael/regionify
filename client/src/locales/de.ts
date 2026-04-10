@@ -349,7 +349,7 @@ const de: CommonNs = {
       publicPage: 'Öffentliche Seite',
       copyUrl: 'URL kopieren',
       embedIframeCode: 'Einbettungscode (iframe)',
-      copyIframe: 'Iframe kopieren',
+      copyEmbed: 'Embed kopieren',
       copied: '{{label}} in die Zwischenablage kopiert',
       copyFailed: 'Kopieren fehlgeschlagen',
       embedNotFoundTitle: 'Diese Einbettung ist nicht verfügbar',

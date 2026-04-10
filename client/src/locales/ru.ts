@@ -339,7 +339,7 @@ const ru: CommonNs = {
       publicPage: 'Публичная страница',
       copyUrl: 'Копировать ссылку',
       embedIframeCode: 'Код вставки (iframe)',
-      copyIframe: 'Копировать iframe',
+      copyEmbed: 'Копировать embed',
       copied: '{{label}} скопировано в буфер обмена',
       copyFailed: 'Не удалось скопировать',
       embedNotFoundTitle: 'Встраивание недоступно',
