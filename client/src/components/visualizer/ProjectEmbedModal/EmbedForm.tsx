@@ -86,11 +86,8 @@ export const EmbedForm: FC<Props> = ({
 
   return (
     <Form form={form} layout="vertical" onFinish={onFinish} className="min-w-0">
-      <Flex align="flex-start" justify="space-between" gap="middle" wrap="wrap" className="mb-6">
-        <Typography.Paragraph
-          type="secondary"
-          className="mb-0! max-w-[min(100%,20rem)] flex-1 text-xs"
-        >
+      <Flex align="center" justify="space-between" gap="middle" wrap="wrap" className="mb-6">
+        <Typography.Paragraph type="secondary" className="mb-0! flex-1 text-xs">
           {t('visualizer.embed.intro')}
         </Typography.Paragraph>
         <Flex align="center" gap="small" className="shrink-0">
