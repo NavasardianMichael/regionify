@@ -107,6 +107,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: changes
     if: needs.changes.outputs.needs_client_build == 'true'
+    concurrency:
+      group: build-client
+      cancel-in-progress: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -145,6 +148,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, build-client]
     if: needs.changes.outputs.deploy_server == 'true'
+    concurrency:
+      group: build-server
+      cancel-in-progress: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -208,6 +214,8 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-production
     needs: [changes, build-client, build-server]
     if: |
       always() &&
