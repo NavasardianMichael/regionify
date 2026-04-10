@@ -1,9 +1,9 @@
 import { type FC, useCallback } from 'react';
-import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
-import { Button, Flex, Typography } from 'antd';
+import { Flex, Typography } from 'antd';
 import { getEmbedRoute } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { AppNavLink } from '@/components/ui/AppNavLink';
+import { EmbedIframeCode } from './EmbedIframeCode';
+import { EmbedPublicUrl } from './EmbedPublicUrl';
 
 type Props = {
   embedEnabled: boolean;
@@ -42,70 +42,35 @@ export const ShareSection: FC<Props> = ({
 
   const hasPublicUrl = Boolean(embedPageUrl && embedToken);
   const publicPagePath = embedToken ? getEmbedRoute(embedToken) : '';
+  const pendingToken = !hasPublicUrl && submitting;
 
   return (
     <Flex vertical gap="middle" className="mt-6! min-w-0">
-      <Flex vertical gap="middle">
+      <Flex vertical gap="small">
         <Typography.Text className="text-sm font-medium text-neutral-900">
           {t('visualizer.embed.publicPage')}
         </Typography.Text>
-        {hasPublicUrl ? (
-          <>
-            <div className="w-full min-w-0">
-              <AppNavLink
-                to={publicPagePath}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block max-w-full min-w-0 truncate text-sm"
-                title={embedPageUrl}
-              >
-                {embedPageUrl}
-              </AppNavLink>
-            </div>
-            <Flex>
-              <Button
-                type="dashed"
-                size="small"
-                icon={<LinkOutlined />}
-                disabled={submitting}
-                className="w-fit"
-                onClick={handleCopyUrl}
-              >
-                {copyLabelUrl}
-              </Button>
-            </Flex>
-          </>
-        ) : (
-          <Typography.Text type="secondary" className="text-sm">
-            {t('visualizer.embed.saveToGenerateLink')}
-          </Typography.Text>
-        )}
+        <EmbedPublicUrl
+          hasPublicUrl={hasPublicUrl}
+          pendingToken={pendingToken}
+          publicPagePath={publicPagePath}
+          embedPageUrl={embedPageUrl}
+          submitting={submitting}
+          copyLabelUrl={copyLabelUrl}
+          onCopyUrl={handleCopyUrl}
+        />
       </Flex>
-      <Flex vertical gap="middle" className="min-w-0">
+      <Flex vertical gap="small" className="min-w-0">
         <Typography.Text className="text-sm font-medium text-neutral-900">
           {t('visualizer.embed.embedIframeCode')}
         </Typography.Text>
-        {iframeSnippet ? (
-          <pre className="mb-0 max-h-48 min-h-0 overflow-auto rounded border border-neutral-200 bg-white px-3 py-2 font-mono text-sm leading-relaxed whitespace-pre text-neutral-800">
-            {iframeSnippet}
-          </pre>
-        ) : (
-          <Typography.Text type="secondary" className="text-sm">
-            {t('visualizer.embed.saveToGenerateLink')}
-          </Typography.Text>
-        )}
-        <Flex>
-          <Button
-            type="dashed"
-            size="small"
-            icon={<CopyOutlined />}
-            disabled={submitting || !iframeSnippet}
-            className="w-fit"
-            onClick={handleCopyEmbed}
-          >
-            {copyLabelEmbed}
-          </Button>
-        </Flex>
+        <EmbedIframeCode
+          iframeSnippet={iframeSnippet}
+          pendingToken={pendingToken}
+          submitting={submitting}
+          copyLabelEmbed={copyLabelEmbed}
+          onCopyEmbed={handleCopyEmbed}
+        />
       </Flex>
     </Flex>
   );

@@ -151,4 +151,5 @@ import { useAuth } from '@/hooks/useAuth';
   1. Early return with `if` statements
   2. Mapped variable with `{ [key]: Component or tsx) }` structure
   3. Memoized variable (`useMemo`) with internal `if`/`return` logic
+  4. Extract a presentational component with early returns for each branch
 - In loops (e.g., `.map()`), avoid inline event handler functions; instead use `data-*` attributes (or `name`/`id`) on elements and a single memoized (`useCallback`) handler that extracts the identifier from `event.currentTarget.dataset`.

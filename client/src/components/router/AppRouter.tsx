@@ -55,7 +55,7 @@ function AppRoutesLayout() {
       vertical
       className={
         isEmbedRoute
-          ? 'embed-route-root h-full min-h-0 w-full min-w-0 overflow-hidden'
+          ? 'embed-route-root h-screen min-h-0 w-full min-w-0 overflow-hidden'
           : 'h-screen min-h-0 overflow-hidden'
       }
     >

@@ -8,6 +8,7 @@ import { useLoadProject } from '@/hooks/useLoadProject';
 import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
 import MapViewer from '@/components/visualizer/MapViewer';
 import { EmbedNotFoundView } from '@/pages/EmbedNotFoundView';
+import '@/embed/embed-shell.css';
 
 function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
   return {
@@ -38,6 +39,12 @@ const EmbedPage: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [embedNotFound, setEmbedNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [embedMeta, setEmbedMeta] = useState<{
+    title: string | null;
+    description: string | null;
+  } | null>(null);
+
+  const showClientHeader = embedMeta !== null && !document.querySelector('.embed-shell-header');
 
   useEffect(() => {
     if (!token) {
@@ -60,6 +67,10 @@ const EmbedPage: FC = () => {
         resetVisualizerToDefaultState();
         loadProject(buildProjectFromEmbedPayload(data), {
           associateWithProjectsStore: false,
+        });
+        setEmbedMeta({
+          title: data.seoTitle,
+          description: data.seoDescription,
         });
         setError(null);
       } catch (e) {
@@ -86,7 +97,7 @@ const EmbedPage: FC = () => {
 
   if (loading) {
     return (
-      <Flex align="center" justify="center" className="min-h-[240px] min-w-0 flex-1">
+      <Flex align="center" justify="center" className="min-h-60 min-w-0 flex-1">
         <Spin size="large" />
       </Flex>
     );
@@ -103,7 +114,7 @@ const EmbedPage: FC = () => {
         align="center"
         justify="center"
         gap="small"
-        className="min-h-[240px] min-w-0 flex-1 p-4"
+        className="min-h-60 min-w-0 flex-1 p-4"
       >
         <Typography.Title level={4} className="mb-0! text-center">
           Could not load embed
@@ -117,6 +128,12 @@ const EmbedPage: FC = () => {
 
   return (
     <Flex vertical className="h-full min-h-0 w-full min-w-0 flex-1 overflow-hidden">
+      {showClientHeader && (embedMeta.title ?? embedMeta.description) && (
+        <header className="embed-shell-header">
+          {embedMeta.title && <h1 className="embed-shell-title">{embedMeta.title}</h1>}
+          {embedMeta.description && <p className="embed-shell-intro">{embedMeta.description}</p>}
+        </header>
+      )}
       <Flex className="min-h-0 min-w-0 flex-1 overflow-hidden">
         <MapViewer className="min-h-0 min-w-0 flex-1" flatEmbedChrome />
       </Flex>

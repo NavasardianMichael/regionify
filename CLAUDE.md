@@ -238,6 +238,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   1. Early return with `if` statements
   2. Mapped variable: `{ [key]: <Component /> }` structure
   3. Memoized variable (`useMemo`) with internal `if`/`return` logic
+  4. Extract a presentational component with early returns for each branch
 - In loops (`.map()`), avoid inline event handler functions; use `data-*` attributes on elements and a single memoized `useCallback` handler that reads `event.currentTarget.dataset`.
 - Avoid declaring a variable holding static markup and rendering it in the same component — extract a presentational component instead.
 - Refactor functions over ~100 lines into dedicated helpers or modules; keep UI components focused on composition and state.

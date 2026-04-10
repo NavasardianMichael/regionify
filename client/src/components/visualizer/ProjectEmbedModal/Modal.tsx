@@ -41,7 +41,10 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
 
   const [form] = Form.useForm<ProjectEmbedFormValues>();
   const [submitting, setSubmitting] = useState(false);
+  const [savedToken, setSavedToken] = useState<string | null>(null);
   const embedEnabled = Form.useWatch('enabled', form) === true;
+
+  const currentToken = savedToken ?? project.embed.token;
 
   useEffect(() => {
     if (!open) return;
@@ -53,6 +56,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       seoDescription: storedDescription || defaultSeoDescription,
       keywords: defaultKeywords,
     });
+    setSavedToken(null);
   }, [
     form,
     open,
@@ -69,10 +73,10 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
     () =>
       buildEmbedPageUrl({
         origin: window.location.origin,
-        token: project.embed.token,
+        token: currentToken,
         enabled: embedEnabled,
       }),
-    [project.embed.token, embedEnabled],
+    [currentToken, embedEnabled],
   );
 
   const iframeSnippet = useMemo(() => buildIframeSnippet(embedPageUrl), [embedPageUrl]);
@@ -97,7 +101,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       setSubmitting(true);
       try {
         const kw = sanitizeKeywords(values.keywords);
-        await updateProjectEmbed(project.id, {
+        const embedResult = await updateProjectEmbed(project.id, {
           enabled: values.enabled,
           seo: {
             title: values.enabled ? values.seoTitle.trim().slice(0, SEO_TITLE_MAX) : null,
@@ -107,6 +111,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
             keywords: kw.length > 0 ? kw : null,
           },
         });
+        setSavedToken(embedResult.embed.token);
         const fresh = await getProject(project.id);
         updateProjectInList(fresh);
         message.success(t('visualizer.embed.saveSuccess'));
@@ -165,7 +170,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       />
       <ShareSection
         embedEnabled={embedEnabled}
-        embedToken={project.embed.token}
+        embedToken={currentToken}
         embedPageUrl={embedPageUrl}
         iframeSnippet={iframeSnippet}
         submitting={submitting}
