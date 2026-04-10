@@ -16,6 +16,16 @@ body.embed-page {
   flex-direction: column;
 }
 
+/* Minimal `/embed/:token` shell (invalid token): `#root` is direct child of `body` — fill width/height for the SPA. */
+body.embed-page #root {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+
 .embed-shell-main {
   display: flex;
   flex: 1 1 0%;
@@ -78,6 +88,8 @@ body.embed-page #root > .ant-app {
 body.embed-page .embed-route-root {
   flex: 1 1 0%;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .embed-skip-to-map {

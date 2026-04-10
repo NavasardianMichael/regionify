@@ -86,7 +86,7 @@ const EmbedPage: FC = () => {
 
   if (loading) {
     return (
-      <Flex align="center" justify="center" className="h-full min-h-[240px] w-full">
+      <Flex align="center" justify="center" className="min-h-[240px] min-w-0 flex-1">
         <Spin size="large" />
       </Flex>
     );
@@ -103,7 +103,7 @@ const EmbedPage: FC = () => {
         align="center"
         justify="center"
         gap="small"
-        className="h-full min-h-[240px] w-full p-4"
+        className="min-h-[240px] min-w-0 flex-1 p-4"
       >
         <Typography.Title level={4} className="mb-0! text-center">
           Could not load embed

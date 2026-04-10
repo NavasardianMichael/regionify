@@ -9,18 +9,20 @@ export const EmbedNotFoundView: FC = () => {
   const { t } = useTypedTranslation();
 
   return (
-    <Flex align="center" justify="center" className="h-full min-h-[240px] w-full p-4">
-      <Card className="w-full max-w-lg shadow-sm">
-        <Flex vertical align="center" gap="middle">
+    <Flex align="center" justify="center" className="min-h-[240px] min-w-0 flex-1 p-4">
+      <Card className="w-full max-w-lg min-w-0 shadow-sm">
+        <Flex vertical gap="middle" className="w-full min-w-0">
           <Typography.Title level={3} className="text-primary mb-0! text-center">
             {t('visualizer.embed.embedNotFoundTitle')}
           </Typography.Title>
-          <Typography.Paragraph type="secondary" className="mb-0! text-center">
+          <Typography.Paragraph type="secondary" className="mb-0! text-center break-words">
             {t('visualizer.embed.embedNotFoundDescription')}
           </Typography.Paragraph>
-          <Link to={ROUTES.PROJECTS}>
-            <Button type="primary">{t('visualizer.embed.embedNotFoundOpenProjects')}</Button>
-          </Link>
+          <Flex justify="center">
+            <Link to={ROUTES.PROJECTS}>
+              <Button type="primary">{t('visualizer.embed.embedNotFoundOpenProjects')}</Button>
+            </Link>
+          </Flex>
         </Flex>
       </Card>
     </Flex>

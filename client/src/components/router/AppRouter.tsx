@@ -36,7 +36,7 @@ function AppRoutesLayout() {
       vertical
       className={
         isEmbedRoute
-          ? 'embed-route-root h-full min-h-0 overflow-hidden'
+          ? 'embed-route-root h-full min-h-0 w-full min-w-0 overflow-hidden'
           : 'h-screen min-h-0 overflow-hidden'
       }
     >
@@ -45,13 +45,15 @@ function AppRoutesLayout() {
       <MainOrRegion
         className={
           isEmbedRoute
-            ? 'min-h-0 grow overflow-hidden bg-gray-100'
+            ? 'min-h-0 min-w-0 grow overflow-hidden bg-gray-100'
             : `grow overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`
         }
       >
         <div
           className={
-            isEmbedRoute ? 'flex h-full min-h-0 flex-col' : 'flex h-full flex-col items-stretch'
+            isEmbedRoute
+              ? 'flex h-full min-h-0 w-full min-w-0 flex-col'
+              : 'flex h-full flex-col items-stretch'
           }
         >
           <Suspense fallback={<PageLoader />}>
