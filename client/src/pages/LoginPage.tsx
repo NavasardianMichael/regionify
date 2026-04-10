@@ -274,15 +274,17 @@ const LoginPage: FC = () => {
             )}
             {isSessionLimitError && (
               <div className="mt-2">
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={handleForceLogin}
-                  loading={loading}
-                  className="h-auto! p-0!"
+                <AppNavLink
+                  to={ROUTES.LOGIN}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    void handleForceLogin();
+                  }}
+                  aria-disabled={loading}
+                  className={`text-sm font-semibold ${loading ? 'pointer-events-none opacity-70' : ''}`}
                 >
                   {t('auth.login.signInEvictDevices')}
-                </Button>
+                </AppNavLink>
               </div>
             )}
           </div>

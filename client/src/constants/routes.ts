@@ -3,6 +3,11 @@ export function isEmbedPathname(pathname: string): boolean {
   return /^\/embed\/[^/]+$/.test(pathname);
 }
 
+/** True for the marketing home page (`/`), which uses a full-bleed layout without app padding. */
+export function isHomePathname(pathname: string): boolean {
+  return pathname === '/';
+}
+
 export const ROUTES = {
   HOME: '/',
   PROJECTS: '/projects',

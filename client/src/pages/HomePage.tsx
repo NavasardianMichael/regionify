@@ -1,21 +1,18 @@
 import type { FC } from 'react';
-import { Flex, Typography } from 'antd';
-import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { CtaSection } from '@/pages/home/CtaSection';
+import { FeaturesSection } from '@/pages/home/FeaturesSection';
+import { HeroSection } from '@/pages/home/HeroSection';
+import { MapsSection } from '@/pages/home/MapsSection';
+import { PlansSection } from '@/pages/home/PlansSection';
 
-const HomePage: FC = () => {
-  const { t } = useTypedTranslation();
-  return (
-    <Flex vertical className="h-full min-h-0 w-full flex-col items-center">
-      <Flex vertical gap="middle" className="w-full max-w-4xl p-4 md:p-6">
-        <Typography.Title level={1} className="text-primary mb-0! text-2xl font-bold md:text-3xl">
-          {t('home.title')}
-        </Typography.Title>
-        <Typography.Paragraph className="mb-0! text-gray-600">
-          {t('home.welcome')}
-        </Typography.Paragraph>
-      </Flex>
-    </Flex>
-  );
-};
+const HomePage: FC = () => (
+  <>
+    <HeroSection />
+    <FeaturesSection />
+    <MapsSection />
+    <PlansSection />
+    <CtaSection />
+  </>
+);
 
 export default HomePage;
