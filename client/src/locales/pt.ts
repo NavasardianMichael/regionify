@@ -347,8 +347,10 @@ const pt: CommonNs = {
       copyFailed: 'Não foi possível copiar',
       embedNotFoundTitle: 'Esta incorporação não está disponível',
       embedNotFoundDescription:
-        'O link pode estar desativado, expirado ou incorreto. Se for o seu mapa, abra Projetos e ative novamente a incorporação pública.',
+        'O link pode estar desativado, expirado ou incorreto. Se o projeto existir e você tiver acesso, tente abrir o projeto e ativar novamente a incorporação pública.',
       embedNotFoundOpenProjects: 'Meus projetos',
+      embedErrorMessage: 'Algo deu errado, por favor tente novamente mais tarde ou ',
+      embedErrorContactUs: 'entre em contato',
     },
     exportModal: {
       title: 'Configurar exportação',

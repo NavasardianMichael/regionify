@@ -355,8 +355,10 @@ const de: CommonNs = {
       copyFailed: 'Kopieren fehlgeschlagen',
       embedNotFoundTitle: 'Diese Einbettung ist nicht verfügbar',
       embedNotFoundDescription:
-        'Der Link ist möglicherweise deaktiviert, abgelaufen oder ungültig. Wenn dies Ihre Karte ist, öffnen Sie Projekte und aktivieren Sie die öffentliche Einbettung erneut.',
+        'Der Link ist möglicherweise deaktiviert, abgelaufen oder ungültig. Falls das Projekt existiert und Sie Zugriff darauf haben, versuchen Sie, das Projekt zu öffnen und die öffentliche Einbettung wieder zu aktivieren.',
       embedNotFoundOpenProjects: 'Meine Projekte',
+      embedErrorMessage: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es später erneut oder ',
+      embedErrorContactUs: 'kontaktieren Sie uns',
     },
     exportModal: {
       title: 'Exporteinstellungen konfigurieren',

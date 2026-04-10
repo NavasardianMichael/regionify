@@ -300,6 +300,8 @@ export type CommonNs = {
       embedNotFoundTitle: string;
       embedNotFoundDescription: string;
       embedNotFoundOpenProjects: string;
+      embedErrorMessage: string;
+      embedErrorContactUs: string;
     };
     exportModal: {
       title: string;

@@ -351,8 +351,10 @@ const es: CommonNs = {
       copyFailed: 'No se pudo copiar',
       embedNotFoundTitle: 'Esta incrustación no está disponible',
       embedNotFoundDescription:
-        'El enlace puede estar desactivado, caducado o ser incorrecto. Si es su mapa, abra Proyectos y vuelva a activar la incrustación pública.',
+        'El enlace puede estar desactivado, caducado o ser incorrecto. Si el proyecto existe y tiene acceso, intente abrir el proyecto y volver a activar la incrustación pública.',
       embedNotFoundOpenProjects: 'Mis proyectos',
+      embedErrorMessage: 'Algo salió mal, por favor inténtelo de nuevo más tarde o ',
+      embedErrorContactUs: 'contáctenos',
     },
     exportModal: {
       title: 'Configurar exportación',

@@ -5,7 +5,10 @@ import { fetchPublicEmbedData, PublicEmbedNotFoundError } from '@/api/embed';
 import type { PublicEmbedApiResponse } from '@/api/embed/types';
 import type { Project } from '@/api/projects/types';
 import { useLoadProject } from '@/hooks/useLoadProject';
+import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 import MapViewer from '@/components/visualizer/MapViewer';
 import { EmbedNotFoundView } from '@/pages/EmbedNotFoundView';
 import '@/embed/embed-shell.css';
@@ -35,8 +38,9 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
 
 const EmbedPage: FC = () => {
   const { token } = useParams<{ token: string }>();
+  const { t } = useTypedTranslation();
   const loadProject = useLoadProject();
-  const [error, setError] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
   const [embedNotFound, setEmbedNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [embedMeta, setEmbedMeta] = useState<{
@@ -48,8 +52,7 @@ const EmbedPage: FC = () => {
 
   useEffect(() => {
     if (!token) {
-      setEmbedNotFound(false);
-      setError('Invalid embed link');
+      setEmbedNotFound(true);
       setLoading(false);
       return;
     }
@@ -58,7 +61,7 @@ const EmbedPage: FC = () => {
 
     setLoading(true);
     setEmbedNotFound(false);
-    setError(null);
+    setHasError(false);
 
     const run = async () => {
       try {
@@ -72,15 +75,15 @@ const EmbedPage: FC = () => {
           title: data.seoTitle,
           description: data.seoDescription,
         });
-        setError(null);
+        setHasError(false);
       } catch (e) {
         if (!cancelled) {
           if (e instanceof PublicEmbedNotFoundError) {
             setEmbedNotFound(true);
-            setError(null);
+            setHasError(false);
           } else {
             setEmbedNotFound(false);
-            setError(e instanceof Error ? e.message : 'Failed to load map');
+            setHasError(true);
           }
         }
       } finally {
@@ -97,7 +100,7 @@ const EmbedPage: FC = () => {
 
   if (loading) {
     return (
-      <Flex align="center" justify="center" className="min-h-60 min-w-0 flex-1">
+      <Flex align="center" justify="center" className="min-h-60 w-full flex-1">
         <Spin size="large" />
       </Flex>
     );
@@ -107,20 +110,18 @@ const EmbedPage: FC = () => {
     return <EmbedNotFoundView />;
   }
 
-  if (error) {
+  if (hasError) {
     return (
       <Flex
         vertical
         align="center"
         justify="center"
         gap="small"
-        className="min-h-60 min-w-0 flex-1 p-4"
+        className="min-h-60 w-full flex-1 p-4"
       >
-        <Typography.Title level={4} className="mb-0! text-center">
-          Could not load embed
-        </Typography.Title>
-        <Typography.Text type="danger" className="text-center">
-          {error}
+        <Typography.Text type="secondary" className="text-center">
+          {t('visualizer.embed.embedErrorMessage')}
+          <AppNavLink to={ROUTES.CONTACT}>{t('visualizer.embed.embedErrorContactUs')}</AppNavLink>
         </Typography.Text>
       </Flex>
     );

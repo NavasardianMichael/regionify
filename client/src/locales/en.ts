@@ -342,8 +342,10 @@ const en: CommonNs = {
       copyFailed: 'Could not copy',
       embedNotFoundTitle: "This embed isn't available",
       embedNotFoundDescription:
-        'The link may be disabled, expired, or incorrect. If this is your map, open Projects and turn public embed back on.',
+        'The link may be disabled, expired, or incorrect. If the project exists and you have access to it, try to open the project and turn public embed back on.',
       embedNotFoundOpenProjects: 'My projects',
+      embedErrorMessage: 'Something went wrong, please try again later or ',
+      embedErrorContactUs: 'contact us',
     },
     exportModal: {
       title: 'Configure Exporting Asset',

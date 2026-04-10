@@ -352,8 +352,10 @@ const fr: CommonNs = {
       copyFailed: 'Impossible de copier',
       embedNotFoundTitle: "Cette intégration n'est pas disponible",
       embedNotFoundDescription:
-        "Le lien est peut-être désactivé, expiré ou incorrect. S'il s'agit de votre carte, ouvrez Projets et réactivez l'intégration publique.",
+        "Le lien est peut-être désactivé, expiré ou incorrect. Si le projet existe et que vous y avez accès, essayez de l'ouvrir et de réactiver l'intégration publique.",
       embedNotFoundOpenProjects: 'Mes projets',
+      embedErrorMessage: 'Une erreur est survenue, veuillez réessayer plus tard ou ',
+      embedErrorContactUs: 'nous contacter',
     },
     exportModal: {
       title: "Configurer l'exportation",

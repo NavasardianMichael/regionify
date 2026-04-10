@@ -331,8 +331,10 @@ const zh: CommonNs = {
       copyFailed: '复制失败',
       embedNotFoundTitle: '此嵌入不可用',
       embedNotFoundDescription:
-        '链接可能已关闭、过期或不正确。如果这是您的地图，请打开「项目」重新开启公开嵌入。',
+        '链接可能已关闭、过期或不正确。如果项目存在且您有访问权限，请尝试打开项目并重新开启公开嵌入。',
       embedNotFoundOpenProjects: '我的项目',
+      embedErrorMessage: '出了点问题，请稍后再试或',
+      embedErrorContactUs: '联系我们',
     },
     exportModal: {
       title: '配置导出资源',
