@@ -10,7 +10,7 @@ export const EmbedNotFoundView: FC = () => {
     <Flex vertical align="center" justify="center" gap="middle" className="w-full flex-1 p-4">
       <a href="/" target="_blank" rel="noopener noreferrer" className="no-underline">
         <Flex align="center" gap="small">
-          <img src={logoImage} alt={t('appName')} className="h-10 w-auto object-contain" />
+          <img src={logoImage} alt={t('appName')} className="h-6 w-auto object-contain" />
           <Typography.Text strong className="text-primary text-lg">
             Regionify
           </Typography.Text>

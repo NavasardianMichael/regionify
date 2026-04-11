@@ -170,7 +170,7 @@ export const Navigation: FC = () => {
 
   const desktopTrailing = (
     <Flex align="center" gap={12} className="flex-1 justify-end lg:gap-4">
-      <Flex component="ul" gap={4}>
+      <Flex component="ul" align="center" gap={4}>
         {publicNavItems.map((item) => (
           <li key={item.path}>
             <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>

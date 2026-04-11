@@ -52,7 +52,7 @@ const BillingPage: FC = () => {
         </Typography.Paragraph>
       </header>
 
-      <ul className="m-0 flex w-full min-w-0 list-none flex-wrap items-stretch justify-center gap-8 p-0 md:gap-6 lg:items-start">
+      <ul className="m-0 flex w-full min-w-0 list-none flex-wrap items-stretch! justify-center gap-8 p-0 md:gap-6 lg:items-start">
         {billingPlans.map((plan) => (
           <li key={plan.id} className="w-full flex-col md:w-80 md:shrink-0">
             <PlanCard

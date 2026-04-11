@@ -59,8 +59,8 @@ export const FeaturesSection: FC = () => {
           <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {features.map(({ Icon, title, desc }) => (
               <Flex key={title} vertical gap="small" align="center" className="text-center">
-                <Icon className="text-primary text-4xl" />
-                <Typography.Title level={3} className="mb-0! text-lg font-semibold">
+                <Icon className="text-primary mb-sm text-4xl" />
+                <Typography.Title level={3} className="mb-0! text-base! font-semibold">
                   {title}
                 </Typography.Title>
                 <Typography.Paragraph className="mb-0! text-gray-500">{desc}</Typography.Paragraph>
