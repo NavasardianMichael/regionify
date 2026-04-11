@@ -422,14 +422,25 @@ export const ImportDataPanel: FC = () => {
     [setVisualizerState],
   );
 
+  /** Generate sample value within legend ranges (0-100, 101-500, 501-1000) for region at index. */
+  const generateSampleValue = useCallback((regionIndex: number): number => {
+    const ranges = [
+      { min: 10, max: 100 },
+      { min: 101, max: 500 },
+      { min: 501, max: 1000 },
+    ];
+    const range = ranges[regionIndex % ranges.length];
+    return Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+  }, []);
+
   /** Apply static mode: clear timeline and set data to sample (or empty if no region). */
   const applySwitchToStatic = useCallback(() => {
     clearTimelineData();
     if (svgTitles.length > 0) {
-      const sampleData = svgTitles.map((title) => ({
+      const sampleData = svgTitles.map((title, index) => ({
         id: title,
         label: title,
-        value: Math.floor(Math.random() * 900) + 100,
+        value: generateSampleValue(index),
       }));
       const allIds = sampleData.map((item) => item.id);
       const byId = Object.fromEntries(sampleData.map((item) => [item.id, item as RegionData]));
@@ -438,7 +449,7 @@ export const ImportDataPanel: FC = () => {
       setVisualizerState({ data: { allIds: [], byId: {} } });
     }
     showMessageWithClose(messageApi, 'success', t('messages.switchedToStatic'));
-  }, [messageApi, svgTitles, clearTimelineData, setVisualizerState, t]);
+  }, [messageApi, svgTitles, clearTimelineData, setVisualizerState, generateSampleValue, t]);
 
   /** Apply dynamic mode: set timeline to sample (or empty if no region). */
   const applySwitchToDynamic = useCallback(() => {
@@ -446,11 +457,11 @@ export const ImportDataPanel: FC = () => {
       const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
       const timeline: Record<string, DataSet> = {};
       for (let p = 0; p < samplePeriods.length; p++) {
-        const baseMultiplier = 1 + p * 0.3;
+        const periodMultiplier = 1 + p * 0.1;
         const periodData = svgTitles.map((title, i) => ({
           id: title,
           label: title,
-          value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
+          value: Math.floor(generateSampleValue(i) * periodMultiplier),
         }));
         timeline[samplePeriods[p]] = {
           allIds: periodData.map((item) => item.id),
@@ -462,7 +473,7 @@ export const ImportDataPanel: FC = () => {
       setTimelineData({}, []);
     }
     showMessageWithClose(messageApi, 'success', t('messages.switchedToDynamic'));
-  }, [messageApi, svgTitles, setTimelineData, t]);
+  }, [messageApi, svgTitles, setTimelineData, generateSampleValue, t]);
 
   const handleSwitchToStatic = useCallback(() => {
     if (hasHistoricalFormat && hasDataOrTimeline) {
@@ -530,11 +541,11 @@ export const ImportDataPanel: FC = () => {
               const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
               const timeline: Record<string, DataSet> = {};
               for (let p = 0; p < samplePeriods.length; p++) {
-                const baseMultiplier = 1 + p * 0.3;
+                const periodMultiplier = 1 + p * 0.1;
                 const periodData = titles.map((title, i) => ({
                   id: title,
                   label: title,
-                  value: Math.floor((100 + i * 50) * baseMultiplier + Math.random() * 200),
+                  value: Math.floor(generateSampleValue(i) * periodMultiplier),
                 }));
                 timeline[samplePeriods[p]] = {
                   allIds: periodData.map((item) => item.id),
@@ -543,10 +554,10 @@ export const ImportDataPanel: FC = () => {
               }
               setTimelineData(timeline, samplePeriods);
             } else {
-              const sampleData = titles.map((title) => ({
+              const sampleData = titles.map((title, index) => ({
                 id: title,
                 label: title,
-                value: Math.floor(Math.random() * 900) + 100,
+                value: generateSampleValue(index),
               }));
               const allIds = sampleData.map((item) => item.id);
               const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
@@ -574,6 +585,7 @@ export const ImportDataPanel: FC = () => {
     clearTimelineData,
     setTimelineData,
     limits.historicalDataImport,
+    generateSampleValue,
   ]);
 
   /** Process parsed rows — groups by time period for Atlas users or imports flat data. */
