@@ -1,6 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Typography } from 'antd';
+import regionifyEuropeSvg from '@/assets/images/showcases/regionify-europe.svg';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
@@ -10,6 +11,24 @@ type ShowcaseItem = {
   planName: string;
   assetId: string;
 };
+
+const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
+  svg: (
+    <Flex align="center" justify="center" className="h-full w-full">
+      <img
+        src={regionifyEuropeSvg}
+        alt="Regionify Europe Showcase"
+        className="max-h-full max-w-full"
+      />
+    </Flex>
+  ),
+};
+
+const DEFAULT_SHOWCASE_PLACEHOLDER = (assetId: string) => (
+  <Flex align="center" justify="center" className="h-full w-full">
+    <Typography.Text className="text-gray-400 select-none">{assetId.toUpperCase()}</Typography.Text>
+  </Flex>
+);
 
 export const ShowcaseSection: FC = () => {
   const { t } = useTypedTranslation();
@@ -89,9 +108,7 @@ export const ShowcaseSection: FC = () => {
                 className="aspect-video w-full min-w-0 flex-1 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50"
                 data-showcase={assetId}
               >
-                <Typography.Text className="text-gray-400 select-none">
-                  {assetId.toUpperCase()}
-                </Typography.Text>
+                {SHOWCASE_CONTENT_MAP[assetId] ?? DEFAULT_SHOWCASE_PLACEHOLDER(assetId)}
               </Flex>
             </div>
           ))}
