@@ -1,0 +1,102 @@
+import { type FC, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button, Flex, Typography } from 'antd';
+import { ROUTES } from '@/constants/routes';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+
+type ShowcaseItem = {
+  title: string;
+  description: string;
+  planName: string;
+  assetId: string;
+};
+
+export const ShowcaseSection: FC = () => {
+  const { t } = useTypedTranslation();
+  const navigate = useNavigate();
+
+  const items = useMemo<ShowcaseItem[]>(
+    () => [
+      {
+        title: t('home.showcaseSvgTitle'),
+        description: t('home.showcaseSvgDesc'),
+        planName: t('plans.items.explorer.name'),
+        assetId: 'svg',
+      },
+      {
+        title: t('home.showcaseGifTitle'),
+        description: t('home.showcaseGifDesc'),
+        planName: t('plans.items.chronographer.name'),
+        assetId: 'gif',
+      },
+      {
+        title: t('home.showcaseMp4Title'),
+        description: t('home.showcaseMp4Desc'),
+        planName: t('plans.items.chronographer.name'),
+        assetId: 'mp4',
+      },
+      {
+        title: t('home.showcasePublicPageTitle'),
+        description: t('home.showcasePublicPageDesc'),
+        planName: t('plans.items.chronographer.name'),
+        assetId: 'public-page',
+      },
+      {
+        title: t('home.showcaseEmbedTitle'),
+        description: t('home.showcaseEmbedDesc'),
+        planName: t('plans.items.chronographer.name'),
+        assetId: 'embed',
+      },
+    ],
+    [t],
+  );
+
+  const handlePlanClick = useCallback(() => {
+    void navigate(ROUTES.BILLING);
+  }, [navigate]);
+
+  return (
+    <section className="bg-gray-50 px-6 py-16 md:py-20">
+      <div className="mx-auto w-full max-w-5xl">
+        <Flex vertical gap={48}>
+          <Typography.Title
+            level={2}
+            className="text-primary mb-0! text-center text-2xl font-bold md:text-3xl"
+          >
+            {t('home.showcaseTitle')}
+          </Typography.Title>
+          {items.map(({ title, description, planName, assetId }, index) => (
+            <div
+              key={assetId}
+              className={`flex flex-col items-center gap-10 ${index > 0 ? 'border-t border-gray-200 pt-12' : ''} ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+            >
+              <Flex vertical gap="middle" className="min-w-0 flex-1">
+                <Typography.Title level={3} className="mb-0! text-xl font-semibold">
+                  {title}
+                </Typography.Title>
+                <Typography.Paragraph className="mb-0! text-gray-500">
+                  {description}
+                </Typography.Paragraph>
+                <div>
+                  <Button type="default" onClick={handlePlanClick}>
+                    {planName} →
+                  </Button>
+                </div>
+              </Flex>
+              <Flex
+                align="center"
+                justify="center"
+                className="aspect-video w-full min-w-0 flex-1 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50"
+                data-showcase={assetId}
+              >
+                <Typography.Text className="text-gray-400 select-none">
+                  {assetId.toUpperCase()}
+                </Typography.Text>
+              </Flex>
+            </div>
+          ))}
+        </Flex>
+      </div>
+    </section>
+  );
+};

@@ -50,8 +50,33 @@ const es: CommonNs = {
     mapsTitle: 'Más de 200 mapas incluidos',
     mapsSubtitle:
       'Países, continentes, estados de EE. UU., regiones de la UE y más — listos para usar.',
+    dataModesTitle: 'Instantáneas estáticas y series temporales',
+    dataModesSubtitle:
+      'Ya sea un mapa puntual o una línea temporal histórica completa, Regionify lo tiene cubierto.',
+    dataModesStaticTitle: 'Datos estáticos',
+    dataModesStaticDesc:
+      'Importa un conjunto de datos y genera un mapa coroplético listo para publicar en segundos — perfecto para informes, artículos y presentaciones.',
+    dataModesTimeSeriesTitle: 'Series temporales históricas',
+    dataModesTimeSeriesDesc:
+      'Carga datos de múltiples periodos, navega por una línea temporal interactiva y observa cómo cambian las regiones — luego exporta la animación como GIF o MP4.',
     ctaBottomTitle: '¿Listo para mapear tus datos?',
     ctaBottomSubtitle: 'Crea tu primera visualización en minutos — sin tarjeta de crédito.',
+    showcaseTitle: 'Exporta y comparte tus mapas',
+    showcaseSvgTitle: 'Exportación SVG nítida',
+    showcaseSvgDesc:
+      'Exporta mapas vectoriales que escalan a cualquier tamaño — ideales para impresión, presentaciones e informes profesionales.',
+    showcaseGifTitle: 'Línea de tiempo GIF animada',
+    showcaseGifDesc:
+      'Convierte datos de series temporales en animaciones GIF que cuentan una historia de un vistazo.',
+    showcaseMp4Title: 'Exportación de video MP4',
+    showcaseMp4Desc:
+      'Exporta líneas de tiempo en video listas para presentaciones, redes sociales o proyectos audiovisuales.',
+    showcasePublicPageTitle: 'Página pública con SEO',
+    showcasePublicPageDesc:
+      'Comparte tu mapa en una URL pública dedicada con título, descripción e imagen de previsualización personalizables para buscadores y enlaces compartidos.',
+    showcaseEmbedTitle: 'Iframe incrustable',
+    showcaseEmbedDesc:
+      'Coloca un mapa interactivo en cualquier lugar de tu sitio web, blog o aplicación con un simple fragmento de iframe — totalmente responsive y siempre actualizado.',
   },
   about: {
     title: 'Acerca de Regionify',

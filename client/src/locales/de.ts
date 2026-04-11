@@ -51,9 +51,34 @@ const de: CommonNs = {
     mapsTitle: 'Über 200 Karten enthalten',
     mapsSubtitle:
       'Länder, Kontinente, US-Bundesstaaten, EU-Regionen und mehr — sofort einsatzbereit.',
+    dataModesTitle: 'Statische Momentaufnahmen & Zeitreihen',
+    dataModesSubtitle:
+      'Ob Sie eine einzelne Karte oder eine vollständige historische Zeitleiste benötigen — Regionify deckt beides ab.',
+    dataModesStaticTitle: 'Statische Daten',
+    dataModesStaticDesc:
+      'Importieren Sie einen einzelnen Datensatz und erstellen Sie in Sekunden eine druckfertige Choroplethenkarte — perfekt für Berichte, Artikel und Präsentationen.',
+    dataModesTimeSeriesTitle: 'Historische Zeitreihen',
+    dataModesTimeSeriesDesc:
+      'Laden Sie Daten über mehrere Zeiträume, navigieren Sie durch eine interaktive Zeitleiste und beobachten Sie die Veränderung der Regionen — dann exportieren Sie die Animation als GIF oder MP4.',
     ctaBottomTitle: 'Bereit, Ihre Daten zu kartieren?',
     ctaBottomSubtitle:
       'Erstellen Sie Ihre erste Visualisierung in Minuten — keine Kreditkarte erforderlich.',
+    showcaseTitle: 'Exportieren & teilen Sie Ihre Karten',
+    showcaseSvgTitle: 'Gestochen scharfer SVG-Export',
+    showcaseSvgDesc:
+      'Exportieren Sie pixelgenaue Vektorkarten, die auf jede Größe skalieren — ideal für Druck, Präsentationen und professionelle Berichte.',
+    showcaseGifTitle: 'Animierte GIF-Zeitleiste',
+    showcaseGifDesc:
+      'Verwandeln Sie Zeitreihendaten in GIF-Animationen, die auf einen Blick eine Geschichte erzählen.',
+    showcaseMp4Title: 'MP4-Videoexport',
+    showcaseMp4Desc:
+      'Exportieren Sie flüssige Video-Zeitleisten für Präsentationen, soziale Medien oder Videoprojekte.',
+    showcasePublicPageTitle: 'Öffentliche Kartenseite mit SEO',
+    showcasePublicPageDesc:
+      'Teilen Sie Ihre Karte über eine eigene öffentliche URL mit anpassbarem Titel, Beschreibung und Social-Media-Vorschaubild für Suchmaschinen und Link-Vorschauen.',
+    showcaseEmbedTitle: 'Einbettbarer Iframe',
+    showcaseEmbedDesc:
+      'Platzieren Sie eine interaktive Karte überall auf Ihrer Website, Ihrem Blog oder Ihrer App mit einem einfachen Iframe-Snippet — vollständig responsiv und immer aktuell.',
   },
   about: {
     title: 'Über Regionify',

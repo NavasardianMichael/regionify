@@ -52,8 +52,25 @@ export type CommonNs = {
     featureTimeSeriesDesc: string;
     mapsTitle: string;
     mapsSubtitle: string;
+    dataModesTitle: string;
+    dataModesSubtitle: string;
+    dataModesStaticTitle: string;
+    dataModesStaticDesc: string;
+    dataModesTimeSeriesTitle: string;
+    dataModesTimeSeriesDesc: string;
     ctaBottomTitle: string;
     ctaBottomSubtitle: string;
+    showcaseTitle: string;
+    showcaseSvgTitle: string;
+    showcaseSvgDesc: string;
+    showcaseGifTitle: string;
+    showcaseGifDesc: string;
+    showcaseMp4Title: string;
+    showcaseMp4Desc: string;
+    showcasePublicPageTitle: string;
+    showcasePublicPageDesc: string;
+    showcaseEmbedTitle: string;
+    showcaseEmbedDesc: string;
   };
   about: {
     title: string;

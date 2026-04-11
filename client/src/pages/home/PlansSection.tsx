@@ -37,7 +37,7 @@ export const PlansSection: FC = () => {
               {t('plans.subtitle')}
             </Typography.Paragraph>
           </Flex>
-          <ul className="m-0 flex w-full list-none flex-wrap items-stretch justify-center gap-6 p-0 lg:items-start">
+          <ul className="m-0 flex w-full list-none flex-wrap items-stretch! justify-center gap-6 p-0 lg:items-start">
             {billingPlans.map((plan) => (
               <li key={plan.id} className="w-full md:w-80 md:shrink-0">
                 <PlanCard

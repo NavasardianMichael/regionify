@@ -50,8 +50,33 @@ const en: CommonNs = {
     mapsTitle: '200+ maps included',
     mapsSubtitle:
       'Countries, continents, US states, EU regions and more — ready to use out of the box.',
+    dataModesTitle: 'Static snapshots & time-series',
+    dataModesSubtitle:
+      'Whether you need a single point-in-time map or a full historical timeline, Regionify has you covered.',
+    dataModesStaticTitle: 'Static data',
+    dataModesStaticDesc:
+      'Import a single dataset and produce a clean, publication-ready choropleth map in seconds — perfect for reports, articles, and presentations.',
+    dataModesTimeSeriesTitle: 'Historical time-series',
+    dataModesTimeSeriesDesc:
+      'Load multi-period data, scrub through an interactive timeline, and watch regions change over time — then export the animation as GIF or MP4.',
     ctaBottomTitle: 'Ready to map your data?',
     ctaBottomSubtitle: 'Create your first visualization in minutes — no credit card required.',
+    showcaseTitle: 'Export & share your maps',
+    showcaseSvgTitle: 'Crisp SVG export',
+    showcaseSvgDesc:
+      'Export pixel-perfect vector maps that scale to any size — ideal for print, presentations, and professional reports.',
+    showcaseGifTitle: 'Animated GIF timeline',
+    showcaseGifDesc:
+      'Turn time-series data into looping GIF animations that tell a story at a glance.',
+    showcaseMp4Title: 'MP4 video export',
+    showcaseMp4Desc:
+      'Export smooth video timelines ready to embed in presentations, social media, or video projects.',
+    showcasePublicPageTitle: 'Public map page with SEO',
+    showcasePublicPageDesc:
+      'Share your map on a dedicated public URL with customizable title, description, and social preview image for search engines and link previews.',
+    showcaseEmbedTitle: 'Embeddable iframe',
+    showcaseEmbedDesc:
+      'Place an interactive map anywhere on your website, blog, or app with a simple iframe snippet — fully responsive and always up to date.',
   },
   about: {
     title: 'About Regionify',

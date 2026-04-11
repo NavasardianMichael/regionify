@@ -50,9 +50,34 @@ const fr: CommonNs = {
     mapsTitle: 'Plus de 200 cartes incluses',
     mapsSubtitle:
       'Pays, continents, états américains, régions européennes et plus — prêts à utiliser.',
+    dataModesTitle: 'Instantanés statiques et séries temporelles',
+    dataModesSubtitle:
+      "Qu'il s'agisse d'une carte ponctuelle ou d'une chronologie historique complète, Regionify vous couvre.",
+    dataModesStaticTitle: 'Données statiques',
+    dataModesStaticDesc:
+      'Importez un jeu de données et produisez une carte choroplèthe prête à publier en quelques secondes — idéale pour les rapports, articles et présentations.',
+    dataModesTimeSeriesTitle: 'Séries temporelles historiques',
+    dataModesTimeSeriesDesc:
+      "Chargez des données multi-périodes, parcourez une chronologie interactive et observez l'évolution des régions — puis exportez l'animation en GIF ou MP4.",
     ctaBottomTitle: 'Prêt à cartographier vos données ?',
     ctaBottomSubtitle:
       'Créez votre première visualisation en quelques minutes — sans carte de crédit.',
+    showcaseTitle: 'Exportez et partagez vos cartes',
+    showcaseSvgTitle: 'Export SVG net',
+    showcaseSvgDesc:
+      "Exportez des cartes vectorielles parfaitement nettes qui s'adaptent à toute taille — idéales pour l'impression, les présentations et les rapports professionnels.",
+    showcaseGifTitle: 'Chronologie GIF animée',
+    showcaseGifDesc:
+      "Transformez des données chronologiques en animations GIF qui racontent une histoire en un coup d'œil.",
+    showcaseMp4Title: 'Export vidéo MP4',
+    showcaseMp4Desc:
+      'Exportez des chronologies vidéo fluides prêtes pour les présentations, les réseaux sociaux ou les projets vidéo.',
+    showcasePublicPageTitle: 'Page publique avec SEO',
+    showcasePublicPageDesc:
+      "Partagez votre carte sur une URL publique dédiée avec un titre, une description et une image d'aperçu personnalisables pour les moteurs de recherche et les prévisualisations de liens.",
+    showcaseEmbedTitle: 'Iframe intégrable',
+    showcaseEmbedDesc:
+      "Intégrez une carte interactive n'importe où sur votre site web, blog ou application avec un simple extrait iframe — entièrement responsive et toujours à jour.",
   },
   about: {
     title: 'À propos de Regionify',

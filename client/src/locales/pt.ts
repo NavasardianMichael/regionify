@@ -49,8 +49,33 @@ const pt: CommonNs = {
       'Importe dados históricos, percorra o tempo e exporte cronologias animadas em GIF ou MP4.',
     mapsTitle: 'Mais de 200 mapas incluídos',
     mapsSubtitle: 'Países, continentes, estados dos EUA, regiões da UE e mais — prontos a usar.',
+    dataModesTitle: 'Instantâneos estáticos e séries temporais',
+    dataModesSubtitle:
+      'Quer precise de um mapa pontual ou de uma linha temporal histórica completa, o Regionify tem a solução.',
+    dataModesStaticTitle: 'Dados estáticos',
+    dataModesStaticDesc:
+      'Importe um conjunto de dados e produza um mapa coroplético pronto a publicar em segundos — perfeito para relatórios, artigos e apresentações.',
+    dataModesTimeSeriesTitle: 'Séries temporais históricas',
+    dataModesTimeSeriesDesc:
+      'Carregue dados de múltiplos períodos, percorra uma linha temporal interativa e observe como as regiões mudam — depois exporte a animação como GIF ou MP4.',
     ctaBottomTitle: 'Pronto para mapear os seus dados?',
     ctaBottomSubtitle: 'Crie a sua primeira visualização em minutos — sem cartão de crédito.',
+    showcaseTitle: 'Exporte e partilhe os seus mapas',
+    showcaseSvgTitle: 'Exportação SVG nítida',
+    showcaseSvgDesc:
+      'Exporte mapas vetoriais perfeitos que escalam para qualquer tamanho — ideais para impressão, apresentações e relatórios profissionais.',
+    showcaseGifTitle: 'Linha do tempo GIF animada',
+    showcaseGifDesc:
+      'Transforme dados de séries temporais em animações GIF que contam uma história num relance.',
+    showcaseMp4Title: 'Exportação de vídeo MP4',
+    showcaseMp4Desc:
+      'Exporte linhas do tempo em vídeo prontas para apresentações, redes sociais ou projetos audiovisuais.',
+    showcasePublicPageTitle: 'Página pública com SEO',
+    showcasePublicPageDesc:
+      'Partilhe o seu mapa num URL público dedicado com título, descrição e imagem de pré-visualização personalizáveis para motores de busca e pré-visualizações de links.',
+    showcaseEmbedTitle: 'Iframe incorporável',
+    showcaseEmbedDesc:
+      'Coloque um mapa interativo em qualquer lugar do seu site, blog ou aplicação com um simples snippet de iframe — totalmente responsivo e sempre atualizado.',
   },
   about: {
     title: 'Sobre o Regionify',

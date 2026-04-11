@@ -46,8 +46,29 @@ const zh: CommonNs = {
     featureTimeSeriesDesc: '导入历史数据、浏览时间线，并导出 GIF 或 MP4 动画时间轴。',
     mapsTitle: '包含 200+ 张地图',
     mapsSubtitle: '国家、大洲、美国各州、欧盟区域等——开箱即用。',
+    dataModesTitle: '静态快照与时间序列',
+    dataModesSubtitle: '无论是单一时间点地图还是完整历史时间线，Regionify 都能满足需求。',
+    dataModesStaticTitle: '静态数据',
+    dataModesStaticDesc:
+      '导入单个数据集，几秒钟内生成可发布的分级统计地图——非常适合报告、文章和演示文稿。',
+    dataModesTimeSeriesTitle: '历史时间序列',
+    dataModesTimeSeriesDesc:
+      '加载多时段数据，浏览交互式时间线并观察区域变化——然后将动画导出为 GIF 或 MP4。',
     ctaBottomTitle: '准备好绘制数据地图了吗？',
     ctaBottomSubtitle: '几分钟内创建您的第一个可视化——无需信用卡。',
+    showcaseTitle: '导出与分享地图',
+    showcaseSvgTitle: '清晰 SVG 导出',
+    showcaseSvgDesc: '导出可缩放至任意尺寸的矢量地图——适合打印、演示和专业报告。',
+    showcaseGifTitle: 'GIF 动画时间轴',
+    showcaseGifDesc: '将时间序列数据转化为循环 GIF 动画，一目了然讲述数据故事。',
+    showcaseMp4Title: 'MP4 视频导出',
+    showcaseMp4Desc: '导出流畅的视频时间轴，可用于演示文稿、社交媒体或视频项目。',
+    showcasePublicPageTitle: '带 SEO 的公开地图页面',
+    showcasePublicPageDesc:
+      '在专属公开链接上分享地图，可自定义标题、描述和社交预览图，优化搜索引擎和链接预览效果。',
+    showcaseEmbedTitle: '可嵌入的 iframe',
+    showcaseEmbedDesc:
+      '通过简单的 iframe 代码片段将交互式地图放入任何网站、博客或应用中——完全响应式，始终保持最新。',
   },
   about: {
     title: '关于 Regionify',
