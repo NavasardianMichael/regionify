@@ -16,6 +16,13 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["Choropleth", "chronographer", "cursorrules", "Lngs", "regionify"],
+  "cSpell.words": [
+    "Choropleth",
+    "chronographer",
+    "cursorrules",
+    "Lngs",
+    "mnavasardian",
+    "regionify"
+  ],
   "postman.settings.dotenv-detection-notification-visibility": false
 }

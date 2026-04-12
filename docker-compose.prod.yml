@@ -52,9 +52,69 @@ services:
     networks:
       - regionify-network
 
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: regionify-loki
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/config.yml
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3100/ready || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - regionify-network
+
+  promtail:
+    image: grafana/promtail:3.3.2
+    container_name: regionify-promtail
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/promtail/promtail-prod-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      loki:
+        condition: service_healthy
+    networks:
+      - regionify-network
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: regionify-grafana
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${GRAFANA_PORT:-8002}:3000'
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: '${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD before starting the stack}'
+      GF_SERVER_ROOT_URL: '${GRAFANA_ROOT_URL:-http://localhost:8002}'
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      GF_LOG_LEVEL: warn
+      # Email alerting — set GF_SMTP_ENABLED=true and the rest to enable (see docs/OBSERVABILITY.md)
+      GF_SMTP_ENABLED: '${GF_SMTP_ENABLED:-false}'
+      GF_SMTP_HOST: '${GF_SMTP_HOST:-smtp.gmail.com:587}'
+      GF_SMTP_USER: '${GF_SMTP_USER:-}'
+      GF_SMTP_PASSWORD: '${GF_SMTP_PASSWORD:-}'
+      GF_SMTP_FROM_ADDRESS: '${GF_SMTP_FROM_ADDRESS:-}'
+    depends_on:
+      loki:
+        condition: service_healthy
+    networks:
+      - regionify-network
+
 volumes:
   postgres_data:
   redis_data:
+  loki_data:
+  grafana_data:
 
 networks:
   regionify-network:
