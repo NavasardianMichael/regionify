@@ -30,6 +30,8 @@ export type ProjectMapStyles = {
     fontSize: number;
     labelPositionsByRegionId?: Record<string, { x: number; y: number }>;
   };
+  /** Offset of draggable time period pill from default top-center; omitted on legacy saves. */
+  timePeriodLabelOffset?: { x: number; y: number };
 };
 
 export type ProjectLegendStyles = {
@@ -38,6 +40,8 @@ export type ProjectLegendStyles = {
   position: string;
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };
+  /** @since client: omitted on legacy projects = opaque background */
+  transparentBackground?: boolean;
   backgroundColor: string;
   noDataColor: string;
 };

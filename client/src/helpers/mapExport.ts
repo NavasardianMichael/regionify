@@ -6,6 +6,7 @@ export const MAP_SVG_SELECTOR = '.map-svg-container svg';
 export const MAP_EXPORT_ROOT = '[data-map-export-root]';
 export const MAP_EXPORT_FLOATING_LEGEND = '[data-map-export-floating-legend]';
 export const MAP_EXPORT_BOTTOM_LEGEND = '[data-map-export-bottom-legend]';
+export const MAP_EXPORT_TIME_PERIOD_LABEL = '[data-map-export-time-period-label]';
 const LEGEND_NO_DATA_SWATCH_BORDER = '#d1d5db';
 const DEFAULT_EXPORT_NAME = 'regionify-map';
 const DEFAULT_WATERMARK_LOGO_SRC = '/favicon-32x32.png';
@@ -15,6 +16,8 @@ export type MapExportLegendDrawOptions = {
   labels: LegendLabelsConfig;
   items: LegendItem[];
   noDataColor: string;
+  /** When true, legend panel has no fill (stroke only), matching on-screen transparent legend. */
+  transparentBackground?: boolean;
   backgroundColor: string;
 };
 
@@ -118,8 +121,9 @@ const buildLegendSvgFragment = (
     `<defs><clipPath id="${clipId}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" ry="${radius}"/></clipPath></defs>`,
   );
   parts.push(`<g clip-path="url(#${clipId})">`);
+  const fill = legend.transparentBackground === true ? 'none' : escapeXml(legend.backgroundColor);
   parts.push(
-    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" ry="${radius}" fill="${legend.backgroundColor}" stroke="rgba(24, 41, 77, 0.2)" stroke-width="1"/>`,
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" ry="${radius}" fill="${fill}" stroke="rgba(24, 41, 77, 0.2)" stroke-width="1"/>`,
   );
 
   let cy = y + pad + Math.round(2 * scale);
@@ -447,8 +451,12 @@ export const drawLegendOnCanvas = (
 
   ctx.beginPath();
   drawRoundedRectPath(ctx, x, y, w, h, radius);
-  ctx.fillStyle = legend.backgroundColor;
-  ctx.fill();
+  if (!legend.transparentBackground) {
+    ctx.fillStyle = legend.backgroundColor;
+    ctx.fill();
+  }
+  ctx.beginPath();
+  drawRoundedRectPath(ctx, x, y, w, h, radius);
   ctx.strokeStyle = 'rgba(24, 41, 77, 0.2)';
   ctx.lineWidth = 1;
   ctx.stroke();

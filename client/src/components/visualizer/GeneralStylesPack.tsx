@@ -33,6 +33,7 @@ const DEFAULT_MAP_STYLES = {
     fontSize: 10,
     labelPositionsByRegionId: {},
   },
+  timePeriodLabelOffset: { x: 0, y: 0 },
 };
 
 const DEFAULT_LEGEND_STYLES = {
@@ -47,6 +48,7 @@ const DEFAULT_LEGEND_STYLES = {
   position: LEGEND_POSITIONS.floating,
   floatingPosition: { x: 20, y: 20 },
   floatingSize: { width: 160, height: 'auto' as const },
+  transparentBackground: false,
   backgroundColor: 'rgba(255, 255, 255, 0.95)',
   noDataColor: '#E5E7EB',
 };
@@ -83,7 +85,7 @@ const GeneralStylesPack: FC = () => {
           labelPositionsByRegionId: regionLabels.labelPositionsByRegionId,
         },
       });
-      setLegendStylesState(palette.legend);
+      setLegendStylesState({ ...palette.legend, transparentBackground: false });
 
       const { items, setItems } = useLegendDataStore.getState();
       const legendItems = items.allIds.map((id) => items.byId[id]);

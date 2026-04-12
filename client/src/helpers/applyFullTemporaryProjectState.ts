@@ -33,6 +33,7 @@ export function applyFullTemporaryProjectState(merged: FullTemporaryProjectState
     zoomControls: merged.zoomControls,
     picture: merged.picture,
     regionLabels: merged.regionLabels,
+    timePeriodLabelOffset: merged.timePeriodLabelOffset,
   });
   setLegendStylesState({
     labels: merged.labels,
@@ -40,6 +41,7 @@ export function applyFullTemporaryProjectState(merged: FullTemporaryProjectState
     position: merged.position,
     floatingPosition: merged.floatingPosition,
     floatingSize: merged.floatingSize,
+    transparentBackground: merged.transparentBackground,
     backgroundColor: merged.backgroundColor,
     noDataColor: merged.noDataColor,
   });

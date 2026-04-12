@@ -9,23 +9,27 @@ import {
   selectLabels,
   selectNoDataColor,
   selectTitle,
+  selectTransparentBackground,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { MapLegendContent } from '@/components/visualizer/MapViewer/MapLegendContent';
 
 type MapFloatingLegendProps = {
   legendRef: RefObject<HTMLDivElement | null>;
+  isDragging: boolean;
   onLegendMouseDown: (e: React.PointerEvent) => void;
   onResizeMouseDown: (e: React.PointerEvent) => void;
 };
 
 export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
   legendRef,
+  isDragging,
   onLegendMouseDown,
   onResizeMouseDown,
 }) => {
   const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const floatingSize = useLegendStylesStore(selectFloatingSize);
+  const transparentBackground = useLegendStylesStore(selectTransparentBackground);
   const backgroundColor = useLegendStylesStore(selectBackgroundColor);
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
@@ -43,16 +47,16 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
       role="region"
       aria-label="Map legend"
       data-map-export-floating-legend
-      className={`p-sm absolute cursor-move rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${
-        isFloatingLegendHeightFixed ? 'flex min-h-0 flex-col overflow-hidden' : ''
-      }`}
+      className={`p-sm absolute rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${
+        isDragging ? 'cursor-grabbing' : 'cursor-grab active:cursor-grabbing'
+      } ${isFloatingLegendHeightFixed ? 'flex min-h-0 flex-col overflow-hidden' : ''}`}
       onPointerDown={onLegendMouseDown}
       style={{
         left: floatingPosition.x,
         top: floatingPosition.y,
         width: floatingSize.width,
         ...(floatingLegendHeightPx != null ? { height: floatingLegendHeightPx } : {}),
-        backgroundColor,
+        backgroundColor: transparentBackground ? 'transparent' : backgroundColor,
       }}
     >
       {isFloatingLegendHeightFixed ? (

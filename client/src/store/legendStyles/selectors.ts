@@ -6,6 +6,8 @@ export const selectTitle = (state: LegendStylesState) => state.title;
 export const selectPosition = (state: LegendStylesState) => state.position;
 export const selectFloatingPosition = (state: LegendStylesState) => state.floatingPosition;
 export const selectFloatingSize = (state: LegendStylesState) => state.floatingSize;
+export const selectTransparentBackground = (state: LegendStylesState) =>
+  state.transparentBackground;
 export const selectBackgroundColor = (state: LegendStylesState) => state.backgroundColor;
 export const selectNoDataColor = (state: LegendStylesState) => state.noDataColor;
 

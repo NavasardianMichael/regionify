@@ -28,6 +28,8 @@ export type VisualizerRandomPalette = {
   };
   legend: {
     labels: { color: string; fontSize: number };
+    /** Omitted or false: use opaque legend background */
+    transparentBackground?: boolean;
     backgroundColor: string;
     noDataColor: string;
   };

@@ -35,6 +35,9 @@ export type RegionLabelsConfig = {
 /** SVG-space positions for region labels (path title → { x, y }). Used for export and persistence. */
 export type RegionLabelPositions = Record<string, { x: number; y: number }>;
 
+/** Offset in CSS px from default top-center time period pill (`left: 50%` + `top: 1rem`). */
+export type TimePeriodLabelOffset = { x: number; y: number };
+
 export type MapStylesState = {
   // State
   border: BorderConfig;
@@ -42,6 +45,7 @@ export type MapStylesState = {
   zoomControls: ZoomControlsConfig;
   picture: PictureConfig;
   regionLabels: RegionLabelsConfig;
+  timePeriodLabelOffset: TimePeriodLabelOffset;
 
   // Actions
   setMapStylesState: (data: Partial<MapStylesState>) => void;

@@ -42,7 +42,10 @@ export type TemporaryProjectState = Partial<
     | 'timePeriods'
     | 'activeTimePeriod'
   > &
-    Pick<MapStylesState, 'border' | 'shadow' | 'zoomControls' | 'picture' | 'regionLabels'> &
+    Pick<
+      MapStylesState,
+      'border' | 'shadow' | 'zoomControls' | 'picture' | 'regionLabels' | 'timePeriodLabelOffset'
+    > &
     Pick<
       LegendStylesState,
       | 'labels'
@@ -50,6 +53,7 @@ export type TemporaryProjectState = Partial<
       | 'position'
       | 'floatingPosition'
       | 'floatingSize'
+      | 'transparentBackground'
       | 'backgroundColor'
       | 'noDataColor'
     > &
@@ -96,6 +100,7 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
       fontSize: 10,
       labelPositionsByRegionId: {},
     },
+    timePeriodLabelOffset: { x: 0, y: 0 },
     labels: {
       color: '#18294D',
       fontSize: 12,
@@ -107,6 +112,7 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
     position: LEGEND_POSITIONS.floating,
     floatingPosition: { x: 20, y: 20 },
     floatingSize: { width: 160, height: 'auto' },
+    transparentBackground: false,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     noDataColor: '#E5E7EB',
     items: { allIds: [], byId: {} },

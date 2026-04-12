@@ -17,6 +17,7 @@ export type LegendStylesState = {
   position: LegendPosition;
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };
+  transparentBackground: boolean;
   backgroundColor: string;
   noDataColor: string;
 

@@ -4,16 +4,17 @@ import {
   selectActiveTimePeriod,
   selectIsGoogleSheetSyncLoading,
   selectSelectedCountryId,
-  selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
 import { selectRegionLabels } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
+import type { TimePeriodLabelOffset } from '@/store/mapStyles/types';
 import styles from '../MapViewer.module.css';
 
 type MapSvgCanvasProps = {
   containerRef: RefObject<HTMLButtonElement | null>;
   mapTransformRef: RefObject<HTMLDivElement | null>;
+  periodLabelRef: RefObject<HTMLDivElement | null>;
   svgContent: string;
   isLoading: boolean;
   isDragging: boolean;
@@ -22,11 +23,16 @@ type MapSvgCanvasProps = {
   ariaLabel: string;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerUp: () => void;
+  showTimePeriodLabel: boolean;
+  timePeriodLabelOffset: TimePeriodLabelOffset;
+  periodLabelDragging: boolean;
+  onPeriodLabelPointerDown: (e: React.PointerEvent) => void;
 };
 
 export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
   containerRef,
   mapTransformRef,
+  periodLabelRef,
   svgContent,
   isLoading,
   isDragging,
@@ -35,11 +41,14 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
   ariaLabel,
   onPointerDown,
   onPointerUp,
+  showTimePeriodLabel,
+  timePeriodLabelOffset,
+  periodLabelDragging,
+  onPeriodLabelPointerDown,
 }) {
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const isGoogleSheetSyncLoading = useVisualizerStore(selectIsGoogleSheetSyncLoading);
   const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
-  const timePeriods = useVisualizerStore(selectTimePeriods);
   const regionLabels = useMapStylesStore(selectRegionLabels);
 
   const showSheetSyncOnMap =
@@ -89,9 +98,25 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
               </Flex>
             )}
           </Flex>
-          {activeTimePeriod && timePeriods.length > 1 && (
-            <div className="pointer-events-none absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1.5 shadow-md">
-              <Typography.Text className="text-sm font-semibold">
+          {showTimePeriodLabel && activeTimePeriod && (
+            <div
+              ref={periodLabelRef}
+              data-map-export-time-period-label
+              role="status"
+              aria-live="polite"
+              className={`absolute top-4 left-1/2 z-10 touch-none rounded-full bg-white/90 px-4 py-1.5 shadow-md select-none ${
+                periodLabelDragging ? 'cursor-grabbing' : 'cursor-grab active:cursor-grabbing'
+              }`}
+              style={{
+                left: '50%',
+                top: '1rem',
+                ...(!periodLabelDragging && {
+                  transform: `translate(calc(-50% + ${timePeriodLabelOffset.x}px), ${timePeriodLabelOffset.y}px)`,
+                }),
+              }}
+              onPointerDown={onPeriodLabelPointerDown}
+            >
+              <Typography.Text className="pointer-events-none text-sm font-semibold">
                 {activeTimePeriod}
               </Typography.Text>
             </div>

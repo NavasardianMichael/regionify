@@ -1,7 +1,7 @@
 import { type FC, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AUTH_VALIDATION, ErrorCode } from '@regionify/shared';
-import { Button, Card, Divider, Form, Input, Typography } from 'antd';
+import { Button, Card, Divider, Form, type FormInstance, Input, Typography } from 'antd';
 import { login, LoginError, resendVerificationEmail } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -30,7 +30,9 @@ type LoginFormValues = {
 
 const LoginPage: FC = () => {
   const { t } = useTypedTranslation();
-  const [form] = Form.useForm<LoginFormValues>();
+  const [formApi] = Form.useForm<LoginFormValues>();
+  /** antd/rc-form typings omit store helpers on `FormInstance<Values>` when `Values` is a concrete object type. */
+  const form = formApi as FormInstance;
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginErrorCode, setLoginErrorCode] = useState<string | null>(null);
@@ -88,6 +90,7 @@ const LoginPage: FC = () => {
           zoomControls: merged.zoomControls,
           picture: merged.picture,
           regionLabels: merged.regionLabels,
+          timePeriodLabelOffset: merged.timePeriodLabelOffset,
         });
         setLegendStylesState({
           labels: merged.labels,
@@ -95,6 +98,7 @@ const LoginPage: FC = () => {
           position: merged.position,
           floatingPosition: merged.floatingPosition,
           floatingSize: merged.floatingSize,
+          transparentBackground: merged.transparentBackground,
           backgroundColor: merged.backgroundColor,
           noDataColor: merged.noDataColor,
         });
@@ -219,7 +223,7 @@ const LoginPage: FC = () => {
       <Form
         form={form}
         layout="vertical"
-        onFinish={(values) => handleSubmit(values)}
+        onFinish={(values: LoginFormValues) => handleSubmit(values)}
         onValuesChange={() => {
           setLoginError(null);
           setLoginErrorCode(null);

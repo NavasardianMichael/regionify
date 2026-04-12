@@ -385,13 +385,7 @@ const VisualizerPage: FC = () => {
         <Suspense fallback={<Spin className="m-auto flex-1" />}>
           <MapViewer
             className="min-h-0 flex-1"
-            showPlanRibbon={
-              isLoggedIn &&
-              Boolean(currentProject) &&
-              urlProjectId != null &&
-              urlProjectId !== 'new' &&
-              !isAwaitingProjectFromUrl
-            }
+            showPlanRibbon={isLoggedIn && !isAwaitingProjectFromUrl}
           />
         </Suspense>
       )}

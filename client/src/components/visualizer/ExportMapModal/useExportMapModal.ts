@@ -9,6 +9,7 @@ import {
   selectNoDataColor,
   selectPosition,
   selectTitle,
+  selectTransparentBackground,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
@@ -88,6 +89,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const legendLabels = useLegendStylesStore(selectLabels);
   const legendTitle = useLegendStylesStore(selectTitle);
   const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
+  const legendTransparentBackground = useLegendStylesStore(selectTransparentBackground);
   const legendPosition = useLegendStylesStore(selectPosition);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
@@ -203,6 +205,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
               labels: legendLabels,
               items: legendItems,
               noDataColor,
+              transparentBackground: legendTransparentBackground,
               backgroundColor: legendBackgroundColor,
             }
           : null,
@@ -215,6 +218,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       legendLabels,
       noDataColor,
       legendBackgroundColor,
+      legendTransparentBackground,
     ],
   );
 
@@ -247,6 +251,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
               labels: legendLabels,
               items: legendItems,
               noDataColor,
+              transparentBackground: legendTransparentBackground,
               backgroundColor: legendBackgroundColor,
             }
           : null,
@@ -269,6 +274,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       legendTitle,
       legendLabels,
       legendBackgroundColor,
+      legendTransparentBackground,
       resolvedQuality,
       legendPosition,
       regionLabels,

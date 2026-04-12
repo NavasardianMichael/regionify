@@ -26,6 +26,7 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
     fontSize: 10,
     labelPositionsByRegionId: {},
   },
+  timePeriodLabelOffset: { x: 0, y: 0 },
 
   setMapStylesState: (data) => set((state) => ({ ...state, ...data })),
   setBorder: (data) => set((state) => ({ ...state, border: { ...state.border, ...data } })),

@@ -8,6 +8,7 @@ import {
   selectNoDataColor,
   selectPosition,
   selectTitle,
+  selectTransparentBackground,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
@@ -15,6 +16,7 @@ import { MapLegendContent } from '@/components/visualizer/MapViewer/MapLegendCon
 
 export const MapBottomLegend: FC = () => {
   const position = useLegendStylesStore(selectPosition);
+  const transparentBackground = useLegendStylesStore(selectTransparentBackground);
   const backgroundColor = useLegendStylesStore(selectBackgroundColor);
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
@@ -27,7 +29,7 @@ export const MapBottomLegend: FC = () => {
     <div
       className="p-md pt-md shrink-0 border-t border-gray-200"
       data-map-export-bottom-legend
-      style={{ backgroundColor }}
+      style={{ backgroundColor: transparentBackground ? 'transparent' : backgroundColor }}
     >
       <MapLegendContent
         title={title}

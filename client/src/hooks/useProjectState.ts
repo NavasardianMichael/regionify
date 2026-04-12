@@ -59,9 +59,18 @@ function buildSnapshotDataset(
  */
 function buildStateSnapshot(): string {
   const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
-  const { border, shadow, zoomControls, picture, regionLabels } = useMapStylesStore.getState();
-  const { labels, title, position, floatingPosition, floatingSize, backgroundColor, noDataColor } =
-    useLegendStylesStore.getState();
+  const { border, shadow, zoomControls, picture, regionLabels, timePeriodLabelOffset } =
+    useMapStylesStore.getState();
+  const {
+    labels,
+    title,
+    position,
+    floatingPosition,
+    floatingSize,
+    transparentBackground,
+    backgroundColor,
+    noDataColor,
+  } = useLegendStylesStore.getState();
   const { items } = useLegendDataStore.getState();
 
   const dataset = buildSnapshotDataset(importDataType, google, data);
@@ -72,6 +81,7 @@ function buildStateSnapshot(): string {
     zoomControls,
     picture,
     regionLabels,
+    timePeriodLabelOffset,
   };
 
   const legendStyles: ProjectLegendStyles = {
@@ -80,6 +90,7 @@ function buildStateSnapshot(): string {
     position,
     floatingPosition,
     floatingSize,
+    transparentBackground,
     backgroundColor,
     noDataColor,
   };
@@ -105,21 +116,38 @@ export function getProjectPayload(): ProjectUpdatePayload;
 export function getProjectPayload(name: string): ProjectCreatePayload;
 export function getProjectPayload(name?: string): ProjectCreatePayload | ProjectUpdatePayload {
   const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
-  const { border, shadow, zoomControls, picture, regionLabels } = useMapStylesStore.getState();
-  const { labels, title, position, floatingPosition, floatingSize, backgroundColor, noDataColor } =
-    useLegendStylesStore.getState();
+  const { border, shadow, zoomControls, picture, regionLabels, timePeriodLabelOffset } =
+    useMapStylesStore.getState();
+  const {
+    labels,
+    title,
+    position,
+    floatingPosition,
+    floatingSize,
+    transparentBackground,
+    backgroundColor,
+    noDataColor,
+  } = useLegendStylesStore.getState();
   const { items } = useLegendDataStore.getState();
 
   const base = {
     countryId: selectedCountryId,
     dataset: buildPersistedDataset(importDataType, google, data),
-    mapStyles: { border, shadow, zoomControls, picture, regionLabels },
+    mapStyles: {
+      border,
+      shadow,
+      zoomControls,
+      picture,
+      regionLabels,
+      timePeriodLabelOffset,
+    },
     legendStyles: {
       labels,
       title,
       position,
       floatingPosition,
       floatingSize,
+      transparentBackground,
       backgroundColor,
       noDataColor,
     },
@@ -157,11 +185,13 @@ export function useHasUnsavedChanges(): boolean {
   const zoomControls = useMapStylesStore((s) => s.zoomControls);
   const picture = useMapStylesStore((s) => s.picture);
   const regionLabels = useMapStylesStore((s) => s.regionLabels);
+  const timePeriodLabelOffset = useMapStylesStore((s) => s.timePeriodLabelOffset);
   const labels = useLegendStylesStore((s) => s.labels);
   const title = useLegendStylesStore((s) => s.title);
   const position = useLegendStylesStore((s) => s.position);
   const floatingPosition = useLegendStylesStore((s) => s.floatingPosition);
   const floatingSize = useLegendStylesStore((s) => s.floatingSize);
+  const transparentBackground = useLegendStylesStore((s) => s.transparentBackground);
   const backgroundColor = useLegendStylesStore((s) => s.backgroundColor);
   const noDataColor = useLegendStylesStore((s) => s.noDataColor);
   const items = useLegendDataStore((s) => s.items);
@@ -174,13 +204,14 @@ export function useHasUnsavedChanges(): boolean {
     const currentSnapshot = JSON.stringify({
       countryId: selectedCountryId,
       dataset,
-      mapStyles: { border, shadow, zoomControls, picture, regionLabels },
+      mapStyles: { border, shadow, zoomControls, picture, regionLabels, timePeriodLabelOffset },
       legendStyles: {
         labels,
         title,
         position,
         floatingPosition,
         floatingSize,
+        transparentBackground,
         backgroundColor,
         noDataColor,
       },
@@ -199,11 +230,13 @@ export function useHasUnsavedChanges(): boolean {
     zoomControls,
     picture,
     regionLabels,
+    timePeriodLabelOffset,
     labels,
     title,
     position,
     floatingPosition,
     floatingSize,
+    transparentBackground,
     backgroundColor,
     noDataColor,
     items,

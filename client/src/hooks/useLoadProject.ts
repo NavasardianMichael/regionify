@@ -88,6 +88,7 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
           labelPositionsByRegionId:
             project.mapStyles.regionLabels.labelPositionsByRegionId ?? legacyPositions,
         },
+        timePeriodLabelOffset: project.mapStyles.timePeriodLabelOffset ?? { x: 0, y: 0 },
       });
     }
 
@@ -101,6 +102,7 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
         >['position'],
         floatingPosition: project.legendStyles.floatingPosition,
         floatingSize: project.legendStyles.floatingSize,
+        transparentBackground: project.legendStyles.transparentBackground ?? false,
         backgroundColor: project.legendStyles.backgroundColor,
         noDataColor: project.legendStyles.noDataColor,
       });

@@ -18,6 +18,7 @@ import {
   MAP_EXPORT_BOTTOM_LEGEND,
   MAP_EXPORT_FLOATING_LEGEND,
   MAP_EXPORT_ROOT,
+  MAP_EXPORT_TIME_PERIOD_LABEL,
   MAP_SVG_SELECTOR,
   type MapExportLegendDrawOptions,
   type StillExportOpts,
@@ -223,6 +224,41 @@ const styledSvgToMapCanvas = async (
   return svgToCanvas(svgString, layoutScale);
 };
 
+/** Pill top at `pillTopY`, horizontally centered on `centerX` (export frame coordinates). */
+const drawPeriodLabelPillTopCenter = (
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  mapAreaWidth: number,
+  centerX: number,
+  pillTopY: number,
+): void => {
+  const fontSize = Math.max(14, Math.round(mapAreaWidth / 40));
+  ctx.save();
+  ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`;
+
+  const metrics = ctx.measureText(label);
+  const textWidth = metrics.width;
+  const paddingX = fontSize * 0.6;
+  const paddingY = fontSize * 0.4;
+
+  const pillWidth = textWidth + paddingX * 2;
+  const pillHeight = fontSize + paddingY * 2;
+  const pillX = centerX - pillWidth / 2;
+  const pillY = pillTopY;
+  const radius = pillHeight / 2;
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.beginPath();
+  ctx.roundRect(pillX, pillY, pillWidth, pillHeight, radius);
+  ctx.fill();
+
+  ctx.fillStyle = '#18294D';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, centerX, pillY + pillHeight / 2);
+  ctx.restore();
+};
+
 /**
  * Time period pill centered on the map area. When `mapArea` is omitted, uses the full canvas
  * (map-only fallback).
@@ -237,35 +273,8 @@ const addPeriodLabel = (
 
   const area = mapArea ?? { x: 0, y: 0, w: canvas.width, h: canvas.height };
   const fontSize = Math.max(14, Math.round(area.w / 40));
-
-  ctx.save();
-  ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`;
-
-  const metrics = ctx.measureText(label);
-  const textWidth = metrics.width;
-  const paddingX = fontSize * 0.6;
   const paddingY = fontSize * 0.4;
-  const x = area.x + area.w / 2;
-  const y = area.y + fontSize + paddingY * 2;
-
-  // Background pill
-  const pillWidth = textWidth + paddingX * 2;
-  const pillHeight = fontSize + paddingY * 2;
-  const pillX = x - pillWidth / 2;
-  const pillY = y - fontSize - paddingY;
-  const radius = pillHeight / 2;
-
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-  ctx.beginPath();
-  ctx.roundRect(pillX, pillY, pillWidth, pillHeight, radius);
-  ctx.fill();
-
-  // Text
-  ctx.fillStyle = '#18294D';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(label, x, pillY + pillHeight / 2);
-  ctx.restore();
+  drawPeriodLabelPillTopCenter(ctx, label, area.w, area.x + area.w / 2, area.y + paddingY);
 };
 
 type DomLegendMeasure = {
@@ -460,12 +469,20 @@ const compositeAnimationFrameToExportRoot = async (
     }
   }
 
-  addPeriodLabel(canvas, periodLabel, {
-    x: sx,
-    y: sy,
-    w: mapCanvas.width,
-    h: mapCanvas.height,
-  });
+  const pillEl = root.querySelector<HTMLElement>(MAP_EXPORT_TIME_PERIOD_LABEL);
+  if (pillEl) {
+    const pr = pillEl.getBoundingClientRect();
+    const centerX = (pr.left + pr.width / 2 - rootRect.left) * layoutScale;
+    const pillTopY = (pr.top - rootRect.top) * layoutScale;
+    drawPeriodLabelPillTopCenter(ctx, periodLabel, mapCanvas.width, centerX, pillTopY);
+  } else {
+    addPeriodLabel(canvas, periodLabel, {
+      x: sx,
+      y: sy,
+      w: mapCanvas.width,
+      h: mapCanvas.height,
+    });
+  }
 
   return canvas;
 };

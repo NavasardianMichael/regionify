@@ -1,5 +1,5 @@
 import { type ChangeEvent, type FC, useCallback, useMemo, useState } from 'react';
-import { AimOutlined, EditOutlined, FontSizeOutlined } from '@ant-design/icons';
+import { AimOutlined, BgColorsOutlined, EditOutlined, FontSizeOutlined } from '@ant-design/icons';
 import {
   Collapse,
   ColorPicker,
@@ -15,17 +15,19 @@ import {
   Typography,
 } from 'antd';
 import {
+  selectBackgroundColor,
   selectLabels,
   selectPosition,
   selectSetLabels,
   selectSetLegendStylesState,
   selectSetTitle,
   selectTitle,
+  selectTransparentBackground,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import { useDebouncedCallback } from '@/hooks/useDebounce';
 import type { LegendPosition } from '@/types/legendStyles';
-import { LEGEND_POSITIONS } from '@/constants/legendStyles';
+import { LEGEND_POSITIONS, resolveOpaqueLegendBackgroundColor } from '@/constants/legendStyles';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -34,6 +36,8 @@ const LegendStylesPanel: FC = () => {
   const labels = useLegendStylesStore(selectLabels);
   const title = useLegendStylesStore(selectTitle);
   const position = useLegendStylesStore(selectPosition);
+  const transparentBackground = useLegendStylesStore(selectTransparentBackground);
+  const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
   const setLabels = useLegendStylesStore(selectSetLabels);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
   const setTitle = useLegendStylesStore(selectSetTitle);
@@ -84,6 +88,18 @@ const LegendStylesPanel: FC = () => {
     [setLegendStylesState],
   );
 
+  const handleLegendTransparentChange = useCallback<NonNullable<SwitchProps['onChange']>>(
+    (checked) => setLegendStylesState({ transparentBackground: checked }),
+    [setLegendStylesState],
+  );
+
+  const handleLegendBackgroundColorChange = useCallback<
+    NonNullable<ColorPickerProps['onChangeComplete']>
+  >(
+    (color) => setLegendStylesState({ backgroundColor: color.toHexString() }),
+    [setLegendStylesState],
+  );
+
   const positionOptions = useMemo(
     () => [
       { value: LEGEND_POSITIONS.floating, label: t('visualizer.legendStyles.positionFloating') },
@@ -95,6 +111,45 @@ const LegendStylesPanel: FC = () => {
 
   const items = useMemo(
     () => [
+      {
+        key: 'background',
+        label: (
+          <Flex align="center" gap="small">
+            <BgColorsOutlined className="text-gray-500" />
+            <Typography.Text className="font-semibold">
+              {t('visualizer.mapStyles.collapseBackground')}
+            </Typography.Text>
+          </Flex>
+        ),
+        children: (
+          <Flex vertical gap="small">
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600" id="legend-transparent-bg-label">
+                {t('visualizer.mapStyles.transparent')}
+              </Typography.Text>
+              <Switch
+                checked={transparentBackground}
+                size="small"
+                onChange={handleLegendTransparentChange}
+                aria-labelledby="legend-transparent-bg-label"
+              />
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text className="text-sm text-gray-600">
+                {t('visualizer.mapStyles.color')}
+              </Typography.Text>
+              <ColorPicker
+                value={resolveOpaqueLegendBackgroundColor({
+                  backgroundColor: legendBackgroundColor,
+                })}
+                onChangeComplete={handleLegendBackgroundColorChange}
+                size="small"
+                disabled={transparentBackground}
+              />
+            </Flex>
+          </Flex>
+        ),
+      },
       {
         key: 'title',
         label: (
@@ -211,11 +266,15 @@ const LegendStylesPanel: FC = () => {
       title.show,
       localTitleText,
       position,
+      transparentBackground,
+      legendBackgroundColor,
       positionOptions,
       handleTitleShowChange,
       handleTitleTextChange,
       handleLabelsColorChange,
       handleLabelsFontSizeChange,
+      handleLegendTransparentChange,
+      handleLegendBackgroundColorChange,
       handlePositionChange,
       t,
     ],

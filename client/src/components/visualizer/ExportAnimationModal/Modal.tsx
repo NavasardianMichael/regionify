@@ -10,6 +10,7 @@ import {
   selectNoDataColor,
   selectPosition,
   selectTitle,
+  selectTransparentBackground,
 } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
@@ -69,6 +70,7 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const legendLabels = useLegendStylesStore(selectLabels);
   const legendTitle = useLegendStylesStore(selectTitle);
   const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
+  const legendTransparentBackground = useLegendStylesStore(selectTransparentBackground);
   const legendPosition = useLegendStylesStore(selectPosition);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
@@ -120,6 +122,7 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
               labels: legendLabels,
               items: legendItems,
               noDataColor,
+              transparentBackground: legendTransparentBackground,
               backgroundColor: legendBackgroundColor,
             }
           : null;
@@ -174,6 +177,7 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     legendLabels,
     legendTitle,
     legendBackgroundColor,
+    legendTransparentBackground,
     quality,
     secondsPerPeriod,
     smoothTransitions,

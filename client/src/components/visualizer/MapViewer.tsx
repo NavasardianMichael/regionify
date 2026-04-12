@@ -6,9 +6,18 @@ import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import { selectPosition } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { selectSelectedCountryId } from '@/store/mapData/selectors';
+import {
+  selectActiveTimePeriod,
+  selectSelectedCountryId,
+  selectTimePeriods,
+} from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { selectPicture, selectSetLabelPositionsByRegionId } from '@/store/mapStyles/selectors';
+import {
+  selectPicture,
+  selectSetLabelPositionsByRegionId,
+  selectSetMapStylesState,
+  selectTimePeriodLabelOffset,
+} from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
@@ -27,10 +36,11 @@ import { useLabelDrag } from '@/components/visualizer/MapViewer/useLabelDrag';
 import { useLegendDrag } from '@/components/visualizer/MapViewer/useLegendDrag';
 import { useMapPan } from '@/components/visualizer/MapViewer/useMapPan';
 import { useMapSvg } from '@/components/visualizer/MapViewer/useMapSvg';
+import { useTimePeriodLabelDrag } from '@/components/visualizer/MapViewer/useTimePeriodLabelDrag';
 
 type MapViewerProps = {
   className?: string;
-  /** When true (e.g. saved project in app), show plan ribbon on the map export root block. */
+  /** When true (logged-in app session), show plan ribbon on the map export root block. */
   showPlanRibbon?: boolean;
   /** Public embed: no card border or radius on the map frame. */
   flatEmbedChrome?: boolean;
@@ -39,8 +49,9 @@ type MapViewerProps = {
 /** `Badge.Ribbon` puts `className` on the ribbon tab; `rootClassName` targets `.ant-ribbon-wrapper`. */
 const RIBBON_ROOT_CLASSNAME = 'flex h-full min-h-0 min-w-0 flex-1 flex-col';
 
-const mapFrameClassNames = (flat: boolean): string =>
-  flat
+/** No `rounded-lg` / border on the map frame when embed is flat or legend is bottom-pinned (outer shell can still carry card chrome). */
+const mapFrameClassNames = (flatEmbedChrome: boolean, bottomPinnedLegend: boolean): string =>
+  flatEmbedChrome || bottomPinnedLegend
     ? 'group relative min-h-0 flex-1 overflow-hidden'
     : 'group relative min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200';
 
@@ -53,14 +64,19 @@ const MapViewer: FC<MapViewerProps> = ({
   const user = useProfileStore(selectUser);
   const plan = user?.plan ?? PLANS.observer;
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
+  const timePeriods = useVisualizerStore(selectTimePeriods);
+  const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
   const picture = useMapStylesStore(selectPicture);
   const setLabelPositionsByRegionId = useMapStylesStore(selectSetLabelPositionsByRegionId);
+  const setMapStylesState = useMapStylesStore(selectSetMapStylesState);
+  const timePeriodLabelOffset = useMapStylesStore(selectTimePeriodLabelOffset);
   const position = useLegendStylesStore(selectPosition);
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const showBottomLegend = position === LEGEND_POSITIONS.bottom && legendItems.length > 0;
 
   const containerRef = useRef<HTMLButtonElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
+  const periodLabelRef = useRef<HTMLDivElement>(null);
   const mapTransformRef = useRef<HTMLDivElement>(null);
 
   const { svgContent, isLoading, labelPositionsRef } = useMapSvg();
@@ -68,7 +84,10 @@ const MapViewer: FC<MapViewerProps> = ({
   const onResetLabelPositions = useCallback(() => {
     labelPositionsRef.current = {};
     setLabelPositionsByRegionId({});
-  }, [labelPositionsRef, setLabelPositionsByRegionId]);
+    if (timePeriods.length > 1) {
+      setMapStylesState({ timePeriodLabelOffset: { x: 0, y: 0 } });
+    }
+  }, [labelPositionsRef, setLabelPositionsByRegionId, setMapStylesState, timePeriods.length]);
 
   const {
     zoom,
@@ -87,10 +106,18 @@ const MapViewer: FC<MapViewerProps> = ({
 
   useLabelDrag({ containerRef, svgContent, labelPositionsRef });
 
-  const { handleLegendMouseDown, handleResizeMouseDown } = useLegendDrag({
+  const { isLegendDragging, handleLegendMouseDown, handleResizeMouseDown } = useLegendDrag({
     containerRef,
     legendRef,
   });
+
+  const showTimePeriodLabel = Boolean(activeTimePeriod && timePeriods.length > 1);
+  const { isDragging: isPeriodLabelDragging, handlePeriodLabelPointerDown } =
+    useTimePeriodLabelDrag({
+      containerRef,
+      periodLabelRef,
+      enabled: showTimePeriodLabel,
+    });
 
   const dateLocale = i18n.resolvedLanguage ?? i18n.language;
   const mapInteractiveAriaLabel = useMemo(() => {
@@ -122,6 +149,7 @@ const MapViewer: FC<MapViewerProps> = ({
       <MapSvgCanvas
         containerRef={containerRef}
         mapTransformRef={mapTransformRef}
+        periodLabelRef={periodLabelRef}
         svgContent={svgContent}
         isLoading={isLoading}
         isDragging={isDragging}
@@ -130,11 +158,16 @@ const MapViewer: FC<MapViewerProps> = ({
         ariaLabel={mapInteractiveAriaLabel}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
+        showTimePeriodLabel={showTimePeriodLabel}
+        timePeriodLabelOffset={timePeriodLabelOffset}
+        periodLabelDragging={isPeriodLabelDragging}
+        onPeriodLabelPointerDown={handlePeriodLabelPointerDown}
       />
 
       {position === LEGEND_POSITIONS.floating && (
         <MapFloatingLegend
           legendRef={legendRef}
+          isDragging={isLegendDragging}
           onLegendMouseDown={handleLegendMouseDown}
           onResizeMouseDown={handleResizeMouseDown}
         />
@@ -171,7 +204,7 @@ const MapViewer: FC<MapViewerProps> = ({
             <Flex
               align="center"
               justify="center"
-              className={mapFrameClassNames(flatEmbedChrome)}
+              className={mapFrameClassNames(flatEmbedChrome, showBottomLegend)}
               style={mapBackgroundStyle}
             >
               {mapInterior}
@@ -184,7 +217,7 @@ const MapViewer: FC<MapViewerProps> = ({
             <Flex
               align="center"
               justify="center"
-              className={mapFrameClassNames(flatEmbedChrome)}
+              className={mapFrameClassNames(flatEmbedChrome, showBottomLegend)}
               data-map-export-map-area
               style={mapBackgroundStyle}
             >
