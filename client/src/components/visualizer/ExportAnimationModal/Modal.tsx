@@ -1,4 +1,4 @@
-import { type FC, useCallback, useMemo, useState } from 'react';
+import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { EXPORT_TYPES, PLAN_DETAILS, PLANS } from '@regionify/shared';
 import { Modal as AntModal } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
@@ -6,7 +6,6 @@ import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import {
   selectBackgroundColor,
-  selectFloatingPosition,
   selectLabels,
   selectNoDataColor,
   selectPosition,
@@ -49,7 +48,7 @@ const ANIMATION_FORMAT_OPTIONS: FormatOption[] = [
 ];
 
 const EXPORT_FPS = 30;
-const DEFAULT_SECONDS_PER_PERIOD = 2;
+const DEFAULT_SECONDS_PER_PERIOD = 1;
 
 type Props = {
   open: boolean;
@@ -71,7 +70,6 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const legendTitle = useLegendStylesStore(selectTitle);
   const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
   const legendPosition = useLegendStylesStore(selectPosition);
-  const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
@@ -80,8 +78,14 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
 
   const watermarkActive = plan === PLANS.observer || picture.showWatermark;
 
+  const defaultQuality = useMemo(
+    () =>
+      limits.pictureQualityLimit ? Math.min(60, limits.maxExportQuality) : limits.maxExportQuality,
+    [limits.maxExportQuality, limits.pictureQualityLimit],
+  );
+
   const [format, setFormat] = useState<AnimationFormat>(EXPORT_TYPES.gif);
-  const [quality, setQuality] = useState(60);
+  const [quality, setQuality] = useState(defaultQuality);
   const [secondsPerPeriod, setSecondsPerPeriod] = useState(DEFAULT_SECONDS_PER_PERIOD);
   const [smoothTransitions, setSmoothTransitions] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -91,6 +95,10 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     () => ANIMATION_FORMAT_OPTIONS.filter((o) => limits.allowedAnimationFormats.includes(o.value)),
     [limits.allowedAnimationFormats],
   );
+
+  useEffect(() => {
+    if (open) setQuality(defaultQuality);
+  }, [open, defaultQuality]);
 
   const handleExport = useCallback(async () => {
     if (!selectedCountryId || timePeriods.length < 2) return;
@@ -105,6 +113,17 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
       const exportLegendPosition: LegendPositionExport =
         legendPosition === LEGEND_POSITIONS.floating ? 'floating' : 'bottom';
 
+      const legendDraw =
+        legendPosition !== LEGEND_POSITIONS.hidden && legendItems.length > 0
+          ? {
+              title: legendTitle,
+              labels: legendLabels,
+              items: legendItems,
+              noDataColor,
+              backgroundColor: legendBackgroundColor,
+            }
+          : null;
+
       const exportOptions = {
         rawSvg,
         timePeriods,
@@ -114,17 +133,12 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         border,
         shadow,
         picture,
-        legend: {
-          title: legendTitle,
-          labels: legendLabels,
-          backgroundColor: legendBackgroundColor,
-        },
+        legendDraw,
         quality,
         fps: EXPORT_FPS,
         secondsPerPeriod,
         smooth: smoothTransitions,
         legendPosition: exportLegendPosition,
-        floatingPosition,
         regionLabels,
         labelPositions: labelPositionsByRegionId,
         watermark: watermarkActive ? ({ text: 'Regionify' } as const) : undefined,
@@ -155,7 +169,6 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
     picture,
     watermarkActive,
     legendPosition,
-    floatingPosition,
     regionLabels,
     labelPositionsByRegionId,
     legendLabels,
@@ -180,11 +193,13 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
       centered
       footer={null}
       width={420}
+      classNames={{ body: 'px-md' }}
       destroyOnHidden
     >
       <Form
         format={format}
         quality={quality}
+        maxExportQuality={limits.maxExportQuality}
         secondsPerPeriod={secondsPerPeriod}
         smoothTransitions={smoothTransitions}
         isExporting={isExporting}
@@ -192,8 +207,8 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
         timePeriodsCount={timePeriods.length}
         allowedFormats={allowedFormats}
         onFormatChange={setFormat}
-        onQualityChange={(v) => setQuality(v ?? 60)}
-        onSecondsPerPeriodChange={(v) => setSecondsPerPeriod(Math.max(0.5, Math.min(v ?? 2, 10)))}
+        onQualityChange={(v) => setQuality(v ?? defaultQuality)}
+        onSecondsPerPeriodChange={(v) => setSecondsPerPeriod(Math.max(0.5, Math.min(v ?? 1, 10)))}
         onSmoothTransitionsChange={setSmoothTransitions}
         onExport={handleExport}
       />

@@ -15,9 +15,12 @@ export const ExportMapModal: FC<Props> = ({ open, onClose }) => {
   const isCropStep = state.step === 2;
   const cropStepDisabled = state.isExporting || state.crop.isGeneratingPreview;
 
+  // Crop footer grows to two rows while exporting (buttons + frame progress). The modal
+  // container is capped at 95vh; reserve enough chrome height so the footer is not pushed
+  // past the panel onto the mask.
   const bodyClassName = isCropStep
-    ? 'scrollbar-thin max-h-[calc(95vh-220px)] overflow-y-auto pb-md'
-    : 'scrollbar-thin max-h-[calc(95vh-110px)] overflow-y-auto';
+    ? 'scrollbar-thin max-h-[calc(95vh-200px)] min-h-0 overflow-y-auto px-md pb-md'
+    : 'scrollbar-thin max-h-[calc(95vh-110px)] overflow-y-auto px-md';
 
   return (
     <AntModal
@@ -37,6 +40,9 @@ export const ExportMapModal: FC<Props> = ({ open, onClose }) => {
           downloadDisabled={!state.crop.previewSrc}
           isExporting={state.isExporting}
           downloadLabel={state.downloadButtonLabel}
+          exportProgress={state.progress}
+          totalAnimationFrames={state.totalAnimationFrames}
+          isAnimationFormat={state.isAnimationFormat}
           onBack={state.handleBack}
           onDownload={state.handleDownload}
         />

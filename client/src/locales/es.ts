@@ -401,6 +401,8 @@ const es: CommonNs = {
         ' para PNG, SVG, exportación fija a calidad completa y sin marca de agua.',
       qualityLimited: 'Calidad limitada al {{max}}%.',
       qualityFullHint: ' para el 100%.',
+      exportFramesProcessed: 'Procesados {{processed}} de {{total}} fotogramas',
+      exportSvgBuilding: 'Generando SVG…',
     },
     manualEntry: {
       title: 'Entrada manual de datos',

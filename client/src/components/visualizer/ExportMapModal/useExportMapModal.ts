@@ -5,7 +5,6 @@ import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import {
   selectBackgroundColor,
-  selectFloatingPosition,
   selectLabels,
   selectNoDataColor,
   selectPosition,
@@ -36,6 +35,7 @@ import {
   exportAnimationAsGif,
   exportAnimationAsVideo,
   generateAnimationPreviewCanvas,
+  getAnimationTotalFrames,
   type LegendPositionExport,
 } from '@/helpers/animationExport';
 import {
@@ -65,8 +65,10 @@ const ALL_EXPORT_OPTIONS: ExportTypeOption[] = [
 const STATIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg];
 const DYNAMIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.gif, EXPORT_TYPES.mp4];
 
-const DEFAULT_QUALITY = 60;
-const DEFAULT_SECONDS_PER_PERIOD = 2;
+const DEFAULT_SECONDS_PER_PERIOD = 1;
+
+const defaultQualityForPlan = (maxQuality: number, pictureQualityLimited: boolean): number =>
+  pictureQualityLimited ? Math.min(60, maxQuality) : maxQuality;
 export const EXPORT_FPS = 30;
 
 export function useExportMapModal(_open: boolean, onClose: () => void) {
@@ -87,7 +89,6 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const legendTitle = useLegendStylesStore(selectTitle);
   const legendBackgroundColor = useLegendStylesStore(selectBackgroundColor);
   const legendPosition = useLegendStylesStore(selectPosition);
-  const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const border = useMapStylesStore(selectBorder);
   const shadow = useMapStylesStore(selectShadow);
   const picture = useMapStylesStore(selectPicture);
@@ -95,7 +96,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
 
   const maxQuality = limits.maxExportQuality;
-  const initialQuality = Math.min(DEFAULT_QUALITY, maxQuality);
+  const initialQuality = defaultQualityForPlan(maxQuality, limits.pictureQualityLimit);
   const allowedFormats = limits.allowedExportFormats;
   const planSupportsDynamic = limits.historicalDataImport;
 
@@ -133,9 +134,9 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
   const resolvedQuality = useMemo(() => {
     const q = quality;
-    if (q === null) return Math.min(DEFAULT_QUALITY, maxQuality);
+    if (q === null) return defaultQualityForPlan(maxQuality, limits.pictureQualityLimit);
     return Math.min(Math.max(q, 1), maxQuality);
-  }, [quality, maxQuality]);
+  }, [quality, maxQuality, limits.pictureQualityLimit]);
 
   const resolvedSecondsPerPeriod = useMemo(() => {
     const s = secondsPerPeriod;
@@ -147,12 +148,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     (visible: boolean) => {
       if (visible) {
         setExportType(defaultExportType);
-        setQuality(Math.min(DEFAULT_QUALITY, maxQuality));
+        setQuality(defaultQualityForPlan(maxQuality, limits.pictureQualityLimit));
         setSecondsPerPeriod(DEFAULT_SECONDS_PER_PERIOD);
         setStep(1);
       }
     },
-    [defaultExportType, maxQuality],
+    [defaultExportType, maxQuality, limits.pictureQualityLimit],
   );
 
   const handleExportTypeChange = useCallback((value: ExportType) => {
@@ -172,10 +173,10 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
   const handleQualityBlur = useCallback(() => {
     setQuality((q) => {
-      if (q === null) return Math.min(DEFAULT_QUALITY, maxQuality);
+      if (q === null) return defaultQualityForPlan(maxQuality, limits.pictureQualityLimit);
       return Math.min(Math.max(q, 1), maxQuality);
     });
-  }, [maxQuality]);
+  }, [maxQuality, limits.pictureQualityLimit]);
 
   const handleSecondsInputChange = useCallback((value: number | null) => {
     setSecondsPerPeriod(value);
@@ -239,16 +240,20 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       border,
       shadow,
       picture,
-      legend: {
-        title: legendTitle,
-        labels: legendLabels,
-        backgroundColor: legendBackgroundColor,
-      },
+      legendDraw:
+        legendPosition !== LEGEND_POSITIONS.hidden && legendItems.length > 0
+          ? {
+              title: legendTitle,
+              labels: legendLabels,
+              items: legendItems,
+              noDataColor,
+              backgroundColor: legendBackgroundColor,
+            }
+          : null,
       quality: resolvedQuality,
       legendPosition: (legendPosition === LEGEND_POSITIONS.floating
         ? 'floating'
         : 'bottom') as LegendPositionExport,
-      floatingPosition,
       regionLabels,
       labelPositions: labelPositionsByRegionId,
       watermark: watermarkActive ? ({ text: 'Regionify' } as const) : undefined,
@@ -266,7 +271,6 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       legendBackgroundColor,
       resolvedQuality,
       legendPosition,
-      floatingPosition,
       regionLabels,
       labelPositionsByRegionId,
       watermarkActive,
@@ -314,7 +318,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     setProgress(0);
     try {
       if (isSvgFormat) {
-        exportMapAsSvg(fileName);
+        await exportMapAsSvg(fileName, resolvedStillOpts);
         message.success(t('messages.mapExportedAs', { format: 'SVG' }), 5);
         onClose();
         return;
@@ -409,6 +413,15 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     return t('visualizer.exportModal.downloadFormat', { format: exportType.toUpperCase() });
   }, [exportType, t]);
 
+  const totalAnimationFrames = useMemo(
+    () =>
+      getAnimationTotalFrames(timePeriods.length, {
+        secondsPerPeriod: resolvedSecondsPerPeriod,
+        fps: EXPORT_FPS,
+      }),
+    [timePeriods.length, resolvedSecondsPerPeriod],
+  );
+
   return {
     step,
     exportType,
@@ -444,6 +457,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     handleBack,
     showQualityControl,
     downloadButtonLabel,
+    totalAnimationFrames,
   };
 }
 

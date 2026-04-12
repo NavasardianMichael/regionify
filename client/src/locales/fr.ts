@@ -402,6 +402,8 @@ const fr: CommonNs = {
         ' pour PNG, SVG, export d’images pleine qualité et sans filigrane.',
       qualityLimited: 'Qualité limitée à {{max}}%.',
       qualityFullHint: ' pour 100%.',
+      exportFramesProcessed: '{{processed}} images sur {{total}} traitées',
+      exportSvgBuilding: 'Génération du SVG…',
     },
     manualEntry: {
       title: 'Saisie manuelle des données',

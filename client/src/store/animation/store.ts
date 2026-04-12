@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { AnimationState } from './types';
 
-const DEFAULT_SECONDS_PER_PERIOD = 2;
+const DEFAULT_SECONDS_PER_PERIOD = 1;
 
 export const useAnimationStore = create<AnimationState>((set) => ({
   isPlaying: false,

@@ -7,6 +7,9 @@ type FooterProps = {
   downloadDisabled: boolean;
   isExporting: boolean;
   downloadLabel: string;
+  exportProgress: number;
+  totalAnimationFrames: number;
+  isAnimationFormat: boolean;
   onBack: () => void;
   onDownload: () => void;
 };
@@ -17,6 +20,9 @@ export const Footer: FC<FooterProps> = ({
   downloadDisabled,
   isExporting,
   downloadLabel,
+  exportProgress,
+  totalAnimationFrames,
+  isAnimationFormat,
   onBack,
   onDownload,
 }) => {
@@ -27,6 +33,9 @@ export const Footer: FC<FooterProps> = ({
       downloadDisabled={downloadDisabled}
       isExporting={isExporting}
       downloadLabel={downloadLabel}
+      exportProgress={exportProgress}
+      totalAnimationFrames={totalAnimationFrames}
+      isAnimationFormat={isAnimationFormat}
       onBack={onBack}
       onDownload={onDownload}
     />

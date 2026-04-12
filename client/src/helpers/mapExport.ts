@@ -2,11 +2,10 @@ import { EXPORT_TYPES } from '@regionify/shared';
 import type { LegendItem } from '@/store/legendData/types';
 import type { LegendLabelsConfig, LegendTitleConfig } from '@/store/legendStyles/types';
 
-const MAP_SVG_SELECTOR = '.map-svg-container svg';
-const MAP_EXPORT_ROOT = '[data-map-export-root]';
-const MAP_EXPORT_MAP_AREA = '[data-map-export-map-area]';
-/** Tailwind `border-gray-200` — map frame in composite export (matches on-screen MapViewer). */
-const MAP_AREA_OUTLINE_COLOR = '#e5e7eb';
+export const MAP_SVG_SELECTOR = '.map-svg-container svg';
+export const MAP_EXPORT_ROOT = '[data-map-export-root]';
+export const MAP_EXPORT_FLOATING_LEGEND = '[data-map-export-floating-legend]';
+export const MAP_EXPORT_BOTTOM_LEGEND = '[data-map-export-bottom-legend]';
 const LEGEND_NO_DATA_SWATCH_BORDER = '#d1d5db';
 const DEFAULT_EXPORT_NAME = 'regionify-map';
 const DEFAULT_WATERMARK_LOGO_SRC = '/favicon-32x32.png';
@@ -85,6 +84,197 @@ export const triggerDownload = (blob: Blob, fileName: string): void => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+const escapeXml = (s: string): string =>
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+/** SVG legend overlay; geometry matches {@link drawLegendOnCanvas} at the given scale. */
+const buildLegendSvgFragment = (
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  legend: MapExportLegendDrawOptions,
+  scale: number,
+): string => {
+  const clipId = `lg${Math.random().toString(36).slice(2, 11)}`;
+  const pad = Math.round(8 * scale);
+  const radius = Math.min(Math.round(8 * scale), w / 2, h / 2);
+  const swatch = Math.round(12 * scale);
+  const fontSize = Math.round(legend.labels.fontSize * scale);
+  const swatchTextGap = Math.round(8 * scale);
+  const rowGap = Math.round(8 * scale);
+  const titleGap = Math.round(12 * scale);
+  const font = 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+
+  const parts: string[] = [];
+  parts.push(
+    `<defs><clipPath id="${clipId}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" ry="${radius}"/></clipPath></defs>`,
+  );
+  parts.push(`<g clip-path="url(#${clipId})">`);
+  parts.push(
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" ry="${radius}" fill="${legend.backgroundColor}" stroke="rgba(24, 41, 77, 0.2)" stroke-width="1"/>`,
+  );
+
+  let cy = y + pad + Math.round(2 * scale);
+  if (legend.title.show && legend.title.text.trim()) {
+    parts.push(
+      `<text x="${x + pad}" y="${cy}" font-size="${fontSize}" font-weight="600" fill="${legend.labels.color}" font-family="${font}" dominant-baseline="hanging">${escapeXml(legend.title.text)}</text>`,
+    );
+    cy += fontSize + titleGap;
+  }
+
+  for (const item of legend.items) {
+    const rowCenter = cy;
+    parts.push(
+      `<rect x="${x + pad}" y="${rowCenter - swatch / 2}" width="${swatch}" height="${swatch}" fill="${item.color}"/>`,
+    );
+    parts.push(
+      `<text x="${x + pad + swatch + swatchTextGap}" y="${rowCenter}" font-size="${fontSize}" fill="${legend.labels.color}" font-family="${font}" dominant-baseline="middle">${escapeXml(item.name)}</text>`,
+    );
+    cy += Math.max(swatch, fontSize) + rowGap;
+  }
+
+  const ndY = cy;
+  parts.push(
+    `<rect x="${x + pad}" y="${ndY - swatch / 2}" width="${swatch}" height="${swatch}" fill="${legend.noDataColor}" stroke="${LEGEND_NO_DATA_SWATCH_BORDER}" stroke-width="1"/>`,
+  );
+  parts.push(
+    `<text x="${x + pad + swatch + swatchTextGap}" y="${ndY}" font-size="${fontSize}" fill="${legend.labels.color}" font-family="${font}" dominant-baseline="middle">No Data</text>`,
+  );
+
+  parts.push('</g>');
+  return parts.join('');
+};
+
+const buildWatermarkSvgFragment = async (
+  width: number,
+  height: number,
+  watermark: string | MapExportWatermarkOptions,
+): Promise<string> => {
+  const { text, showTrademark, logoSrc } = normalizeWatermark(watermark);
+  const line = showTrademark ? `${text}\u2122` : text;
+
+  const pad = Math.max(10, Math.round(Math.min(width, height) * 0.014));
+  const fontSize = Math.max(13, Math.round(Math.min(width, height) * 0.024));
+  const logoGap = Math.round(fontSize * 0.4);
+
+  const parts: string[] = ['<g opacity="0.76">'];
+
+  let textWidth = line.length * fontSize * 0.55;
+  if (typeof document !== 'undefined') {
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    if (ctx) {
+      ctx.font = `400 ${fontSize}px Montserrat, Arial, sans-serif`;
+      textWidth = ctx.measureText(line).width;
+    }
+  }
+
+  let logoDrawSize = 0;
+  let dataHref = '';
+  if (logoSrc) {
+    const logo = await loadRasterForCanvas(logoSrc);
+    if (logo) {
+      logoDrawSize = Math.round(fontSize * 1.35);
+      const lc = document.createElement('canvas');
+      lc.width = logoDrawSize;
+      lc.height = logoDrawSize;
+      const lctx = lc.getContext('2d');
+      if (lctx) {
+        lctx.drawImage(logo, 0, 0, logoDrawSize, logoDrawSize);
+        try {
+          dataHref = lc.toDataURL('image/png');
+        } catch {
+          dataHref = '';
+        }
+      }
+    }
+  }
+
+  const textX = width - pad;
+  const baselineY = height - pad;
+
+  if (dataHref && logoDrawSize > 0) {
+    const logoX = textX - textWidth - logoGap - logoDrawSize;
+    const logoY = baselineY - logoDrawSize;
+    const safeHref = dataHref.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    parts.push(
+      `<image href="${safeHref}" x="${logoX}" y="${logoY}" width="${logoDrawSize}" height="${logoDrawSize}" preserveAspectRatio="xMidYMid meet"/>`,
+    );
+  }
+
+  parts.push(
+    `<text x="${textX}" y="${baselineY}" text-anchor="end" dominant-baseline="alphabetic" font-size="${fontSize}" font-weight="400" fill="rgb(180, 180, 180)" font-family="Montserrat, Arial, sans-serif">${escapeXml(line)}</text>`,
+  );
+  parts.push('</g>');
+  return parts.join('');
+};
+
+/**
+ * Builds a standalone SVG matching the composite raster export (map + frame + legend + watermark).
+ */
+const tryBuildCompositeSvgDocument = async (opts?: StillExportOpts): Promise<string | null> => {
+  const root = document.querySelector<HTMLElement>(MAP_EXPORT_ROOT);
+  if (!root) return null;
+
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => resolve());
+  });
+
+  const svgEl = root.querySelector<SVGSVGElement>(MAP_SVG_SELECTOR);
+  if (!svgEl) return null;
+
+  const qs = 1;
+  const rootRect = root.getBoundingClientRect();
+  const W = Math.max(1, Math.round(rootRect.width));
+  const H = Math.max(1, Math.round(rootRect.height));
+
+  const chunks: string[] = [];
+  chunks.push(
+    `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`,
+  );
+
+  if (opts?.backgroundColor) {
+    chunks.push(`<rect width="${W}" height="${H}" fill="${opts.backgroundColor}"/>`);
+  }
+
+  const svgRect = svgEl.getBoundingClientRect();
+  const sx = svgRect.left - rootRect.left;
+  const sy = svgRect.top - rootRect.top;
+  const sw = Math.max(1, Math.round(svgRect.width));
+  const sh = Math.max(1, Math.round(svgRect.height));
+
+  const clone = prepareSvgForExport(svgEl, sw, sh);
+  const innerSvg = new XMLSerializer().serializeToString(clone);
+  chunks.push(`<g transform="translate(${sx.toFixed(2)},${sy.toFixed(2)})">`);
+  chunks.push(innerSvg);
+  chunks.push('</g>');
+
+  const legendEl =
+    root.querySelector<HTMLElement>(MAP_EXPORT_FLOATING_LEGEND) ??
+    root.querySelector<HTMLElement>(MAP_EXPORT_BOTTOM_LEGEND);
+  if (legendEl && opts?.legendDraw && opts.legendDraw.items.length > 0) {
+    const lr = legendEl.getBoundingClientRect();
+    const lx = lr.left - rootRect.left;
+    const ly = lr.top - rootRect.top;
+    const lw = Math.max(1, lr.width);
+    const lh = Math.max(1, lr.height);
+    chunks.push(buildLegendSvgFragment(lx, ly, lw, lh, opts.legendDraw, qs));
+  }
+
+  if (opts?.watermark) {
+    chunks.push(await buildWatermarkSvgFragment(W, H, opts.watermark));
+  }
+
+  chunks.push('</svg>');
+  return chunks.join('');
 };
 
 const loadRasterForCanvas = (src: string): Promise<HTMLImageElement | null> =>
@@ -235,7 +425,7 @@ const drawRoundedRectPath = (
   ctx.closePath();
 };
 
-const drawLegendOnCanvas = (
+export const drawLegendOnCanvas = (
   ctx: CanvasRenderingContext2D,
   bounds: { x: number; y: number; w: number; h: number },
   legend: MapExportLegendDrawOptions,
@@ -374,26 +564,9 @@ export const generateMapCanvas = async (
   const mapCanvas = await svgToCanvas(svgString, 1);
   ctx.drawImage(mapCanvas, sx, sy);
 
-  const mapAreaEl = root.querySelector<HTMLElement>(MAP_EXPORT_MAP_AREA);
-  if (mapAreaEl) {
-    const ar = mapAreaEl.getBoundingClientRect();
-    const ax = (ar.left - rootRect.left) * qs;
-    const ay = (ar.top - rootRect.top) * qs;
-    const aw = Math.max(1, ar.width * qs);
-    const ah = Math.max(1, ar.height * qs);
-    const radius = Math.round(8 * qs);
-    ctx.save();
-    ctx.beginPath();
-    drawRoundedRectPath(ctx, ax, ay, aw, ah, radius);
-    ctx.strokeStyle = MAP_AREA_OUTLINE_COLOR;
-    ctx.lineWidth = Math.max(1, qs);
-    ctx.stroke();
-    ctx.restore();
-  }
-
   const legendEl =
-    root.querySelector<HTMLElement>('[data-map-export-floating-legend]') ??
-    root.querySelector<HTMLElement>('[data-map-export-bottom-legend]');
+    root.querySelector<HTMLElement>(MAP_EXPORT_FLOATING_LEGEND) ??
+    root.querySelector<HTMLElement>(MAP_EXPORT_BOTTOM_LEGEND);
   if (legendEl && opts?.legendDraw && opts.legendDraw.items.length > 0) {
     const lr = legendEl.getBoundingClientRect();
     const lx = (lr.left - rootRect.left) * qs;
@@ -475,7 +648,17 @@ const tryExportCompositeStill = async (
   return true;
 };
 
-export const exportMapAsSvg = (fileName = DEFAULT_EXPORT_NAME): void => {
+export const exportMapAsSvg = async (
+  fileName = DEFAULT_EXPORT_NAME,
+  opts?: StillExportOpts,
+): Promise<void> => {
+  const composite = await tryBuildCompositeSvgDocument(opts);
+  if (composite) {
+    const blob = new Blob([composite], { type: `image/${EXPORT_TYPES.svg}+xml;charset=utf-8` });
+    triggerDownload(blob, `${fileName}.${EXPORT_TYPES.svg}`);
+    return;
+  }
+
   const clone = prepareSvgForExport(getMapSvgElement());
   const svgString = new XMLSerializer().serializeToString(clone);
   const blob = new Blob([svgString], { type: `image/${EXPORT_TYPES.svg}+xml;charset=utf-8` });

@@ -56,7 +56,7 @@ export const Form: FC<FormProps> = (props) => {
   } = props;
 
   return (
-    <Flex vertical gap="middle" className="py-md px-sm">
+    <Flex vertical gap="middle" className="py-md min-w-0 px-1">
       <Flex vertical gap="small">
         <Flex align="center" gap="small">
           <Typography.Text className="text-sm text-gray-600">
@@ -88,17 +88,17 @@ export const Form: FC<FormProps> = (props) => {
       </Flex>
 
       {showQualityControl && (
-        <Flex vertical gap="small">
-          <Flex align="center" justify="space-between">
-            <Flex align="center" gap="small">
-              <Typography.Text className="text-sm text-gray-600">
+        <Flex vertical gap="small" className="min-w-0">
+          <Flex align="center" justify="space-between" gap="small" className="min-w-0">
+            <Flex align="center" gap="small" className="min-w-0 flex-1">
+              <Typography.Text className="min-w-0 truncate text-sm text-gray-600">
                 {t('visualizer.exportModal.qualityLabel')}
               </Typography.Text>
               {limits.pictureQualityLimit && (
                 <Tooltip
                   title={`${t('visualizer.exportModal.qualityLimited', { max: maxQuality })} ${t('visualizer.exportModal.upgradeToExplorer', { planName: t('plans.items.explorer.name') })}${t('visualizer.exportModal.qualityFullHint')}`}
                 >
-                  <InfoCircleOutlined className="cursor-help text-gray-400" />
+                  <InfoCircleOutlined className="shrink-0 cursor-help text-gray-400" />
                 </Tooltip>
               )}
             </Flex>
@@ -108,20 +108,21 @@ export const Form: FC<FormProps> = (props) => {
               value={quality}
               onChange={handleQualityInputChange}
               onBlur={handleQualityBlur}
-              className="w-20"
+              className="w-20 shrink-0"
               disabled={isExporting}
             />
           </Flex>
-          <div className="min-w-0">
+          {/* Inset so slider handles at 1 / max do not extend past the modal content (Ant Design handle overhang). */}
+          <div className="min-w-0 px-2.5">
             <Slider
               min={1}
-              max={100}
+              max={maxQuality}
               value={quality ?? resolvedQuality}
               onChange={handleQualitySliderChange}
               aria-label="Export quality"
               disabled={isExporting}
               styles={{
-                root: { marginInline: 0 },
+                root: { marginInline: 0, width: '100%' },
               }}
             />
           </div>
@@ -175,6 +176,12 @@ export const Form: FC<FormProps> = (props) => {
 
       {isExporting && isAnimationFormat && (
         <Progress percent={Math.round(progress * 100)} status="active" strokeColor="#18294D" />
+      )}
+
+      {isExporting && isSvgFormat && (
+        <Typography.Text type="secondary" className="block w-full text-center text-sm">
+          {t('visualizer.exportModal.exportSvgBuilding')}
+        </Typography.Text>
       )}
 
       {isSvgFormat ? (

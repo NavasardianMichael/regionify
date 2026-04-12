@@ -1,5 +1,5 @@
 import { type FC, useMemo } from 'react';
-import { Cropper, ImageRestriction } from 'react-advanced-cropper';
+import { Cropper, ImageRestriction, Priority } from 'react-advanced-cropper';
 import { Flex, InputNumber, Segmented, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
@@ -54,9 +54,12 @@ export const Step: FC<Props> = ({ crop }) => {
             src={previewSrc}
             onChange={handleCropChange}
             imageRestriction={ImageRestriction.fitArea}
-            defaultSize={({ imageSize }: { imageSize: { width: number; height: number } }) => ({
-              width: imageSize.width * 0.92,
-              height: imageSize.height * 0.92,
+            priority={Priority.coordinates}
+            defaultCoordinates={(state: { imageSize: { width: number; height: number } }) => ({
+              left: 0,
+              top: 0,
+              width: state.imageSize.width,
+              height: state.imageSize.height,
             })}
             stencilProps={{
               aspectRatio,
@@ -73,15 +76,15 @@ export const Step: FC<Props> = ({ crop }) => {
           {t('visualizer.exportModal.aspectRatioLabel')}
         </Typography.Text>
         <Segmented
+          className="w-fit"
           value={aspectRatioPreset}
           onChange={(value: string) => handleAspectRatioChange(value as AspectRatioPreset)}
           options={aspectRatioOptions}
-          block
           disabled={isDisabled}
         />
       </Flex>
 
-      <Flex vertical gap="small">
+      <Flex vertical gap="small" className="mb-md!">
         <Typography.Text className="text-sm text-gray-600">
           {t('visualizer.exportModal.resolutionLabel')}
         </Typography.Text>

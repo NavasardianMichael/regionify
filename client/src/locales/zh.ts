@@ -376,6 +376,8 @@ const zh: CommonNs = {
       singleFormatHintAfterLink: ' 以获得 PNG、SVG、全品质静态导出及无水印。',
       qualityLimited: '画质上限为 {{max}}%。',
       qualityFullHint: ' 可获得 100%。',
+      exportFramesProcessed: '已处理 {{processed}} / {{total}} 帧',
+      exportSvgBuilding: '正在生成 SVG…',
     },
     manualEntry: {
       title: '手动录入数据',

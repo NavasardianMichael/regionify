@@ -339,6 +339,10 @@ export type CommonNs = {
       singleFormatHintAfterLink: string;
       qualityLimited: string;
       qualityFullHint: string;
+      /** Crop-step footer while GIF/MP4 export runs (progress 0–1 maps to frames). */
+      exportFramesProcessed: string;
+      /** Step 1 while SVG composite export runs. */
+      exportSvgBuilding: string;
     };
     manualEntry: {
       title: string;

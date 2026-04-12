@@ -394,6 +394,8 @@ const ru: CommonNs = {
       singleFormatHintAfterLink: ' для PNG, SVG, полноценного экспорта статики без водяного знака.',
       qualityLimited: 'Качество ограничено {{max}}%.',
       qualityFullHint: ' для 100%.',
+      exportFramesProcessed: 'Обработано кадров: {{processed}} из {{total}}',
+      exportSvgBuilding: 'Создание SVG…',
     },
     manualEntry: {
       title: 'Ручной ввод данных',

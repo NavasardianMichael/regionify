@@ -13,6 +13,7 @@ type FormatOption = { value: AnimationFormat; label: string };
 export type FormProps = {
   format: AnimationFormat;
   quality: number;
+  maxExportQuality: number;
   secondsPerPeriod: number;
   smoothTransitions: boolean;
   isExporting: boolean;
@@ -29,6 +30,7 @@ export type FormProps = {
 export const Form: FC<FormProps> = ({
   format,
   quality,
+  maxExportQuality,
   secondsPerPeriod,
   smoothTransitions,
   isExporting,
@@ -41,7 +43,7 @@ export const Form: FC<FormProps> = ({
   onSmoothTransitionsChange,
   onExport,
 }) => (
-  <Flex vertical gap="middle" className="py-2">
+  <Flex vertical gap="middle" className="min-w-0 px-1 py-2">
     <Flex vertical gap="small">
       <Typography.Text className="text-sm text-gray-600">Format:</Typography.Text>
       <Select
@@ -53,25 +55,30 @@ export const Form: FC<FormProps> = ({
       />
     </Flex>
 
-    <Flex vertical gap="small">
-      <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">Quality (%):</Typography.Text>
+    <Flex vertical gap="small" className="min-w-0">
+      <Flex align="center" justify="space-between" gap="small" className="min-w-0">
+        <Typography.Text className="min-w-0 flex-1 text-sm text-gray-600">
+          Quality (%):
+        </Typography.Text>
         <InputNumber
-          min={25}
-          max={100}
+          min={1}
+          max={maxExportQuality}
           value={quality}
           onChange={onQualityChange}
-          className="w-20"
+          className="w-20 shrink-0"
           disabled={isExporting}
         />
       </Flex>
-      <Slider
-        min={25}
-        max={100}
-        value={quality}
-        onChange={(v: number) => onQualityChange(v)}
-        disabled={isExporting}
-      />
+      <div className="min-w-0 px-2.5">
+        <Slider
+          min={1}
+          max={maxExportQuality}
+          value={Math.min(quality, maxExportQuality)}
+          onChange={(v: number) => onQualityChange(Math.min(v, maxExportQuality))}
+          disabled={isExporting}
+          styles={{ root: { marginInline: 0, width: '100%' } }}
+        />
+      </div>
     </Flex>
 
     <Flex vertical gap="small">

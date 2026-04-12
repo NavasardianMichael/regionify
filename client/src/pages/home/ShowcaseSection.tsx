@@ -97,7 +97,7 @@ export const ShowcaseSection: FC = () => {
                   {description}
                 </Typography.Paragraph>
                 <div>
-                  <Button type="default" onClick={handlePlanClick}>
+                  <Button type="primary" onClick={handlePlanClick}>
                     {planName} →
                   </Button>
                 </div>

@@ -405,6 +405,8 @@ const de: CommonNs = {
         ' für PNG, SVG, Stillbild-Export in voller Qualität und ohne Wasserzeichen.',
       qualityLimited: 'Qualität auf {{max}}% begrenzt.',
       qualityFullHint: ' für 100%.',
+      exportFramesProcessed: '{{processed}} von {{total}} Frames verarbeitet',
+      exportSvgBuilding: 'SVG wird erstellt …',
     },
     manualEntry: {
       title: 'Manuelle Dateneingabe',

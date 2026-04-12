@@ -391,6 +391,8 @@ const en: CommonNs = {
       singleFormatHintAfterLink: ' for PNG, SVG, full quality and no watermark.',
       qualityLimited: 'Quality limited to {{max}}%.',
       qualityFullHint: ' for 100%.',
+      exportFramesProcessed: 'Processed {{processed}} of {{total}} frames',
+      exportSvgBuilding: 'Building SVG…',
     },
     manualEntry: {
       title: 'Manual Data Entry',
