@@ -104,7 +104,11 @@ const ProjectsPage: FC = () => {
         {projectsStatus !== IDLE_STATUSES.idle ? (
           <>
             <Flex align="center" justify="space-between" wrap="wrap" gap="middle">
-              <Typography.Title level={2} className="text-primary mb-0! text-xl font-bold">
+              <Typography.Title
+                level={2}
+                className="text-primary mb-0! text-xl font-bold"
+                data-i18n-key="projects.title"
+              >
                 {t('projects.title')}
               </Typography.Title>
               {projects.length > 0 && (
@@ -115,8 +119,14 @@ const ProjectsPage: FC = () => {
                     value={search}
                     onChange={handleSearchChange}
                     allowClear
+                    data-i18n-key="projects.searchPlaceholder"
                   />
-                  <Button type="primary" icon={<PlusOutlined />} onClick={handleNewProject}>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={handleNewProject}
+                    data-i18n-key="projects.newProject"
+                  >
                     {t('projects.newProject')}
                   </Button>
                 </Flex>
@@ -135,7 +145,12 @@ const ProjectsPage: FC = () => {
                   }
                 >
                   {projects.length === 0 && (
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleNewProject}>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={handleNewProject}
+                      data-i18n-key="projects.newProject"
+                    >
                       {t('projects.newProject')}
                     </Button>
                   )}

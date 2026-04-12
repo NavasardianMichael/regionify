@@ -20,6 +20,7 @@ export const LanguageTransitionOverlay: FC = () => {
       aria-busy="true"
       aria-label={t('nav.languageSwitchingOverlay')}
       className="pointer-events-auto fixed inset-0 z-[10000] bg-white/45 backdrop-blur-sm dark:bg-black/35"
+      data-i18n-key="nav.languageSwitchingOverlay"
     >
       <Spin size="large" />
     </Flex>

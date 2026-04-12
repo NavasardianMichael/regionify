@@ -154,6 +154,7 @@ export const AiParserModal: FC<Props> = ({
       centered
       destroyOnHidden
       focusable={{ trap: false }}
+      data-i18n-key="visualizer.aiParserModal.title"
     >
       <Body
         limitedRequestsNote={t('visualizer.aiParserModal.limitedRequestsNote', {

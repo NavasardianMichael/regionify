@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo } from 'react';
+import { useMemo } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { TableColumnType } from 'antd';
 import { Input, InputNumber, Typography } from 'antd';
@@ -10,10 +10,6 @@ import { TextFilterBody } from './TextFilterBody';
 import type { MiddleColKey } from './types';
 import type { ModalState } from './useModalState';
 import { ValueCell } from './ValueCell';
-
-function columnTitleText(text: string): ReactNode {
-  return <Typography.Text className="block min-w-0 truncate font-semibold">{text}</Typography.Text>;
-}
 
 export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
   const {
@@ -116,7 +112,14 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
     const middleBuilders: Record<MiddleColKey, () => TableColumnType<DataRow>> = {
       id: () => ({
         key: 'id',
-        title: columnTitleText(t('visualizer.manualEntry.colId')),
+        title: (
+          <Typography.Text
+            className="block min-w-0 truncate font-semibold"
+            data-i18n-key="visualizer.manualEntry.colId"
+          >
+            {t('visualizer.manualEntry.colId')}
+          </Typography.Text>
+        ),
         sorter: (a: DataRow, b: DataRow) =>
           a.id.trim().localeCompare(b.id.trim(), undefined, { numeric: true }),
         sortOrder: sortedInfo.field === 'id' ? sortedInfo.order : null,
@@ -134,7 +137,14 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
       }),
       label: () => ({
         key: 'label',
-        title: columnTitleText(t('visualizer.manualEntry.colLabel')),
+        title: (
+          <Typography.Text
+            className="block min-w-0 truncate font-semibold"
+            data-i18n-key="visualizer.manualEntry.colLabel"
+          >
+            {t('visualizer.manualEntry.colLabel')}
+          </Typography.Text>
+        ),
         sorter: (a: DataRow, b: DataRow) =>
           a.label.trim().localeCompare(b.label.trim(), undefined, { numeric: true }),
         sortOrder: sortedInfo.field === 'label' ? sortedInfo.order : null,
@@ -152,7 +162,14 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
       }),
       value: () => ({
         key: 'value',
-        title: columnTitleText(t('visualizer.manualEntry.colValue')),
+        title: (
+          <Typography.Text
+            className="block min-w-0 truncate font-semibold"
+            data-i18n-key="visualizer.manualEntry.colValue"
+          >
+            {t('visualizer.manualEntry.colValue')}
+          </Typography.Text>
+        ),
         sorter: (a: DataRow, b: DataRow) => a.value - b.value,
         sortOrder: sortedInfo.field === 'value' ? sortedInfo.order : null,
         ...filterFor('value'),
@@ -168,7 +185,14 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
       }),
       time: () => ({
         key: 'time',
-        title: columnTitleText(t('visualizer.manualEntry.colTime')),
+        title: (
+          <Typography.Text
+            className="block min-w-0 truncate font-semibold"
+            data-i18n-key="visualizer.manualEntry.colTime"
+          >
+            {t('visualizer.manualEntry.colTime')}
+          </Typography.Text>
+        ),
         sorter: (a: DataRow, b: DataRow) => compareTimePeriodForSort(a.timePeriod, b.timePeriod),
         sortOrder: sortedInfo.field === 'time' ? sortedInfo.order : null,
         ...filterFor('time'),
@@ -199,7 +223,10 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
     const indexCol: TableColumnType<DataRow> = {
       key: 'index',
       title: (
-        <div className="text-center font-semibold whitespace-nowrap">
+        <div
+          className="text-center font-semibold whitespace-nowrap"
+          data-i18n-key="visualizer.manualEntry.colIndex"
+        >
           {t('visualizer.manualEntry.colIndex')}
         </div>
       ),

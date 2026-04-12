@@ -46,10 +46,11 @@ export const MapsSection: FC = () => {
             <Typography.Title
               level={2}
               className="text-primary mb-0! text-2xl font-bold md:text-3xl"
+              data-i18n-key="home.mapsTitle"
             >
               {t('home.mapsTitle')}
             </Typography.Title>
-            <Typography.Paragraph className="mb-0! text-gray-500">
+            <Typography.Paragraph className="mb-0! text-gray-500" data-i18n-key="home.mapsSubtitle">
               {t('home.mapsSubtitle')}
             </Typography.Paragraph>
           </Flex>

@@ -28,7 +28,10 @@ export const Body: FC<BodyProps> = ({
 
   return (
     <Flex vertical gap="middle" className="py-2">
-      <Typography.Text className="text-sm text-gray-600">
+      <Typography.Text
+        className="text-sm text-gray-600"
+        data-i18n-key="visualizer.googleSheets.intro"
+      >
         {t('visualizer.googleSheets.intro')}
       </Typography.Text>
 
@@ -39,23 +42,39 @@ export const Body: FC<BodyProps> = ({
         disabled={busy}
         status={error ? 'error' : undefined}
         allowClear
+        data-i18n-key="visualizer.googleSheets.placeholder"
       />
 
       {error && (
-        <Typography.Text type="danger" className="text-xs">
+        <Typography.Text
+          type="danger"
+          className="text-xs"
+          data-i18n-key="visualizer.googleSheets.fetchFailed"
+        >
           {error}
         </Typography.Text>
       )}
 
       <Flex vertical gap={4} className="rounded-md bg-gray-50 p-3!">
-        <Typography.Text className="text-xs font-medium text-gray-500">
+        <Typography.Text
+          className="text-xs font-medium text-gray-500"
+          data-i18n-key="visualizer.googleSheets.howToShare"
+        >
           {t('visualizer.googleSheets.howToShare')}
         </Typography.Text>
         <ol className="m-0 space-y-1 text-xs text-gray-500">
-          <li>{t('visualizer.googleSheets.stepOpen')}</li>
-          <li>{t('visualizer.googleSheets.stepShare')}</li>
-          <li>{t('visualizer.googleSheets.stepAnyone')}</li>
-          <li>{t('visualizer.googleSheets.stepPaste')}</li>
+          <li data-i18n-key="visualizer.googleSheets.stepOpen">
+            {t('visualizer.googleSheets.stepOpen')}
+          </li>
+          <li data-i18n-key="visualizer.googleSheets.stepShare">
+            {t('visualizer.googleSheets.stepShare')}
+          </li>
+          <li data-i18n-key="visualizer.googleSheets.stepAnyone">
+            {t('visualizer.googleSheets.stepAnyone')}
+          </li>
+          <li data-i18n-key="visualizer.googleSheets.stepPaste">
+            {t('visualizer.googleSheets.stepPaste')}
+          </li>
         </ol>
       </Flex>
 
@@ -67,6 +86,7 @@ export const Body: FC<BodyProps> = ({
           loading={busy && loadingMode === 'sync'}
           disabled={!isValidUrl || busy}
           className="min-w-[160px] grow"
+          data-i18n-key="visualizer.googleSheets.syncButton"
         >
           {busy && loadingMode === 'sync'
             ? t('visualizer.googleSheets.fetching')
@@ -79,6 +99,7 @@ export const Body: FC<BodyProps> = ({
           loading={busy && loadingMode === 'snapshot'}
           disabled={!isValidUrl || busy}
           className="min-w-[160px] grow"
+          data-i18n-key="visualizer.googleSheets.importOnceButton"
         >
           {busy && loadingMode === 'snapshot'
             ? t('visualizer.googleSheets.fetching')

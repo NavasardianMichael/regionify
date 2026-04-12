@@ -14,7 +14,11 @@ export const MapStylesZoomSection: FC<ZoomSectionProps> = ({ zoomControls, onSho
   return (
     <Flex vertical gap="small">
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="show-controls-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="show-controls-label"
+          data-i18n-key="visualizer.mapStyles.showControls"
+        >
           {t('visualizer.mapStyles.showControls')}
         </Typography.Text>
         <Switch

@@ -24,7 +24,9 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   }, [plan.id, onUpgrade]);
 
   const priceLabel = useMemo(() => {
-    if (plan.price === 0) return t('plans.priceFree');
+    if (plan.price === 0) {
+      return t('plans.priceFree');
+    }
     return t('plans.priceOneTime', { price: `$${plan.price}` });
   }, [plan.price, t]);
 
@@ -59,7 +61,10 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   return (
     <Card className={`relative overflow-visible ${cardClassName}`} styles={cardStyles}>
       {plan.popular ? (
-        <span className="bg-primary pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white shadow-sm">
+        <span
+          className="bg-primary pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white shadow-sm"
+          data-i18n-key="plans.bestChoice"
+        >
           {t('plans.bestChoice')}
         </span>
       ) : null}
@@ -73,16 +78,32 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           <Typography.Title
             level={3}
             className="text-primary mb-0! w-full text-center text-xl font-bold"
+            data-i18n-key="plans.items.observer.name"
           >
             {plan.name}
           </Typography.Title>
-          <Typography.Paragraph className="mb-0! w-full max-w-full text-center! text-gray-500">
+          <Typography.Paragraph
+            className="mb-0! w-full max-w-full text-center! text-gray-500"
+            data-i18n-key="plans.items.observer.description"
+          >
             {plan.description}
           </Typography.Paragraph>
           <Flex align="baseline" justify="center" gap={4} className="w-full">
-            <Typography.Text className="text-primary text-4xl font-bold">
-              {priceLabel}
-            </Typography.Text>
+            {plan.price === 0 ? (
+              <Typography.Text
+                className="text-primary text-4xl font-bold"
+                data-i18n-key="plans.priceFree"
+              >
+                {priceLabel}
+              </Typography.Text>
+            ) : (
+              <Typography.Text
+                className="text-primary text-4xl font-bold"
+                data-i18n-key="plans.priceOneTime"
+              >
+                {priceLabel}
+              </Typography.Text>
+            )}
           </Flex>
         </Flex>
 
@@ -90,24 +111,46 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           {plan.features.map((feature, index) => (
             <Flex key={index} align="flex-start" gap="small" className="w-full">
               <CheckOutlined className="mt-0.5 shrink-0 text-green-500" />
-              <Typography.Text className="text-left text-gray-700">{feature.text}</Typography.Text>
+              <Typography.Text
+                className="text-left text-gray-700"
+                data-i18n-key="plans.rows.advancedStyles"
+              >
+                {feature.text}
+              </Typography.Text>
             </Flex>
           ))}
         </Flex>
 
-        <Button
-          type={buttonType}
-          variant={isCurrentPlan ? 'outlined' : 'solid'}
-          color={isCurrentPlan ? 'default' : 'primary'}
-          block
-          className="mt-auto shrink-0"
-          disabled={isCurrentPlan}
-          loading={isUpgrading}
-          icon={isUpgrading ? <LoadingOutlined /> : undefined}
-          onClick={handleClick}
-        >
-          {isCurrentPlan ? t('plans.currentPlan') : plan.buttonText}
-        </Button>
+        {isCurrentPlan ? (
+          <Button
+            type={buttonType}
+            variant="outlined"
+            color="default"
+            block
+            className="mt-auto shrink-0"
+            disabled
+            loading={isUpgrading}
+            icon={isUpgrading ? <LoadingOutlined /> : undefined}
+            onClick={handleClick}
+            data-i18n-key="plans.currentPlan"
+          >
+            {t('plans.currentPlan')}
+          </Button>
+        ) : (
+          <Button
+            type={buttonType}
+            variant="solid"
+            color="primary"
+            block
+            className="mt-auto shrink-0"
+            loading={isUpgrading}
+            icon={isUpgrading ? <LoadingOutlined /> : undefined}
+            onClick={handleClick}
+            data-i18n-key="plans.items.explorer.buttonText"
+          >
+            {plan.buttonText}
+          </Button>
+        )}
       </Flex>
     </Card>
   );

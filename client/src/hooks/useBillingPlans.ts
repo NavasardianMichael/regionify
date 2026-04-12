@@ -41,14 +41,26 @@ function buildPlanFeatures(planId: Plan, t: TypedT): BillingPlan['features'] {
 
   const rows: BillingPlan['features'] = [
     { text: projectText, included: true },
-    ...(sessionsText ? [{ text: sessionsText, included: true }] : []),
+    ...(sessionsText ? [{ text: sessionsText, included: true as const }] : []),
     { text: imageExportText, included: true },
     { text: t('plans.rows.advancedStyles'), included: true },
     { text: watermarkText, included: true },
-    { text: t('plans.rows.timeSeries'), included: l.historicalDataImport },
-    { text: t('plans.rows.animationExport'), included: l.animationExport },
-    { text: t('plans.rows.embedMapIframe'), included: l.publicEmbed },
-    { text: t('plans.rows.publicMapPage'), included: l.publicEmbed },
+    {
+      text: t('plans.rows.timeSeries'),
+      included: l.historicalDataImport,
+    },
+    {
+      text: t('plans.rows.animationExport'),
+      included: l.animationExport,
+    },
+    {
+      text: t('plans.rows.embedMapIframe'),
+      included: l.publicEmbed,
+    },
+    {
+      text: t('plans.rows.publicMapPage'),
+      included: l.publicEmbed,
+    },
   ];
   /** Only show capabilities this plan actually includes (no gray “not included” filler rows). */
   return rows.filter((row) => row.included);

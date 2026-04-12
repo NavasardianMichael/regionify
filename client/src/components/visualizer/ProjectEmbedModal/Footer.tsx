@@ -13,10 +13,15 @@ export const Footer: FC<Props> = ({ submitting, onClose, onSubmit }) => {
 
   return (
     <Flex justify="flex-end" gap="small">
-      <Button onClick={onClose} disabled={submitting}>
+      <Button onClick={onClose} disabled={submitting} data-i18n-key="nav.cancel">
         {t('nav.cancel')}
       </Button>
-      <Button type="primary" loading={submitting} onClick={onSubmit}>
+      <Button
+        type="primary"
+        loading={submitting}
+        onClick={onSubmit}
+        data-i18n-key="visualizer.save"
+      >
         {t('visualizer.save')}
       </Button>
     </Flex>

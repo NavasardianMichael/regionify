@@ -8,8 +8,14 @@ export const SwitchModeConfirmContent: FC = () => {
 
   return (
     <Flex vertical gap="small">
-      <Typography.Text>{t('visualizer.switchMode.body')}</Typography.Text>
-      <Typography.Text type="secondary" className="text-xs">
+      <Typography.Text data-i18n-key="visualizer.switchMode.body">
+        {t('visualizer.switchMode.body')}
+      </Typography.Text>
+      <Typography.Text
+        type="secondary"
+        className="text-xs"
+        data-i18n-key="visualizer.switchMode.hint"
+      >
         {t('visualizer.switchMode.hint')}
       </Typography.Text>
     </Flex>

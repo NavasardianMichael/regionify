@@ -33,10 +33,16 @@ const FaqPage: FC = () => {
 
   return (
     <Flex vertical gap="middle" className="mx-auto w-full max-w-4xl pb-6!">
-      <Typography.Title level={1} className="text-primary text-2xl font-bold md:text-3xl">
+      <Typography.Title
+        level={1}
+        className="text-primary text-2xl font-bold md:text-3xl"
+        data-i18n-key="faq.title"
+      >
         {t('faq.title')}
       </Typography.Title>
-      <Typography.Paragraph className="text-gray-600">{t('faq.intro')}</Typography.Paragraph>
+      <Typography.Paragraph className="text-gray-600" data-i18n-key="faq.intro">
+        {t('faq.intro')}
+      </Typography.Paragraph>
       <Collapse
         bordered={false}
         className="bg-transparent!"

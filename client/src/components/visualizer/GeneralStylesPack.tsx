@@ -105,7 +105,12 @@ const GeneralStylesPack: FC = () => {
 
   return (
     <Flex wrap gap="small">
-      <Button icon={<UndoOutlined />} onClick={handleResetStyles} className="min-w-40 grow">
+      <Button
+        icon={<UndoOutlined />}
+        onClick={handleResetStyles}
+        className="min-w-40 grow"
+        data-i18n-key="visualizer.resetStyles"
+      >
         {t('visualizer.resetStyles')}
       </Button>
       <Button
@@ -114,6 +119,7 @@ const GeneralStylesPack: FC = () => {
         disabled={randomPaletteLoading}
         onClick={() => void handleApplyRandomPalette()}
         className="min-w-40 grow"
+        data-i18n-key="visualizer.randomStylesPack"
       >
         {t('visualizer.randomStylesPack')}
       </Button>

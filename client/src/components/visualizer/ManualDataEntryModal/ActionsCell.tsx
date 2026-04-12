@@ -27,7 +27,10 @@ export const ActionsCell = memo(function ActionsCell({
 
   return (
     <Flex gap={0} justify="flex-end" wrap="nowrap" className="min-w-0">
-      <Tooltip title={hidden ? showOnChartLabel : hideFromChartLabel}>
+      <Tooltip
+        title={hidden ? showOnChartLabel : hideFromChartLabel}
+        data-i18n-key="visualizer.manualEntry.showOnChart"
+      >
         <Button
           type="text"
           size="small"
@@ -37,9 +40,10 @@ export const ActionsCell = memo(function ActionsCell({
           onClick={onActionClick}
           aria-label={hidden ? showOnChartLabel : hideFromChartLabel}
           className={hidden ? 'text-gray-400' : 'text-gray-600'}
+          data-i18n-key="visualizer.manualEntry.showOnChart"
         />
       </Tooltip>
-      <Tooltip title={deleteRowLabel}>
+      <Tooltip title={deleteRowLabel} data-i18n-key="visualizer.manualEntry.deleteRow">
         <Button
           type="text"
           size="small"
@@ -49,6 +53,7 @@ export const ActionsCell = memo(function ActionsCell({
           data-action="delete"
           onClick={onActionClick}
           aria-label={deleteRowLabel}
+          data-i18n-key="visualizer.manualEntry.deleteRow"
         />
       </Tooltip>
     </Flex>

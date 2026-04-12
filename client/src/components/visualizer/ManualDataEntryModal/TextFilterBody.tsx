@@ -64,14 +64,15 @@ export const TextFilterBody: FC<TextFilterBodyProps> = ({
     e.stopPropagation();
   }, []);
 
-  return (
-    <div className="w-52 p-2">
+  const filterInput =
+    columnKey === 'id' ? (
       <Input
         ref={inputRef}
         allowClear
         variant="outlined"
         prefix={<SearchOutlined className="text-[rgba(0,0,0,0.45)]" />}
         placeholder={placeholder}
+        data-i18n-key="visualizer.manualEntry.filterPlaceholder.id"
         value={text}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           const v = e.target.value;
@@ -82,6 +83,61 @@ export const TextFilterBody: FC<TextFilterBodyProps> = ({
         }}
         onKeyDown={stopFilterKeyPropagation}
       />
-    </div>
-  );
+    ) : columnKey === 'label' ? (
+      <Input
+        ref={inputRef}
+        allowClear
+        variant="outlined"
+        prefix={<SearchOutlined className="text-[rgba(0,0,0,0.45)]" />}
+        placeholder={placeholder}
+        data-i18n-key="visualizer.manualEntry.filterPlaceholder.label"
+        value={text}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          const v = e.target.value;
+          setText(v);
+          startTransition(() => {
+            setColumnFilters((f) => ({ ...f, [columnKey]: v }));
+          });
+        }}
+        onKeyDown={stopFilterKeyPropagation}
+      />
+    ) : columnKey === 'value' ? (
+      <Input
+        ref={inputRef}
+        allowClear
+        variant="outlined"
+        prefix={<SearchOutlined className="text-[rgba(0,0,0,0.45)]" />}
+        placeholder={placeholder}
+        data-i18n-key="visualizer.manualEntry.filterPlaceholder.value"
+        value={text}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          const v = e.target.value;
+          setText(v);
+          startTransition(() => {
+            setColumnFilters((f) => ({ ...f, [columnKey]: v }));
+          });
+        }}
+        onKeyDown={stopFilterKeyPropagation}
+      />
+    ) : (
+      <Input
+        ref={inputRef}
+        allowClear
+        variant="outlined"
+        prefix={<SearchOutlined className="text-[rgba(0,0,0,0.45)]" />}
+        placeholder={placeholder}
+        data-i18n-key="visualizer.manualEntry.filterPlaceholder.time"
+        value={text}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          const v = e.target.value;
+          setText(v);
+          startTransition(() => {
+            setColumnFilters((f) => ({ ...f, [columnKey]: v }));
+          });
+        }}
+        onKeyDown={stopFilterKeyPropagation}
+      />
+    );
+
+  return <div className="w-52 p-2">{filterInput}</div>;
 };

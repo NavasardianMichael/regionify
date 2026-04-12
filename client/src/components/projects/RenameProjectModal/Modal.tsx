@@ -66,6 +66,7 @@ export const RenameProjectModal: FC<Props> = ({
         draftName={draftName}
         onDraftNameChange={handleInputChange}
         onPressEnter={handleSubmit}
+        data-i18n-key="visualizer.renameProjectPrompt"
       />
     </AntModal>
   );

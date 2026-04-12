@@ -203,6 +203,7 @@ export const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) =>
       centered
       className="w-4/5! lg:w-2/3!"
       destroyOnHidden
+      data-i18n-key="visualizer.legendModal.title"
     >
       <Body
         localItems={localItems}

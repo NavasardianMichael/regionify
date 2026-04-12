@@ -8,7 +8,7 @@ export const Title: FC = () => {
   return (
     <Flex align="center" gap="small" className="mb-4!">
       <LinkOutlined className="text-primary" />
-      <Typography.Title level={4} className="mb-0!">
+      <Typography.Title level={4} className="mb-0!" data-i18n-key="visualizer.googleSheets.title">
         {t('visualizer.googleSheets.title')}
       </Typography.Title>
     </Flex>

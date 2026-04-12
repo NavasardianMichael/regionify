@@ -62,17 +62,27 @@ const SignUpPage: FC = () => {
               />
             </svg>
           </Flex>
-          <Typography.Title level={2} className="text-primary text-xl font-bold">
+          <Typography.Title
+            level={2}
+            className="text-primary text-xl font-bold"
+            data-i18n-key="auth.signUp.verifyTitle"
+          >
             {t('auth.signUp.verifyTitle')}
           </Typography.Title>
-          <Typography.Paragraph className="mt-2 text-gray-500">
+          <Typography.Paragraph
+            className="mt-2 text-gray-500"
+            data-i18n-key="auth.signUp.verifyBody"
+          >
             {t('auth.signUp.verifyBody')}
           </Typography.Paragraph>
-          <Typography.Paragraph className="text-sm text-gray-400">
+          <Typography.Paragraph
+            className="text-sm text-gray-400"
+            data-i18n-key="auth.signUp.verifyNote"
+          >
             {t('auth.signUp.verifyNote')}
           </Typography.Paragraph>
           <AppNavLink to={ROUTES.LOGIN}>
-            <Button type="primary" className="mt-4">
+            <Button type="primary" className="mt-4" data-i18n-key="auth.signUp.goToLogin">
               {t('auth.signUp.goToLogin')}
             </Button>
           </AppNavLink>
@@ -84,10 +94,14 @@ const SignUpPage: FC = () => {
   return (
     <Card className="m-auto! w-full max-w-144! shadow-sm">
       <div className="mb-6 text-center">
-        <Typography.Title level={1} className="text-primary mb-0! text-2xl font-bold">
+        <Typography.Title
+          level={1}
+          className="text-primary mb-0! text-2xl font-bold"
+          data-i18n-key="auth.signUp.title"
+        >
           {t('auth.signUp.title')}
         </Typography.Title>
-        <Typography.Paragraph className="mt-2 text-gray-500">
+        <Typography.Paragraph className="mt-2 text-gray-500" data-i18n-key="auth.signUp.subtitle">
           {t('auth.signUp.subtitle')}
         </Typography.Paragraph>
       </div>
@@ -96,6 +110,7 @@ const SignUpPage: FC = () => {
         block
         onClick={() => (window.location.href = AUTH_ENDPOINTS.google)}
         className="mb-4 flex! items-center justify-center gap-3 border-gray-300 bg-white! text-gray-700 hover:bg-gray-50!"
+        data-i18n-key="auth.signUp.continueGoogle"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -118,7 +133,7 @@ const SignUpPage: FC = () => {
         {t('auth.signUp.continueGoogle')}
       </Button>
 
-      <Divider plain className="text-gray-400!">
+      <Divider plain className="text-gray-400!" data-i18n-key="auth.signUp.dividerEmail">
         {t('auth.signUp.dividerEmail')}
       </Divider>
 
@@ -133,7 +148,10 @@ const SignUpPage: FC = () => {
           <Form.Item
             name="name"
             label={
-              <Typography.Text className="font-medium text-gray-700">
+              <Typography.Text
+                className="font-medium text-gray-700"
+                data-i18n-key="auth.signUp.fullName"
+              >
                 {t('auth.signUp.fullName')}
               </Typography.Text>
             }
@@ -150,13 +168,16 @@ const SignUpPage: FC = () => {
               },
             ]}
           >
-            <Input placeholder={t('auth.signUp.fullNamePlaceholder')} />
+            <Input
+              placeholder={t('auth.signUp.fullNamePlaceholder')}
+              data-i18n-key="auth.signUp.fullNamePlaceholder"
+            />
           </Form.Item>
 
           <Form.Item
             name="email"
             label={
-              <Typography.Text className="font-medium text-gray-700">
+              <Typography.Text className="font-medium text-gray-700" data-i18n-key="account.email">
                 {t('account.email')}
               </Typography.Text>
             }
@@ -166,13 +187,20 @@ const SignUpPage: FC = () => {
               { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
             ]}
           >
-            <Input placeholder={t('auth.login.emailPlaceholder')} autoComplete="username" />
+            <Input
+              placeholder={t('auth.login.emailPlaceholder')}
+              autoComplete="username"
+              data-i18n-key="auth.login.emailPlaceholder"
+            />
           </Form.Item>
 
           <Form.Item
             name="password"
             label={
-              <Typography.Text className="font-medium text-gray-700">
+              <Typography.Text
+                className="font-medium text-gray-700"
+                data-i18n-key="auth.signUp.password"
+              >
                 {t('auth.signUp.password')}
               </Typography.Text>
             }
@@ -200,13 +228,17 @@ const SignUpPage: FC = () => {
             <Input.Password
               placeholder={t('auth.signUp.createPasswordPlaceholder')}
               autoComplete="new-password"
+              data-i18n-key="auth.signUp.createPasswordPlaceholder"
             />
           </Form.Item>
 
           <Form.Item
             name="confirmPassword"
             label={
-              <Typography.Text className="font-medium text-gray-700">
+              <Typography.Text
+                className="font-medium text-gray-700"
+                data-i18n-key="auth.signUp.confirmPassword"
+              >
                 {t('auth.signUp.confirmPassword')}
               </Typography.Text>
             }
@@ -229,6 +261,7 @@ const SignUpPage: FC = () => {
             <Input.Password
               placeholder={t('auth.signUp.confirmPasswordPlaceholder')}
               autoComplete="new-password"
+              data-i18n-key="auth.signUp.confirmPasswordPlaceholder"
             />
           </Form.Item>
         </Flex>
@@ -241,7 +274,11 @@ const SignUpPage: FC = () => {
           >
             {signUpError}
             {signUpError.toLowerCase().includes('account with this email already exists') && (
-              <AppNavLink to={ROUTES.FORGOT_PASSWORD} className="text-sm font-semibold">
+              <AppNavLink
+                to={ROUTES.FORGOT_PASSWORD}
+                className="text-sm font-semibold"
+                data-i18n-key="auth.signUp.forgotPassword"
+              >
                 {t('auth.signUp.forgotPassword')}
               </AppNavLink>
             )}
@@ -250,14 +287,24 @@ const SignUpPage: FC = () => {
 
         <Flex gap={8} className="mt-8!" vertical>
           <Form.Item className="mb-0!">
-            <Button type="primary" htmlType="submit" block loading={loading}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              loading={loading}
+              data-i18n-key="auth.signUp.createAccount"
+            >
               {t('auth.signUp.createAccount')}
             </Button>
           </Form.Item>
 
-          <div className="text-center text-gray-600">
+          <div className="text-center text-gray-600" data-i18n-key="auth.signUp.alreadyHaveAccount">
             {t('auth.signUp.alreadyHaveAccount')}{' '}
-            <AppNavLink to={ROUTES.LOGIN} className="text-primary font-medium hover:underline">
+            <AppNavLink
+              to={ROUTES.LOGIN}
+              className="text-primary font-medium hover:underline"
+              data-i18n-key="auth.signUp.signInLink"
+            >
               {t('auth.signUp.signInLink')}
             </AppNavLink>
           </div>

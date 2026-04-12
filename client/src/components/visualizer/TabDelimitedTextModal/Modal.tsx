@@ -135,12 +135,14 @@ export const TabDelimitedTextModal: FC<Props> = ({
       centered
       destroyOnHidden
       focusable={{ trap: false }}
+      data-i18n-key="visualizer.tabDelimitedModal.title"
     >
       <Body
         text={text}
         placeholder={t('visualizer.tabDelimitedModal.placeholder')}
         error={error}
         onTextChange={handleTextChange}
+        data-i18n-key="visualizer.tabDelimitedModal.placeholder"
       />
     </AntModal>
   );

@@ -9,7 +9,7 @@ export const Title: FC = () => {
   return (
     <Flex align="center" gap="small" className="mb-6!">
       <ShareAltOutlined className="text-primary" />
-      <Typography.Title level={4} className="mb-0!">
+      <Typography.Title level={4} className="mb-0!" data-i18n-key="visualizer.embed.modalTitle">
         {t('visualizer.embed.modalTitle')}
       </Typography.Title>
     </Flex>

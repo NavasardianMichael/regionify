@@ -119,9 +119,15 @@ const EmbedPage: FC = () => {
         gap="small"
         className="min-h-60 w-full flex-1 p-4"
       >
-        <Typography.Text type="secondary" className="text-center">
+        <Typography.Text
+          type="secondary"
+          className="text-center"
+          data-i18n-key="visualizer.embed.embedErrorMessage"
+        >
           {t('visualizer.embed.embedErrorMessage')}
-          <AppNavLink to={ROUTES.CONTACT}>{t('visualizer.embed.embedErrorContactUs')}</AppNavLink>
+          <AppNavLink to={ROUTES.CONTACT} data-i18n-key="visualizer.embed.embedErrorContactUs">
+            {t('visualizer.embed.embedErrorContactUs')}
+          </AppNavLink>
         </Typography.Text>
       </Flex>
     );

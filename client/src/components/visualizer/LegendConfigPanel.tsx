@@ -320,7 +320,10 @@ const LegendConfigPanel: FC = () => {
               aria-label={sortLegendTooltip}
             />
           </Tooltip>
-          <Tooltip title={t('visualizer.legendConfig.expandEdit')}>
+          <Tooltip
+            title={t('visualizer.legendConfig.expandEdit')}
+            data-i18n-key="visualizer.legendConfig.expandEdit"
+          >
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -328,6 +331,7 @@ const LegendConfigPanel: FC = () => {
               onClick={handleOpenModal}
               className="text-gray-500"
               aria-label={t('visualizer.legendConfig.expandEditAria')}
+              data-i18n-key="visualizer.legendConfig.expandEditAria"
             />
           </Tooltip>
         </Flex>
@@ -335,16 +339,28 @@ const LegendConfigPanel: FC = () => {
 
       <div className={`grid ${GRID_COLS} gap-2 text-xs font-medium text-gray-500`}>
         <span />
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.name"
+        >
           {t('visualizer.legendColumns.name')}
         </Typography.Text>
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.min"
+        >
           {t('visualizer.legendColumns.min')}
         </Typography.Text>
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.max"
+        >
           {t('visualizer.legendColumns.max')}
         </Typography.Text>
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.color"
+        >
           {t('visualizer.legendColumns.color')}
         </Typography.Text>
         <span />
@@ -370,7 +386,10 @@ const LegendConfigPanel: FC = () => {
         ))}
       </Flex>
 
-      <Tooltip title={t('visualizer.legendConfig.addRange')}>
+      <Tooltip
+        title={t('visualizer.legendConfig.addRange')}
+        data-i18n-key="visualizer.legendConfig.addRange"
+      >
         <Button
           type="dashed"
           icon={<PlusOutlined />}
@@ -378,6 +397,7 @@ const LegendConfigPanel: FC = () => {
           onClick={handleAddLegendRange}
           className="w-full text-gray-500"
           aria-label={t('visualizer.legendConfig.addRangeAria')}
+          data-i18n-key="visualizer.legendConfig.addRangeAria"
         />
       </Tooltip>
     </Flex>
@@ -387,7 +407,10 @@ const LegendConfigPanel: FC = () => {
     <Flex vertical gap="small">
       <Flex align="center" gap={6}>
         <BgColorsOutlined className="text-gray-500" />
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendConfig.paletteSuggestions"
+        >
           {t('visualizer.legendConfig.paletteSuggestions')}
         </Typography.Text>
       </Flex>
@@ -402,6 +425,7 @@ const LegendConfigPanel: FC = () => {
                 <Tooltip
                   key={palette.id}
                   title={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
+                  data-i18n-key="visualizer.legendConfig.applyPalette"
                 >
                   <Button
                     type="default"
@@ -409,6 +433,7 @@ const LegendConfigPanel: FC = () => {
                     data-palette-id={palette.id}
                     onClick={handlePaletteSwatchClick}
                     aria-label={t('visualizer.legendConfig.applyPalette', { name: palette.name })}
+                    data-i18n-key="visualizer.legendConfig.applyPalette"
                   >
                     <Flex className="h-full w-full">
                       {palette.colors.map((color) => (
@@ -429,7 +454,10 @@ const LegendConfigPanel: FC = () => {
       <Flex align="center" justify="space-between" className="mt-4">
         <Flex align="center" gap={6}>
           <InfoCircleOutlined className="text-gray-400" />
-          <Typography.Text className="text-xs text-gray-500">
+          <Typography.Text
+            className="text-xs text-gray-500"
+            data-i18n-key="visualizer.legendStyles.noDataColor"
+          >
             {t('visualizer.legendStyles.noDataColor')}
           </Typography.Text>
         </Flex>
@@ -442,7 +470,10 @@ const LegendConfigPanel: FC = () => {
     {
       key: 'ranges',
       label: (
-        <Typography.Text className="font-semibold">
+        <Typography.Text
+          className="font-semibold"
+          data-i18n-key="visualizer.legendConfig.collapseRanges"
+        >
           {t('visualizer.legendConfig.collapseRanges')}
         </Typography.Text>
       ),
@@ -451,7 +482,10 @@ const LegendConfigPanel: FC = () => {
     {
       key: 'palettes',
       label: (
-        <Typography.Text className="font-semibold">
+        <Typography.Text
+          className="font-semibold"
+          data-i18n-key="visualizer.legendConfig.collapseTheme"
+        >
           {t('visualizer.legendConfig.collapseTheme')}
         </Typography.Text>
       ),
@@ -461,7 +495,10 @@ const LegendConfigPanel: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={BarChartOutlined}>
+      <SectionTitle
+        IconComponent={BarChartOutlined}
+        data-i18n-key="visualizer.legendConfig.sectionTitle"
+      >
         {t('visualizer.legendConfig.sectionTitle')}
       </SectionTitle>
       <Collapse items={collapseItems} defaultActiveKey={[]} ghost expandIconPlacement="end" />

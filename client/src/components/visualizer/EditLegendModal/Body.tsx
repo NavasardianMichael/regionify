@@ -56,7 +56,10 @@ export const Body: FC<BodyProps> = ({
             className="text-gray-500"
           />
         </Tooltip>
-        <Tooltip title={t('visualizer.legendModal.addRange')}>
+        <Tooltip
+          title={t('visualizer.legendModal.addRange')}
+          data-i18n-key="visualizer.legendModal.addRange"
+        >
           <Button
             type="text"
             icon={<PlusOutlined />}
@@ -69,16 +72,28 @@ export const Body: FC<BodyProps> = ({
 
       <div className={`grid ${gridCols} gap-2 text-xs font-medium text-gray-500`}>
         <span />
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.name"
+        >
           {t('visualizer.legendColumns.name')}
         </Typography.Text>
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.minLong"
+        >
           {t('visualizer.legendColumns.minLong')}
         </Typography.Text>
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.maxLong"
+        >
           {t('visualizer.legendColumns.maxLong')}
         </Typography.Text>
-        <Typography.Text className="text-xs text-gray-500">
+        <Typography.Text
+          className="text-xs text-gray-500"
+          data-i18n-key="visualizer.legendColumns.color"
+        >
           {t('visualizer.legendColumns.color')}
         </Typography.Text>
         <span />
@@ -105,7 +120,10 @@ export const Body: FC<BodyProps> = ({
         ))}
       </Flex>
 
-      <Tooltip title={t('visualizer.legendModal.addRange')}>
+      <Tooltip
+        title={t('visualizer.legendModal.addRange')}
+        data-i18n-key="visualizer.legendModal.addRange"
+      >
         <Button type="dashed" icon={<PlusOutlined />} onClick={onAddRange} className="w-full" />
       </Tooltip>
     </Flex>

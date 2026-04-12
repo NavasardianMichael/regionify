@@ -388,19 +388,30 @@ export const ImportDataPanel: FC = () => {
               };
               return (
                 <Flex vertical gap="small" align="flex-start" className="w-max">
-                  <Typography.Text className="text-sm text-balance" style={{ color: onTooltip }}>
+                  <Typography.Text
+                    className="text-sm text-balance"
+                    style={{ color: onTooltip }}
+                    data-i18n-key="visualizer.importData.aiParserChronographerTooltip"
+                  >
                     {t('visualizer.importData.aiParserChronographerTooltip', {
                       planName: t('plans.items.chronographer.name'),
                     })}
                   </Typography.Text>
-                  <NavLink to={ROUTES.BILLING} className="text-sm text-white" style={linkStyle}>
+                  <NavLink
+                    to={ROUTES.BILLING}
+                    className="text-sm text-white"
+                    style={linkStyle}
+                    data-i18n-key="visualizer.embed.upgradePlansLink"
+                  >
                     {t('visualizer.embed.upgradePlansLink')}
                   </NavLink>
                 </Flex>
               );
             })()}
           >
-            <span>{t('visualizer.importData.format.aiParser')}</span>
+            <span data-i18n-key="visualizer.importData.format.aiParser">
+              {t('visualizer.importData.format.aiParser')}
+            </span>
           </Tooltip>
         ),
     };
@@ -826,6 +837,7 @@ export const ImportDataPanel: FC = () => {
             icon={<EditOutlined />}
             onClick={() => setIsManualModalOpen(true)}
             disabled={!selectedCountryId}
+            data-i18n-key="visualizer.importData.editManuallyInTable"
           >
             {t('visualizer.importData.editManuallyInTable')}
           </Button>
@@ -838,6 +850,7 @@ export const ImportDataPanel: FC = () => {
             icon={<EditOutlined />}
             onClick={() => setIsTabDelimitedModalOpen(true)}
             disabled={!selectedCountryId}
+            data-i18n-key="visualizer.importData.editManuallyInText"
           >
             {t('visualizer.importData.editManuallyInText')}
           </Button>
@@ -850,6 +863,7 @@ export const ImportDataPanel: FC = () => {
             icon={<ExperimentOutlined />}
             onClick={() => setIsAiParserModalOpen(true)}
             disabled={!selectedCountryId}
+            data-i18n-key="visualizer.aiParserModal.submit"
           >
             {t('visualizer.aiParserModal.submit')}
           </Button>
@@ -859,13 +873,19 @@ export const ImportDataPanel: FC = () => {
         <Flex vertical gap="small" className="min-w-0">
           {googleUrl ? (
             <>
-              <Typography.Text type="secondary" className="text-xs text-gray-600">
+              <Typography.Text
+                type="secondary"
+                className="text-xs text-gray-600"
+                data-i18n-key="visualizer.importData.sheetsSyncDescription"
+              >
                 {t('visualizer.importData.sheetsSyncDescription')}
               </Typography.Text>
               {isGoogleSheetSyncLoading ? (
                 <Flex align="center" gap="small" className="text-xs text-gray-500">
                   <LoadingOutlined aria-hidden />
-                  <span>{t('visualizer.importData.sheetsSyncLoading')}</span>
+                  <span data-i18n-key="visualizer.importData.sheetsSyncLoading">
+                    {t('visualizer.importData.sheetsSyncLoading')}
+                  </span>
                 </Flex>
               ) : null}
               <Flex align="center" gap="small" className="w-full max-w-full min-w-0">
@@ -875,7 +895,10 @@ export const ImportDataPanel: FC = () => {
                 >
                   {googleUrl}
                 </span>
-                <Tooltip title={t('visualizer.importData.sheetsCopyUrlTooltip')}>
+                <Tooltip
+                  title={t('visualizer.importData.sheetsCopyUrlTooltip')}
+                  data-i18n-key="visualizer.importData.sheetsCopyUrlTooltip"
+                >
                   <Button
                     type="text"
                     size="small"
@@ -883,11 +906,16 @@ export const ImportDataPanel: FC = () => {
                     onClick={() => void handleCopyGoogleSheetUrl()}
                     aria-label={t('visualizer.importData.sheetsCopyUrlTooltip')}
                     className="shrink-0 text-gray-500"
+                    data-i18n-key="visualizer.importData.sheetsCopyUrlTooltip"
                   />
                 </Tooltip>
               </Flex>
               {googleGid ? (
-                <Typography.Text type="secondary" className="text-xs">
+                <Typography.Text
+                  type="secondary"
+                  className="text-xs"
+                  data-i18n-key="visualizer.importData.sheetsTabId"
+                >
                   {t('visualizer.importData.sheetsTabId', { gid: googleGid })}
                 </Typography.Text>
               ) : null}
@@ -908,7 +936,11 @@ export const ImportDataPanel: FC = () => {
       ),
       csv: (
         <Upload accept=".csv" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
-          <Button type="primary" icon={<CloudUploadOutlined />}>
+          <Button
+            type="primary"
+            icon={<CloudUploadOutlined />}
+            data-i18n-key="visualizer.importData.uploadCsv"
+          >
             {t('visualizer.importData.uploadCsv')}
           </Button>
         </Upload>
@@ -920,14 +952,24 @@ export const ImportDataPanel: FC = () => {
           showUploadList={false}
           maxCount={1}
         >
-          <Button type="primary" icon={<CloudUploadOutlined />} block>
+          <Button
+            type="primary"
+            icon={<CloudUploadOutlined />}
+            block
+            data-i18n-key="visualizer.importData.uploadExcel"
+          >
             {t('visualizer.importData.uploadExcel')}
           </Button>
         </Upload>
       ),
       json: (
         <Upload accept=".json" customRequest={handleFileUpload} showUploadList={false} maxCount={1}>
-          <Button type="primary" icon={<CloudUploadOutlined />} block>
+          <Button
+            type="primary"
+            icon={<CloudUploadOutlined />}
+            block
+            data-i18n-key="visualizer.importData.uploadJson"
+          >
             {t('visualizer.importData.uploadJson')}
           </Button>
         </Upload>
@@ -947,7 +989,10 @@ export const ImportDataPanel: FC = () => {
   return (
     <Flex vertical gap="middle">
       <Flex align="center" justify="space-between">
-        <SectionTitle IconComponent={FileExcelOutlined}>
+        <SectionTitle
+          IconComponent={FileExcelOutlined}
+          data-i18n-key="visualizer.importData.sectionTitle"
+        >
           {t('visualizer.importData.sectionTitle')}
         </SectionTitle>
         <Flex gap={4} align="center">
@@ -967,6 +1012,7 @@ export const ImportDataPanel: FC = () => {
               disabled={data.allIds.length === 0 || isDownloading}
               loading={isDownloading}
               aria-label={t('visualizer.importData.downloadAria')}
+              data-i18n-key="visualizer.importData.downloadAria"
             />
           </Tooltip>
 
@@ -986,6 +1032,7 @@ export const ImportDataPanel: FC = () => {
                 className="text-gray-500"
                 disabled={!selectedCountryId}
                 aria-label={t('visualizer.importData.manualAria')}
+                data-i18n-key="visualizer.importData.manualAria"
               />
             </span>
           </Tooltip>
@@ -1030,13 +1077,17 @@ export const ImportDataPanel: FC = () => {
           orientation="vertical"
           className="w-full min-w-0 [&_.ant-radio-wrapper]:mr-0! [&_.ant-radio-wrapper]:max-w-full [&_.ant-radio-wrapper]:items-start [&_.ant-radio-wrapper]:leading-snug [&_.ant-radio-wrapper]:whitespace-normal"
           aria-label={t('visualizer.importData.segmentedAria')}
+          data-i18n-key="visualizer.importData.segmentedAria"
         />
       </Flex>
 
       {importActionComponents[importDataType]}
 
       <Flex vertical gap="small" className="p-sm! min-w-0 rounded-md bg-gray-50">
-        <Typography.Text className="text-xs font-semibold text-gray-500">
+        <Typography.Text
+          className="text-xs font-semibold text-gray-500"
+          data-i18n-key="visualizer.importData.expectedFormat"
+        >
           {t('visualizer.importData.expectedFormat')}
         </Typography.Text>
         <ImportFormatExamples
@@ -1052,6 +1103,7 @@ export const ImportDataPanel: FC = () => {
             title={
               !selectedCountryId ? t('visualizer.importData.downloadTooltipNoCountry') : undefined
             }
+            data-i18n-key="visualizer.importData.downloadTooltipNoCountry"
           >
             <span>
               <Button

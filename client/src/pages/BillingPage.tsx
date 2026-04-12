@@ -44,10 +44,17 @@ const BillingPage: FC = () => {
   return (
     <div className="m-auto w-full max-w-5xl shrink-0">
       <header className="mb-8 flex flex-col items-center gap-2 text-center">
-        <Typography.Title level={1} className="text-primary mb-0! w-full text-3xl font-bold">
+        <Typography.Title
+          level={1}
+          className="text-primary mb-0! w-full text-3xl font-bold"
+          data-i18n-key="plans.title"
+        >
           {t('plans.title')}
         </Typography.Title>
-        <Typography.Paragraph className="mb-0! w-full max-w-3xl text-center text-gray-500">
+        <Typography.Paragraph
+          className="mb-0! w-full max-w-3xl text-center text-gray-500"
+          data-i18n-key="plans.subtitle"
+        >
           {t('plans.subtitle')}
         </Typography.Paragraph>
       </header>
@@ -68,15 +75,21 @@ const BillingPage: FC = () => {
       <Typography.Text
         type="secondary"
         className="relative z-10 mt-10 block w-full px-1 text-center text-sm lg:text-base"
+        data-i18n-key="plans.paymentNote"
       >
         {t('plans.paymentNote')}
       </Typography.Text>
       <Typography.Text
         type="secondary"
         className="relative z-10 block w-full px-1 text-center text-sm lg:text-base"
+        data-i18n-key="plans.paymentIssueNote"
       >
         {t('plans.paymentIssueNote')}{' '}
-        <AppNavLink className="font-semibold underline!" to={ROUTES.CONTACT}>
+        <AppNavLink
+          className="font-semibold underline!"
+          to={ROUTES.CONTACT}
+          data-i18n-key="plans.paymentContactUs"
+        >
           {t('plans.paymentContactUs')}
         </AppNavLink>
         .

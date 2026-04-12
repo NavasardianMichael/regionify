@@ -72,7 +72,10 @@ export const Step: FC<Props> = ({ crop }) => {
       ) : null}
 
       <Flex vertical gap="small">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.exportModal.aspectRatioLabel"
+        >
           {t('visualizer.exportModal.aspectRatioLabel')}
         </Typography.Text>
         <Segmented
@@ -85,12 +88,18 @@ export const Step: FC<Props> = ({ crop }) => {
       </Flex>
 
       <Flex vertical gap="small" className="mb-md!">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.exportModal.resolutionLabel"
+        >
           {t('visualizer.exportModal.resolutionLabel')}
         </Typography.Text>
         <Flex gap="small" align="center">
           <Flex align="center" gap="small">
-            <Typography.Text className="text-xs text-gray-500">
+            <Typography.Text
+              className="text-xs text-gray-500"
+              data-i18n-key="visualizer.exportModal.width"
+            >
               {t('visualizer.exportModal.width')}
             </Typography.Text>
             <InputNumber
@@ -103,7 +112,10 @@ export const Step: FC<Props> = ({ crop }) => {
           </Flex>
           <Typography.Text className="text-xs text-gray-400">×</Typography.Text>
           <Flex align="center" gap="small">
-            <Typography.Text className="text-xs text-gray-500">
+            <Typography.Text
+              className="text-xs text-gray-500"
+              data-i18n-key="visualizer.exportModal.height"
+            >
               {t('visualizer.exportModal.height')}
             </Typography.Text>
             <InputNumber

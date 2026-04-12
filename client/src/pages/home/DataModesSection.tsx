@@ -1,32 +1,10 @@
 import type { FC } from 'react';
 import { CameraOutlined, HistoryOutlined } from '@ant-design/icons';
-import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import { Flex, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
-type DataModeCard = {
-  Icon: React.ForwardRefExoticComponent<
-    Omit<AntdIconProps, 'ref'> & React.RefAttributes<HTMLSpanElement>
-  >;
-  title: string;
-  description: string;
-};
-
 export const DataModesSection: FC = () => {
   const { t } = useTypedTranslation();
-
-  const modes: DataModeCard[] = [
-    {
-      Icon: CameraOutlined,
-      title: t('home.dataModesStaticTitle'),
-      description: t('home.dataModesStaticDesc'),
-    },
-    {
-      Icon: HistoryOutlined,
-      title: t('home.dataModesTimeSeriesTitle'),
-      description: t('home.dataModesTimeSeriesDesc'),
-    },
-  ];
 
   return (
     <section className="bg-white px-6 py-16 md:py-20">
@@ -36,25 +14,50 @@ export const DataModesSection: FC = () => {
             <Typography.Title
               level={2}
               className="text-primary mb-0! text-2xl font-bold md:text-3xl"
+              data-i18n-key="home.dataModesTitle"
             >
               {t('home.dataModesTitle')}
             </Typography.Title>
-            <Typography.Paragraph className="mb-0! text-gray-500">
+            <Typography.Paragraph
+              className="mb-0! text-gray-500"
+              data-i18n-key="home.dataModesSubtitle"
+            >
               {t('home.dataModesSubtitle')}
             </Typography.Paragraph>
           </Flex>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-            {modes.map(({ Icon, title, description }) => (
-              <Flex key={title} vertical gap="small" className="p-6">
-                <Icon className="text-primary text-3xl" />
-                <Typography.Title level={3} className="mb-0! text-lg! font-semibold">
-                  {title}
-                </Typography.Title>
-                <Typography.Paragraph className="mb-0! text-gray-500">
-                  {description}
-                </Typography.Paragraph>
-              </Flex>
-            ))}
+            <Flex key="static" vertical gap="small" className="p-6">
+              <CameraOutlined className="text-primary text-3xl" />
+              <Typography.Title
+                level={3}
+                className="mb-0! text-lg! font-semibold"
+                data-i18n-key="home.dataModesStaticTitle"
+              >
+                {t('home.dataModesStaticTitle')}
+              </Typography.Title>
+              <Typography.Paragraph
+                className="mb-0! text-gray-500"
+                data-i18n-key="home.dataModesStaticDesc"
+              >
+                {t('home.dataModesStaticDesc')}
+              </Typography.Paragraph>
+            </Flex>
+            <Flex key="timeSeries" vertical gap="small" className="p-6">
+              <HistoryOutlined className="text-primary text-3xl" />
+              <Typography.Title
+                level={3}
+                className="mb-0! text-lg! font-semibold"
+                data-i18n-key="home.dataModesTimeSeriesTitle"
+              >
+                {t('home.dataModesTimeSeriesTitle')}
+              </Typography.Title>
+              <Typography.Paragraph
+                className="mb-0! text-gray-500"
+                data-i18n-key="home.dataModesTimeSeriesDesc"
+              >
+                {t('home.dataModesTimeSeriesDesc')}
+              </Typography.Paragraph>
+            </Flex>
           </div>
         </Flex>
       </div>

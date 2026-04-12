@@ -39,14 +39,22 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
       {isObserver && (
         <Typography.Text type="secondary" className="mb-2 text-[13px]">
           {t('visualizer.mapStyles.freePlanNoteBeforeUpgrade')}
-          <AppNavLink to={ROUTES.BILLING} className="text-[13px] font-medium">
+          <AppNavLink
+            to={ROUTES.BILLING}
+            className="text-[13px] font-medium"
+            data-i18n-key="visualizer.mapStyles.freePlanUpgradeLink"
+          >
             {t('visualizer.mapStyles.freePlanUpgradeLink')}
           </AppNavLink>
           {t('visualizer.mapStyles.freePlanNoteAfterUpgrade')}
         </Typography.Text>
       )}
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="transparent-bg-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="transparent-bg-label"
+          data-i18n-key="visualizer.mapStyles.transparent"
+        >
           {t('visualizer.mapStyles.transparent')}
         </Typography.Text>
         <Switch
@@ -58,7 +66,10 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.mapStyles.color"
+        >
           {t('visualizer.mapStyles.color')}
         </Typography.Text>
         <ColorPicker
@@ -69,7 +80,11 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="show-watermark-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="show-watermark-label"
+          data-i18n-key="visualizer.mapStyles.showWatermark"
+        >
           {t('visualizer.mapStyles.showWatermark')}
         </Typography.Text>
         <Switch

@@ -59,6 +59,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
       type="button"
       ref={containerRef}
       aria-label={ariaLabel}
+      data-i18n-key="visualizer.mapAriaMapOf"
       className="absolute inset-0 flex cursor-move items-center justify-center border-none bg-transparent p-0"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}

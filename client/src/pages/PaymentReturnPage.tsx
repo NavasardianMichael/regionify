@@ -82,7 +82,11 @@ const PaymentReturnPage: FC = () => {
     return (
       <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
         <Typography.Text type="danger">{messageText}</Typography.Text>
-        <Button type="primary" onClick={() => navigate(ROUTES.BILLING)}>
+        <Button
+          type="primary"
+          onClick={() => navigate(ROUTES.BILLING)}
+          data-i18n-key="plans.backToPlans"
+        >
           {t('plans.backToPlans')}
         </Button>
       </Flex>
@@ -98,7 +102,11 @@ const PaymentReturnPage: FC = () => {
         Continue to My Projects
       </Button>
       {!upgradedPlan && (
-        <Button type="link" onClick={() => navigate(ROUTES.BILLING)}>
+        <Button
+          type="link"
+          onClick={() => navigate(ROUTES.BILLING)}
+          data-i18n-key="plans.goToPlans"
+        >
           {t('plans.goToPlans')}
         </Button>
       )}

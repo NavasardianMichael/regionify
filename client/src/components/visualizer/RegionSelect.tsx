@@ -70,7 +70,7 @@ export const RegionSelect: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={GlobalOutlined}>
+      <SectionTitle IconComponent={GlobalOutlined} data-i18n-key="visualizer.region.sectionTitle">
         {t('visualizer.region.sectionTitle')}
       </SectionTitle>
       <Select

@@ -14,7 +14,11 @@ const PaymentCancelPage: FC = () => {
       <Typography.Text type="secondary">
         You cancelled the payment. No charges were made.
       </Typography.Text>
-      <Button type="primary" onClick={() => navigate(ROUTES.BILLING)}>
+      <Button
+        type="primary"
+        onClick={() => navigate(ROUTES.BILLING)}
+        data-i18n-key="plans.backToPlans"
+      >
         {t('plans.backToPlans')}
       </Button>
     </Flex>

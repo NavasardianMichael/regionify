@@ -30,10 +30,11 @@ export const PlansSection: FC = () => {
             <Typography.Title
               level={2}
               className="text-primary mb-0! text-2xl font-bold md:text-3xl"
+              data-i18n-key="plans.title"
             >
               {t('plans.title')}
             </Typography.Title>
-            <Typography.Paragraph className="mb-0! text-gray-500">
+            <Typography.Paragraph className="mb-0! text-gray-500" data-i18n-key="plans.subtitle">
               {t('plans.subtitle')}
             </Typography.Paragraph>
           </Flex>

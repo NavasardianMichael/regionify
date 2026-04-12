@@ -104,13 +104,20 @@ const AccountPage: FC = () => {
       placement="end"
       rootClassName="mx-auto w-full max-w-144 overflow-visible"
       className="top-3! font-medium"
+      data-i18n-key="plans.items.observer.name"
     >
       <Card className="w-full overflow-visible bg-white! shadow-sm!">
         <header className="mb-8 text-center">
-          <Typography.Title level={1} className="text-primary mb-1! text-2xl font-semibold">
+          <Typography.Title
+            level={1}
+            className="text-primary mb-1! text-2xl font-semibold"
+            data-i18n-key="account.title"
+          >
             {t('account.title')}
           </Typography.Title>
-          <Typography.Text className="text-gray-500">{t('account.subtitle')}</Typography.Text>
+          <Typography.Text className="text-gray-500" data-i18n-key="account.subtitle">
+            {t('account.subtitle')}
+          </Typography.Text>
         </header>
 
         <Form
@@ -125,7 +132,7 @@ const AccountPage: FC = () => {
               name="name"
               className="mb-0!"
               label={
-                <Typography.Text className="font-medium text-gray-700">
+                <Typography.Text className="font-medium text-gray-700" data-i18n-key="account.name">
                   {t('account.name')}
                 </Typography.Text>
               }
@@ -145,14 +152,21 @@ const AccountPage: FC = () => {
                 },
               ]}
             >
-              <Input placeholder={t('account.name')} className="rounded-lg" />
+              <Input
+                placeholder={t('account.name')}
+                className="rounded-lg"
+                data-i18n-key="account.name"
+              />
             </Form.Item>
 
             <Flex vertical gap="small" className="w-full">
               <Form.Item
                 className="mb-0!"
                 label={
-                  <Typography.Text className="font-medium text-gray-700">
+                  <Typography.Text
+                    className="font-medium text-gray-700"
+                    data-i18n-key="account.email"
+                  >
                     {t('account.email')}
                   </Typography.Text>
                 }
@@ -163,7 +177,10 @@ const AccountPage: FC = () => {
                   className="rounded-lg bg-gray-50 text-gray-600"
                 />
               </Form.Item>
-              <Typography.Text className="block text-[12px]! text-gray-400">
+              <Typography.Text
+                className="block text-[12px]! text-gray-400"
+                data-i18n-key="account.emailNote"
+              >
                 {t('account.emailNote')}
               </Typography.Text>
             </Flex>
@@ -175,6 +192,7 @@ const AccountPage: FC = () => {
                 loading={profileLoading}
                 disabled={!isProfileDirty}
                 className="w-full rounded-lg font-medium"
+                data-i18n-key="account.saveProfile"
               >
                 {t('account.saveProfile')}
               </Button>
@@ -186,10 +204,17 @@ const AccountPage: FC = () => {
 
         <Flex vertical gap="middle" className="w-full">
           <Flex vertical gap="small" className="w-full">
-            <Typography.Title level={5} className="text-primary mb-0! text-sm font-semibold">
+            <Typography.Title
+              level={5}
+              className="text-primary mb-0! text-sm font-semibold"
+              data-i18n-key="nav.deleteAccount"
+            >
               {t('nav.deleteAccount')}
             </Typography.Title>
-            <Typography.Text className="block text-sm text-gray-500">
+            <Typography.Text
+              className="block text-sm text-gray-500"
+              data-i18n-key="deleteAccountModal.content"
+            >
               {t('deleteAccountModal.content')}
             </Typography.Text>
           </Flex>
@@ -198,6 +223,7 @@ const AccountPage: FC = () => {
             danger
             onClick={handleDeleteAccount}
             className="w-full rounded-lg font-medium"
+            data-i18n-key="nav.deleteAccount"
           >
             {t('nav.deleteAccount')}
           </Button>

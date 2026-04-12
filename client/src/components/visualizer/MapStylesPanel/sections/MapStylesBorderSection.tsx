@@ -29,7 +29,11 @@ export const MapStylesBorderSection: FC<BorderSectionProps> = ({
   return (
     <Flex vertical gap="small">
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="show-border-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="show-border-label"
+          data-i18n-key="visualizer.mapStyles.showBorder"
+        >
           {t('visualizer.mapStyles.showBorder')}
         </Typography.Text>
         <Switch
@@ -40,7 +44,10 @@ export const MapStylesBorderSection: FC<BorderSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.mapStyles.color"
+        >
           {t('visualizer.mapStyles.color')}
         </Typography.Text>
         <ColorPicker
@@ -51,7 +58,11 @@ export const MapStylesBorderSection: FC<BorderSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="border-width-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="border-width-label"
+          data-i18n-key="visualizer.mapStyles.width"
+        >
           {t('visualizer.mapStyles.width')}
         </Typography.Text>
         <Flex align="center" gap="small" className="w-1/2">

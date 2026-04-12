@@ -79,20 +79,28 @@ const ProjectCardMetaDescription = memo<ProjectCardMetaDescriptionProps>(
     <Flex vertical gap={4} className="min-w-0">
       <Flex align="center" gap="small" className="min-w-0">
         <GlobalOutlined className="shrink-0 text-xs text-gray-400" aria-hidden />
-        <Typography.Text type="secondary" className="truncate text-xs">
+        <Typography.Text
+          type="secondary"
+          className="truncate text-xs"
+          data-i18n-key="projects.cardNoCountry"
+        >
           {countryLabel}
         </Typography.Text>
       </Flex>
       <Flex align="center" gap="small" className="min-w-0">
         <InsertRowAboveOutlined className="shrink-0 text-xs text-gray-400" aria-hidden />
-        <Typography.Text type="secondary" className="truncate text-xs">
+        <Typography.Text
+          type="secondary"
+          className="truncate text-xs"
+          data-i18n-key="projects.dataSource"
+        >
           {dataSourceLine}
         </Typography.Text>
       </Flex>
-      <Typography.Text type="secondary" className="text-xs">
+      <Typography.Text type="secondary" className="text-xs" data-i18n-key="projects.cardCreated">
         {createdLine}
       </Typography.Text>
-      <Typography.Text type="secondary" className="text-xs">
+      <Typography.Text type="secondary" className="text-xs" data-i18n-key="projects.cardUpdated">
         {updatedLine}
       </Typography.Text>
     </Flex>
@@ -229,12 +237,14 @@ const ProjectCard = memo<ProjectCardProps>(
           onClick={handleRenameClick}
           label={t('common.rename')}
           disabled={isOpening}
+          data-i18n-key="common.rename"
         />,
         <ProjectCardDeleteButton
           key="delete"
           onClick={handleDeleteClick}
           label={t('common.delete')}
           disabled={isOpening}
+          data-i18n-key="common.delete"
         />,
       ],
       [handleRenameClick, handleDeleteClick, isOpening, t],
@@ -254,6 +264,7 @@ const ProjectCard = memo<ProjectCardProps>(
               <ProjectCardCover
                 mapThumbnailUrl={mapThumbnailUrl}
                 thumbnailAlt={t('projects.cardRegionThumbnailAlt')}
+                data-i18n-key="projects.cardRegionThumbnailAlt"
               />
             ) : undefined
           }

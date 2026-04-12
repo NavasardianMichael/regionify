@@ -32,7 +32,10 @@ export const DeleteProjectModal: FC<Props> = ({
       centered
       maskClosable={false}
     >
-      <Body content={t('messages.deleteProjectContent', { name: project?.name ?? '' })} />
+      <Body
+        content={t('messages.deleteProjectContent', { name: project?.name ?? '' })}
+        data-i18n-key="messages.deleteProjectContent"
+      />
     </AntModal>
   );
 };

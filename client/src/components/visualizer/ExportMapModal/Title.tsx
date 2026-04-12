@@ -20,9 +20,19 @@ export const Title: FC<TitleProps> = ({ variant }) => {
       ) : (
         <DownloadOutlined className="text-primary" />
       )}
-      <Typography.Title level={4} className="mb-0!">
-        {isCrop ? t('visualizer.exportModal.cropAndDownload') : t('visualizer.exportModal.title')}
-      </Typography.Title>
+      {isCrop ? (
+        <Typography.Title
+          level={4}
+          className="mb-0!"
+          data-i18n-key="visualizer.exportModal.cropAndDownload"
+        >
+          {t('visualizer.exportModal.cropAndDownload')}
+        </Typography.Title>
+      ) : (
+        <Typography.Title level={4} className="mb-0!" data-i18n-key="visualizer.exportModal.title">
+          {t('visualizer.exportModal.title')}
+        </Typography.Title>
+      )}
     </Flex>
   );
 };

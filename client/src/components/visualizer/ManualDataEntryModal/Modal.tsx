@@ -162,6 +162,7 @@ export const ManualDataEntryModal: FC<Props> = ({
         locale={{
           filterReset: t('visualizer.manualEntry.filterReset'),
         }}
+        data-i18n-key="visualizer.manualEntry.filterReset"
       />
     ),
     [
@@ -199,6 +200,7 @@ export const ManualDataEntryModal: FC<Props> = ({
       className={`${bodyScrollbarStyles.bodyScrollbar} ${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
       destroyOnHidden
       focusable={{ trap: false }}
+      data-i18n-key="visualizer.manualEntry.title"
     >
       <ConfigProvider theme={tableTheme}>
         <Body

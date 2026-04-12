@@ -27,7 +27,11 @@ export const EmbedIframeCode: FC<Props> = ({
 
     if (!iframeSnippet) {
       return (
-        <Typography.Text type="secondary" className="text-sm">
+        <Typography.Text
+          type="secondary"
+          className="text-sm"
+          data-i18n-key="visualizer.embed.saveToGenerateLink"
+        >
           {t('visualizer.embed.saveToGenerateLink')}
         </Typography.Text>
       );
@@ -51,6 +55,7 @@ export const EmbedIframeCode: FC<Props> = ({
           disabled={submitting || !iframeSnippet}
           className="w-fit"
           onClick={onCopyEmbed}
+          data-i18n-key="visualizer.embed.copyEmbed"
         >
           {copyLabelEmbed}
         </Button>

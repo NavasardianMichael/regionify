@@ -59,7 +59,10 @@ export const Form: FC<FormProps> = (props) => {
     <Flex vertical gap="middle" className="py-md min-w-0 px-1">
       <Flex vertical gap="small">
         <Flex align="center" gap="small">
-          <Typography.Text className="text-sm text-gray-600">
+          <Typography.Text
+            className="text-sm text-gray-600"
+            data-i18n-key="visualizer.exportModal.exportTypeLabel"
+          >
             {t('visualizer.exportModal.exportTypeLabel')}
           </Typography.Text>
           {exportTypeInfoTooltip && (
@@ -78,7 +81,11 @@ export const Form: FC<FormProps> = (props) => {
           disabled={isExporting}
         />
         {allowedFormats.length === 1 && (
-          <Typography.Text type="secondary" className="text-xs">
+          <Typography.Text
+            type="secondary"
+            className="text-xs"
+            data-i18n-key="visualizer.exportModal.singleFormatHintAfterLink"
+          >
             <AppNavLink to={ROUTES.BILLING} className="text-primary! font-semibold">
               {explorerUpgradeLabel}
             </AppNavLink>
@@ -91,7 +98,10 @@ export const Form: FC<FormProps> = (props) => {
         <Flex vertical gap="small" className="min-w-0">
           <Flex align="center" justify="space-between" gap="small" className="min-w-0">
             <Flex align="center" gap="small" className="min-w-0 flex-1">
-              <Typography.Text className="min-w-0 truncate text-sm text-gray-600">
+              <Typography.Text
+                className="min-w-0 truncate text-sm text-gray-600"
+                data-i18n-key="visualizer.exportModal.qualityLabel"
+              >
                 {t('visualizer.exportModal.qualityLabel')}
               </Typography.Text>
               {limits.pictureQualityLimit && (
@@ -132,7 +142,10 @@ export const Form: FC<FormProps> = (props) => {
       {isAnimationFormat && hasTimelineData && (
         <Flex vertical gap="small">
           <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">
+            <Typography.Text
+              className="text-sm text-gray-600"
+              data-i18n-key="visualizer.exportModal.secondsPerPeriod"
+            >
               {t('visualizer.exportModal.secondsPerPeriod')}
             </Typography.Text>
             <InputNumber
@@ -147,7 +160,10 @@ export const Form: FC<FormProps> = (props) => {
             />
           </Flex>
           <Flex align="center" justify="space-between">
-            <Typography.Text className="text-sm text-gray-600">
+            <Typography.Text
+              className="text-sm text-gray-600"
+              data-i18n-key="visualizer.exportModal.smoothTransitions"
+            >
               {t('visualizer.exportModal.smoothTransitions')}
             </Typography.Text>
             <Switch
@@ -157,7 +173,11 @@ export const Form: FC<FormProps> = (props) => {
               disabled={isExporting}
             />
           </Flex>
-          <Typography.Text type="secondary" className="text-xs">
+          <Typography.Text
+            type="secondary"
+            className="text-xs"
+            data-i18n-key="visualizer.exportModal.animationDuration"
+          >
             {t('visualizer.exportModal.animationDuration', {
               frames: getAnimationTotalFrames(timePeriods.length, {
                 secondsPerPeriod: resolvedSecondsPerPeriod,
@@ -179,7 +199,11 @@ export const Form: FC<FormProps> = (props) => {
       )}
 
       {isExporting && isSvgFormat && (
-        <Typography.Text type="secondary" className="block w-full text-center text-sm">
+        <Typography.Text
+          type="secondary"
+          className="block w-full text-center text-sm"
+          data-i18n-key="visualizer.exportModal.exportSvgBuilding"
+        >
           {t('visualizer.exportModal.exportSvgBuilding')}
         </Typography.Text>
       )}
@@ -201,6 +225,7 @@ export const Form: FC<FormProps> = (props) => {
           iconPlacement="end"
           onClick={handleNext}
           disabled={isExporting || !selectedCountryId || (isAnimationFormat && !hasTimelineData)}
+          data-i18n-key="visualizer.exportModal.nextCropAndDownload"
         >
           {t('visualizer.exportModal.nextCropAndDownload')}
         </Button>

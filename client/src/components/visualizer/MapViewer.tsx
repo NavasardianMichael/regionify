@@ -238,6 +238,7 @@ const MapViewer: FC<MapViewerProps> = ({
         placement="end"
         rootClassName={RIBBON_ROOT_CLASSNAME}
         className="top-2! font-medium"
+        data-i18n-key="plans.items.observer.name"
       >
         {mapExportRoot}
       </Badge.Ribbon>

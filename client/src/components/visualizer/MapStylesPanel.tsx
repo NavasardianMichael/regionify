@@ -142,7 +142,10 @@ const MapStylesPanel: FC = () => {
         key: 'background',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.mapStyles.collapseBackground"
+            >
               {t('visualizer.mapStyles.collapseBackground')}
             </Typography.Text>
           </Flex>
@@ -161,7 +164,10 @@ const MapStylesPanel: FC = () => {
         key: 'border',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.mapStyles.collapseBorder"
+            >
               {t('visualizer.mapStyles.collapseBorder')}
             </Typography.Text>
           </Flex>
@@ -179,7 +185,10 @@ const MapStylesPanel: FC = () => {
         key: 'shadow',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.mapStyles.collapseShadow"
+            >
               {t('visualizer.mapStyles.collapseShadow')}
             </Typography.Text>
           </Flex>
@@ -201,7 +210,10 @@ const MapStylesPanel: FC = () => {
         key: 'zoom',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.mapStyles.collapseControls"
+            >
               {t('visualizer.mapStyles.collapseControls')}
             </Typography.Text>
           </Flex>
@@ -217,7 +229,10 @@ const MapStylesPanel: FC = () => {
         key: 'labels',
         label: (
           <Flex align="center" gap="small">
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.mapStyles.collapseRegionLabels"
+            >
               {t('visualizer.mapStyles.collapseRegionLabels')}
             </Typography.Text>
           </Flex>
@@ -262,7 +277,10 @@ const MapStylesPanel: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={BgColorsOutlined}>
+      <SectionTitle
+        IconComponent={BgColorsOutlined}
+        data-i18n-key="visualizer.mapStyles.sectionTitle"
+      >
         {t('visualizer.mapStyles.sectionTitle')}
       </SectionTitle>
       <Collapse items={items} defaultActiveKey={[]} ghost expandIconPlacement="end" />

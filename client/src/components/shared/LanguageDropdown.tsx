@@ -96,6 +96,7 @@ export const LanguageDropdown: FC<Props> = ({ currentLocale, placement, classNam
         aria-label={t('nav.languageSelectAriaLabel')}
         aria-haspopup="menu"
         className={`flex! items-center gap-2 px-2! py-1! ${className}`}
+        data-i18n-key="nav.languageSelectAriaLabel"
       >
         <img
           src={FLAG_SRC[currentLocale]}

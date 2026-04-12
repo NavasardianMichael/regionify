@@ -17,12 +17,13 @@ export const Body: FC<BodyProps> = ({
   onPressEnter,
 }) => (
   <Flex vertical gap="small" className="py-sm">
-    <Typography.Text>{prompt}</Typography.Text>
+    <Typography.Text data-i18n-key="visualizer.saveModalPrompt">{prompt}</Typography.Text>
     <Input
       placeholder={placeholder}
       value={projectName}
       onChange={onProjectNameChange}
       onPressEnter={onPressEnter}
+      data-i18n-key="visualizer.saveModalPlaceholder"
     />
   </Flex>
 );

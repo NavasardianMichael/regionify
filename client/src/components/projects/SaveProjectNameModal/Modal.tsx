@@ -1,10 +1,10 @@
-import { type FC } from 'react';
+import { type FC, type ReactNode } from 'react';
 import { Modal as AntModal } from 'antd';
 import { Body } from './Body';
 
 type Props = {
   open: boolean;
-  title: string;
+  title: ReactNode;
   prompt: string;
   placeholder: string;
   okText: string;
@@ -28,12 +28,12 @@ export const SaveProjectNameModal: FC<Props> = ({
   onCancel,
 }) => (
   <AntModal
-    title={title}
+    title={<span data-i18n-key="visualizer.saveModalTitle">{title}</span>}
     open={open}
     onOk={onOk}
     onCancel={onCancel}
     okText={okText}
-    okButtonProps={{ disabled: okDisabled }}
+    okButtonProps={{ disabled: okDisabled, 'data-i18n-key': 'visualizer.saveModalCreate' }}
     centered
   >
     <Body

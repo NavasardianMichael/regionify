@@ -47,7 +47,10 @@ export const ShareSection: FC<Props> = ({
   return (
     <Flex vertical gap="middle" className="mt-6! min-w-0">
       <Flex vertical gap="small">
-        <Typography.Text className="text-sm font-medium text-neutral-900">
+        <Typography.Text
+          className="text-sm font-medium text-neutral-900"
+          data-i18n-key="visualizer.embed.publicPage"
+        >
           {t('visualizer.embed.publicPage')}
         </Typography.Text>
         <EmbedPublicUrl
@@ -61,7 +64,10 @@ export const ShareSection: FC<Props> = ({
         />
       </Flex>
       <Flex vertical gap="small" className="min-w-0">
-        <Typography.Text className="text-sm font-medium text-neutral-900">
+        <Typography.Text
+          className="text-sm font-medium text-neutral-900"
+          data-i18n-key="visualizer.embed.embedIframeCode"
+        >
           {t('visualizer.embed.embedIframeCode')}
         </Typography.Text>
         <EmbedIframeCode

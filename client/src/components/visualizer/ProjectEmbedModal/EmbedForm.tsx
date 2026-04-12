@@ -34,7 +34,11 @@ export const EmbedForm: FC<Props> = ({
 
   const tagSelectNoData = useMemo(
     () => (
-      <Typography.Text type="secondary" className="text-xs">
+      <Typography.Text
+        type="secondary"
+        className="text-xs"
+        data-i18n-key="visualizer.embed.tagSelectNoData"
+      >
         {t('visualizer.embed.tagSelectNoData')}
       </Typography.Text>
     ),
@@ -87,11 +91,18 @@ export const EmbedForm: FC<Props> = ({
   return (
     <Form form={form} layout="vertical" onFinish={onFinish} className="min-w-0">
       <Flex align="center" justify="space-between" gap="middle" wrap="wrap" className="mb-6">
-        <Typography.Paragraph type="secondary" className="mb-0! flex-1 text-xs">
+        <Typography.Paragraph
+          type="secondary"
+          className="mb-0! flex-1 text-xs"
+          data-i18n-key="visualizer.embed.intro"
+        >
           {t('visualizer.embed.intro')}
         </Typography.Paragraph>
         <Flex align="center" gap="small" className="shrink-0">
-          <Typography.Text className="text-xs whitespace-nowrap">
+          <Typography.Text
+            className="text-xs whitespace-nowrap"
+            data-i18n-key="visualizer.embed.publicToggle"
+          >
             {t('visualizer.embed.publicToggle')}
           </Typography.Text>
           <Form.Item name="enabled" valuePropName="checked" className="mb-0!">
@@ -105,6 +116,7 @@ export const EmbedForm: FC<Props> = ({
         label={t('visualizer.embed.seoTitle')}
         dependencies={['enabled']}
         rules={seoTitleRules}
+        data-i18n-key="visualizer.embed.seoTitle"
       >
         <Input
           maxLength={SEO_TITLE_MAX}
@@ -119,6 +131,7 @@ export const EmbedForm: FC<Props> = ({
         label={t('visualizer.embed.seoDescription')}
         dependencies={['enabled']}
         rules={seoDescriptionRules}
+        data-i18n-key="visualizer.embed.seoDescription"
       >
         <Input.TextArea
           rows={3}
@@ -134,11 +147,16 @@ export const EmbedForm: FC<Props> = ({
         name="keywords"
         label={t('visualizer.embed.seoKeywords')}
         extra={
-          <Typography.Text type="secondary" className="text-[11px]! leading-snug">
+          <Typography.Text
+            type="secondary"
+            className="text-[11px]! leading-snug"
+            data-i18n-key="visualizer.embed.keywordsHint"
+          >
             {t('visualizer.embed.keywordsHint')}
           </Typography.Text>
         }
         className="mb-0!"
+        data-i18n-key="visualizer.embed.seoKeywords"
       >
         <Select
           mode="tags"
@@ -149,6 +167,7 @@ export const EmbedForm: FC<Props> = ({
           className="w-full"
           notFoundContent={tagSelectNoData}
           onChange={handleKeywordsChange}
+          data-i18n-key="visualizer.embed.keywordPlaceholder"
         />
       </Form.Item>
     </Form>

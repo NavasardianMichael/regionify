@@ -38,7 +38,11 @@ export const MapStylesShadowSection: FC<ShadowSectionProps> = ({
   return (
     <Flex vertical gap="small">
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="show-shadow-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="show-shadow-label"
+          data-i18n-key="visualizer.mapStyles.showShadow"
+        >
           {t('visualizer.mapStyles.showShadow')}
         </Typography.Text>
         <Switch
@@ -49,7 +53,10 @@ export const MapStylesShadowSection: FC<ShadowSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.mapStyles.color"
+        >
           {t('visualizer.mapStyles.color')}
         </Typography.Text>
         <ColorPicker
@@ -60,7 +67,11 @@ export const MapStylesShadowSection: FC<ShadowSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="shadow-blur-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="shadow-blur-label"
+          data-i18n-key="visualizer.mapStyles.blur"
+        >
           {t('visualizer.mapStyles.blur')}
         </Typography.Text>
         <Flex align="center" gap="small" className="w-1/2">
@@ -79,7 +90,10 @@ export const MapStylesShadowSection: FC<ShadowSectionProps> = ({
         </Flex>
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.mapStyles.offsetX"
+        >
           {t('visualizer.mapStyles.offsetX')}
         </Typography.Text>
         <InputNumber
@@ -91,7 +105,10 @@ export const MapStylesShadowSection: FC<ShadowSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.mapStyles.offsetY"
+        >
           {t('visualizer.mapStyles.offsetY')}
         </Typography.Text>
         <InputNumber

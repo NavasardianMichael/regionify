@@ -116,7 +116,10 @@ const LegendStylesPanel: FC = () => {
         label: (
           <Flex align="center" gap="small">
             <BgColorsOutlined className="text-gray-500" />
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.mapStyles.collapseBackground"
+            >
               {t('visualizer.mapStyles.collapseBackground')}
             </Typography.Text>
           </Flex>
@@ -124,7 +127,11 @@ const LegendStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600" id="legend-transparent-bg-label">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                id="legend-transparent-bg-label"
+                data-i18n-key="visualizer.mapStyles.transparent"
+              >
                 {t('visualizer.mapStyles.transparent')}
               </Typography.Text>
               <Switch
@@ -135,7 +142,10 @@ const LegendStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                data-i18n-key="visualizer.mapStyles.color"
+              >
                 {t('visualizer.mapStyles.color')}
               </Typography.Text>
               <ColorPicker
@@ -155,7 +165,10 @@ const LegendStylesPanel: FC = () => {
         label: (
           <Flex align="center" gap="small">
             <EditOutlined className="text-gray-500" />
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.legendStyles.collapseTitle"
+            >
               {t('visualizer.legendStyles.collapseTitle')}
             </Typography.Text>
           </Flex>
@@ -163,7 +176,11 @@ const LegendStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600" id="show-title-label">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                id="show-title-label"
+                data-i18n-key="visualizer.legendStyles.showTitle"
+              >
                 {t('visualizer.legendStyles.showTitle')}
               </Typography.Text>
               <Switch
@@ -174,7 +191,10 @@ const LegendStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between" gap="small">
-              <Typography.Text className="shrink-0 text-sm text-gray-600">
+              <Typography.Text
+                className="shrink-0 text-sm text-gray-600"
+                data-i18n-key="visualizer.legendStyles.titleField"
+              >
                 {t('visualizer.legendStyles.titleField')}
               </Typography.Text>
               <Input
@@ -184,6 +204,7 @@ const LegendStylesPanel: FC = () => {
                 disabled={!title.show}
                 size="small"
                 className="w-3/4!"
+                data-i18n-key="visualizer.legendStyles.titlePlaceholder"
               />
             </Flex>
           </Flex>
@@ -194,7 +215,10 @@ const LegendStylesPanel: FC = () => {
         label: (
           <Flex align="center" gap="small">
             <FontSizeOutlined className="text-gray-500" />
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.legendStyles.collapseLabels"
+            >
               {t('visualizer.legendStyles.collapseLabels')}
             </Typography.Text>
           </Flex>
@@ -202,7 +226,10 @@ const LegendStylesPanel: FC = () => {
         children: (
           <Flex vertical gap="small">
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                data-i18n-key="visualizer.legendStyles.textColor"
+              >
                 {t('visualizer.legendStyles.textColor')}
               </Typography.Text>
               <ColorPicker
@@ -212,7 +239,11 @@ const LegendStylesPanel: FC = () => {
               />
             </Flex>
             <Flex align="center" justify="space-between">
-              <Typography.Text className="text-sm text-gray-600" id="legend-font-size-label">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                id="legend-font-size-label"
+                data-i18n-key="visualizer.legendStyles.fontSize"
+              >
                 {t('visualizer.legendStyles.fontSize')}
               </Typography.Text>
               <Flex align="center" gap="small" className="w-1/2">
@@ -237,7 +268,10 @@ const LegendStylesPanel: FC = () => {
         label: (
           <Flex align="center" gap="small">
             <AimOutlined className="text-gray-500" />
-            <Typography.Text className="font-semibold">
+            <Typography.Text
+              className="font-semibold"
+              data-i18n-key="visualizer.legendStyles.collapsePosition"
+            >
               {t('visualizer.legendStyles.collapsePosition')}
             </Typography.Text>
           </Flex>
@@ -252,7 +286,10 @@ const LegendStylesPanel: FC = () => {
               block
             />
             {position === 'floating' && (
-              <Typography.Text className="text-[10px]! text-gray-400">
+              <Typography.Text
+                className="text-[10px]! text-gray-400"
+                data-i18n-key="visualizer.legendStyles.floatingHint"
+              >
                 {t('visualizer.legendStyles.floatingHint')}
               </Typography.Text>
             )}
@@ -282,7 +319,10 @@ const LegendStylesPanel: FC = () => {
 
   return (
     <Flex vertical gap="middle">
-      <SectionTitle IconComponent={AimOutlined}>
+      <SectionTitle
+        IconComponent={AimOutlined}
+        data-i18n-key="visualizer.legendStyles.sectionTitle"
+      >
         {t('visualizer.legendStyles.sectionTitle')}
       </SectionTitle>
       <Collapse items={items} defaultActiveKey={[]} ghost expandIconPlacement="end" />

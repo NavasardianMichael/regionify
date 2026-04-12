@@ -46,7 +46,11 @@ export const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport, initialU
         setUrl('');
         onClose();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('visualizer.googleSheets.fetchFailed'));
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError(t('visualizer.googleSheets.fetchFailed'));
+        }
       } finally {
         setIsLoading(false);
         setLoadingMode(null);

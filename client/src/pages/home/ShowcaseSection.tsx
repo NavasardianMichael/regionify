@@ -81,6 +81,7 @@ export const ShowcaseSection: FC = () => {
           <Typography.Title
             level={2}
             className="text-primary mb-0! text-center text-2xl font-bold md:text-3xl"
+            data-i18n-key="home.showcaseTitle"
           >
             {t('home.showcaseTitle')}
           </Typography.Title>
@@ -90,14 +91,25 @@ export const ShowcaseSection: FC = () => {
               className={`flex flex-col items-center gap-10 ${index > 0 ? 'border-t border-gray-200 pt-12' : ''} ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
             >
               <Flex vertical gap="middle" className="min-w-0 flex-1">
-                <Typography.Title level={3} className="mb-0! text-xl font-semibold">
+                <Typography.Title
+                  level={3}
+                  className="mb-0! text-xl font-semibold"
+                  data-i18n-key="home.showcaseSvgTitle"
+                >
                   {title}
                 </Typography.Title>
-                <Typography.Paragraph className="mb-0! text-gray-500">
+                <Typography.Paragraph
+                  className="mb-0! text-gray-500"
+                  data-i18n-key="home.showcaseSvgDesc"
+                >
                   {description}
                 </Typography.Paragraph>
                 <div>
-                  <Button type="primary" onClick={handlePlanClick}>
+                  <Button
+                    type="primary"
+                    onClick={handlePlanClick}
+                    data-i18n-key="plans.items.explorer.name"
+                  >
                     {planName} →
                   </Button>
                 </div>

@@ -61,7 +61,11 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
     <>
       {/* Arrow pan buttons */}
       <div className={`top-sm absolute left-1/2 -translate-x-1/2 ${visibilityClass}`}>
-        <Tooltip title={t('visualizer.mapStyles.tooltipPanUp')} placement="bottom">
+        <Tooltip
+          title={t('visualizer.mapStyles.tooltipPanUp')}
+          placement="bottom"
+          data-i18n-key="visualizer.mapStyles.tooltipPanUp"
+        >
           <Button
             type="default"
             icon={<ArrowUpOutlined />}
@@ -69,11 +73,16 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipPanUp')}
+            data-i18n-key="visualizer.mapStyles.tooltipPanUp"
           />
         </Tooltip>
       </div>
       <div className={`bottom-sm absolute left-1/2 -translate-x-1/2 ${visibilityClass}`}>
-        <Tooltip title={t('visualizer.mapStyles.tooltipPanDown')} placement="top">
+        <Tooltip
+          title={t('visualizer.mapStyles.tooltipPanDown')}
+          placement="top"
+          data-i18n-key="visualizer.mapStyles.tooltipPanDown"
+        >
           <Button
             type="default"
             icon={<ArrowDownOutlined />}
@@ -81,11 +90,16 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipPanDown')}
+            data-i18n-key="visualizer.mapStyles.tooltipPanDown"
           />
         </Tooltip>
       </div>
       <div className={`left-sm absolute top-1/2 -translate-y-1/2 ${visibilityClass}`}>
-        <Tooltip title={t('visualizer.mapStyles.tooltipPanLeft')} placement="right">
+        <Tooltip
+          title={t('visualizer.mapStyles.tooltipPanLeft')}
+          placement="right"
+          data-i18n-key="visualizer.mapStyles.tooltipPanLeft"
+        >
           <Button
             type="default"
             icon={<ArrowLeftOutlined />}
@@ -93,11 +107,16 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipPanLeft')}
+            data-i18n-key="visualizer.mapStyles.tooltipPanLeft"
           />
         </Tooltip>
       </div>
       <div className={`right-sm absolute top-1/2 -translate-y-1/2 ${visibilityClass}`}>
-        <Tooltip title={t('visualizer.mapStyles.tooltipPanRight')} placement="left">
+        <Tooltip
+          title={t('visualizer.mapStyles.tooltipPanRight')}
+          placement="left"
+          data-i18n-key="visualizer.mapStyles.tooltipPanRight"
+        >
           <Button
             type="default"
             icon={<ArrowRightOutlined />}
@@ -105,6 +124,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipPanRight')}
+            data-i18n-key="visualizer.mapStyles.tooltipPanRight"
           />
         </Tooltip>
       </div>
@@ -119,7 +139,11 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
           bottom: zoomControls.position.y + zoomStackExtraBottomPx,
         }}
       >
-        <Tooltip title={t('visualizer.mapStyles.tooltipZoomIn')} placement="left">
+        <Tooltip
+          title={t('visualizer.mapStyles.tooltipZoomIn')}
+          placement="left"
+          data-i18n-key="visualizer.mapStyles.tooltipZoomIn"
+        >
           <Button
             type="default"
             icon={<PlusOutlined />}
@@ -127,9 +151,14 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipZoomIn')}
+            data-i18n-key="visualizer.mapStyles.tooltipZoomIn"
           />
         </Tooltip>
-        <Tooltip title={t('visualizer.mapStyles.tooltipZoomOut')} placement="left">
+        <Tooltip
+          title={t('visualizer.mapStyles.tooltipZoomOut')}
+          placement="left"
+          data-i18n-key="visualizer.mapStyles.tooltipZoomOut"
+        >
           <Button
             type="default"
             icon={<MinusOutlined />}
@@ -137,9 +166,14 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={t('visualizer.mapStyles.tooltipZoomOut')}
+            data-i18n-key="visualizer.mapStyles.tooltipZoomOut"
           />
         </Tooltip>
-        <Tooltip title={resetMapTooltip} placement="left">
+        <Tooltip
+          title={resetMapTooltip}
+          placement="left"
+          data-i18n-key="visualizer.mapStyles.tooltipResetMapAndLabels"
+        >
           <Button
             type="default"
             icon={<FullscreenOutlined />}
@@ -147,6 +181,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             disabled={isDisabled}
             className="shadow-md"
             aria-label={resetMapTooltip}
+            data-i18n-key="visualizer.mapStyles.tooltipResetMapAndLabels"
           />
         </Tooltip>
       </Flex>

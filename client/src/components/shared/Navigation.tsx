@@ -153,6 +153,7 @@ export const Navigation: FC = () => {
         <Typography.Text
           strong
           className="mb-0! min-w-0 flex-1 truncate text-base leading-snug text-gray-900"
+          data-i18n-key="nav.mainMenu"
         >
           {t('nav.mainMenu')}
         </Typography.Text>
@@ -162,6 +163,7 @@ export const Navigation: FC = () => {
           aria-label={t('nav.closeMenu')}
           onClick={closeMobileMenu}
           className="shrink-0 text-gray-500!"
+          data-i18n-key="nav.closeMenu"
         />
       </Flex>
     ),
@@ -194,7 +196,11 @@ export const Navigation: FC = () => {
       ) : (
         <Flex component="ul" gap={4}>
           <li>
-            <AppNavLink to={ROUTES.LOGIN} className={getNavLinkClassName(ROUTES.LOGIN)}>
+            <AppNavLink
+              to={ROUTES.LOGIN}
+              className={getNavLinkClassName(ROUTES.LOGIN)}
+              data-i18n-key="nav.login"
+            >
               <LoginOutlined />
               {t('nav.login')}
             </AppNavLink>
@@ -237,6 +243,7 @@ export const Navigation: FC = () => {
             onClick={() => {
               navigate(ROUTES.PROFILE);
             }}
+            data-i18n-key="nav.account"
           >
             {t('nav.account')}
           </Button>
@@ -247,12 +254,17 @@ export const Navigation: FC = () => {
             icon={<LogoutOutlined />}
             className="justify-start!"
             onClick={() => void handleLogout()}
+            data-i18n-key="nav.logout"
           >
             {t('nav.logout')}
           </Button>
         </Flex>
       ) : (
-        <AppNavLink to={ROUTES.LOGIN} className={getDrawerNavLinkClassName(ROUTES.LOGIN)}>
+        <AppNavLink
+          to={ROUTES.LOGIN}
+          className={getDrawerNavLinkClassName(ROUTES.LOGIN)}
+          data-i18n-key="nav.login"
+        >
           <LoginOutlined />
           {t('nav.login')}
         </AppNavLink>
@@ -268,7 +280,7 @@ export const Navigation: FC = () => {
             to={ROUTES.HOME}
             className="flex shrink-0 items-center outline-offset-2 [&_img]:max-h-10 [&_img]:w-auto [&_img]:max-w-[min(160px,42vw)] [&_img]:object-contain [&_img]:object-left md:[&_img]:max-h-11 lg:[&_img]:max-h-12 lg:[&_img]:max-w-none"
           >
-            <img src={logoImage} alt={t('appName')} fetchPriority="high" />
+            <img src={logoImage} alt={t('appName')} fetchPriority="high" data-i18n-key="appName" />
           </Link>
           {isLgUp ? (
             desktopTrailing
@@ -282,6 +294,7 @@ export const Navigation: FC = () => {
                 aria-expanded={mobileMenuOpen}
                 aria-haspopup="dialog"
                 onClick={() => setMobileMenuOpen(true)}
+                data-i18n-key="nav.openMenu"
               />
             </Flex>
           )}

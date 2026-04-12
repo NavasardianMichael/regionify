@@ -26,7 +26,10 @@ Saint Petersburg,St. Petersburg,1800`}
     ),
     excel: (
       <Flex vertical gap={4} className="min-w-0 text-xs text-gray-600">
-        <Typography.Text className="text-xs text-gray-600">
+        <Typography.Text
+          className="text-xs text-gray-600"
+          data-i18n-key="visualizer.importFormatExamples.excelColumnsStatic"
+        >
           {t('visualizer.importFormatExamples.excelColumnsStatic')}
         </Typography.Text>
         <div className={FORMAT_SCROLL_WRAP_CLASS}>
@@ -49,7 +52,10 @@ Saint Petersburg,St. Petersburg,1800`}
     ),
     sheets: (
       <Flex vertical gap={4} className="min-w-0 text-xs text-gray-600">
-        <Typography.Text className="text-xs text-gray-600">
+        <Typography.Text
+          className="text-xs text-gray-600"
+          data-i18n-key="visualizer.importFormatExamples.sheetsColumnsStatic"
+        >
           {t('visualizer.importFormatExamples.sheetsColumnsStatic')}
         </Typography.Text>
         <div className={FORMAT_SCROLL_WRAP_CLASS}>
@@ -61,17 +67,26 @@ Saint Petersburg,St. Petersburg,1800`}
       </Flex>
     ),
     table: (
-      <Typography.Text className="text-xs text-gray-600">
+      <Typography.Text
+        className="text-xs text-gray-600"
+        data-i18n-key="visualizer.importFormatExamples.manualStatic"
+      >
         {t('visualizer.importFormatExamples.manualStatic')}
       </Typography.Text>
     ),
     tab_delimited: (
-      <Typography.Text className="text-xs text-gray-600">
+      <Typography.Text
+        className="text-xs text-gray-600"
+        data-i18n-key="visualizer.importFormatExamples.tabDelimitedStatic"
+      >
         {t('visualizer.importFormatExamples.tabDelimitedStatic')}
       </Typography.Text>
     ),
     ai_parser: (
-      <Typography.Text className="text-xs text-gray-600">
+      <Typography.Text
+        className="text-xs text-gray-600"
+        data-i18n-key="visualizer.importFormatExamples.aiParserStatic"
+      >
         {t('visualizer.importFormatExamples.aiParserStatic')}
       </Typography.Text>
     ),
@@ -91,7 +106,10 @@ Saint Petersburg,St. Petersburg,1800`}
     ),
     excel: (
       <Flex vertical gap={4} className="min-w-0 text-xs text-gray-600">
-        <Typography.Text className="text-xs text-gray-600">
+        <Typography.Text
+          className="text-xs text-gray-600"
+          data-i18n-key="visualizer.importFormatExamples.excelColumnsTime"
+        >
           {t('visualizer.importFormatExamples.excelColumnsTime')}
         </Typography.Text>
         <div className={FORMAT_SCROLL_WRAP_CLASS}>
@@ -115,7 +133,10 @@ Saint Petersburg,St. Petersburg,1800`}
     ),
     sheets: (
       <Flex vertical gap={4} className="min-w-0 text-xs text-gray-600">
-        <Typography.Text className="text-xs text-gray-600">
+        <Typography.Text
+          className="text-xs text-gray-600"
+          data-i18n-key="visualizer.importFormatExamples.sheetsColumnsTime"
+        >
           {t('visualizer.importFormatExamples.sheetsColumnsTime')}
         </Typography.Text>
         <div className={FORMAT_SCROLL_WRAP_CLASS}>
@@ -128,17 +149,26 @@ Saint Petersburg,St. Petersburg,1800`}
       </Flex>
     ),
     table: (
-      <Typography.Text className="text-xs text-gray-600">
+      <Typography.Text
+        className="text-xs text-gray-600"
+        data-i18n-key="visualizer.importFormatExamples.manualHistorical"
+      >
         {t('visualizer.importFormatExamples.manualHistorical')}
       </Typography.Text>
     ),
     tab_delimited: (
-      <Typography.Text className="text-xs text-gray-600">
+      <Typography.Text
+        className="text-xs text-gray-600"
+        data-i18n-key="visualizer.importFormatExamples.tabDelimitedHistorical"
+      >
         {t('visualizer.importFormatExamples.tabDelimitedHistorical')}
       </Typography.Text>
     ),
     ai_parser: (
-      <Typography.Text className="text-xs text-gray-600">
+      <Typography.Text
+        className="text-xs text-gray-600"
+        data-i18n-key="visualizer.importFormatExamples.aiParserStatic"
+      >
         {t('visualizer.importFormatExamples.aiParserStatic')}
       </Typography.Text>
     ),

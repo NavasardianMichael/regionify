@@ -162,12 +162,21 @@ const VisualizerPage: FC = () => {
       };
       return (
         <Flex vertical gap="small">
-          <Typography.Text className="text-sm text-balance" style={{ color: onTooltip }}>
+          <Typography.Text
+            className="text-sm text-balance"
+            style={{ color: onTooltip }}
+            data-i18n-key="visualizer.embed.tooltipChronographerBody"
+          >
             {t('visualizer.embed.tooltipChronographerBody', {
               planName: t('plans.items.chronographer.name'),
             })}
           </Typography.Text>
-          <Link to={ROUTES.BILLING} className="text-sm" style={linkStyle}>
+          <Link
+            to={ROUTES.BILLING}
+            className="text-sm"
+            style={linkStyle}
+            data-i18n-key="visualizer.embed.upgradePlansLink"
+          >
             {t('visualizer.embed.upgradePlansLink')}
           </Link>
         </Flex>
@@ -191,6 +200,7 @@ const VisualizerPage: FC = () => {
       type="primary"
       onClick={handleOpenEmbedModal}
       disabled={embedButtonDisabled}
+      data-i18n-key="visualizer.embed.openButton"
     >
       {embedButtonText}
     </Button>
@@ -316,6 +326,7 @@ const VisualizerPage: FC = () => {
             <Typography.Title
               level={3}
               className="text-primary mb-0! min-w-0 flex-1 truncate text-base font-semibold"
+              data-i18n-key="visualizer.mapAreaTitle"
             >
               {currentProject?.name?.trim() ? currentProject.name : t('visualizer.mapAreaTitle')}
             </Typography.Title>
@@ -324,21 +335,29 @@ const VisualizerPage: FC = () => {
           )}
           {isLoggedIn && currentProject && !isAwaitingProjectFromUrl ? (
             <Flex gap={0} className="shrink-0">
-              <Tooltip title={t('visualizer.mapHeaderRenameTooltip')}>
+              <Tooltip
+                title={t('visualizer.mapHeaderRenameTooltip')}
+                data-i18n-key="visualizer.mapHeaderRenameTooltip"
+              >
                 <Button
                   type="text"
                   icon={<EditOutlined />}
                   onClick={handleOpenRenameModal}
                   aria-label={t('visualizer.mapHeaderRenameTooltip')}
+                  data-i18n-key="visualizer.mapHeaderRenameTooltip"
                 />
               </Tooltip>
-              <Tooltip title={t('visualizer.mapHeaderDeleteTooltip')}>
+              <Tooltip
+                title={t('visualizer.mapHeaderDeleteTooltip')}
+                data-i18n-key="visualizer.mapHeaderDeleteTooltip"
+              >
                 <Button
                   type="text"
                   // danger
                   icon={<DeleteOutlined />}
                   onClick={handleDeleteCurrentProject}
                   aria-label={t('visualizer.mapHeaderDeleteTooltip')}
+                  data-i18n-key="visualizer.mapHeaderDeleteTooltip"
                 />
               </Tooltip>
             </Flex>
@@ -350,6 +369,7 @@ const VisualizerPage: FC = () => {
             onClick={handleSave}
             disabled={isSaveDisabled || isAwaitingProjectFromUrl}
             loading={isSaving}
+            data-i18n-key="visualizer.save"
           >
             {saveButtonText}
           </Button>
@@ -358,12 +378,16 @@ const VisualizerPage: FC = () => {
             icon={<DownloadOutlined />}
             onClick={handleOpenExportModal}
             disabled={!selectedCountryId || isAwaitingProjectFromUrl}
+            data-i18n-key="visualizer.export"
           >
             {exportButtonText}
           </Button>
           {isLoggedIn ? (
             embedButtonDisabled ? (
-              <Tooltip title={embedTooltipTitle}>
+              <Tooltip
+                title={embedTooltipTitle}
+                data-i18n-key="visualizer.embed.tooltipNeedSavedProject"
+              >
                 <span className="inline-flex">{embedButton}</span>
               </Tooltip>
             ) : (
@@ -438,9 +462,15 @@ const VisualizerPage: FC = () => {
               setMobileSection(e.target.value as MobileVisualizerSection);
             }}
           >
-            <Radio.Button value="map">{t('visualizer.tabMap')}</Radio.Button>
-            <Radio.Button value="data">{t('visualizer.tabData')}</Radio.Button>
-            <Radio.Button value="styles">{t('visualizer.tabStyles')}</Radio.Button>
+            <Radio.Button value="map" data-i18n-key="visualizer.tabMap">
+              {t('visualizer.tabMap')}
+            </Radio.Button>
+            <Radio.Button value="data" data-i18n-key="visualizer.tabData">
+              {t('visualizer.tabData')}
+            </Radio.Button>
+            <Radio.Button value="styles" data-i18n-key="visualizer.tabStyles">
+              {t('visualizer.tabStyles')}
+            </Radio.Button>
           </Radio.Group>
           <div className="relative min-h-0 w-full min-w-0 flex-1 overflow-hidden">
             {/*

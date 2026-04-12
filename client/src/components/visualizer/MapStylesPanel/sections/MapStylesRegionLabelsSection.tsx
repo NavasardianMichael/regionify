@@ -29,7 +29,11 @@ export const MapStylesRegionLabelsSection: FC<RegionLabelsSectionProps> = ({
   return (
     <Flex vertical gap="small">
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="show-region-labels-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="show-region-labels-label"
+          data-i18n-key="visualizer.mapStyles.showLabels"
+        >
           {t('visualizer.mapStyles.showLabels')}
         </Typography.Text>
         <Switch
@@ -40,7 +44,10 @@ export const MapStylesRegionLabelsSection: FC<RegionLabelsSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          data-i18n-key="visualizer.mapStyles.color"
+        >
           {t('visualizer.mapStyles.color')}
         </Typography.Text>
         <ColorPicker
@@ -51,7 +58,11 @@ export const MapStylesRegionLabelsSection: FC<RegionLabelsSectionProps> = ({
         />
       </Flex>
       <Flex align="center" justify="space-between">
-        <Typography.Text className="text-sm text-gray-600" id="region-labels-font-size-label">
+        <Typography.Text
+          className="text-sm text-gray-600"
+          id="region-labels-font-size-label"
+          data-i18n-key="visualizer.mapStyles.fontSize"
+        >
           {t('visualizer.mapStyles.fontSize')}
         </Typography.Text>
         <Flex align="center" gap="small" className="w-1/2">

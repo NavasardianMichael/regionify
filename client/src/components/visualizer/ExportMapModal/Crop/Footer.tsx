@@ -41,11 +41,20 @@ export const Footer: FC<FooterProps> = ({
   return (
     <Flex vertical gap="small" className="w-full">
       <Flex justify="space-between" align="center" className="w-full" wrap="wrap" gap="small">
-        <Button icon={<ArrowLeftOutlined />} onClick={onBack} disabled={disabled}>
+        <Button
+          icon={<ArrowLeftOutlined />}
+          onClick={onBack}
+          disabled={disabled}
+          data-i18n-key="visualizer.exportModal.back"
+        >
           {t('visualizer.exportModal.back')}
         </Button>
         {showFrameProgress && (
-          <Typography.Text type="secondary" className="min-w-28 text-center text-sm">
+          <Typography.Text
+            type="secondary"
+            className="min-w-28 text-center text-sm"
+            data-i18n-key="visualizer.exportModal.exportFramesProcessed"
+          >
             {t('visualizer.exportModal.exportFramesProcessed', {
               processed: processedFrames,
               total: totalAnimationFrames,

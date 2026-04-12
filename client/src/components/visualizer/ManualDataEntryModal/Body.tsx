@@ -32,7 +32,10 @@ export const Body: FC<BodyProps> = ({
           showIcon
           className="manual-entry-google-sync-alert border-primary/30! bg-primary/10! [&_.ant-alert-icon]:text-primary! [&_.ant-alert-title]:text-primary [&_.ant-alert-info]:bg-transparent! [&_.ant-alert-title]:mb-0!"
           title={
-            <Typography.Text className="text-primary text-sm">
+            <Typography.Text
+              className="text-primary text-sm"
+              data-i18n-key="visualizer.manualEntry.googleSheetsSyncReadOnlyNote"
+            >
               {t('visualizer.manualEntry.googleSheetsSyncReadOnlyNote')}
             </Typography.Text>
           }
@@ -54,6 +57,7 @@ export const Body: FC<BodyProps> = ({
           onClick={onAddMissingRow}
           className="mt-1! w-fit self-start"
           aria-label={t('visualizer.manualEntry.addMissingRow')}
+          data-i18n-key="visualizer.manualEntry.addMissingRow"
         >
           {t('visualizer.manualEntry.addMissingRow')}
         </Button>

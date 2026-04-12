@@ -101,12 +101,14 @@ export const HeroSection: FC = () => {
             <Typography.Title
               level={1}
               className="mb-0! text-4xl font-bold text-white! md:text-5xl lg:text-6xl"
+              data-i18n-key="home.heroHeadline"
             >
               {t('home.heroHeadline')}
             </Typography.Title>
             <Typography.Paragraph
               className="mb-0! text-lg md:text-xl"
               style={{ color: 'rgba(255,255,255,0.8)' }}
+              data-i18n-key="home.heroSubheadline"
             >
               {t('home.heroSubheadline')}
             </Typography.Paragraph>
@@ -116,6 +118,7 @@ export const HeroSection: FC = () => {
               onClick={handleStart}
               type="dashed"
               className="border-white! bg-transparent! font-semibold text-white! hover:bg-white/5!"
+              data-i18n-key="home.ctaStart"
             >
               {t('home.ctaStart')}
             </Button>
@@ -123,6 +126,7 @@ export const HeroSection: FC = () => {
               onClick={handlePlans}
               type="dashed"
               className="border-white! bg-transparent! font-semibold text-white! hover:bg-white/5!"
+              data-i18n-key="home.ctaPlans"
             >
               {t('home.ctaPlans')}
             </Button>
