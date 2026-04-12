@@ -1,7 +1,9 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Typography } from 'antd';
+import regionifyAnimationGif from '@/assets/images/showcases/regionify-animation.gif';
 import regionifyEuropeSvg from '@/assets/images/showcases/regionify-europe.svg';
+import regionifyVideoMp4 from '@/assets/images/showcases/regionify-video.mp4';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
@@ -21,6 +23,20 @@ const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
         className="max-h-full max-w-full"
       />
     </Flex>
+  ),
+  gif: (
+    <Flex align="center" justify="center" className="h-full w-full">
+      <img
+        src={regionifyAnimationGif}
+        alt="Regionify Animation Showcase"
+        className="max-h-full max-w-full"
+      />
+    </Flex>
+  ),
+  mp4: (
+    <video src={regionifyVideoMp4} className="max-h-full max-w-full" controls playsInline>
+      <track kind="captions" />
+    </video>
   ),
 };
 
