@@ -21,6 +21,7 @@ const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
         src={regionifyEuropeSvg}
         alt="Regionify Europe Showcase"
         className="max-h-full max-w-full"
+        loading="lazy"
       />
     </Flex>
   ),
@@ -30,11 +31,18 @@ const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
         src={regionifyAnimationGif}
         alt="Regionify Animation Showcase"
         className="max-h-full max-w-full"
+        loading="lazy"
       />
     </Flex>
   ),
   mp4: (
-    <video src={regionifyVideoMp4} className="max-h-full max-w-full" controls playsInline>
+    <video
+      src={regionifyVideoMp4}
+      className="max-h-full max-w-full"
+      controls
+      playsInline
+      preload="none"
+    >
       <track kind="captions" />
     </video>
   ),
