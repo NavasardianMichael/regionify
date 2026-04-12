@@ -1,10 +1,19 @@
 name: regionify
 
+# Limit Docker's own log files to a small rolling buffer.
+# Loki is the long-term log store; the local copy is only needed until Promtail ships it.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: '10m'
+    max-file: '3'
+
 services:
   postgres:
     image: postgres:17-alpine
     container_name: regionify-postgres
     restart: unless-stopped
+    logging: *default-logging
     env_file:
       - '${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}'
     ports:
@@ -23,6 +32,7 @@ services:
     image: redis:7-alpine
     container_name: regionify-redis
     restart: unless-stopped
+    logging: *default-logging
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
@@ -40,6 +50,7 @@ services:
       dockerfile: server/Dockerfile
     container_name: regionify-server
     restart: unless-stopped
+    logging: *default-logging
     ports:
       - '9002:9002'
     env_file:
@@ -56,6 +67,7 @@ services:
     image: grafana/loki:3.3.2
     container_name: regionify-loki
     restart: unless-stopped
+    logging: *default-logging
     volumes:
       - ./monitoring/loki/loki-config.yml:/etc/loki/config.yml:ro
       - loki_data:/loki
@@ -72,6 +84,7 @@ services:
     image: grafana/promtail:3.3.2
     container_name: regionify-promtail
     restart: unless-stopped
+    logging: *default-logging
     volumes:
       - ./monitoring/promtail/promtail-prod-config.yml:/etc/promtail/config.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -86,6 +99,7 @@ services:
     image: grafana/grafana:11.4.0
     container_name: regionify-grafana
     restart: unless-stopped
+    logging: *default-logging
     ports:
       - '127.0.0.1:${GRAFANA_PORT:-8002}:3000'
     volumes:
