@@ -60,7 +60,7 @@ const ALL_EXPORT_OPTIONS: ExportTypeOption[] = [
   { value: EXPORT_TYPES.svg, label: 'SVG' },
   { value: EXPORT_TYPES.jpeg, label: 'JPEG' },
   { value: EXPORT_TYPES.gif, label: 'GIF (Animation)' },
-  { value: EXPORT_TYPES.mp4, label: 'Video (MP4/WebM)' },
+  { value: EXPORT_TYPES.mp4, label: 'Video (MP4)' },
 ];
 
 const STATIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg];

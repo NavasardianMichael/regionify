@@ -640,6 +640,21 @@ const finalizeAnimationFrame = async (
   return cropped;
 };
 
+/**
+ * Extracts only opaque pixels (alpha >= 128) from RGBA pixel data.
+ * Used to build GIF palettes without transparent pixels polluting the color space.
+ */
+const extractOpaqueRgba = (data: Uint8ClampedArray): Uint8ClampedArray => {
+  const opaque: number[] = [];
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] >= 128) {
+      opaque.push(data[i], data[i + 1], data[i + 2], 255);
+    }
+  }
+  if (opaque.length === 0) opaque.push(0, 0, 0, 255);
+  return new Uint8ClampedArray(opaque);
+};
+
 /** Export animation as GIF using gifenc with smooth color transitions and stable global palette. */
 export const exportAnimationAsGif = async (options: AnimationExportOptions): Promise<void> => {
   const {
@@ -655,6 +670,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     onProgress,
   } = options;
 
+  const isTransparent = options.picture.transparentBackground;
   const scale = qualityToScale(quality);
   const delay = Math.round(1000 / fps);
   const frameList = buildFrameList(timePeriods, {
@@ -691,7 +707,12 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     const imageData = ctx.getImageData(0, 0, width, height);
     samplePixels.set(imageData.data, i * imageData.data.length);
   }
-  const globalPalette = quantize(samplePixels, 256);
+
+  // When transparent: build palette from opaque pixels only, using max 255 colors so that
+  // index 255 is always free to designate as the transparent color index.
+  const maxPaletteColors = isTransparent ? 255 : 256;
+  const paletteInput = isTransparent ? extractOpaqueRgba(samplePixels) : samplePixels;
+  const globalPalette = quantize(paletteInput, maxPaletteColors);
 
   const gif = GIFEncoder();
   const sampleIndexSet = new Set(sampleIndices);
@@ -708,7 +729,20 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     if (!ctx) throw new Error('Failed to get canvas context');
     const imageData = ctx.getImageData(0, 0, width, height);
     const index = applyPalette(imageData.data, globalPalette);
-    gif.writeFrame(index, width, height, { palette: globalPalette, delay });
+
+    if (isTransparent) {
+      for (let p = 0; p < index.length; p++) {
+        if (imageData.data[p * 4 + 3] < 128) {
+          index[p] = 255;
+        }
+      }
+    }
+
+    gif.writeFrame(index, width, height, {
+      palette: globalPalette,
+      delay,
+      ...(isTransparent && { transparent: true, transparentIndex: 255, dispose: 2 }),
+    });
     onProgress?.((i + 1) / totalFrames);
   }
 
@@ -718,7 +752,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
   triggerDownload(blob, 'regionify-animation.gif');
 };
 
-/** Export animation as MP4/WebM video from canvas with smooth color transitions. */
+/** Export animation as MP4 video from canvas with smooth color transitions (falls back to WebM on unsupported browsers). */
 export const exportAnimationAsVideo = async (options: AnimationExportOptions): Promise<void> => {
   const {
     rawSvg,
@@ -732,6 +766,7 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
     watermark,
     onProgress,
   } = options;
+  const isTransparent = options.picture.transparentBackground;
 
   const scale = qualityToScale(quality);
   const frameList = buildFrameList(timePeriods, {
@@ -786,6 +821,10 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
 
     const drawAndCapture = (canvas: HTMLCanvasElement): Promise<void> => {
       recordCtx.clearRect(0, 0, width, height);
+      if (isTransparent) {
+        recordCtx.fillStyle = '#FFFFFF';
+        recordCtx.fillRect(0, 0, width, height);
+      }
       recordCtx.drawImage(canvas, 0, 0);
 
       const videoTrack = stream.getVideoTracks()[0];
@@ -798,6 +837,10 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
 
     const renderFrames = async (): Promise<void> => {
       recordCtx.clearRect(0, 0, width, height);
+      if (isTransparent) {
+        recordCtx.fillStyle = '#FFFFFF';
+        recordCtx.fillRect(0, 0, width, height);
+      }
       recordCtx.drawImage(firstCanvas, 0, 0);
       const videoTrack = stream.getVideoTracks()[0];
       if (videoTrack && 'requestFrame' in videoTrack) {

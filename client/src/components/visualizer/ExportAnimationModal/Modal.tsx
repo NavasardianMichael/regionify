@@ -45,7 +45,7 @@ type FormatOption = { value: AnimationFormat; label: string };
 
 const ANIMATION_FORMAT_OPTIONS: FormatOption[] = [
   { value: EXPORT_TYPES.gif, label: 'GIF' },
-  { value: EXPORT_TYPES.mp4, label: 'Video (MP4/WebM)' },
+  { value: EXPORT_TYPES.mp4, label: 'Video (MP4)' },
 ];
 
 const EXPORT_FPS = 30;
