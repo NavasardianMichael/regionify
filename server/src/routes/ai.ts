@@ -7,6 +7,7 @@ import { AppError } from '@/middleware/errorHandler.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { requireChronographer } from '@/middleware/requireChronographer.js';
 import { validate } from '@/middleware/validate.js';
+import { logger } from '@/lib/logger.js';
 import {
   MAX_AI_PARSE_INPUT_CHARS,
   getAiParseRemaining,
@@ -75,6 +76,7 @@ router.post(
       }
     } catch (error) {
       // Headers already sent — write an SSE error event instead of using next()
+      logger.error({ err: error }, 'AI parse stream error');
       const message =
         error instanceof AppError ? error.message : 'AI parsing failed. Please try again.';
       res.write(`data: ${JSON.stringify({ error: message })}\n\n`);

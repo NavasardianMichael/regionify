@@ -107,7 +107,7 @@ export async function* streamAiParse(
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 
   const stream = client.messages.stream({
-    model: 'claude-haiku-4-5-20251001',
+    model: 'claude-3-5-haiku-20241022',
     temperature: 0,
     max_tokens: AI_PARSE_MAX_TOKENS,
     system: buildSystemPrompt(mapRegionIds),
