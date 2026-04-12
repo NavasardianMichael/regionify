@@ -75,7 +75,7 @@ export const ShowcaseSection: FC = () => {
   }, [navigate]);
 
   return (
-    <section className="bg-gray-50 px-6 py-16 md:py-20">
+    <section className="bg-white px-6 py-16 md:py-20">
       <div className="mx-auto w-full max-w-5xl">
         <Flex vertical gap={48}>
           <Typography.Title
@@ -117,7 +117,7 @@ export const ShowcaseSection: FC = () => {
               <Flex
                 align="center"
                 justify="center"
-                className="aspect-video w-full min-w-0 flex-1 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50"
+                className="aspect-video w-full min-w-0 flex-1 rounded-lg border border-dashed border-gray-300"
                 data-showcase={assetId}
               >
                 {SHOWCASE_CONTENT_MAP[assetId] ?? DEFAULT_SHOWCASE_PLACEHOLDER(assetId)}

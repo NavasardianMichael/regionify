@@ -12,8 +12,8 @@ const HomePage: FC = () => (
     <HeroSection />
     <FeaturesSection />
     <MapsSection />
-    <DataModesSection />
     <ShowcaseSection />
+    <DataModesSection />
     <PlansSection />
     <CtaSection />
   </>
