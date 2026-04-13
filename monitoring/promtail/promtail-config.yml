@@ -1,0 +1,76 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+
+    relabel_configs:
+      # Only collect logs from the regionify compose project
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        regex: 'regionify'
+        action: keep
+      # Exclude monitoring containers themselves (avoid noise / self-reference)
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/regionify-(promtail|loki|grafana)'
+        action: drop
+      # Label: compose service name (server, postgres, redis)
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: service
+      # Label: container name without leading slash
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+      # Label: stdout or stderr
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: stream
+
+    pipeline_stages:
+      # Attempt to parse as Pino JSON. Non-JSON lines (postgres, redis) pass through unchanged.
+      - json:
+          expressions:
+            level: level
+            action: action
+
+      # Map Pino numeric levels (10–60) to human-readable strings.
+      # Non-Pino logs (postgres/redis) produce an empty level; no label is set for those.
+      - template:
+          source: level
+          template: |-
+            {{- if eq .Value "10" -}}trace
+            {{- else if eq .Value "20" -}}debug
+            {{- else if eq .Value "30" -}}info
+            {{- else if eq .Value "40" -}}warn
+            {{- else if eq .Value "50" -}}error
+            {{- else if eq .Value "60" -}}fatal
+            {{- else -}}{{- .Value -}}
+            {{- end -}}
+
+      - labels:
+          level:
+
+      # Mark payment/order events with important="true" for 1-year Loki retention.
+      # Loki retention_stream selector: {important="true"} (see monitoring/loki/loki-config.yml).
+      # Extend this list whenever a new critical business action is added to the server.
+      - template:
+          source: action
+          template: |-
+            {{- if or
+              (eq .Value "payment_completed")
+              (eq .Value "payment_failed")
+              (eq .Value "order_created")
+              (eq .Value "subscription_created")
+              (eq .Value "subscription_cancelled")
+            -}}true{{- end -}}
+
+      - labels:
+          important:
