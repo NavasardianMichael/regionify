@@ -25,24 +25,22 @@ The `important` label is set automatically by Promtail when the `action` field i
 
 ## Environment Variables
 
-All monitoring variables are consumed by the **Grafana container only** — none affect the application server or belong in `server/.env`.
+Grafana variables live in the same `server/.env.production.local` file as the rest of the stack (loaded via `REGIONIFY_ENV_FILE`). Only `GRAFANA_PORT` is a shell export (it controls the host-side port binding in the compose file itself).
 
-Set these as shell exports before running `docker compose -f docker-compose.prod.yml up -d` (same convention as `REGIONIFY_ENV_FILE`).
+### Required — add to `server/.env.production.local`
 
-### Required
+| Variable                     | Description                                                                |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| `GF_SECURITY_ADMIN_PASSWORD` | Grafana admin account password                                             |
+| `GF_SERVER_ROOT_URL`         | Full public URL of Grafana, e.g. `https://logs.regionify.mnavasardian.com` |
 
-| Variable                 | Description                                                                |
-| ------------------------ | -------------------------------------------------------------------------- |
-| `GRAFANA_ADMIN_PASSWORD` | Grafana admin account password                                             |
-| `GRAFANA_ROOT_URL`       | Full public URL of Grafana, e.g. `https://logs.regionify.mnavasardian.com` |
-
-### Optional — ports
+### Optional — ports (shell export or root `.env`)
 
 | Variable       | Default | Description                                                    |
 | -------------- | ------- | -------------------------------------------------------------- |
 | `GRAFANA_PORT` | `8002`  | Host port Grafana binds to (dev: `0.0.0.0`; prod: `127.0.0.1`) |
 
-### Optional — email alerting
+### Optional — email alerting (add to `server/.env.production.local`)
 
 | Variable               | Default              | Description                                   |
 | ---------------------- | -------------------- | --------------------------------------------- |
@@ -82,17 +80,17 @@ open http://localhost:8002   # admin / admin
 
 ## Production Setup
 
-### 1. Export env vars
+### 1. Add Grafana vars to `server/.env.production.local`
 
-```bash
-export GRAFANA_ADMIN_PASSWORD=<secure-password>
-export GRAFANA_ROOT_URL=https://logs.regionify.mnavasardian.com
+```env
+GF_SECURITY_ADMIN_PASSWORD=<secure-password>
+GF_SERVER_ROOT_URL=https://logs.regionify.mnavasardian.com
 
 # Optional — email alerts:
-export GF_SMTP_ENABLED=true
-export GF_SMTP_USER=your@gmail.com
-export GF_SMTP_PASSWORD=<gmail-app-password>
-export GF_SMTP_FROM_ADDRESS=your@gmail.com
+GF_SMTP_ENABLED=true
+GF_SMTP_USER=your@gmail.com
+GF_SMTP_PASSWORD=<gmail-app-password>
+GF_SMTP_FROM_ADDRESS=your@gmail.com
 ```
 
 ### 2. Start the stack
