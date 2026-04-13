@@ -106,18 +106,12 @@ services:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data:/var/lib/grafana
+    env_file:
+      - '${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}'
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: '${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD before starting the stack}'
-      GF_SERVER_ROOT_URL: '${GRAFANA_ROOT_URL:-http://localhost:8002}'
       GF_AUTH_ANONYMOUS_ENABLED: 'false'
       GF_LOG_LEVEL: warn
-      # Email alerting — set GF_SMTP_ENABLED=true and the rest to enable (see docs/OBSERVABILITY.md)
-      GF_SMTP_ENABLED: '${GF_SMTP_ENABLED:-false}'
-      GF_SMTP_HOST: '${GF_SMTP_HOST:-smtp.gmail.com:587}'
-      GF_SMTP_USER: '${GF_SMTP_USER:-}'
-      GF_SMTP_PASSWORD: '${GF_SMTP_PASSWORD:-}'
-      GF_SMTP_FROM_ADDRESS: '${GF_SMTP_FROM_ADDRESS:-}'
     depends_on:
       loki:
         condition: service_healthy
