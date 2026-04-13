@@ -6,7 +6,7 @@ const ru: CommonNs = {
     home: 'Главная',
     projects: 'Проекты',
     contact: 'Контакты',
-    faq: 'FAQ',
+    faq: 'Частые вопросы',
     plans: 'Планы',
     about: 'О приложении',
     login: 'Войти',

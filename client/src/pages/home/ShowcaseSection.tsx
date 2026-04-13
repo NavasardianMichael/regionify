@@ -36,13 +36,7 @@ const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
     </Flex>
   ),
   mp4: (
-    <video
-      src={regionifyVideoMp4}
-      className="max-h-full max-w-full"
-      controls
-      playsInline
-      preload="none"
-    >
+    <video src={regionifyVideoMp4} className="max-h-full max-w-full" controls playsInline>
       <track kind="captions" />
     </video>
   ),

@@ -6,7 +6,7 @@ const es: CommonNs = {
     home: 'Inicio',
     projects: 'Proyectos',
     contact: 'Contacto',
-    faq: 'FAQ',
+    faq: 'Preguntas frecuentes',
     plans: 'Planes',
     about: 'Acerca de',
     login: 'Iniciar sesión',
