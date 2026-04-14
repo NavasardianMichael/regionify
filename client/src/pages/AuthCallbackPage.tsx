@@ -56,7 +56,7 @@ const AuthCallbackPage: FC = () => {
             clearReturnUrl();
             navigate(returnUrl, { replace: true });
           } else {
-            navigate(ROUTES.HOME, { replace: true });
+            navigate(ROUTES.PROJECTS, { replace: true });
           }
         }
       } catch {

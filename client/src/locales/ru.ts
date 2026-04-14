@@ -243,6 +243,12 @@ const ru: CommonNs = {
     defaultLegendTitle: 'ОТНОШЕНИЕ ИНТЕНСИВНОСТИ',
     done: 'Готово',
     newLegendRangeName: 'Новый диапазон',
+    unsavedGuard: {
+      title: 'Несохранённые изменения',
+      body: 'Несохранённые изменения будут потеряны, если вы покинете эту страницу.',
+      discard: 'Отменить и уйти',
+      saveAndLeave: 'Сохранить и уйти',
+    },
     region: {
       sectionTitle: 'Выбор страны',
       placeholder: 'Выберите страну...',

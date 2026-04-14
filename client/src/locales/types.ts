@@ -195,6 +195,12 @@ export type CommonNs = {
     defaultLegendTitle: string;
     done: string;
     newLegendRangeName: string;
+    unsavedGuard: {
+      title: string;
+      body: string;
+      discard: string;
+      saveAndLeave: string;
+    };
     region: {
       sectionTitle: string;
       placeholder: string;

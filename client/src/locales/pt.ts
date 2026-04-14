@@ -243,6 +243,12 @@ const pt: CommonNs = {
     defaultLegendTitle: 'RAZÃO DE INTENSIDADE',
     done: 'Concluído',
     newLegendRangeName: 'Novo intervalo',
+    unsavedGuard: {
+      title: 'Alterações não guardadas',
+      body: 'As alterações não guardadas serão perdidas se sair desta página.',
+      discard: 'Descartar e sair',
+      saveAndLeave: 'Guardar e sair',
+    },
     region: {
       sectionTitle: 'Selecionar país',
       placeholder: 'Selecione um país...',

@@ -245,6 +245,12 @@ const es: CommonNs = {
     defaultLegendTitle: 'RELACIÓN DE INTENSIDAD',
     done: 'Hecho',
     newLegendRangeName: 'Nuevo rango',
+    unsavedGuard: {
+      title: 'Cambios sin guardar',
+      body: 'Los cambios sin guardar se perderán si abandonas esta página.',
+      discard: 'Descartar y salir',
+      saveAndLeave: 'Guardar y salir',
+    },
     region: {
       sectionTitle: 'Seleccionar país',
       placeholder: 'Selecciona un país...',

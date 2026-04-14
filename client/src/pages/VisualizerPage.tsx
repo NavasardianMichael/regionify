@@ -44,6 +44,7 @@ import { useGuestDraftAutosave } from '@/hooks/useGuestDraftAutosave';
 import { useIsMdUp } from '@/hooks/useIsMdUp';
 import { useLoadProject } from '@/hooks/useLoadProject';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
+import { useUnsavedChangesGuard } from '@/hooks/useUnsavedChangesGuard';
 import { useVisualizerPage } from '@/hooks/useVisualizerPage';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
@@ -59,7 +60,6 @@ import {
   readGuestProjectSnapshotEnvelope,
   saveReturnUrl,
 } from '@/helpers/temporaryProjectState';
-import { SaveProjectNameModal } from '@/components/projects/SaveProjectNameModal/Modal';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
@@ -84,6 +84,16 @@ const RenameProjectModal = lazy(() =>
 const DeleteProjectModal = lazy(() =>
   import('@/components/projects/DeleteProjectModal/Modal').then((m) => ({
     default: m.DeleteProjectModal,
+  })),
+);
+const SaveProjectNameModal = lazy(() =>
+  import('@/components/projects/SaveProjectNameModal/Modal').then((m) => ({
+    default: m.SaveProjectNameModal,
+  })),
+);
+const UnsavedChangesModal = lazy(() =>
+  import('@/components/shared/UnsavedChangesModal').then((m) => ({
+    default: m.UnsavedChangesModal,
   })),
 );
 const AnimationControls = lazy(() => import('@/components/visualizer/AnimationControls'));
@@ -114,6 +124,8 @@ const VisualizerPage: FC = () => {
 
   const {
     selectedCountryId,
+    currentProjectId: visualizerProjectId,
+    hasUnsavedChanges,
     isExportModalOpen,
     isEmbedModalOpen,
     isLoggedIn,
@@ -128,6 +140,7 @@ const VisualizerPage: FC = () => {
     saveButtonText,
     exportButtonText,
     embedButtonText,
+    saveCurrentProject,
     handleOpenExportModal,
     handleCloseExportModal,
     handleOpenEmbedModal,
@@ -145,6 +158,11 @@ const VisualizerPage: FC = () => {
     handleDeleteConfirm,
     handleDeleteCancel,
   } = useVisualizerPage();
+
+  const unsavedGuard = useUnsavedChangesGuard({
+    hasUnsavedChanges: isLoggedIn && visualizerProjectId !== null && hasUnsavedChanges,
+    onSave: saveCurrentProject,
+  });
 
   const embedButtonDisabled =
     !canUseEmbed || !selectedCountryId || !currentProject || isAwaitingProjectFromUrl;
@@ -539,18 +557,35 @@ const VisualizerPage: FC = () => {
         />
       </Suspense>
 
-      <SaveProjectNameModal
-        open={isNameModalOpen}
-        title={t('visualizer.saveModalTitle')}
-        prompt={t('visualizer.saveModalPrompt')}
-        placeholder={t('visualizer.saveModalPlaceholder')}
-        okText={t('visualizer.saveModalCreate')}
-        projectName={projectName}
-        okDisabled={!projectName.trim()}
-        onProjectNameChange={handleNameChange}
-        onOk={handleCreateProject}
-        onCancel={handleNameModalCancel}
-      />
+      {isNameModalOpen && (
+        <Suspense>
+          <SaveProjectNameModal
+            open={isNameModalOpen}
+            title={t('visualizer.saveModalTitle')}
+            prompt={t('visualizer.saveModalPrompt')}
+            placeholder={t('visualizer.saveModalPlaceholder')}
+            okText={t('visualizer.saveModalCreate')}
+            projectName={projectName}
+            okDisabled={!projectName.trim()}
+            onProjectNameChange={handleNameChange}
+            onOk={handleCreateProject}
+            onCancel={handleNameModalCancel}
+          />
+        </Suspense>
+      )}
+
+      {unsavedGuard.isModalOpen && (
+        <Suspense>
+          <UnsavedChangesModal
+            open={unsavedGuard.isModalOpen}
+            canSave={visualizerProjectId !== null}
+            isSaving={unsavedGuard.isSaving}
+            onDiscard={unsavedGuard.handleDiscard}
+            onSaveAndLeave={unsavedGuard.handleSaveAndLeave}
+            onCancel={unsavedGuard.handleCancel}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

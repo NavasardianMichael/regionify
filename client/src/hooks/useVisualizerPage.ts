@@ -92,6 +92,26 @@ export function useVisualizerPage() {
     setIsEmbedModalOpen(false);
   }, []);
 
+  /**
+   * Silently saves an existing project (no modals, no redirects).
+   * Returns `true` on success, `false` on failure or when the project hasn't been created yet.
+   */
+  const saveCurrentProject = useCallback(async (): Promise<boolean> => {
+    if (!currentProjectId) return false;
+    try {
+      const payload = getProjectPayload();
+      const updated = await updateProject(currentProjectId, payload);
+      updateProjectInList(updated);
+      setSavedStateSnapshot(captureStateSnapshot());
+      clearTemporaryProjectState();
+      message.success(t('messages.projectSaved'), 5);
+      return true;
+    } catch {
+      message.error(t('messages.projectSaveFailed'), 0);
+      return false;
+    }
+  }, [currentProjectId, updateProjectInList, setSavedStateSnapshot, message, t]);
+
   const handleSave = useCallback(async () => {
     if (isFreePlan && !isLoggedIn) {
       saveTemporaryProjectState(buildPartialTemporaryState(captureFullTemporaryProjectState()));
@@ -111,14 +131,7 @@ export function useVisualizerPage() {
 
     setIsSaving(true);
     try {
-      const payload = getProjectPayload();
-      const updated = await updateProject(currentProjectId, payload);
-      updateProjectInList(updated);
-      setSavedStateSnapshot(captureStateSnapshot());
-      clearTemporaryProjectState();
-      message.success(t('messages.projectSaved'), 5);
-    } catch {
-      message.error(t('messages.projectSaveFailed'), 0);
+      await saveCurrentProject();
     } finally {
       setIsSaving(false);
     }
@@ -129,11 +142,8 @@ export function useVisualizerPage() {
     selectedCountryId,
     i18n.language,
     i18n.resolvedLanguage,
-    updateProjectInList,
-    setSavedStateSnapshot,
-    message,
+    saveCurrentProject,
     navigate,
-    t,
   ]);
 
   const handleCreateProject = useCallback(async () => {
@@ -235,6 +245,7 @@ export function useVisualizerPage() {
 
   return {
     selectedCountryId,
+    currentProjectId,
     currentProject,
     hasUnsavedChanges,
     isLoggedIn,
@@ -250,6 +261,7 @@ export function useVisualizerPage() {
     saveButtonText,
     exportButtonText,
     embedButtonText,
+    saveCurrentProject,
     handleOpenExportModal,
     handleCloseExportModal,
     handleOpenEmbedModal,

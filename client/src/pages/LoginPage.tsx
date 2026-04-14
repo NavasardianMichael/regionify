@@ -129,7 +129,7 @@ const LoginPage: FC = () => {
           clearReturnUrl();
           navigate(returnUrl, { replace: true });
         } else {
-          navigate(ROUTES.HOME);
+          navigate(ROUTES.PROJECTS);
         }
       }
     } catch (error) {

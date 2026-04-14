@@ -250,6 +250,12 @@ const de: CommonNs = {
     defaultLegendTitle: 'INTENSITÄTSVERHÄLTNIS',
     done: 'Fertig',
     newLegendRangeName: 'Neuer Bereich',
+    unsavedGuard: {
+      title: 'Nicht gespeicherte Änderungen',
+      body: 'Nicht gespeicherte Änderungen gehen verloren, wenn Sie diese Seite verlassen.',
+      discard: 'Verwerfen und verlassen',
+      saveAndLeave: 'Speichern und verlassen',
+    },
     region: {
       sectionTitle: 'Land auswählen',
       placeholder: 'Land auswählen...',

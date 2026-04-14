@@ -231,6 +231,12 @@ const zh: CommonNs = {
     defaultLegendTitle: '强度比',
     done: '完成',
     newLegendRangeName: '新范围',
+    unsavedGuard: {
+      title: '未保存的更改',
+      body: '如果离开此页面，未保存的更改将丢失。',
+      discard: '放弃并离开',
+      saveAndLeave: '保存并离开',
+    },
     region: {
       sectionTitle: '选择国家',
       placeholder: '请选择国家...',

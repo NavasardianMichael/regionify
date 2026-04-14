@@ -245,6 +245,12 @@ const fr: CommonNs = {
     defaultLegendTitle: "RATIO D'INTENSITÉ",
     done: 'Terminé',
     newLegendRangeName: 'Nouvelle plage',
+    unsavedGuard: {
+      title: 'Modifications non enregistrées',
+      body: 'Les modifications non enregistrées seront perdues si vous quittez cette page.',
+      discard: 'Abandonner et quitter',
+      saveAndLeave: 'Enregistrer et quitter',
+    },
     region: {
       sectionTitle: 'Sélectionner un pays',
       placeholder: 'Sélectionnez un pays...',

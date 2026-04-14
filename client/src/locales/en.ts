@@ -244,6 +244,12 @@ const en: CommonNs = {
     defaultLegendTitle: 'INTENSITY RATIO',
     done: 'Done',
     newLegendRangeName: 'New Range',
+    unsavedGuard: {
+      title: 'Unsaved changes',
+      body: 'You have unsaved changes that will be lost if you leave this page.',
+      discard: 'Discard and leave',
+      saveAndLeave: 'Save and leave',
+    },
     region: {
       sectionTitle: 'Select Country',
       placeholder: 'Select a country...',
