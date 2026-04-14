@@ -1,7 +1,12 @@
 import { useMemo } from 'react';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { buildAutoEmbedTitle, normalizeKeywords, trimDefaultSeoDescription } from './helpers';
+import {
+  buildAutoEmbedTitle,
+  normalizeAllowedOrigins,
+  normalizeKeywords,
+  trimDefaultSeoDescription,
+} from './helpers';
 
 export function useEmbedSEOFieldsDefaultValues(project: Project) {
   const { t } = useTypedTranslation();
@@ -21,5 +26,10 @@ export function useEmbedSEOFieldsDefaultValues(project: Project) {
     [project.embed.seo.keywords],
   );
 
-  return { defaultEmbedTitle, defaultSeoDescription, defaultKeywords };
+  const defaultAllowedOrigins = useMemo(
+    () => normalizeAllowedOrigins(project.embed.seo.allowedOrigins),
+    [project.embed.seo.allowedOrigins],
+  );
+
+  return { defaultEmbedTitle, defaultSeoDescription, defaultKeywords, defaultAllowedOrigins };
 }

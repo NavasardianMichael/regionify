@@ -1,6 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Typography } from 'antd';
+import embedPagePng from '@/assets/images/showcases/embed-page.png';
 import regionifyAnimationGif from '@/assets/images/showcases/regionify-animation.gif';
 import regionifyEuropeSvg from '@/assets/images/showcases/regionify-europe.svg';
 import regionifyVideoMp4 from '@/assets/images/showcases/regionify-video.mp4';
@@ -39,6 +40,16 @@ const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
     <video src={regionifyVideoMp4} className="max-h-full max-w-full" controls playsInline>
       <track kind="captions" />
     </video>
+  ),
+  'public-page': (
+    <Flex align="center" justify="center" className="h-full w-full">
+      <img
+        src={embedPagePng}
+        alt="Regionify Embed Page Showcase"
+        className="max-h-full max-w-full"
+        loading="lazy"
+      />
+    </Flex>
   ),
 };
 

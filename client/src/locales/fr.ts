@@ -74,10 +74,10 @@ const fr: CommonNs = {
       'Exportez des chronologies vidéo fluides prêtes pour les présentations, les réseaux sociaux ou les projets vidéo.',
     showcasePublicPageTitle: 'Page publique avec SEO',
     showcasePublicPageDesc:
-      "Partagez votre carte sur une URL publique dédiée avec un titre, une description et une image d'aperçu personnalisables pour les moteurs de recherche et les prévisualisations de liens.",
+      "Partagez votre carte interactive sur une URL publique dédiée avec un titre, une description et une image d'aperçu personnalisables pour les moteurs de recherche et les prévisualisations de liens.",
     showcaseEmbedTitle: 'Iframe intégrable',
     showcaseEmbedDesc:
-      "Intégrez une carte interactive n'importe où sur votre site web, blog ou application avec un simple extrait iframe — entièrement responsive et toujours à jour.",
+      "Intégrez votre carte interactive n'importe où sur votre site web, blog ou application avec un simple extrait iframe — entièrement responsive et toujours à jour.",
   },
   about: {
     title: 'À propos de Regionify',
@@ -351,6 +351,14 @@ const fr: CommonNs = {
       descriptionMax: '150 caractères maximum',
       descriptionRequired:
         'La meta description est obligatoire lorsque l’intégration publique est activée',
+      allowedOrigins: 'Origines de confiance',
+      allowedOriginsHint:
+        'Optionnel. Ajoutez les origines autorisées à intégrer cette carte (ex. https://example.com). Seules les origines exactes sont autorisées ; le joker (*) n’est pas pris en charge.',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        'Chaque origine doit être une origine http(s) valide (ex. https://example.com), sans chemin, query, hash ou *',
+      allowedOriginsNoData: 'Appuyez sur Entrée pour ajouter cette origine.',
+      allowedOriginsAddCurrent: 'Ajouter l’origine actuelle',
       seoKeywords: 'Meta mots-clés (optionnel)',
       keywordsHint: 'Optionnel. Jusqu’à 5 mots-clés (saisie puis Entrée ou virgule).',
       keywordPlaceholder: 'Saisissez un mot-clé et appuyez sur Entrée.',

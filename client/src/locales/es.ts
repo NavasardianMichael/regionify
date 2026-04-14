@@ -73,10 +73,10 @@ const es: CommonNs = {
       'Exporta líneas de tiempo en video listas para presentaciones, redes sociales o proyectos audiovisuales.',
     showcasePublicPageTitle: 'Página pública con SEO',
     showcasePublicPageDesc:
-      'Comparte tu mapa en una URL pública dedicada con título, descripción e imagen de previsualización personalizables para buscadores y enlaces compartidos.',
+      'Comparte tu mapa interactivo en una URL pública dedicada con título, descripción e imagen de previsualización personalizables para buscadores y enlaces compartidos.',
     showcaseEmbedTitle: 'Iframe incrustable',
     showcaseEmbedDesc:
-      'Coloca un mapa interactivo en cualquier lugar de tu sitio web, blog o aplicación con un simple fragmento de iframe — totalmente responsive y siempre actualizado.',
+      'Coloca tu mapa interactivo en cualquier lugar de tu sitio web, blog o aplicación con un simple fragmento de iframe — totalmente responsive y siempre actualizado.',
   },
   about: {
     title: 'Acerca de Regionify',
@@ -350,6 +350,14 @@ const es: CommonNs = {
       descriptionMax: 'Como máximo 150 caracteres',
       descriptionRequired:
         'La meta descripción es obligatoria si la incrustación pública está activada',
+      allowedOrigins: 'Orígenes de confianza',
+      allowedOriginsHint:
+        'Opcional. Añade orígenes que pueden incrustar este mapa (por ejemplo: https://example.com). Solo se permiten orígenes exactos; no se admite comodín (*).',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        'Cada origen debe ser un origen http(s) válido (por ejemplo: https://example.com) sin ruta, query, hash ni *',
+      allowedOriginsNoData: 'Pulsa Enter para añadir este origen.',
+      allowedOriginsAddCurrent: 'Añadir origen actual',
       seoKeywords: 'Meta palabras clave (opcional)',
       keywordsHint: 'Opcional. Hasta 5 palabras clave (escribe y pulsa Intro o coma).',
       keywordPlaceholder: 'Escribe una palabra clave y pulsa Intro.',

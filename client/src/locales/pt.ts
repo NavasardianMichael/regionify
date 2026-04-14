@@ -72,10 +72,10 @@ const pt: CommonNs = {
       'Exporte linhas do tempo em vídeo prontas para apresentações, redes sociais ou projetos audiovisuais.',
     showcasePublicPageTitle: 'Página pública com SEO',
     showcasePublicPageDesc:
-      'Partilhe o seu mapa num URL público dedicado com título, descrição e imagem de pré-visualização personalizáveis para motores de busca e pré-visualizações de links.',
+      'Partilhe o seu mapa interativo num URL público dedicado com título, descrição e imagem de pré-visualização personalizáveis para motores de busca e pré-visualizações de links.',
     showcaseEmbedTitle: 'Iframe incorporável',
     showcaseEmbedDesc:
-      'Coloque um mapa interativo em qualquer lugar do seu site, blog ou aplicação com um simples snippet de iframe — totalmente responsivo e sempre atualizado.',
+      'Coloque o seu mapa interativo em qualquer lugar do seu site, blog ou aplicação com um simples snippet de iframe — totalmente responsivo e sempre atualizado.',
   },
   about: {
     title: 'Sobre o Regionify',
@@ -346,6 +346,14 @@ const pt: CommonNs = {
       descriptionMax: 'No máximo 150 caracteres',
       descriptionRequired:
         'A meta descrição é obrigatória quando a incorporação pública está ativa',
+      allowedOrigins: 'Origens confiáveis',
+      allowedOriginsHint:
+        'Opcional. Adicione origens autorizadas a incorporar este mapa (ex.: https://example.com). Apenas origens exatas são permitidas; wildcard (*) não é suportado.',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        'Cada origem deve ser uma origem http(s) válida (ex.: https://example.com), sem caminho, query, hash ou *',
+      allowedOriginsNoData: 'Prima Enter para adicionar esta origem.',
+      allowedOriginsAddCurrent: 'Adicionar origem atual',
       seoKeywords: 'Meta palavras-chave (opcional)',
       keywordsHint: 'Opcional. Até 5 palavras-chave (escreva e prima Enter ou vírgula).',
       keywordPlaceholder: 'Escreva uma palavra-chave e prima Enter.',

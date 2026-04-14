@@ -6,6 +6,7 @@ import { ErrorCode, HttpStatus } from '@regionify/shared';
 
 import { env, isProd } from '@/config/env.js';
 import { AppError } from '@/middleware/errorHandler.js';
+import { embedPageLimiter } from '@/middleware/embedPageLimiter.js';
 import { logger } from '@/lib/logger.js';
 import { projectEmbedService } from '@/services/projectEmbedService.js';
 import { HOME_PAGE_DEFAULT, homeRootInnerHtml } from '@/web/homeCopy.js';
@@ -40,6 +41,31 @@ const API_PATH_PREFIXES = [
 
 function isApiPath(path: string): boolean {
   return API_PATH_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+}
+
+function buildFrameAncestorsDirective(allowedOrigins: string[] | null): string {
+  const safeOrigins = (allowedOrigins ?? []).filter((origin) => {
+    if (!origin || origin.includes('*')) return false;
+    try {
+      const url = new URL(origin);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  });
+  const sources = [`'self'`, ...safeOrigins];
+  return `frame-ancestors ${sources.join(' ')}`;
+}
+
+function withFrameAncestorsDirective(existing: unknown, frameAncestorsDirective: string): string {
+  const raw = typeof existing === 'string' ? existing : '';
+  const directives = raw
+    .split(';')
+    .map((d) => d.trim())
+    .filter(Boolean)
+    .filter((d) => !d.toLowerCase().startsWith('frame-ancestors'));
+  directives.push(frameAncestorsDirective);
+  return `${directives.join('; ')};`;
 }
 
 /**
@@ -98,11 +124,16 @@ export function setupWebClient(app: Application): void {
 
   const embedEntryCss = [...assets.css, assets.embedShellCss];
 
-  app.get('/embed/:token', async (req: Request, res: Response, next) => {
+  app.get('/embed/:token', embedPageLimiter, async (req: Request, res: Response, next) => {
     try {
       const rawToken = req.params.token;
       const token = Array.isArray(rawToken) ? rawToken[0] : rawToken;
       const meta = await projectEmbedService.getEmbedMetaForHtml(token);
+      const frameAncestorsDirective = buildFrameAncestorsDirective(meta.allowedOrigins);
+      const cspWithFrameAncestors = withFrameAncestorsDirective(
+        res.getHeader('Content-Security-Policy'),
+        frameAncestorsDirective,
+      );
       const kw = meta.keywords;
       const html = renderHtmlDocument({
         siteUrl,
@@ -124,7 +155,12 @@ export function setupWebClient(app: Application): void {
           intro: visibleEmbedIntro(meta.description),
         },
       });
-      res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
+      res.removeHeader('X-Frame-Options');
+      res
+        .status(200)
+        .setHeader('Content-Security-Policy', cspWithFrameAncestors)
+        .setHeader('Content-Type', 'text/html; charset=utf-8')
+        .send(html);
     } catch (e) {
       if (
         e instanceof AppError &&

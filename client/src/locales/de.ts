@@ -75,10 +75,10 @@ const de: CommonNs = {
       'Exportieren Sie flüssige Video-Zeitleisten für Präsentationen, soziale Medien oder Videoprojekte.',
     showcasePublicPageTitle: 'Öffentliche Kartenseite mit SEO',
     showcasePublicPageDesc:
-      'Teilen Sie Ihre Karte über eine eigene öffentliche URL mit anpassbarem Titel, Beschreibung und Social-Media-Vorschaubild für Suchmaschinen und Link-Vorschauen.',
+      'Teilen Sie Ihre interaktive Karte über eine eigene öffentliche URL mit anpassbarem Titel, Beschreibung und Social-Media-Vorschaubild für Suchmaschinen und Link-Vorschauen.',
     showcaseEmbedTitle: 'Einbettbarer Iframe',
     showcaseEmbedDesc:
-      'Platzieren Sie eine interaktive Karte überall auf Ihrer Website, Ihrem Blog oder Ihrer App mit einem einfachen Iframe-Snippet — vollständig responsiv und immer aktuell.',
+      'Platzieren Sie Ihre interaktive Karte überall auf Ihrer Website, Ihrem Blog oder Ihrer App mit einem einfachen Iframe-Snippet — vollständig responsiv und immer aktuell.',
   },
   about: {
     title: 'Über Regionify',
@@ -354,6 +354,14 @@ const de: CommonNs = {
       descriptionMax: 'Höchstens 150 Zeichen',
       descriptionRequired:
         'Meta-Beschreibung ist erforderlich, wenn die öffentliche Einbettung aktiv ist',
+      allowedOrigins: 'Vertrauenswürdige Origins',
+      allowedOriginsHint:
+        'Optional. Fügen Sie Origins hinzu, die diese Karte einbetten dürfen (z. B. https://example.com). Nur exakte Origins sind erlaubt; Wildcard (*) wird nicht unterstützt.',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        'Jede Origin muss eine gültige http(s)-Origin sein (z. B. https://example.com) ohne Pfad, Query, Hash oder *',
+      allowedOriginsNoData: 'Drücken Sie Enter, um diese Origin hinzuzufügen.',
+      allowedOriginsAddCurrent: 'Aktuelle Origin hinzufügen',
       seoKeywords: 'Meta-Schlüsselwörter (optional)',
       keywordsHint: 'Optional. Bis zu 5 Schlüsselwörter (Eingabe und Enter oder Komma).',
       keywordPlaceholder: 'Schlüsselwort eingeben und Enter drücken.',

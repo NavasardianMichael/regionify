@@ -73,10 +73,10 @@ const ru: CommonNs = {
       'Экспортируйте плавные видеохронологии для презентаций, социальных сетей или видеопроектов.',
     showcasePublicPageTitle: 'Публичная страница с SEO',
     showcasePublicPageDesc:
-      'Поделитесь картой на отдельной публичной странице с настраиваемым заголовком, описанием и превью для поисковиков и ссылок.',
+      'Поделитесь своей интерактивной картой на отдельной публичной странице с настраиваемым заголовком, описанием и превью для поисковиков и ссылок.',
     showcaseEmbedTitle: 'Встраиваемый iframe',
     showcaseEmbedDesc:
-      'Разместите интерактивную карту в любом месте сайта, блога или приложения с помощью простого iframe — полностью адаптивно и всегда актуально.',
+      'Разместите свою интерактивную карту в любом месте сайта, блога или приложения с помощью простого iframe — полностью адаптивно и всегда актуально.',
   },
   about: {
     title: 'О Regionify',
@@ -344,6 +344,14 @@ const ru: CommonNs = {
       seoDescription: 'Мета-описание (SEO)',
       descriptionMax: 'Не более 150 символов',
       descriptionRequired: 'Мета-описание обязательно, если включена публичная вставка',
+      allowedOrigins: 'Доверенные origin',
+      allowedOriginsHint:
+        'Необязательно. Добавьте origin, которым разрешено встраивать карту (например: https://example.com). Разрешены только точные origin; wildcard (*) не поддерживается.',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        'Каждый origin должен быть валидным http(s)-origin (например: https://example.com) без пути, query, hash и *',
+      allowedOriginsNoData: 'Нажмите Enter, чтобы добавить этот origin.',
+      allowedOriginsAddCurrent: 'Добавить текущий origin',
       seoKeywords: 'Meta-ключевые слова (необязательно)',
       keywordsHint: 'Необязательно. До 5 ключевых слов (ввод и Enter или запятая).',
       keywordPlaceholder: 'Введите ключевое слово и нажмите Enter.',

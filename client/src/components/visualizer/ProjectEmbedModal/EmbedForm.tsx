@@ -1,15 +1,16 @@
 import { type FC, useCallback, useMemo } from 'react';
-import { Flex, Form, Input, Select, Switch, Typography } from 'antd';
+import { Button, Flex, Form, Input, Select, Switch, Typography } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import type { Rule } from 'antd/es/form';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
+  ALLOWED_ORIGIN_MAX_COUNT,
   KEYWORD_MAX_COUNT,
   SEO_DESCRIPTION_MAX,
   SEO_TITLE_MAX,
   TEXTAREA_STYLES,
 } from './constants';
-import { sanitizeKeywords } from './helpers';
+import { isValidAllowedOrigin, sanitizeAllowedOrigins, sanitizeKeywords } from './helpers';
 import type { ProjectEmbedFormValues } from './types';
 
 type Props = {
@@ -20,6 +21,15 @@ type Props = {
   onFinish: (values: ProjectEmbedFormValues) => void | Promise<void>;
 };
 
+type EmbedFormApi = {
+  setFieldValue: <K extends keyof ProjectEmbedFormValues>(
+    name: K,
+    value: ProjectEmbedFormValues[K],
+  ) => void;
+  validateFields: (names?: Array<keyof ProjectEmbedFormValues>) => Promise<unknown>;
+  getFieldValue: <K extends keyof ProjectEmbedFormValues>(name: K) => ProjectEmbedFormValues[K];
+};
+
 export const EmbedForm: FC<Props> = ({
   form,
   submitting,
@@ -28,6 +38,7 @@ export const EmbedForm: FC<Props> = ({
   onFinish,
 }) => {
   const { t } = useTypedTranslation();
+  const formApi = form as unknown as EmbedFormApi;
 
   const embedEnabled = Form.useWatch('enabled', form) === true;
   const fieldsDisabled = submitting || !embedEnabled;
@@ -78,14 +89,61 @@ export const EmbedForm: FC<Props> = ({
   );
 
   const handleEnabledChange = useCallback(() => {
-    void form.validateFields(['seoTitle', 'seoDescription']).catch(() => {});
-  }, [form]);
+    void formApi.validateFields(['seoTitle', 'seoDescription']).catch(() => {});
+  }, [formApi]);
 
   const handleKeywordsChange = useCallback(
     (tags: string[]) => {
-      form.setFieldValue('keywords', sanitizeKeywords(tags));
+      formApi.setFieldValue('keywords', sanitizeKeywords(tags));
     },
-    [form],
+    [formApi],
+  );
+
+  const allowedOriginsRules = useMemo<Rule[]>(
+    () => [
+      ({ getFieldValue }) => ({
+        validator(_: unknown, value: unknown) {
+          if (!getFieldValue('enabled')) return Promise.resolve();
+          if (!Array.isArray(value)) return Promise.resolve();
+          const allValid = value.every(
+            (origin) => typeof origin === 'string' && isValidAllowedOrigin(origin),
+          );
+          return allValid
+            ? Promise.resolve()
+            : Promise.reject(new Error(t('visualizer.embed.allowedOriginsInvalid')));
+        },
+      }),
+    ],
+    [t],
+  );
+
+  const handleAllowedOriginsChange = useCallback(
+    (tags: string[]) => {
+      formApi.setFieldValue('allowedOrigins', sanitizeAllowedOrigins(tags));
+      void formApi.validateFields(['allowedOrigins']).catch(() => {});
+    },
+    [formApi],
+  );
+
+  const handleAddCurrentOrigin = useCallback(() => {
+    const currentOrigin = window.location.origin;
+    const existing = formApi.getFieldValue('allowedOrigins') ?? [];
+    const next = sanitizeAllowedOrigins([...existing, currentOrigin]);
+    formApi.setFieldValue('allowedOrigins', next);
+    void formApi.validateFields(['allowedOrigins']).catch(() => {});
+  }, [formApi]);
+
+  const allowedOriginsNoData = useMemo(
+    () => (
+      <Typography.Text
+        type="secondary"
+        className="text-xs"
+        data-i18n-key="visualizer.embed.allowedOriginsNoData"
+      >
+        {t('visualizer.embed.allowedOriginsNoData')}
+      </Typography.Text>
+    ),
+    [t],
   );
 
   return (
@@ -140,6 +198,47 @@ export const EmbedForm: FC<Props> = ({
           disabled={fieldsDisabled}
           styles={TEXTAREA_STYLES}
           placeholder={descriptionPlaceholder}
+        />
+      </Form.Item>
+
+      <Form.Item
+        name="allowedOrigins"
+        label={t('visualizer.embed.allowedOrigins')}
+        dependencies={['enabled']}
+        rules={allowedOriginsRules}
+        extra={
+          <Flex vertical gap={6}>
+            <Typography.Text
+              type="secondary"
+              className="text-[11px]! leading-snug"
+              data-i18n-key="visualizer.embed.allowedOriginsHint"
+            >
+              {t('visualizer.embed.allowedOriginsHint')}
+            </Typography.Text>
+            <Button
+              type="link"
+              size="small"
+              className="h-auto! w-fit p-0! text-xs"
+              disabled={fieldsDisabled}
+              onClick={handleAddCurrentOrigin}
+              data-i18n-key="visualizer.embed.allowedOriginsAddCurrent"
+            >
+              {t('visualizer.embed.allowedOriginsAddCurrent')}
+            </Button>
+          </Flex>
+        }
+        data-i18n-key="visualizer.embed.allowedOrigins"
+      >
+        <Select
+          mode="tags"
+          placeholder={t('visualizer.embed.allowedOriginsPlaceholder')}
+          disabled={fieldsDisabled}
+          maxCount={ALLOWED_ORIGIN_MAX_COUNT}
+          tokenSeparators={[',']}
+          className="w-full"
+          notFoundContent={allowedOriginsNoData}
+          onChange={handleAllowedOriginsChange}
+          data-i18n-key="visualizer.embed.allowedOriginsPlaceholder"
         />
       </Form.Item>
 

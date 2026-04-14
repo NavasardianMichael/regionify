@@ -66,6 +66,7 @@ model Project {
   embedSeoTitle         String?  @map("embed_seo_title") @db.VarChar(200)
   embedSeoDescription   String?  @map("embed_seo_description") @db.VarChar(500)
   embedSeoKeywords      Json?    @map("embed_seo_keywords")
+  embedAllowedOrigins   Json?    @map("embed_allowed_origins")
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @updatedAt @map("updated_at")
 
