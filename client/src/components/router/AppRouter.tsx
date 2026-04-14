@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 import { Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
-import { isEmbedPathname, isHomePathname, ROUTES } from '@/constants/routes';
+import { isEmbedPathname, isFullBleedPathname, ROUTES } from '@/constants/routes';
 import { GoogleAnalytics } from '@/components/shared/GoogleAnalytics';
 import { Navigation } from '@/components/shared/Navigation';
 import { PageLoader } from '@/components/shared/PageLoader';
@@ -29,13 +29,13 @@ const EmbedPage = lazy(() => import('@/pages/EmbedPage'));
 function AppLayout() {
   const location = useLocation();
   const isEmbedRoute = isEmbedPathname(location.pathname);
-  const isHomeRoute = isHomePathname(location.pathname);
+  const isFullBleed = isFullBleedPathname(location.pathname);
   const MainOrRegion = isEmbedRoute ? 'div' : 'main';
 
   let mainClassName: string;
   if (isEmbedRoute) {
     mainClassName = 'min-h-0 min-w-0 w-full grow overflow-hidden bg-gray-100';
-  } else if (isHomeRoute) {
+  } else if (isFullBleed) {
     mainClassName = 'grow overflow-y-auto';
   } else {
     mainClassName = `grow overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`;
@@ -44,7 +44,7 @@ function AppLayout() {
   let innerDivClassName: string;
   if (isEmbedRoute) {
     innerDivClassName = 'flex h-full min-h-0 w-full min-w-0 flex-col';
-  } else if (isHomeRoute) {
+  } else if (isFullBleed) {
     innerDivClassName = 'flex min-h-full flex-col';
   } else {
     innerDivClassName = 'flex h-full flex-col items-stretch';

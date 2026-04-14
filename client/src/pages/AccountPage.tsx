@@ -102,7 +102,7 @@ const AccountPage: FC = () => {
       text={t(planRibbonNameKey(accountPlan))}
       color={planRibbonColor(accountPlan)}
       placement="end"
-      rootClassName="mx-auto w-full max-w-144 overflow-visible"
+      rootClassName="m-auto! w-full max-w-144 overflow-visible"
       className="top-3! font-medium"
       data-i18n-key="plans.items.observer.name"
     >

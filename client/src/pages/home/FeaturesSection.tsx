@@ -12,7 +12,7 @@ export const FeaturesSection: FC = () => {
   const { t } = useTypedTranslation();
 
   return (
-    <section className="bg-white px-6 py-16 md:py-20">
+    <section className="bg-gray-50 px-6 py-16 md:py-20">
       <div className="mx-auto w-full max-w-5xl">
         <Flex vertical gap="large">
           <Typography.Title

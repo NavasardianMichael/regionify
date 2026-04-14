@@ -8,6 +8,11 @@ export function isHomePathname(pathname: string): boolean {
   return pathname === '/';
 }
 
+/** True for pages that use full-bleed section layout (no app padding, no gray background). */
+export function isFullBleedPathname(pathname: string): boolean {
+  return pathname === '/' || pathname === '/about';
+}
+
 export const ROUTES = {
   HOME: '/',
   PROJECTS: '/projects',
