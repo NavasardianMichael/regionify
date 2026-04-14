@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     volumes:
-      - ./monitoring/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - '${MONITORING_DIR:?Set MONITORING_DIR to the absolute path of the monitoring directory}/loki/loki-config.yml:/etc/loki/config.yml:ro'
       - loki_data:/loki
     command: -config.file=/etc/loki/config.yml
     healthcheck:
@@ -87,7 +87,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     volumes:
-      - ./monitoring/promtail/promtail-prod-config.yml:/etc/promtail/config.yml:ro
+      - '${MONITORING_DIR:?Set MONITORING_DIR to the absolute path of the monitoring directory}/promtail/promtail-prod-config.yml:/etc/promtail/config.yml:ro'
       - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/config.yml
     depends_on:
@@ -104,8 +104,8 @@ services:
     ports:
       - '127.0.0.1:${GRAFANA_PORT:-8002}:3000'
     volumes:
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - '${MONITORING_DIR:?Set MONITORING_DIR to the absolute path of the monitoring directory}/grafana/provisioning:/etc/grafana/provisioning:ro'
+      - '${MONITORING_DIR:?Set MONITORING_DIR to the absolute path of the monitoring directory}/grafana/dashboards:/var/lib/grafana/dashboards:ro'
       - grafana_data:/var/lib/grafana
     env_file:
       - '${REGIONIFY_ENV_FILE:?Set REGIONIFY_ENV_FILE to the absolute path of server/.env.production}'

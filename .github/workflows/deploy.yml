@@ -11,7 +11,8 @@
 #   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
 #   $APP_DIR/server/.env.production  (persistent; not inside a release)
 #   $APP_DIR/server/releases/<sha>/  and  $APP_DIR/server/current -> releases/<sha>
-# Run: cd $APP_DIR/server/current && export REGIONIFY_ENV_FILE=$APP_DIR/server/.env.production && docker compose -f docker-compose.prod.yml ...
+#   $APP_DIR/monitoring/             (stable; synced each deploy, not inside releases)
+# Run: cd $APP_DIR/server/current && export REGIONIFY_ENV_FILE=$APP_DIR/server/.env.production && export MONITORING_DIR=$APP_DIR/monitoring && docker compose -f docker-compose.prod.yml ...
 #
 # Migration: if you used $APP_DIR/docker before, compose down from there once, deploy
 # from CI, then remove the old docker/ tree. Align docker volume project name with
@@ -325,9 +326,15 @@ jobs:
           mkdir -p "$NEW_RELEASE"
           tar -xzf /tmp/server-build.tar.gz -C "$NEW_RELEASE"
           install -m 600 /tmp/env.production "$ENV_TARGET"
+
+          # Monitoring configs live outside releases so bind-mounted files
+          # aren't subject to release rotation (avoids root-owned permission issues).
+          rsync -a --delete "$NEW_RELEASE/monitoring/" "$APP_DIR/monitoring/"
+
           ln -sfn "$NEW_RELEASE" "$APP_DIR/server/current"
           cd "$APP_DIR/server/current"
           export REGIONIFY_ENV_FILE="$ENV_TARGET"
+          export MONITORING_DIR="$APP_DIR/monitoring"
 
           echo "Verifying env file at $ENV_TARGET"
           ENV_LINES=$(wc -l < "$ENV_TARGET")
@@ -347,7 +354,7 @@ jobs:
           docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
           docker image prune -f
-          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf || true
           rm -f /tmp/server-build.tar.gz /tmp/env.production
           echo "Server deployed"
           EOF
