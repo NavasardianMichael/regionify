@@ -44,8 +44,11 @@ function isApiPath(path: string): boolean {
 }
 
 function buildFrameAncestorsDirective(allowedOrigins: string[] | null): string {
-  const safeOrigins = (allowedOrigins ?? []).filter((origin) => {
-    if (!origin || origin.includes('*')) return false;
+  const origins = allowedOrigins ?? [];
+  if (origins.includes('*')) return 'frame-ancestors *';
+
+  const safeOrigins = origins.filter((origin) => {
+    if (!origin) return false;
     try {
       const url = new URL(origin);
       return url.protocol === 'http:' || url.protocol === 'https:';
