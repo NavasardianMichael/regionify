@@ -29,6 +29,7 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
         title: null,
         description: null,
         keywords: null,
+        allowedOrigins: null,
       },
     },
     createdAt: '',
@@ -142,7 +143,11 @@ const EmbedPage: FC = () => {
         </header>
       )}
       <Flex className="min-h-0 min-w-0 flex-1 overflow-hidden">
-        <MapViewer className="min-h-0 min-w-0 flex-1" flatEmbedChrome />
+        <MapViewer
+          className="min-h-0 min-w-0 flex-1"
+          flatEmbedChrome
+          enforceObserverWatermark={false}
+        />
       </Flex>
     </Flex>
   );

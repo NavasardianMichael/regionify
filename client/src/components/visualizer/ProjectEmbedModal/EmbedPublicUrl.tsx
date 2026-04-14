@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { LinkOutlined } from '@ant-design/icons';
+import { CopyOutlined } from '@ant-design/icons';
 import { Button, Flex, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -10,7 +10,6 @@ type Props = {
   publicPagePath: string;
   embedPageUrl: string;
   submitting: boolean;
-  copyLabelUrl: string;
   onCopyUrl: () => void;
 };
 
@@ -20,7 +19,6 @@ export const EmbedPublicUrl: FC<Props> = ({
   publicPagePath,
   embedPageUrl,
   submitting,
-  copyLabelUrl,
   onCopyUrl,
 }) => {
   const { t } = useTypedTranslation();
@@ -42,31 +40,29 @@ export const EmbedPublicUrl: FC<Props> = ({
   }
 
   return (
-    <>
-      <div className="w-full min-w-0">
-        <AppNavLink
-          to={publicPagePath}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block max-w-full min-w-0 truncate text-sm"
-          title={embedPageUrl}
-        >
-          {embedPageUrl}
-        </AppNavLink>
-      </div>
-      <Flex>
-        <Button
-          type="dashed"
-          size="small"
-          icon={<LinkOutlined />}
-          disabled={submitting}
-          className="w-fit"
-          onClick={onCopyUrl}
-          data-i18n-key="visualizer.embed.copyUrl"
-        >
-          {copyLabelUrl}
-        </Button>
-      </Flex>
-    </>
+    <Flex
+      gap="small"
+      align="center"
+      justify="space-between"
+      className="min-w-0 rounded border border-neutral-200 bg-white px-2! py-1!"
+    >
+      <AppNavLink
+        to={publicPagePath}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sm break-all underline!"
+        title={embedPageUrl}
+      >
+        {embedPageUrl}
+      </AppNavLink>
+      <Button
+        type="text"
+        size="small"
+        icon={<CopyOutlined />}
+        disabled={submitting}
+        onClick={onCopyUrl}
+        data-i18n-key="visualizer.embed.copyUrl"
+      />
+    </Flex>
   );
 };

@@ -73,10 +73,10 @@ const en: CommonNs = {
       'Export smooth video timelines ready to embed in presentations, social media, or video projects.',
     showcasePublicPageTitle: 'Public map page with SEO',
     showcasePublicPageDesc:
-      'Share your map on a dedicated public URL with customizable title, description, and social preview image for search engines and link previews.',
+      'Share your interactive map on a dedicated public URL with customizable title, description, and social preview image for search engines and link previews.',
     showcaseEmbedTitle: 'Embeddable iframe',
     showcaseEmbedDesc:
-      'Place an interactive map anywhere on your website, blog, or app with a simple iframe snippet — fully responsive and always up to date.',
+      'Place your interactive map anywhere on your website, blog, or app with a simple iframe snippet — fully responsive and always up to date.',
   },
   about: {
     title: 'About Regionify',
@@ -334,7 +334,7 @@ const en: CommonNs = {
       title: 'Public embed',
       modalTitle: 'Public map embed',
       openButton: 'Embed',
-      intro: 'Share a read-only map on your site (iframe) or as a link.',
+      intro: 'Share a read-only map on your site via iframe, or as a standalone hosted page.',
       publicToggle: 'Enable public embed',
       seoTitle: 'Page title (SEO)',
       titleMax: 'Use at most 200 characters',
@@ -342,6 +342,19 @@ const en: CommonNs = {
       seoDescription: 'Meta description (SEO)',
       descriptionMax: 'Use at most 150 characters',
       descriptionRequired: 'Meta description is required when public embed is enabled',
+      allowedOrigins: 'Trusted origins',
+      allowedOriginsHint:
+        'Add at least one origin allowed to embed this map (e.g.: https://example.com). Only exact origins are supported.',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        'Each origin must be a valid http(s) origin (e.g.: https://example.com) without path, query, hash, or *',
+      allowedOriginsNoData: 'Press Enter to add this origin.',
+      allowedOriginsAddCurrent: 'Add current origin',
       seoKeywords: 'Meta keywords (optional)',
       keywordsHint: 'Optional. Add up to 5 keywords (type and press Enter or comma).',
       keywordPlaceholder: 'Write a keyword and press Enter.',

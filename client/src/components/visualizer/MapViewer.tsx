@@ -44,6 +44,8 @@ type MapViewerProps = {
   showPlanRibbon?: boolean;
   /** Public embed: no card border or radius on the map frame. */
   flatEmbedChrome?: boolean;
+  /** When false, do not force observer watermark behavior based on current user plan. */
+  enforceObserverWatermark?: boolean;
 };
 
 /** `Badge.Ribbon` puts `className` on the ribbon tab; `rootClassName` targets `.ant-ribbon-wrapper`. */
@@ -59,6 +61,7 @@ const MapViewer: FC<MapViewerProps> = ({
   className = '',
   showPlanRibbon = false,
   flatEmbedChrome = false,
+  enforceObserverWatermark = true,
 }) => {
   const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
@@ -126,14 +129,15 @@ const MapViewer: FC<MapViewerProps> = ({
     return t('visualizer.mapAriaMapOf', { region });
   }, [dateLocale, selectedCountryId, t]);
 
+  const isObserverWatermarkForced = enforceObserverWatermark && plan === PLANS.observer;
   const showWatermarkOverlay = useMemo(
-    () => plan === PLANS.observer || picture.showWatermark,
-    [plan, picture.showWatermark],
+    () => isObserverWatermarkForced || picture.showWatermark,
+    [isObserverWatermarkForced, picture.showWatermark],
   );
 
   /** Lift only when watermark is drawn inside the map frame (not with bottom legend — see layout below). */
   const zoomStackExtraBottomPx =
-    plan === PLANS.observer && !showBottomLegend ? OBSERVER_PLAN_ZOOM_STACK_LIFT_PX : 0;
+    isObserverWatermarkForced && !showBottomLegend ? OBSERVER_PLAN_ZOOM_STACK_LIFT_PX : 0;
 
   const mapBackgroundStyle = useMemo(
     () => ({

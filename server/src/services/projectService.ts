@@ -13,6 +13,7 @@ export type ProjectEmbedSeoPublic = {
   title: string | null;
   description: string | null;
   keywords: string[] | null;
+  allowedOrigins: string[] | null;
 };
 
 export type ProjectEmbedPublic = {
@@ -40,6 +41,12 @@ function embedKeywordsFromDb(value: unknown): string[] | null {
   return value.filter((k): k is string => typeof k === 'string');
 }
 
+function embedAllowedOriginsFromDb(value: unknown): string[] | null {
+  if (value == null) return null;
+  if (!Array.isArray(value)) return null;
+  return value.filter((origin): origin is string => typeof origin === 'string');
+}
+
 function toEmbedPublic(project: Project): ProjectEmbedPublic {
   return {
     enabled: project.embedEnabled,
@@ -48,6 +55,7 @@ function toEmbedPublic(project: Project): ProjectEmbedPublic {
       title: project.embedSeoTitle,
       description: project.embedSeoDescription,
       keywords: embedKeywordsFromDb(project.embedSeoKeywords),
+      allowedOrigins: embedAllowedOriginsFromDb(project.embedAllowedOrigins),
     },
   };
 }

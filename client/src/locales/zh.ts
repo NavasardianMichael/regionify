@@ -65,10 +65,10 @@ const zh: CommonNs = {
     showcaseMp4Desc: '导出流畅的视频时间轴，可用于演示文稿、社交媒体或视频项目。',
     showcasePublicPageTitle: '带 SEO 的公开地图页面',
     showcasePublicPageDesc:
-      '在专属公开链接上分享地图，可自定义标题、描述和社交预览图，优化搜索引擎和链接预览效果。',
+      '在专属公开链接上分享您的互动地图，可自定义标题、描述和社交预览图，优化搜索引擎和链接预览效果。',
     showcaseEmbedTitle: '可嵌入的 iframe',
     showcaseEmbedDesc:
-      '通过简单的 iframe 代码片段将交互式地图放入任何网站、博客或应用中——完全响应式，始终保持最新。',
+      '通过简单的 iframe 代码片段将您的交互式地图放入任何网站、博客或应用中——完全响应式，始终保持最新。',
   },
   about: {
     title: '关于 Regionify',
@@ -321,7 +321,7 @@ const zh: CommonNs = {
       title: '公开嵌入',
       modalTitle: '公开地图嵌入',
       openButton: '嵌入',
-      intro: '通过链接或 iframe 分享只读地图。',
+      intro: '通过 iframe 在您的网站上分享只读地图，或作为独立托管页面。',
       publicToggle: '启用公开嵌入',
       seoTitle: '页面标题（SEO）',
       titleMax: '最多 200 个字符',
@@ -329,6 +329,19 @@ const zh: CommonNs = {
       seoDescription: 'Meta 描述（SEO）',
       descriptionMax: '最多 150 个字符',
       descriptionRequired: '启用公开嵌入时必须填写 Meta 描述',
+      allowedOrigins: '受信任来源',
+      allowedOriginsHint:
+        '可选。添加允许嵌入此地图的来源（例如：https://example.com）。仅支持精确来源，不支持通配符（*）。',
+      allowedOriginsPlaceholder: 'https://example.com',
+      allowedOriginsInvalid:
+        '每个来源都必须是有效的 http(s) 来源（例如：https://example.com），且不能包含路径、查询、哈希或 *',
+      allowedOriginsNoData: '按 Enter 添加该来源。',
+      allowedOriginsAddCurrent: '添加当前来源',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       seoKeywords: 'Meta 关键词（可选）',
       keywordsHint: '可选。最多 5 个关键词（输入后按回车或逗号）。',
       keywordPlaceholder: '输入关键词后按回车。',

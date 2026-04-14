@@ -16,6 +16,29 @@ import { generalLimiter } from '@/middleware/rateLimiter.js';
 import { apiRoutes } from '@/routes/index.js';
 import { setupWebClient } from '@/web/setupWebClient.js';
 
+function toOrigin(value: string): string {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return value;
+  }
+}
+
+function deriveApiOriginFromClientUrl(clientUrl: string): string | null {
+  try {
+    const parsed = new URL(clientUrl);
+    if (parsed.hostname.startsWith('api.')) return null;
+
+    const hostnameWithoutWww = parsed.hostname.replace(/^www\./, '');
+    const apiUrl = new URL(parsed.origin);
+    apiUrl.hostname = `api.${hostnameWithoutWww}`;
+
+    return apiUrl.origin;
+  } catch {
+    return null;
+  }
+}
+
 export function createApp(): express.Application {
   const app = express();
 
@@ -23,7 +46,16 @@ export function createApp(): express.Application {
   app.set('trust proxy', 1);
 
   // Security headers
-  const apiUrl = env.API_URL ?? env.CLIENT_URL;
+  const connectSrcValues = new Set<string>(["'self'", toOrigin(env.CLIENT_URL)]);
+  if (env.API_URL) {
+    connectSrcValues.add(toOrigin(env.API_URL));
+  }
+
+  const derivedApiOrigin = deriveApiOriginFromClientUrl(env.CLIENT_URL);
+  if (derivedApiOrigin) {
+    connectSrcValues.add(derivedApiOrigin);
+  }
+
   app.use(
     helmet({
       contentSecurityPolicy: isProd
@@ -39,7 +71,7 @@ export function createApp(): express.Application {
               scriptSrc: ["'self'"],
               scriptSrcAttr: ["'none'"],
               styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-              connectSrc: ["'self'", apiUrl],
+              connectSrc: [...connectSrcValues],
               upgradeInsecureRequests: [],
             },
           }

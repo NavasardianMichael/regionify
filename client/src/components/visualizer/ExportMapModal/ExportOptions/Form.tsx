@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+import { NavLink } from 'react-router-dom';
 import { DownloadOutlined, InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -106,7 +107,18 @@ export const Form: FC<FormProps> = (props) => {
               </Typography.Text>
               {limits.pictureQualityLimit && (
                 <Tooltip
-                  title={`${t('visualizer.exportModal.qualityLimited', { max: maxQuality })} ${t('visualizer.exportModal.upgradeToExplorer', { planName: t('plans.items.explorer.name') })}${t('visualizer.exportModal.qualityFullHint')}`}
+                  title={
+                    <span>
+                      {t('visualizer.exportModal.qualityLimited', { max: maxQuality })}{' '}
+                      <NavLink
+                        to={ROUTES.BILLING}
+                        className="text-white! underline! underline-offset-2! hover:text-white!"
+                      >
+                        {explorerUpgradeLabel}
+                      </NavLink>
+                      {t('visualizer.exportModal.qualityFullHint')}
+                    </span>
+                  }
                 >
                   <InfoCircleOutlined className="shrink-0 cursor-help text-gray-400" />
                 </Tooltip>

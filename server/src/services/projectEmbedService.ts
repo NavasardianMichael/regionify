@@ -44,6 +44,13 @@ function toKeywordArray(value: unknown): string[] | null {
   return value.filter((k): k is string => typeof k === 'string');
 }
 
+function toAllowedOriginsArray(value: unknown): string[] | null {
+  if (value === null || value === undefined) return null;
+  if (!Array.isArray(value)) return null;
+  const normalized = value.filter((origin): origin is string => typeof origin === 'string');
+  return Array.from(new Set(normalized));
+}
+
 export const projectEmbedService = {
   async getPublicPayloadByToken(token: string): Promise<PublicEmbedPayload> {
     const project = await projectRepository.findByEmbedToken(token);
@@ -68,6 +75,7 @@ export const projectEmbedService = {
     title: string;
     description: string;
     keywords: string | null;
+    allowedOrigins: string[] | null;
     projectName: string;
     htmlLang: string;
     ogLocale: string;
@@ -95,6 +103,7 @@ export const projectEmbedService = {
       title,
       description,
       keywords,
+      allowedOrigins: toAllowedOriginsArray(project.embedAllowedOrigins),
       projectName: project.name,
       htmlLang,
       ogLocale,
@@ -143,6 +152,10 @@ export const projectEmbedService = {
       seoIn === undefined || seoIn.keywords === undefined
         ? (existing.embedSeoKeywords as string[] | null)
         : seoIn.keywords;
+    const embedAllowedOrigins =
+      seoIn === undefined || seoIn.allowedOrigins === undefined
+        ? (existing.embedAllowedOrigins as string[] | null)
+        : seoIn.allowedOrigins;
 
     const embedSeoTitle = input.enabled ? (seoIn?.title ?? '').trim().slice(0, 200) : null;
 
@@ -161,6 +174,7 @@ export const projectEmbedService = {
       embedSeoTitle,
       embedSeoDescription,
       embedSeoKeywords: embedSeoKeywords as object | null,
+      embedAllowedOrigins: embedAllowedOrigins as object | null,
     });
 
     if (!updated) {
@@ -179,6 +193,7 @@ export const projectEmbedService = {
           title: updated.embedSeoTitle,
           description: updated.embedSeoDescription,
           keywords: toKeywordArray(updated.embedSeoKeywords),
+          allowedOrigins: toAllowedOriginsArray(updated.embedAllowedOrigins),
         },
       },
     };

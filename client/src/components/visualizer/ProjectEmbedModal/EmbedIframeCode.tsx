@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { CopyOutlined } from '@ant-design/icons';
-import { Button, Flex, Spin, Typography } from 'antd';
+import { Button, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type Props = {
@@ -15,51 +15,41 @@ export const EmbedIframeCode: FC<Props> = ({
   iframeSnippet,
   pendingToken,
   submitting,
-  copyLabelEmbed,
   onCopyEmbed,
 }) => {
   const { t } = useTypedTranslation();
 
-  const renderContent = (): React.ReactNode => {
-    if (pendingToken) {
-      return <Spin size="small" />;
-    }
+  if (pendingToken) {
+    return <Spin size="small" />;
+  }
 
-    if (!iframeSnippet) {
-      return (
-        <Typography.Text
-          type="secondary"
-          className="text-sm"
-          data-i18n-key="visualizer.embed.saveToGenerateLink"
-        >
-          {t('visualizer.embed.saveToGenerateLink')}
-        </Typography.Text>
-      );
-    }
-
+  if (!iframeSnippet) {
     return (
-      <pre className="mb-0 max-h-48 min-h-0 overflow-auto rounded border border-neutral-200 bg-white px-3 py-2 font-mono text-sm leading-relaxed whitespace-pre text-neutral-800">
-        {iframeSnippet}
-      </pre>
+      <Typography.Text
+        type="secondary"
+        className="text-sm"
+        data-i18n-key="visualizer.embed.saveToGenerateLink"
+      >
+        {t('visualizer.embed.saveToGenerateLink')}
+      </Typography.Text>
     );
-  };
+  }
 
   return (
-    <>
-      {renderContent()}
-      <Flex>
+    <div className="relative rounded border border-neutral-200 bg-white">
+      <pre className="mb-0 max-h-48 min-h-0 overflow-auto px-3 py-2 pr-9 font-mono text-sm leading-relaxed whitespace-pre text-neutral-800">
+        {iframeSnippet}
+      </pre>
+      <div className="absolute top-1.5 right-2">
         <Button
-          type="dashed"
+          type="text"
           size="small"
           icon={<CopyOutlined />}
-          disabled={submitting || !iframeSnippet}
-          className="w-fit"
+          disabled={submitting}
           onClick={onCopyEmbed}
           data-i18n-key="visualizer.embed.copyEmbed"
-        >
-          {copyLabelEmbed}
-        </Button>
-      </Flex>
-    </>
+        />
+      </div>
+    </div>
   );
 };

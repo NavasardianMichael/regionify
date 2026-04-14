@@ -1,5 +1,7 @@
 import { getEmbedRoute } from '@/constants/routes';
 import {
+  ALLOWED_ORIGIN_MAX_COUNT,
+  ALLOWED_ORIGIN_MAX_LENGTH,
   IFRAME_HEIGHT_PX,
   IFRAME_TITLE,
   KEYWORD_MAX_COUNT,
@@ -22,6 +24,51 @@ export function sanitizeKeywords(tags: string[]): string[] {
     .map((t) => t.trim().slice(0, KEYWORD_MAX_LENGTH))
     .filter((t) => t.length > 0)
     .slice(0, KEYWORD_MAX_COUNT);
+}
+
+function normalizeOrigin(value: string): string {
+  const url = new URL(value.trim());
+  return `${url.protocol.toLowerCase()}//${url.host.toLowerCase()}`;
+}
+
+export function isValidAllowedOrigin(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.includes('*')) return false;
+  try {
+    const url = new URL(trimmed);
+    if (!(url.protocol === 'http:' || url.protocol === 'https:')) return false;
+    if (!url.hostname) return false;
+    if (url.username || url.password) return false;
+    if (url.search || url.hash) return false;
+    return url.pathname === '/' || url.pathname === '';
+  } catch {
+    return false;
+  }
+}
+
+export function sanitizeAllowedOrigins(tags: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of tags) {
+    const trimmed = raw.trim().slice(0, ALLOWED_ORIGIN_MAX_LENGTH);
+    if (!trimmed) continue;
+    if (!isValidAllowedOrigin(trimmed)) {
+      result.push(trimmed);
+      continue;
+    }
+    const normalized = normalizeOrigin(trimmed);
+    if (!seen.has(normalized)) {
+      seen.add(normalized);
+      result.push(normalized);
+    }
+    if (result.length >= ALLOWED_ORIGIN_MAX_COUNT) break;
+  }
+  return result;
+}
+
+export function normalizeAllowedOrigins(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return sanitizeAllowedOrigins(value.filter((x): x is string => typeof x === 'string'));
 }
 
 export function buildAutoEmbedTitle(projectName: string): string {

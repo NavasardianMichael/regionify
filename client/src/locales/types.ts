@@ -291,6 +291,15 @@ export type CommonNs = {
       seoDescription: string;
       descriptionMax: string;
       descriptionRequired: string;
+      allowedOrigins: string;
+      allowedOriginsHint: string;
+      allowedOriginsPlaceholder: string;
+      allowedOriginsInvalid: string;
+      allowedOriginsNoData: string;
+      allowedOriginsAddCurrent: string;
+      allowedOriginsAllowAll: string;
+      allowedOriginsAllowAllWarning: string;
+      allowedOriginsRequired: string;
       seoKeywords: string;
       keywordsHint: string;
       keywordPlaceholder: string;

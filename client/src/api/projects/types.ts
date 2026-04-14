@@ -61,6 +61,7 @@ export type ProjectEmbedSeo = {
   title: string | null;
   description: string | null;
   keywords: string[] | null;
+  allowedOrigins: string[] | null;
 };
 
 /** Public embed settings for a saved project (API shape). */
@@ -89,6 +90,7 @@ export type ProjectEmbedUpdatePayload = {
     title?: string | null;
     description?: string | null;
     keywords?: string[] | null;
+    allowedOrigins?: string[] | null;
   };
 };
 

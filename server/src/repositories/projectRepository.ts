@@ -19,6 +19,7 @@ export type ProjectUpdate = Partial<Omit<ProjectCreate, 'userId'>> & {
   embedSeoTitle?: string | null;
   embedSeoDescription?: string | null;
   embedSeoKeywords?: object | null;
+  embedAllowedOrigins?: object | null;
 };
 
 const JSON_FIELDS = [
@@ -27,6 +28,7 @@ const JSON_FIELDS = [
   'legendStyles',
   'legendData',
   'embedSeoKeywords',
+  'embedAllowedOrigins',
 ] as const;
 
 /** Converts plain `null` to `Prisma.JsonNull` for nullable JSON columns */
