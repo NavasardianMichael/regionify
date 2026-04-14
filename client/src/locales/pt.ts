@@ -337,7 +337,8 @@ const pt: CommonNs = {
       title: 'Incorporação pública',
       modalTitle: 'Incorporação pública do mapa',
       openButton: 'Incorporar',
-      intro: 'Partilhe o mapa só de leitura com ligação ou iframe.',
+      intro:
+        'Partilhe um mapa só de leitura no seu site através de iframe, ou como página alojada autónoma.',
       publicToggle: 'Ativar incorporação pública',
       seoTitle: 'Título da página (SEO)',
       titleMax: 'No máximo 200 caracteres',
@@ -354,6 +355,11 @@ const pt: CommonNs = {
         'Cada origem deve ser uma origem http(s) válida (ex.: https://example.com), sem caminho, query, hash ou *',
       allowedOriginsNoData: 'Prima Enter para adicionar esta origem.',
       allowedOriginsAddCurrent: 'Adicionar origem atual',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       seoKeywords: 'Meta palavras-chave (opcional)',
       keywordsHint: 'Opcional. Até 5 palavras-chave (escreva e prima Enter ou vírgula).',
       keywordPlaceholder: 'Escreva uma palavra-chave e prima Enter.',

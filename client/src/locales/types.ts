@@ -297,6 +297,9 @@ export type CommonNs = {
       allowedOriginsInvalid: string;
       allowedOriginsNoData: string;
       allowedOriginsAddCurrent: string;
+      allowedOriginsAllowAll: string;
+      allowedOriginsAllowAllWarning: string;
+      allowedOriginsRequired: string;
       seoKeywords: string;
       keywordsHint: string;
       keywordPlaceholder: string;

@@ -4,8 +4,9 @@ export type ProjectEmbedFormValues = {
   enabled: boolean;
   seoTitle: string;
   seoDescription: string;
-  allowedOrigins: string[];
   keywords: string[];
+  allowedOriginsAllowAll: boolean;
+  allowedOrigins: string[];
 };
 
 export type ProjectEmbedModalProps = {

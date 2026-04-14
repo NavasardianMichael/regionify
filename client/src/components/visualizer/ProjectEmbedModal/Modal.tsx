@@ -36,8 +36,13 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   const user = useProfileStore(selectUser);
   const updateProjectInList = useProjectsStore(selectUpdateProjectInList);
 
-  const { defaultEmbedTitle, defaultSeoDescription, defaultKeywords, defaultAllowedOrigins } =
-    useEmbedSEOFieldsDefaultValues(project);
+  const {
+    defaultEmbedTitle,
+    defaultSeoDescription,
+    defaultKeywords,
+    defaultAllowedOrigins,
+    defaultAllowedOriginsAllowAll,
+  } = useEmbedSEOFieldsDefaultValues(project);
   const { titlePlaceholder, descriptionPlaceholder } = useEmbedSEOFieldPlaceholders({
     defaultEmbedTitle,
     projectName: project.name,
@@ -65,8 +70,9 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       enabled: project.embed.enabled,
       seoTitle: storedTitle || defaultEmbedTitle,
       seoDescription: storedDescription || defaultSeoDescription,
-      allowedOrigins: defaultAllowedOrigins,
       keywords: defaultKeywords,
+      allowedOriginsAllowAll: defaultAllowedOriginsAllowAll,
+      allowedOrigins: defaultAllowedOrigins,
     });
     setSavedToken(null);
   }, [
@@ -79,6 +85,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
     defaultEmbedTitle,
     defaultSeoDescription,
     defaultAllowedOrigins,
+    defaultAllowedOriginsAllowAll,
     defaultKeywords,
   ]);
 
@@ -94,7 +101,6 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
 
   const iframeSnippet = useMemo(() => buildIframeSnippet(embedPageUrl), [embedPageUrl]);
 
-  const copyLabelUrl = t('visualizer.embed.copyUrl');
   const copyLabelEmbed = t('visualizer.embed.copyEmbed');
 
   const copyText = useCallback(
@@ -114,7 +120,9 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       setSubmitting(true);
       try {
         const kw = sanitizeKeywords(values.keywords);
-        const allowedOrigins = sanitizeAllowedOrigins(values.allowedOrigins);
+        const allowedOrigins = values.allowedOriginsAllowAll
+          ? ['*']
+          : sanitizeAllowedOrigins(values.allowedOrigins);
         const embedResult = await updateProjectEmbed(project.id, {
           enabled: values.enabled,
           seo: {
@@ -190,7 +198,6 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         iframeSnippet={iframeSnippet}
         submitting={submitting}
         copyText={copyText}
-        copyLabelUrl={copyLabelUrl}
         copyLabelEmbed={copyLabelEmbed}
       />
     </Modal>

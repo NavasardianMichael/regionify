@@ -345,7 +345,8 @@ const de: CommonNs = {
       title: 'Öffentliche Einbettung',
       modalTitle: 'Öffentliche Karten-Einbettung',
       openButton: 'Einbetten',
-      intro: 'Karte nur lesend per Link oder iframe teilen.',
+      intro:
+        'Teilen Sie eine schreibgeschützte Karte auf Ihrer Website per iframe, oder nutzen Sie eine eigenständig gehostete Seite.',
       publicToggle: 'Öffentliche Einbettung aktivieren',
       seoTitle: 'Seitentitel (SEO)',
       titleMax: 'Höchstens 200 Zeichen',
@@ -362,6 +363,11 @@ const de: CommonNs = {
         'Jede Origin muss eine gültige http(s)-Origin sein (z. B. https://example.com) ohne Pfad, Query, Hash oder *',
       allowedOriginsNoData: 'Drücken Sie Enter, um diese Origin hinzuzufügen.',
       allowedOriginsAddCurrent: 'Aktuelle Origin hinzufügen',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       seoKeywords: 'Meta-Schlüsselwörter (optional)',
       keywordsHint: 'Optional. Bis zu 5 Schlüsselwörter (Eingabe und Enter oder Komma).',
       keywordPlaceholder: 'Schlüsselwort eingeben und Enter drücken.',

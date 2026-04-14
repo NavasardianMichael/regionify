@@ -341,7 +341,8 @@ const es: CommonNs = {
       title: 'Incrustación pública',
       modalTitle: 'Incrustación pública del mapa',
       openButton: 'Insertar',
-      intro: 'Comparte el mapa de solo lectura con un enlace o iframe.',
+      intro:
+        'Comparta un mapa de solo lectura en su sitio mediante iframe, o como página alojada independiente.',
       publicToggle: 'Activar incrustación pública',
       seoTitle: 'Título de página (SEO)',
       titleMax: 'Como máximo 200 caracteres',
@@ -358,6 +359,11 @@ const es: CommonNs = {
         'Cada origen debe ser un origen http(s) válido (por ejemplo: https://example.com) sin ruta, query, hash ni *',
       allowedOriginsNoData: 'Pulsa Enter para añadir este origen.',
       allowedOriginsAddCurrent: 'Añadir origen actual',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       seoKeywords: 'Meta palabras clave (opcional)',
       keywordsHint: 'Opcional. Hasta 5 palabras clave (escribe y pulsa Intro o coma).',
       keywordPlaceholder: 'Escribe una palabra clave y pulsa Intro.',

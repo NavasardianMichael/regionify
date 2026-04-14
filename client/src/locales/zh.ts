@@ -321,7 +321,7 @@ const zh: CommonNs = {
       title: '公开嵌入',
       modalTitle: '公开地图嵌入',
       openButton: '嵌入',
-      intro: '通过链接或 iframe 分享只读地图。',
+      intro: '通过 iframe 在您的网站上分享只读地图，或作为独立托管页面。',
       publicToggle: '启用公开嵌入',
       seoTitle: '页面标题（SEO）',
       titleMax: '最多 200 个字符',
@@ -337,6 +337,11 @@ const zh: CommonNs = {
         '每个来源都必须是有效的 http(s) 来源（例如：https://example.com），且不能包含路径、查询、哈希或 *',
       allowedOriginsNoData: '按 Enter 添加该来源。',
       allowedOriginsAddCurrent: '添加当前来源',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       seoKeywords: 'Meta 关键词（可选）',
       keywordsHint: '可选。最多 5 个关键词（输入后按回车或逗号）。',
       keywordPlaceholder: '输入关键词后按回车。',

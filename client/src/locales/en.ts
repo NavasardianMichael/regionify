@@ -334,7 +334,7 @@ const en: CommonNs = {
       title: 'Public embed',
       modalTitle: 'Public map embed',
       openButton: 'Embed',
-      intro: 'Share a read-only map on your site (iframe) or as a link.',
+      intro: 'Share a read-only map on your site via iframe, or as a standalone hosted page.',
       publicToggle: 'Enable public embed',
       seoTitle: 'Page title (SEO)',
       titleMax: 'Use at most 200 characters',
@@ -344,10 +344,15 @@ const en: CommonNs = {
       descriptionRequired: 'Meta description is required when public embed is enabled',
       allowedOrigins: 'Trusted origins',
       allowedOriginsHint:
-        'Optional. Add origins allowed to embed this map (for example: https://example.com). Only exact origins are allowed; wildcard (*) is not supported.',
+        'Add at least one origin allowed to embed this map (e.g.: https://example.com). Only exact origins are supported.',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       allowedOriginsPlaceholder: 'https://example.com',
       allowedOriginsInvalid:
-        'Each origin must be a valid http(s) origin (for example: https://example.com) without path, query, hash, or *',
+        'Each origin must be a valid http(s) origin (e.g.: https://example.com) without path, query, hash, or *',
       allowedOriginsNoData: 'Press Enter to add this origin.',
       allowedOriginsAddCurrent: 'Add current origin',
       seoKeywords: 'Meta keywords (optional)',

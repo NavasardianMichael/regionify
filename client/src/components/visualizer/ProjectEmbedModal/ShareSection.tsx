@@ -12,7 +12,6 @@ type Props = {
   iframeSnippet: string;
   submitting: boolean;
   copyText: (label: string, text: string) => Promise<void>;
-  copyLabelUrl: string;
   copyLabelEmbed: string;
 };
 
@@ -23,14 +22,13 @@ export const ShareSection: FC<Props> = ({
   iframeSnippet,
   submitting,
   copyText,
-  copyLabelUrl,
   copyLabelEmbed,
 }) => {
   const { t } = useTypedTranslation();
 
   const handleCopyUrl = useCallback(() => {
-    void copyText(copyLabelUrl, embedPageUrl);
-  }, [copyLabelUrl, copyText, embedPageUrl]);
+    void copyText(t('visualizer.embed.copyUrl'), embedPageUrl);
+  }, [copyText, embedPageUrl, t]);
 
   const handleCopyEmbed = useCallback(() => {
     void copyText(copyLabelEmbed, iframeSnippet);
@@ -48,7 +46,7 @@ export const ShareSection: FC<Props> = ({
     <Flex vertical gap="middle" className="mt-6! min-w-0">
       <Flex vertical gap="small">
         <Typography.Text
-          className="text-sm font-medium text-neutral-900"
+          className="text-sm font-semibold text-neutral-900"
           data-i18n-key="visualizer.embed.publicPage"
         >
           {t('visualizer.embed.publicPage')}
@@ -59,13 +57,12 @@ export const ShareSection: FC<Props> = ({
           publicPagePath={publicPagePath}
           embedPageUrl={embedPageUrl}
           submitting={submitting}
-          copyLabelUrl={copyLabelUrl}
           onCopyUrl={handleCopyUrl}
         />
       </Flex>
       <Flex vertical gap="small" className="min-w-0">
         <Typography.Text
-          className="text-sm font-medium text-neutral-900"
+          className="text-sm font-semibold text-neutral-900"
           data-i18n-key="visualizer.embed.embedIframeCode"
         >
           {t('visualizer.embed.embedIframeCode')}

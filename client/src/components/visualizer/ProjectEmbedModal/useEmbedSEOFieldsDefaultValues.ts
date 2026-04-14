@@ -1,12 +1,9 @@
 import { useMemo } from 'react';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import {
-  buildAutoEmbedTitle,
-  normalizeAllowedOrigins,
-  normalizeKeywords,
-  trimDefaultSeoDescription,
-} from './helpers';
+import { buildAutoEmbedTitle, normalizeKeywords, trimDefaultSeoDescription } from './helpers';
+
+const DEFAULT_ORIGIN_PLACEHOLDER = 'https://example.com';
 
 export function useEmbedSEOFieldsDefaultValues(project: Project) {
   const { t } = useTypedTranslation();
@@ -26,10 +23,23 @@ export function useEmbedSEOFieldsDefaultValues(project: Project) {
     [project.embed.seo.keywords],
   );
 
-  const defaultAllowedOrigins = useMemo(
-    () => normalizeAllowedOrigins(project.embed.seo.allowedOrigins),
-    [project.embed.seo.allowedOrigins],
-  );
+  const defaultAllowedOriginsAllowAll = useMemo(() => {
+    const stored = project.embed.seo.allowedOrigins;
+    return Array.isArray(stored) && stored.length === 1 && stored[0] === '*';
+  }, [project.embed.seo.allowedOrigins]);
 
-  return { defaultEmbedTitle, defaultSeoDescription, defaultKeywords, defaultAllowedOrigins };
+  const defaultAllowedOrigins = useMemo(() => {
+    const stored = project.embed.seo.allowedOrigins;
+    if (defaultAllowedOriginsAllowAll) return [];
+    if (!Array.isArray(stored) || stored.length === 0) return [DEFAULT_ORIGIN_PLACEHOLDER];
+    return stored.filter((v): v is string => typeof v === 'string' && v !== '*');
+  }, [project.embed.seo.allowedOrigins, defaultAllowedOriginsAllowAll]);
+
+  return {
+    defaultEmbedTitle,
+    defaultSeoDescription,
+    defaultKeywords,
+    defaultAllowedOrigins,
+    defaultAllowedOriginsAllowAll,
+  };
 }

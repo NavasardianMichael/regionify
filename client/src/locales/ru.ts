@@ -336,7 +336,8 @@ const ru: CommonNs = {
       title: 'Публичная вставка',
       modalTitle: 'Публичная вставка карты',
       openButton: 'Вставка',
-      intro: 'Поделитесь картой только для чтения по ссылке или через iframe.',
+      intro:
+        'Поделитесь картой только для чтения на своём сайте через iframe или в виде отдельной размещённой страницы.',
       publicToggle: 'Включить публичную вставку',
       seoTitle: 'Заголовок страницы (SEO)',
       titleMax: 'Не более 200 символов',
@@ -352,6 +353,11 @@ const ru: CommonNs = {
         'Каждый origin должен быть валидным http(s)-origin (например: https://example.com) без пути, query, hash и *',
       allowedOriginsNoData: 'Нажмите Enter, чтобы добавить этот origin.',
       allowedOriginsAddCurrent: 'Добавить текущий origin',
+      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAllWarning:
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+      allowedOriginsRequired:
+        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       seoKeywords: 'Meta-ключевые слова (необязательно)',
       keywordsHint: 'Необязательно. До 5 ключевых слов (ввод и Enter или запятая).',
       keywordPlaceholder: 'Введите ключевое слово и нажмите Enter.',
