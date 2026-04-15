@@ -339,6 +339,7 @@ jobs:
           # Monitoring configs live outside releases so bind-mounted files
           # aren't subject to release rotation (avoids root-owned permission issues).
           rsync -a --delete "$NEW_RELEASE/monitoring/" "$APP_DIR/monitoring/"
+          rm -rf "$NEW_RELEASE/monitoring"
 
           ln -sfn "$NEW_RELEASE" "$APP_DIR/server/current"
           cd "$APP_DIR/server/current"
