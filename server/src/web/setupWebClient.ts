@@ -138,6 +138,7 @@ export function setupWebClient(app: Application): void {
         frameAncestorsDirective,
       );
       const kw = meta.keywords;
+      const showHeader = req.query.header !== '0';
       const html = renderHtmlDocument({
         siteUrl,
         meta: {
@@ -153,10 +154,14 @@ export function setupWebClient(app: Application): void {
         htmlLang: meta.htmlLang,
         ogLocale: meta.ogLocale,
         includeEmbedJsonLd: true,
-        embedSemantic: {
-          heading: meta.title,
-          intro: visibleEmbedIntro(meta.description),
-        },
+        ...(showHeader
+          ? {
+              embedSemantic: {
+                heading: meta.title,
+                intro: visibleEmbedIntro(meta.description),
+              },
+            }
+          : { embedShellLayout: true }),
       });
       res.removeHeader('X-Frame-Options');
       res

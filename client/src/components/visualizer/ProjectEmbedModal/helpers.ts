@@ -83,11 +83,18 @@ type BuildEmbedPageUrlInput = {
   origin: string;
   token: string | null | undefined;
   enabled: boolean;
+  showHeader?: boolean;
 };
 
-export function buildEmbedPageUrl({ origin, token, enabled }: BuildEmbedPageUrlInput): string {
+export function buildEmbedPageUrl({
+  origin,
+  token,
+  enabled,
+  showHeader = true,
+}: BuildEmbedPageUrlInput): string {
   if (!token || !enabled) return '';
-  return `${origin}${getEmbedRoute(token)}`;
+  const base = `${origin}${getEmbedRoute(token)}`;
+  return showHeader ? base : `${base}?header=0`;
 }
 
 export function buildIframeSnippet(embedPageUrl: string): string {

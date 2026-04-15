@@ -7,6 +7,7 @@ export type ProjectEmbedFormValues = {
   keywords: string[];
   allowedOriginsAllowAll: boolean;
   allowedOrigins: string[];
+  showHeader: boolean;
 };
 
 export type ProjectEmbedModalProps = {

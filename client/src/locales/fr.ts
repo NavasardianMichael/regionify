@@ -398,6 +398,9 @@ const fr: CommonNs = {
       embedNotFoundTitle: "Nous sommes désolés. La page demandée n'est pas disponible.",
       embedNotFoundDescription:
         "Le lien est peut-être désactivé, expiré ou incorrect. Si le projet existe et que vous y avez accès, essayez d'ouvrir le projet et de réactiver l'intégration publique.",
+      showHeader: "Afficher l'en-tête sur la page intégrée",
+      showHeaderHint:
+        "Lorsqu'il est activé, le titre et la description de la page s'affichent en en-tête au-dessus de la carte.",
       embedErrorMessage: 'Une erreur est survenue, veuillez réessayer plus tard ou ',
       embedErrorContactUs: 'nous contacter',
     },

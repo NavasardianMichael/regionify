@@ -1,5 +1,5 @@
 import { type FC, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Flex, Spin, Typography } from 'antd';
 import { fetchPublicEmbedData, PublicEmbedNotFoundError } from '@/api/embed';
 import type { PublicEmbedApiResponse } from '@/api/embed/types';
@@ -39,6 +39,7 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
 
 const EmbedPage: FC = () => {
   const { token } = useParams<{ token: string }>();
+  const [searchParams] = useSearchParams();
   const { t } = useTypedTranslation();
   const loadProject = useLoadProject();
   const [hasError, setHasError] = useState(false);
@@ -49,7 +50,15 @@ const EmbedPage: FC = () => {
     description: string | null;
   } | null>(null);
 
-  const showClientHeader = embedMeta !== null && !document.querySelector('.embed-shell-header');
+  const headerHidden = searchParams.get('header') === '0';
+  const showClientHeader =
+    !headerHidden && embedMeta !== null && !document.querySelector('.embed-shell-header');
+
+  useEffect(() => {
+    if (!headerHidden) return;
+    const ssrHeader = document.querySelector('.embed-shell-header');
+    if (ssrHeader) ssrHeader.remove();
+  }, [headerHidden]);
 
   useEffect(() => {
     if (!token) {

@@ -59,6 +59,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   const [submitting, setSubmitting] = useState(false);
   const [savedToken, setSavedToken] = useState<string | null>(null);
   const embedEnabled = Form.useWatch('enabled', form) === true;
+  const showHeader = Form.useWatch('showHeader', form) !== false;
 
   const currentToken = savedToken ?? project.embed.token;
 
@@ -73,6 +74,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       keywords: defaultKeywords,
       allowedOriginsAllowAll: defaultAllowedOriginsAllowAll,
       allowedOrigins: defaultAllowedOrigins,
+      showHeader: true,
     });
     setSavedToken(null);
   }, [
@@ -95,8 +97,9 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         origin: window.location.origin,
         token: currentToken,
         enabled: embedEnabled,
+        showHeader,
       }),
-    [currentToken, embedEnabled],
+    [currentToken, embedEnabled, showHeader],
   );
 
   const iframeSnippet = useMemo(() => buildIframeSnippet(embedPageUrl), [embedPageUrl]);
@@ -172,10 +175,10 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       title={<Title />}
       open={open}
       onCancel={onModalCancel}
-      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[720px]! lg:w-2/3!`}
+      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[1200px]! lg:w-2/3!`}
       classNames={{
-        container: 'max-h-[80vh]',
-        body: 'min-h-0 max-h-[calc(80vh-180px)] overflow-y-auto',
+        container: 'max-h-[90vh]',
+        body: 'min-h-0 max-h-[calc(90vh-180px)] overflow-y-auto',
       }}
       maskClosable={false}
       keyboard={!submitting}

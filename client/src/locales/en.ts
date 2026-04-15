@@ -387,6 +387,9 @@ const en: CommonNs = {
       embedNotFoundTitle: 'We are sorry. The requested page is not available.',
       embedNotFoundDescription:
         'The link may be disabled, expired, or incorrect. If the project exists and you have access to it, try to open the project and turn public embed back on.',
+      showHeader: 'Show header on embed page',
+      showHeaderHint:
+        'When enabled, the page title and description are shown as a header above the map.',
       embedErrorMessage: 'Something went wrong, please try again later or ',
       embedErrorContactUs: 'contact us',
     },

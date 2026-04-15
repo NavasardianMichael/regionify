@@ -1,6 +1,7 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Typography } from 'antd';
+import embedIframePng from '@/assets/images/showcases/embed-iframe.png';
 import embedPagePng from '@/assets/images/showcases/embed-page.png';
 import regionifyAnimationGif from '@/assets/images/showcases/regionify-animation.gif';
 import regionifyEuropeSvg from '@/assets/images/showcases/regionify-europe.svg';
@@ -46,6 +47,16 @@ const SHOWCASE_CONTENT_MAP: Record<string, React.ReactNode> = {
       <img
         src={embedPagePng}
         alt="Regionify Embed Page Showcase"
+        className="max-h-full max-w-full"
+        loading="lazy"
+      />
+    </Flex>
+  ),
+  embed: (
+    <Flex align="center" justify="center" className="h-full w-full">
+      <img
+        src={embedIframePng}
+        alt="Regionify Embed Iframe Showcase"
         className="max-h-full max-w-full"
         loading="lazy"
       />

@@ -401,6 +401,9 @@ const de: CommonNs = {
       embedNotFoundTitle: 'Es tut uns leid. Die angeforderte Seite ist nicht verfügbar.',
       embedNotFoundDescription:
         'Der Link ist möglicherweise deaktiviert, abgelaufen oder ungültig. Falls das Projekt existiert und Sie Zugriff darauf haben, versuchen Sie, das Projekt zu öffnen und die öffentliche Einbettung wieder zu aktivieren.',
+      showHeader: 'Kopfzeile auf der Einbettungsseite anzeigen',
+      showHeaderHint:
+        'Wenn aktiviert, werden Seitentitel und Beschreibung als Kopfzeile über der Karte angezeigt.',
       embedErrorMessage: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es später erneut oder ',
       embedErrorContactUs: 'kontaktieren Sie uns',
     },

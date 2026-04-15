@@ -1,5 +1,6 @@
 import { type FC, useCallback, useMemo } from 'react';
-import { Flex, Form, Input, Select, Switch, Tag, Typography } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Flex, Form, Input, Select, Switch, Tag, Tooltip, Typography } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import type { Rule } from 'antd/es/form';
 import type { SelectProps } from 'antd/es/select';
@@ -285,6 +286,19 @@ export const EmbedForm: FC<Props> = ({
           )}
         </Flex>
       </Form.Item>
+
+      {/* Show header toggle */}
+      <Flex align="center" gap="small" className="mt-4!">
+        <Form.Item name="showHeader" valuePropName="checked" noStyle>
+          <Switch disabled={fieldsDisabled} data-i18n-key="visualizer.embed.showHeader" />
+        </Form.Item>
+        <Typography.Text data-i18n-key="visualizer.embed.showHeader">
+          {t('visualizer.embed.showHeader')}
+        </Typography.Text>
+        <Tooltip title={t('visualizer.embed.showHeaderHint')}>
+          <InfoCircleOutlined className="cursor-help text-gray-400" />
+        </Tooltip>
+      </Flex>
 
       {/* Origins select — only visible when not allowing all */}
       {!allowAll && (

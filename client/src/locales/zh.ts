@@ -372,6 +372,8 @@ const zh: CommonNs = {
       embedNotFoundTitle: '抱歉，请求的页面不可用。',
       embedNotFoundDescription:
         '链接可能已关闭、过期或不正确。如果项目存在且您有访问权限，请尝试打开项目并重新开启公开嵌入。',
+      showHeader: '在嵌入页面上显示标题栏',
+      showHeaderHint: '启用后，页面标题和描述将作为标题栏显示在地图上方。',
       embedErrorMessage: '出了点问题，请稍后再试或',
       embedErrorContactUs: '联系我们',
     },

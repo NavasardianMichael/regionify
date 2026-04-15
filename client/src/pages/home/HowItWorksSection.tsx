@@ -25,7 +25,7 @@ const steps: Step[] = [
 
 const timelineItems: NonNullable<TimelineProps['items']> = steps.map(({ title, desc }, index) => ({
   color: '#18294d',
-  children: (
+  content: (
     <Flex vertical gap="xs" className={index < steps.length - 1 ? 'pb-6 pl-2' : 'pl-2'}>
       <Typography.Title level={3} className="mb-0! text-lg! font-semibold">
         {title}

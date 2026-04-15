@@ -397,6 +397,9 @@ const es: CommonNs = {
       embedNotFoundTitle: 'Lo sentimos. La página solicitada no está disponible.',
       embedNotFoundDescription:
         'El enlace puede estar deshabilitado, caducado o ser incorrecto. Si el proyecto existe y tienes acceso, intenta abrir el proyecto y vuelve a activar la incrustación pública.',
+      showHeader: 'Mostrar encabezado en la página embebida',
+      showHeaderHint:
+        'Cuando está activado, el título y la descripción de la página se muestran como encabezado sobre el mapa.',
       embedErrorMessage: 'Algo salió mal, por favor inténtelo de nuevo más tarde o ',
       embedErrorContactUs: 'contáctenos',
     },
