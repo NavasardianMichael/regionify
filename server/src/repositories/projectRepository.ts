@@ -20,6 +20,7 @@ export type ProjectUpdate = Partial<Omit<ProjectCreate, 'userId'>> & {
   embedSeoDescription?: string | null;
   embedSeoKeywords?: object | null;
   embedAllowedOrigins?: object | null;
+  embedShowHeader?: boolean;
 };
 
 const JSON_FIELDS = [

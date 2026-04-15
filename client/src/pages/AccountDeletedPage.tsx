@@ -49,7 +49,7 @@ const AccountDeletedPage: FC = () => {
       form.resetFields();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send feedback';
-      message.error(errorMessage, 0);
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }

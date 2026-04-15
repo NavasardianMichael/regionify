@@ -16,6 +16,7 @@ import {
   SaveOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons';
+import * as Sentry from '@sentry/react';
 import {
   Button,
   Divider,
@@ -61,6 +62,7 @@ import {
   saveReturnUrl,
 } from '@/helpers/temporaryProjectState';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import { ErrorFallback } from '@/components/ui/ErrorFallback';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
 import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
@@ -253,10 +255,10 @@ const VisualizerPage: FC = () => {
         if (err.code === 'UNAUTHORIZED') {
           saveReturnUrl(`${location.pathname}${location.search}`);
           logout();
-          message.error('Session expired. Please log in again.', 0);
+          message.error(t('messages.sessionExpired'));
           navigate(ROUTES.LOGIN);
         } else {
-          message.error(t('messages.projectLoadFailed'), 0);
+          message.error(t('messages.projectLoadFailed'));
           navigate(ROUTES.PROJECTS);
         }
       }
@@ -425,10 +427,12 @@ const VisualizerPage: FC = () => {
         </Flex>
       ) : (
         <Suspense fallback={<Spin className="m-auto flex-1" />}>
-          <MapViewer
-            className="min-h-0 flex-1"
-            showPlanRibbon={isLoggedIn && !isAwaitingProjectFromUrl}
-          />
+          <Sentry.ErrorBoundary fallback={<ErrorFallback title={t('errors.mapRenderFailed')} />}>
+            <MapViewer
+              className="min-h-0 flex-1"
+              showPlanRibbon={isLoggedIn && !isAwaitingProjectFromUrl}
+            />
+          </Sentry.ErrorBoundary>
         </Suspense>
       )}
     </CardLayout>

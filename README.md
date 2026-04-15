@@ -32,6 +32,7 @@ regionify/
 - **Ant Design 6** — UI components
 - **Tailwind CSS 4** — Styling
 - **Zustand** — State management
+- **Sentry** — Client-side error tracking
 
 ### Backend (server/)
 
@@ -207,6 +208,15 @@ sudo tail -20 /var/log/nginx/error.log
 | `SSH_PORT`        | SSH port (optional, default: 22)                         |
 | `APP_DIR`         | Deployment directory (e.g., `/home/user/apps/regionify`) |
 | `ENV_FILE_BASE64` | Base64-encoded server .env file                          |
+
+### Optional GitHub Secrets
+
+| Secret              | Description                                                              |
+| ------------------- | ------------------------------------------------------------------------ |
+| `VITE_SENTRY_DSN`   | Sentry DSN for client error tracking. Omit to disable.                   |
+| `SENTRY_ORG`        | Sentry organization slug (for source-map uploads during client build)    |
+| `SENTRY_PROJECT`    | Sentry project slug                                                      |
+| `SENTRY_AUTH_TOKEN` | Sentry org auth token (`org:ci` scope). Omit to skip source-map uploads. |
 
 ### Server setup
 

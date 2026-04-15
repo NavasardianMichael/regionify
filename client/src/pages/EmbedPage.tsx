@@ -1,5 +1,6 @@
 import { type FC, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { Flex, Spin, Typography } from 'antd';
 import { fetchPublicEmbedData, PublicEmbedNotFoundError } from '@/api/embed';
 import type { PublicEmbedApiResponse } from '@/api/embed/types';
@@ -9,6 +10,7 @@ import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { resetVisualizerToDefaultState } from '@/helpers/applyFullTemporaryProjectState';
 import { AppNavLink } from '@/components/ui/AppNavLink';
+import { ErrorFallback } from '@/components/ui/ErrorFallback';
 import MapViewer from '@/components/visualizer/MapViewer';
 import { EmbedNotFoundView } from '@/pages/EmbedNotFoundView';
 import '@/embed/embed-shell.css';
@@ -25,6 +27,7 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
     embed: {
       enabled: false,
       token: null,
+      showHeader: true,
       seo: {
         title: null,
         description: null,
@@ -152,11 +155,13 @@ const EmbedPage: FC = () => {
         </header>
       )}
       <Flex className="min-h-0 min-w-0 flex-1 overflow-hidden">
-        <MapViewer
-          className="min-h-0 min-w-0 flex-1"
-          flatEmbedChrome
-          enforceObserverWatermark={false}
-        />
+        <Sentry.ErrorBoundary fallback={<ErrorFallback title={t('errors.mapRenderFailed')} />}>
+          <MapViewer
+            className="min-h-0 min-w-0 flex-1"
+            flatEmbedChrome
+            enforceObserverWatermark={false}
+          />
+        </Sentry.ErrorBoundary>
       </Flex>
     </Flex>
   );

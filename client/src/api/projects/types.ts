@@ -68,6 +68,7 @@ export type ProjectEmbedSeo = {
 export type ProjectEmbed = {
   enabled: boolean;
   token: string | null;
+  showHeader: boolean;
   seo: ProjectEmbedSeo;
 };
 
@@ -86,6 +87,7 @@ export type Project = {
 
 export type ProjectEmbedUpdatePayload = {
   enabled: boolean;
+  showHeader?: boolean;
   seo?: {
     title?: string | null;
     description?: string | null;

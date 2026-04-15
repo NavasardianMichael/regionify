@@ -81,10 +81,10 @@ export const useProjects = (): UseProjectsReturn => {
         const err = error as Error & { code?: string };
         if (err.code === 'UNAUTHORIZED') {
           logout();
-          message.error('Session expired. Please log in again.', 0);
+          message.error(t('messages.sessionExpired'));
           navigate(ROUTES.LOGIN);
         } else {
-          message.error(t('messages.projectsLoadFailed'), 0);
+          message.error(t('messages.projectsLoadFailed'));
         }
         setProjectsStatus(IDLE_STATUSES.error);
       }
@@ -120,7 +120,7 @@ export const useProjects = (): UseProjectsReturn => {
       message.success(t('messages.projectDeleted'), 5);
       setDeletingProject(null);
     } catch {
-      message.error(t('messages.projectDeleteFailed'), 0);
+      message.error(t('messages.projectDeleteFailed'));
     } finally {
       setIsDeleting(false);
     }
@@ -142,7 +142,7 @@ export const useProjects = (): UseProjectsReturn => {
         updateProjectInList(updated);
         message.success(t('messages.projectRenamed'), 5);
       } catch {
-        message.error(t('messages.projectRenameFailed'), 0);
+        message.error(t('messages.projectRenameFailed'));
       }
       setRenamingProject(null);
     },

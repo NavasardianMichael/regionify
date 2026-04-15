@@ -106,7 +106,7 @@ const ResetPasswordPage: FC = () => {
       setSubmitted(true);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to reset password';
-      message.error(errorMessage, 0);
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }

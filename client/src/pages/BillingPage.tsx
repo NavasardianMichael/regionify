@@ -34,7 +34,7 @@ const BillingPage: FC = () => {
         const { checkoutUrl } = await createCheckout({ plan });
         window.location.href = checkoutUrl;
       } catch {
-        message.error(t('plans.checkoutError'), 0);
+        message.error(t('plans.checkoutError'));
         setUpgradingPlan(null);
       }
     },

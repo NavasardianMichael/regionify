@@ -6,6 +6,7 @@ import { isEmbedPathname, isFullBleedPathname, ROUTES } from '@/constants/routes
 import { GoogleAnalytics } from '@/components/shared/GoogleAnalytics';
 import { Navigation } from '@/components/shared/Navigation';
 import { PageLoader } from '@/components/shared/PageLoader';
+import AppErrorPage from '@/pages/AppErrorPage';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const VisualizerPage = lazy(() => import('@/pages/VisualizerPage'));
@@ -78,6 +79,7 @@ function AppLayout() {
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
+    errorElement: <AppErrorPage />,
     children: [
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.PROJECT_EDITOR, element: <VisualizerPage /> },

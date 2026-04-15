@@ -397,6 +397,7 @@ const es: CommonNs = {
       embedNotFoundTitle: 'Lo sentimos. La página solicitada no está disponible.',
       embedNotFoundDescription:
         'El enlace puede estar deshabilitado, caducado o ser incorrecto. Si el proyecto existe y tienes acceso, intenta abrir el proyecto y vuelve a activar la incrustación pública.',
+      layout: 'Diseño',
       showHeader: 'Mostrar encabezado en la página embebida',
       showHeaderHint:
         'Cuando está activado, el título y la descripción de la página se muestran como encabezado sobre el mapa.',
@@ -632,6 +633,7 @@ const es: CommonNs = {
     projectDeleteFailed: 'Error al eliminar el proyecto',
     projectRenamed: 'Proyecto renombrado',
     projectRenameFailed: 'Error al renombrar el proyecto',
+    sessionExpired: 'Sesión expirada. Por favor inicia sesión de nuevo.',
     projectsLoadFailed: 'Error al cargar los proyectos',
     projectLoadFailed: 'Error al cargar el proyecto',
     mapExportedAs: 'Mapa exportado como {{format}}',
@@ -676,6 +678,14 @@ const es: CommonNs = {
     sessionLimitReached:
       'Tu cuenta ya está activa en el número máximo de dispositivos ({{maxSessions}}). Por favor cierra sesión en otro dispositivo primero.',
     googleAuthFailed: 'Fallo en el inicio de sesión con Google. Por favor inténtalo de nuevo.',
+  },
+  errors: {
+    mapRenderFailed: 'Lo sentimos, no se pudo renderizar el mapa.',
+    panelFailed: 'Este panel no se pudo cargar.',
+    appCrashed: 'Algo salió mal.',
+    reload: 'Recargar',
+    goHome: 'Ir a la página de inicio',
+    contactSupport: 'Contactar soporte',
   },
 };
 

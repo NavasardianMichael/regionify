@@ -28,7 +28,7 @@ const ContactPage: FC = () => {
       form.resetFields();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('contact.error');
-      message.error(errorMessage, 0);
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }

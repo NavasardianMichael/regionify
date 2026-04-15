@@ -107,7 +107,7 @@ export function useVisualizerPage() {
       message.success(t('messages.projectSaved'), 5);
       return true;
     } catch {
-      message.error(t('messages.projectSaveFailed'), 0);
+      message.error(t('messages.projectSaveFailed'));
       return false;
     }
   }, [currentProjectId, updateProjectInList, setSavedStateSnapshot, message, t]);
@@ -162,7 +162,7 @@ export function useVisualizerPage() {
       message.success(t('messages.projectCreated'), 5);
       setProjectName('');
     } catch {
-      message.error(t('messages.projectCreateFailed'), 0);
+      message.error(t('messages.projectCreateFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -196,7 +196,7 @@ export function useVisualizerPage() {
         message.success(t('messages.projectRenamed'), 5);
         setIsRenameModalOpen(false);
       } catch {
-        message.error(t('messages.projectRenameFailed'), 0);
+        message.error(t('messages.projectRenameFailed'));
       } finally {
         setIsRenameSubmitting(false);
       }
@@ -219,7 +219,7 @@ export function useVisualizerPage() {
       setIsDeleteModalOpen(false);
       navigate(ROUTES.PROJECTS);
     } catch {
-      message.error(t('messages.projectDeleteFailed'), 0);
+      message.error(t('messages.projectDeleteFailed'));
     } finally {
       setIsDeleteSubmitting(false);
     }

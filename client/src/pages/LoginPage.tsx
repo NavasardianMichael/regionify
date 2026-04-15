@@ -31,8 +31,6 @@ type LoginFormValues = {
 const LoginPage: FC = () => {
   const { t } = useTypedTranslation();
   const [form] = Form.useForm<LoginFormValues>();
-  const emailField = Form.useWatch('email', form);
-  const passwordField = Form.useWatch('password', form);
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginErrorCode, setLoginErrorCode] = useState<string | null>(null);
@@ -90,7 +88,6 @@ const LoginPage: FC = () => {
           zoomControls: merged.zoomControls,
           picture: merged.picture,
           regionLabels: merged.regionLabels,
-          timePeriodLabelOffset: merged.timePeriodLabelOffset,
         });
         setLegendStylesState({
           labels: merged.labels,
@@ -98,7 +95,6 @@ const LoginPage: FC = () => {
           position: merged.position,
           floatingPosition: merged.floatingPosition,
           floatingSize: merged.floatingSize,
-          transparentBackground: merged.transparentBackground,
           backgroundColor: merged.backgroundColor,
           noDataColor: merged.noDataColor,
         });
@@ -129,7 +125,7 @@ const LoginPage: FC = () => {
           clearReturnUrl();
           navigate(returnUrl, { replace: true });
         } else {
-          navigate(ROUTES.PROJECTS);
+          navigate(ROUTES.HOME);
         }
       }
     } catch (error) {
@@ -158,19 +154,14 @@ const LoginPage: FC = () => {
       window.location.href = `${AUTH_ENDPOINTS.google}?force=true`;
       return;
     }
-    await handleSubmit(
-      {
-        email: typeof emailField === 'string' ? emailField : '',
-        password: typeof passwordField === 'string' ? passwordField : '',
-      },
-      true,
-    );
+    const values = form.getFieldsValue() as LoginFormValues;
+    await handleSubmit(values, true);
   };
 
   const handleResendVerification = async () => {
-    const email = typeof emailField === 'string' ? emailField.trim() : '';
+    const email = form.getFieldValue('email');
     if (!email) {
-      message.error(t('messages.enterEmail'), 0);
+      message.error(t('messages.enterEmail'));
       return;
     }
     setResendLoading(true);
@@ -178,7 +169,7 @@ const LoginPage: FC = () => {
       const result = await resendVerificationEmail(email);
       message.success(result.message, 5);
     } catch {
-      message.error(t('messages.resendVerificationFailed'), 0);
+      message.error(t('messages.resendVerificationFailed'));
     } finally {
       setResendLoading(false);
     }
@@ -187,14 +178,10 @@ const LoginPage: FC = () => {
   return (
     <Card className="m-auto! w-full max-w-144! shadow-sm">
       <div className="mb-6 text-center">
-        <Typography.Title
-          level={1}
-          className="text-primary text-2xl font-bold"
-          data-i18n-key="auth.login.title"
-        >
+        <Typography.Title level={1} className="text-primary text-2xl font-bold">
           {t('auth.login.title')}
         </Typography.Title>
-        <Typography.Paragraph className="mt-2 text-gray-500" data-i18n-key="auth.login.subtitle">
+        <Typography.Paragraph className="mt-2 text-gray-500">
           {t('auth.login.subtitle')}
         </Typography.Paragraph>
       </div>
@@ -203,7 +190,6 @@ const LoginPage: FC = () => {
         block
         onClick={() => (window.location.href = AUTH_ENDPOINTS.google)}
         className="mb-4 flex! items-center justify-center gap-3 border-gray-300 bg-white! text-gray-700 hover:bg-gray-50!"
-        data-i18n-key="auth.login.continueGoogle"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -226,14 +212,14 @@ const LoginPage: FC = () => {
         {t('auth.login.continueGoogle')}
       </Button>
 
-      <Divider plain className="text-gray-400!" data-i18n-key="auth.login.dividerEmail">
+      <Divider plain className="text-gray-400!">
         {t('auth.login.dividerEmail')}
       </Divider>
 
       <Form
         form={form}
         layout="vertical"
-        onFinish={(values: LoginFormValues) => handleSubmit(values)}
+        onFinish={(values) => handleSubmit(values)}
         onValuesChange={() => {
           setLoginError(null);
           setLoginErrorCode(null);
@@ -243,7 +229,7 @@ const LoginPage: FC = () => {
         <Form.Item
           name="email"
           label={
-            <Typography.Text className="font-medium text-gray-700" data-i18n-key="account.email">
+            <Typography.Text className="font-medium text-gray-700">
               {t('account.email')}
             </Typography.Text>
           }
@@ -252,20 +238,13 @@ const LoginPage: FC = () => {
             { type: 'email', message: AUTH_VALIDATION.email.messages.invalid },
           ]}
         >
-          <Input
-            placeholder={t('auth.login.emailPlaceholder')}
-            autoComplete="username"
-            data-i18n-key="auth.login.emailPlaceholder"
-          />
+          <Input placeholder={t('auth.login.emailPlaceholder')} autoComplete="username" />
         </Form.Item>
 
         <Form.Item
           name="password"
           label={
-            <Typography.Text
-              className="font-medium text-gray-700"
-              data-i18n-key="auth.login.password"
-            >
+            <Typography.Text className="font-medium text-gray-700">
               {t('auth.login.password')}
             </Typography.Text>
           }
@@ -274,7 +253,6 @@ const LoginPage: FC = () => {
           <Input.Password
             placeholder={t('auth.login.passwordPlaceholder')}
             autoComplete="current-password"
-            data-i18n-key="auth.login.passwordPlaceholder"
           />
         </Form.Item>
 
@@ -289,7 +267,6 @@ const LoginPage: FC = () => {
                   onClick={handleResendVerification}
                   loading={resendLoading}
                   className="h-auto! p-0!"
-                  data-i18n-key="auth.login.resendVerification"
                 >
                   {t('auth.login.resendVerification')}
                 </Button>
@@ -297,52 +274,35 @@ const LoginPage: FC = () => {
             )}
             {isSessionLimitError && (
               <div className="mt-2">
-                <AppNavLink
-                  to={ROUTES.LOGIN}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    void handleForceLogin();
-                  }}
-                  aria-disabled={loading}
-                  className={`text-sm font-semibold ${loading ? 'pointer-events-none opacity-70' : ''}`}
-                  data-i18n-key="auth.login.signInEvictDevices"
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={handleForceLogin}
+                  loading={loading}
+                  className="h-auto! p-0! underline"
                 >
                   {t('auth.login.signInEvictDevices')}
-                </AppNavLink>
+                </Button>
               </div>
             )}
           </div>
         )}
 
         <div className="mb-4 text-right">
-          <AppNavLink
-            to={ROUTES.FORGOT_PASSWORD}
-            className="text-sm font-semibold"
-            data-i18n-key="auth.login.forgotPassword"
-          >
+          <AppNavLink to={ROUTES.FORGOT_PASSWORD} className="text-sm font-semibold">
             {t('auth.login.forgotPassword')}
           </AppNavLink>
         </div>
 
         <Form.Item className="mb-4">
-          <Button
-            type="primary"
-            htmlType="submit"
-            block
-            loading={loading}
-            data-i18n-key="auth.login.signIn"
-          >
+          <Button type="primary" htmlType="submit" block loading={loading}>
             {t('auth.login.signIn')}
           </Button>
         </Form.Item>
 
         <div className="text-center">
-          <span data-i18n-key="auth.login.noAccount">{t('auth.login.noAccount')}</span>{' '}
-          <AppNavLink
-            to={ROUTES.SIGN_UP}
-            className="font-semibold hover:underline"
-            data-i18n-key="auth.login.signUpLink"
-          >
+          {t('auth.login.noAccount')}{' '}
+          <AppNavLink to={ROUTES.SIGN_UP} className="font-semibold hover:underline">
             {t('auth.login.signUpLink')}
           </AppNavLink>
         </div>

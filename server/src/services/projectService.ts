@@ -19,6 +19,7 @@ export type ProjectEmbedSeoPublic = {
 export type ProjectEmbedPublic = {
   enabled: boolean;
   token: string | null;
+  showHeader: boolean;
   seo: ProjectEmbedSeoPublic;
 };
 
@@ -51,6 +52,7 @@ function toEmbedPublic(project: Project): ProjectEmbedPublic {
   return {
     enabled: project.embedEnabled,
     token: project.embedToken,
+    showHeader: project.embedShowHeader,
     seo: {
       title: project.embedSeoTitle,
       description: project.embedSeoDescription,

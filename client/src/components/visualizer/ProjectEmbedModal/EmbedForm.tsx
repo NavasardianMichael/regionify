@@ -287,19 +287,6 @@ export const EmbedForm: FC<Props> = ({
         </Flex>
       </Form.Item>
 
-      {/* Show header toggle */}
-      <Flex align="center" gap="small" className="mt-4!">
-        <Form.Item name="showHeader" valuePropName="checked" noStyle>
-          <Switch disabled={fieldsDisabled} data-i18n-key="visualizer.embed.showHeader" />
-        </Form.Item>
-        <Typography.Text data-i18n-key="visualizer.embed.showHeader">
-          {t('visualizer.embed.showHeader')}
-        </Typography.Text>
-        <Tooltip title={t('visualizer.embed.showHeaderHint')}>
-          <InfoCircleOutlined className="cursor-help text-gray-400" />
-        </Tooltip>
-      </Flex>
-
       {/* Origins select — only visible when not allowing all */}
       {!allowAll && (
         <Form.Item
@@ -331,6 +318,28 @@ export const EmbedForm: FC<Props> = ({
           />
         </Form.Item>
       )}
+
+      {/* Layout section */}
+      <Form.Item
+        label={
+          <span className="font-semibold" data-i18n-key="visualizer.embed.layout">
+            {t('visualizer.embed.layout')}
+          </span>
+        }
+        className="mt-4! mb-0!"
+      >
+        <Flex align="center" gap="small">
+          <Form.Item name="showHeader" valuePropName="checked" noStyle>
+            <Switch disabled={fieldsDisabled} data-i18n-key="visualizer.embed.showHeader" />
+          </Form.Item>
+          <Typography.Text data-i18n-key="visualizer.embed.showHeader">
+            {t('visualizer.embed.showHeader')}
+          </Typography.Text>
+          <Tooltip title={t('visualizer.embed.showHeaderHint')}>
+            <InfoCircleOutlined className="cursor-help text-gray-400" />
+          </Tooltip>
+        </Flex>
+      </Form.Item>
     </Form>
   );
 };

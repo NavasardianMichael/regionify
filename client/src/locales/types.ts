@@ -331,6 +331,7 @@ export type CommonNs = {
       /** Standalone embed URL: disabled, wrong token, or plan no longer eligible */
       embedNotFoundTitle: string;
       embedNotFoundDescription: string;
+      layout: string;
       showHeader: string;
       showHeaderHint: string;
       embedErrorMessage: string;
@@ -548,6 +549,14 @@ export type CommonNs = {
     error: string;
     language: string;
   };
+  errors: {
+    mapRenderFailed: string;
+    panelFailed: string;
+    appCrashed: string;
+    reload: string;
+    goHome: string;
+    contactSupport: string;
+  };
   messages: {
     projectSaved: string;
     projectSaveFailed: string;
@@ -557,6 +566,7 @@ export type CommonNs = {
     projectDeleteFailed: string;
     projectRenamed: string;
     projectRenameFailed: string;
+    sessionExpired: string;
     projectsLoadFailed: string;
     projectLoadFailed: string;
     mapExportedAs: string;

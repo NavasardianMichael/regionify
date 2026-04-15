@@ -39,14 +39,12 @@ function newEmbedToken(): string {
 }
 
 function toKeywordArray(value: unknown): string[] | null {
-  if (value === null || value === undefined) return null;
-  if (!Array.isArray(value)) return null;
+  if (value == null || !Array.isArray(value)) return null;
   return value.filter((k): k is string => typeof k === 'string');
 }
 
 function toAllowedOriginsArray(value: unknown): string[] | null {
-  if (value === null || value === undefined) return null;
-  if (!Array.isArray(value)) return null;
+  if (value == null || !Array.isArray(value)) return null;
   const normalized = value.filter((origin): origin is string => typeof origin === 'string');
   return Array.from(new Set(normalized));
 }
@@ -168,6 +166,8 @@ export const projectEmbedService = {
           ? null
           : descIn.trim() || null;
 
+    const embedShowHeader = input.showHeader ?? existing.embedShowHeader;
+
     const updated = await projectRepository.update(projectId, {
       embedEnabled: input.enabled,
       embedToken,
@@ -175,6 +175,7 @@ export const projectEmbedService = {
       embedSeoDescription,
       embedSeoKeywords: embedSeoKeywords as object | null,
       embedAllowedOrigins: embedAllowedOrigins as object | null,
+      embedShowHeader,
     });
 
     if (!updated) {
@@ -189,6 +190,7 @@ export const projectEmbedService = {
       embed: {
         enabled: updated.embedEnabled,
         token: updated.embedToken,
+        showHeader: updated.embedShowHeader,
         seo: {
           title: updated.embedSeoTitle,
           description: updated.embedSeoDescription,

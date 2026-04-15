@@ -7,6 +7,11 @@
 # - ENV_FILE_BASE64: Base64-encoded server .env.production (POSTGRES_*, app vars)
 # - VITE_API_BASE_URL: Client API base URL (client builds only)
 #
+# OPTIONAL GITHUB SECRETS (Sentry source-map uploads):
+# - SENTRY_ORG: Sentry organization slug
+# - SENTRY_PROJECT: Sentry project slug
+# - SENTRY_AUTH_TOKEN: Sentry org auth token (org:ci scope)
+#
 # On-host layout after deploy:
 #   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
 #   $APP_DIR/server/.env.production  (persistent; not inside a release)
@@ -134,6 +139,10 @@ jobs:
         run: pnpm run build:client
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Create client archive
         run: tar -czf client-build.tar.gz -C client/dist/client .

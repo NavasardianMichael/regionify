@@ -332,7 +332,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
       if (isAnimationFormat) {
         if (!hasTimelineData) {
-          message.warning(t('messages.importHistoricalFirst'), 0);
+          message.warning(t('messages.importHistoricalFirst'));
           return;
         }
         const rawSvg = await loadMapSvg(selectedCountryId!);
@@ -385,7 +385,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       message.success(t('messages.mapExportedAs', { format: exportType.toUpperCase() }), 5);
       onClose();
     } catch {
-      message.error(t('messages.exportFailed'), 0);
+      message.error(t('messages.exportFailed'));
     } finally {
       setIsExporting(false);
       setProgress(0);

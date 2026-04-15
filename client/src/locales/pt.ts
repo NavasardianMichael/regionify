@@ -393,6 +393,7 @@ const pt: CommonNs = {
       embedNotFoundTitle: 'Lamentamos. A página solicitada não está disponível.',
       embedNotFoundDescription:
         'O link pode estar desativado, expirado ou incorreto. Se o projeto existir e você tiver acesso, tente abrir o projeto e reativar a incorporação pública.',
+      layout: 'Layout',
       showHeader: 'Mostrar cabeçalho na página incorporada',
       showHeaderHint:
         'Quando ativado, o título e a descrição da página são exibidos como cabeçalho acima do mapa.',
@@ -628,6 +629,7 @@ const pt: CommonNs = {
     projectDeleteFailed: 'Falha ao eliminar o projeto',
     projectRenamed: 'Projeto renomeado',
     projectRenameFailed: 'Falha ao renomear o projeto',
+    sessionExpired: 'Sessão expirada. Por favor inicie sessão novamente.',
     projectsLoadFailed: 'Falha ao carregar os projetos',
     projectLoadFailed: 'Falha ao carregar o projeto',
     mapExportedAs: 'Mapa exportado como {{format}}',
@@ -671,6 +673,14 @@ const pt: CommonNs = {
     sessionLimitReached:
       'A sua conta já está ativa no número máximo de dispositivos ({{maxSessions}}). Por favor encerre sessão noutro dispositivo primeiro.',
     googleAuthFailed: 'Falha ao iniciar sessão com Google. Por favor tente novamente.',
+  },
+  errors: {
+    mapRenderFailed: 'Lamentamos, falha ao renderizar o mapa.',
+    panelFailed: 'Este painel não pôde ser carregado.',
+    appCrashed: 'Algo correu mal.',
+    reload: 'Recarregar',
+    goHome: 'Ir para a página inicial',
+    contactSupport: 'Contactar suporte',
   },
 };
 

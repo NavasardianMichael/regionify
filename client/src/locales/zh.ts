@@ -372,6 +372,7 @@ const zh: CommonNs = {
       embedNotFoundTitle: '抱歉，请求的页面不可用。',
       embedNotFoundDescription:
         '链接可能已关闭、过期或不正确。如果项目存在且您有访问权限，请尝试打开项目并重新开启公开嵌入。',
+      layout: '布局',
       showHeader: '在嵌入页面上显示标题栏',
       showHeaderHint: '启用后，页面标题和描述将作为标题栏显示在地图上方。',
       embedErrorMessage: '出了点问题，请稍后再试或',
@@ -599,6 +600,7 @@ const zh: CommonNs = {
     projectDeleteFailed: '删除项目失败',
     projectRenamed: '项目已重命名',
     projectRenameFailed: '重命名项目失败',
+    sessionExpired: '会话已过期，请重新登录。',
     projectsLoadFailed: '加载项目失败',
     projectLoadFailed: '无法加载项目',
     mapExportedAs: '地图已导出为 {{format}}',
@@ -636,6 +638,14 @@ const zh: CommonNs = {
     sessionLimitReached:
       '您的账户已在最大数量 ({{maxSessions}}) 的设备上登录。请先在其他设备上退出登录。',
     googleAuthFailed: 'Google 登录失败，请重试。',
+  },
+  errors: {
+    mapRenderFailed: '很抱歉，地图渲染失败。',
+    panelFailed: '此面板加载失败。',
+    appCrashed: '出了点问题。',
+    reload: '重新加载',
+    goHome: '返回首页',
+    contactSupport: '联系支持',
   },
 };
 

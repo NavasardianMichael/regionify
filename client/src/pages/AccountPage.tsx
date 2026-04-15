@@ -44,7 +44,7 @@ const AccountPage: FC = () => {
       message.success(t('account.profileUpdated'), 5);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('account.updateError');
-      message.error(errorMessage, 0);
+      message.error(errorMessage);
     } finally {
       setProfileLoading(false);
     }
@@ -76,7 +76,7 @@ const AccountPage: FC = () => {
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : t('deleteAccountModal.error');
-          message.error(errorMessage, 0);
+          message.error(errorMessage);
           // Re-enable buttons on error
           modalInstance.update({
             okButtonProps: { disabled: false, loading: false, type: 'primary', danger: true },

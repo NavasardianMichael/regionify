@@ -29,6 +29,9 @@ export const theme: ThemeConfig = {
   components: {
     Button: {
       primaryShadow: 'none',
+      colorLink: '#18294D',
+      colorLinkHover: '#18294D',
+      colorLinkActive: '#18294D',
     },
     Input: {
       activeShadow: 'none',

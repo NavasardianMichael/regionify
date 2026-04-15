@@ -24,7 +24,7 @@ const ForgotPasswordPage: FC = () => {
       setSubmitted(true);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to send reset email';
-      message.error(errorMessage, 0);
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }

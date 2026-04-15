@@ -398,6 +398,7 @@ const fr: CommonNs = {
       embedNotFoundTitle: "Nous sommes désolés. La page demandée n'est pas disponible.",
       embedNotFoundDescription:
         "Le lien est peut-être désactivé, expiré ou incorrect. Si le projet existe et que vous y avez accès, essayez d'ouvrir le projet et de réactiver l'intégration publique.",
+      layout: 'Mise en page',
       showHeader: "Afficher l'en-tête sur la page intégrée",
       showHeaderHint:
         "Lorsqu'il est activé, le titre et la description de la page s'affichent en en-tête au-dessus de la carte.",
@@ -635,6 +636,7 @@ const fr: CommonNs = {
     projectDeleteFailed: 'Échec de la suppression du projet',
     projectRenamed: 'Projet renommé',
     projectRenameFailed: 'Échec du renommage du projet',
+    sessionExpired: 'Session expirée. Veuillez vous reconnecter.',
     projectsLoadFailed: 'Échec du chargement des projets',
     projectLoadFailed: 'Échec du chargement du projet',
     mapExportedAs: 'Carte exportée en {{format}}',
@@ -679,6 +681,14 @@ const fr: CommonNs = {
     sessionLimitReached:
       "Votre compte est déjà actif sur le nombre maximum d'appareils ({{maxSessions}}). Veuillez vous déconnecter d'un autre appareil en premier.",
     googleAuthFailed: 'La connexion avec Google a échoué. Veuillez réessayer.',
+  },
+  errors: {
+    mapRenderFailed: "Nous sommes désolés, l'affichage de la carte a échoué.",
+    panelFailed: "Ce panneau n'a pas pu être chargé.",
+    appCrashed: 'Une erreur est survenue.',
+    reload: 'Recharger',
+    goHome: "Aller à la page d'accueil",
+    contactSupport: 'Contacter le support',
   },
 };
 

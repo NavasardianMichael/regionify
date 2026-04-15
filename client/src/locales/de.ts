@@ -401,6 +401,7 @@ const de: CommonNs = {
       embedNotFoundTitle: 'Es tut uns leid. Die angeforderte Seite ist nicht verfügbar.',
       embedNotFoundDescription:
         'Der Link ist möglicherweise deaktiviert, abgelaufen oder ungültig. Falls das Projekt existiert und Sie Zugriff darauf haben, versuchen Sie, das Projekt zu öffnen und die öffentliche Einbettung wieder zu aktivieren.',
+      layout: 'Layout',
       showHeader: 'Kopfzeile auf der Einbettungsseite anzeigen',
       showHeaderHint:
         'Wenn aktiviert, werden Seitentitel und Beschreibung als Kopfzeile über der Karte angezeigt.',
@@ -636,6 +637,7 @@ const de: CommonNs = {
     projectDeleteFailed: 'Projekt konnte nicht gelöscht werden',
     projectRenamed: 'Projekt umbenannt',
     projectRenameFailed: 'Projekt konnte nicht umbenannt werden',
+    sessionExpired: 'Sitzung abgelaufen. Bitte erneut anmelden.',
     projectsLoadFailed: 'Projekte konnten nicht geladen werden',
     projectLoadFailed: 'Projekt konnte nicht geladen werden',
     mapExportedAs: 'Karte exportiert als {{format}}',
@@ -681,6 +683,14 @@ const de: CommonNs = {
     sessionLimitReached:
       'Ihr Konto ist bereits auf der maximalen Anzahl von Geräten ({{maxSessions}}) aktiv. Bitte melden Sie sich zuerst von einem anderen Gerät ab.',
     googleAuthFailed: 'Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+  },
+  errors: {
+    mapRenderFailed: 'Es tut uns leid, die Karte konnte nicht gerendert werden.',
+    panelFailed: 'Dieses Panel konnte nicht geladen werden.',
+    appCrashed: 'Etwas ist schiefgelaufen.',
+    reload: 'Neu laden',
+    goHome: 'Zur Startseite',
+    contactSupport: 'Support kontaktieren',
   },
 };
 

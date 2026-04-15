@@ -49,6 +49,7 @@ const projectEmbedSeoUpdateSchema = z.object({
 export const projectEmbedUpdateSchema = z
   .object({
     enabled: z.boolean(),
+    showHeader: z.boolean().optional(),
     seo: projectEmbedSeoUpdateSchema.optional(),
   })
   .superRefine((data, ctx) => {

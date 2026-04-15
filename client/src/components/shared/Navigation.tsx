@@ -105,7 +105,7 @@ export const Navigation: FC = () => {
       navigate(ROUTES.HOME);
     } catch (error) {
       const text = error instanceof Error ? error.message : t('nav.logoutError');
-      message.error(text, 0);
+      message.error(text);
     }
   }, [logout, navigate, message, t]);
 

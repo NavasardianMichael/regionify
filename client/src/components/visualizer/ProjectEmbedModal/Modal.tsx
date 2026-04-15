@@ -74,7 +74,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       keywords: defaultKeywords,
       allowedOriginsAllowAll: defaultAllowedOriginsAllowAll,
       allowedOrigins: defaultAllowedOrigins,
-      showHeader: true,
+      showHeader: project.embed.showHeader,
     });
     setSavedToken(null);
   }, [
@@ -82,6 +82,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
     open,
     project.id,
     project.embed.enabled,
+    project.embed.showHeader,
     project.embed.seo.title,
     project.embed.seo.description,
     defaultEmbedTitle,
@@ -128,6 +129,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
           : sanitizeAllowedOrigins(values.allowedOrigins);
         const embedResult = await updateProjectEmbed(project.id, {
           enabled: values.enabled,
+          showHeader: values.showHeader,
           seo: {
             title: values.enabled ? values.seoTitle.trim().slice(0, SEO_TITLE_MAX) : null,
             description: values.enabled

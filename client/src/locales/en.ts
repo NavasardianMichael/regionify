@@ -387,6 +387,7 @@ const en: CommonNs = {
       embedNotFoundTitle: 'We are sorry. The requested page is not available.',
       embedNotFoundDescription:
         'The link may be disabled, expired, or incorrect. If the project exists and you have access to it, try to open the project and turn public embed back on.',
+      layout: 'Layout',
       showHeader: 'Show header on embed page',
       showHeaderHint:
         'When enabled, the page title and description are shown as a header above the map.',
@@ -610,6 +611,14 @@ const en: CommonNs = {
     error: 'Something went wrong',
     language: 'Language',
   },
+  errors: {
+    mapRenderFailed: 'We are sorry, map failed to render.',
+    panelFailed: 'This panel failed to load.',
+    appCrashed: 'Something went wrong.',
+    reload: 'Reload',
+    goHome: 'Go to homepage',
+    contactSupport: 'Contact Support',
+  },
   messages: {
     projectSaved: 'Project saved',
     projectSaveFailed: 'Failed to save project',
@@ -619,6 +628,7 @@ const en: CommonNs = {
     projectDeleteFailed: 'Failed to delete project',
     projectRenamed: 'Project renamed',
     projectRenameFailed: 'Failed to rename project',
+    sessionExpired: 'Session expired. Please log in again.',
     projectsLoadFailed: 'Failed to load projects',
     projectLoadFailed: 'Failed to load project',
     mapExportedAs: 'Map exported as {{format}}',
