@@ -107,7 +107,7 @@ const MapViewer: FC<MapViewerProps> = ({
     handleResetView,
   } = useMapPan({ containerRef, mapTransformRef, onResetLabelPositions });
 
-  useLabelDrag({ containerRef, svgContent, labelPositionsRef });
+  useLabelDrag({ containerRef, svgContent, labelPositionsRef, enabled: !flatEmbedChrome });
 
   const { isLegendDragging, handleLegendMouseDown, handleResizeMouseDown } = useLegendDrag({
     containerRef,

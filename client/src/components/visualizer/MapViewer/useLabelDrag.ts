@@ -6,12 +6,14 @@ type UseLabelDragParams = {
   containerRef: RefObject<HTMLButtonElement | null>;
   svgContent: string;
   labelPositionsRef: RefObject<Record<string, { x: number; y: number }>>;
+  enabled?: boolean;
 };
 
 export function useLabelDrag({
   containerRef,
   svgContent,
   labelPositionsRef,
+  enabled = true,
 }: UseLabelDragParams): void {
   const regionLabels = useMapStylesStore(selectRegionLabels);
   const setLabelPositionsByRegionId = useMapStylesStore(selectSetLabelPositionsByRegionId);
@@ -85,7 +87,7 @@ export function useLabelDrag({
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !svgContent || !regionLabels.show) return;
+    if (!enabled || !container || !svgContent || !regionLabels.show) return;
 
     const textElements = container.querySelectorAll<SVGTextElement>('text[data-region-id]');
 
@@ -127,6 +129,7 @@ export function useLabelDrag({
       document.body.style.cursor = '';
     };
   }, [
+    enabled,
     containerRef,
     svgContent,
     regionLabels.show,

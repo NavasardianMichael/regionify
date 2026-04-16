@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { getMe } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { isEmbedPathname } from '@/constants/routes';
 
 /**
  * Keeps the persisted auth state (Zustand + localStorage) in sync with the server session.
@@ -14,7 +15,7 @@ export const AuthSync = () => {
   const logout = useProfileStore(selectLogout);
 
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn || isEmbedPathname(window.location.pathname)) return;
 
     let cancelled = false;
 

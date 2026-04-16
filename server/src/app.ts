@@ -70,6 +70,7 @@ export function createApp(): express.Application {
               objectSrc: ["'none'"],
               scriptSrc: ["'self'"],
               scriptSrcAttr: ["'none'"],
+              workerSrc: ["'self'", 'blob:'],
               styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
               connectSrc: [...connectSrcValues],
               upgradeInsecureRequests: [],
