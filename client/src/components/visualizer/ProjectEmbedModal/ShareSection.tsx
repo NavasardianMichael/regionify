@@ -1,6 +1,5 @@
 import { type FC, useCallback } from 'react';
 import { Flex, Typography } from 'antd';
-import { getEmbedRoute } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { EmbedIframeCode } from './EmbedIframeCode';
 import { EmbedPublicUrl } from './EmbedPublicUrl';
@@ -39,7 +38,6 @@ export const ShareSection: FC<Props> = ({
   }
 
   const hasPublicUrl = Boolean(embedPageUrl && embedToken);
-  const publicPagePath = embedToken ? getEmbedRoute(embedToken) : '';
   const pendingToken = !hasPublicUrl && submitting;
 
   return (
@@ -54,7 +52,6 @@ export const ShareSection: FC<Props> = ({
         <EmbedPublicUrl
           hasPublicUrl={hasPublicUrl}
           pendingToken={pendingToken}
-          publicPagePath={publicPagePath}
           embedPageUrl={embedPageUrl}
           submitting={submitting}
           onCopyUrl={handleCopyUrl}

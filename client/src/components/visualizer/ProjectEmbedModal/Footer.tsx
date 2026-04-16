@@ -4,11 +4,12 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type Props = {
   submitting: boolean;
+  saveDisabled: boolean;
   onClose: () => void;
   onSubmit: () => void;
 };
 
-export const Footer: FC<Props> = ({ submitting, onClose, onSubmit }) => {
+export const Footer: FC<Props> = ({ submitting, saveDisabled, onClose, onSubmit }) => {
   const { t } = useTypedTranslation();
 
   return (
@@ -19,6 +20,7 @@ export const Footer: FC<Props> = ({ submitting, onClose, onSubmit }) => {
       <Button
         type="primary"
         loading={submitting}
+        disabled={saveDisabled}
         onClick={onSubmit}
         data-i18n-key="visualizer.save"
       >

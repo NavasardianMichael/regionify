@@ -21,6 +21,7 @@ type Props = {
   titlePlaceholder: string;
   descriptionPlaceholder: string;
   onFinish: (values: ProjectEmbedFormValues) => void | Promise<void>;
+  onFieldsChange: () => void;
 };
 
 type EmbedFormApi = {
@@ -38,6 +39,7 @@ export const EmbedForm: FC<Props> = ({
   titlePlaceholder,
   descriptionPlaceholder,
   onFinish,
+  onFieldsChange,
 }) => {
   const { t } = useTypedTranslation();
   const formApi = form as unknown as EmbedFormApi;
@@ -175,8 +177,14 @@ export const EmbedForm: FC<Props> = ({
   );
 
   return (
-    <Form form={form} layout="vertical" onFinish={onFinish} className="min-w-0">
-      <Flex align="start" justify="space-between" gap="middle" wrap="wrap" className="mb-6!">
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={onFinish}
+      onFieldsChange={onFieldsChange}
+      className="min-w-0"
+    >
+      <Flex align="start" justify="space-between" gap="small" vertical className="mb-3!">
         <Typography.Paragraph
           type="secondary"
           className="mb-0! flex-1 text-xs"
@@ -259,7 +267,7 @@ export const EmbedForm: FC<Props> = ({
       {/* Trusted origins — label + allow-all toggle */}
       <Form.Item
         label={<span className="font-semibold">{t('visualizer.embed.allowedOrigins')}</span>}
-        className="mb-0!"
+        className="mb-1!"
         data-i18n-key="visualizer.embed.allowedOrigins"
       >
         <Flex vertical gap={6}>

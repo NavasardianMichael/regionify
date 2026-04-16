@@ -1,1 +1,17 @@
 pnpm exec lint-staged
+
+# Check if schema.prisma is staged but no new migration file is included
+if git diff --cached --name-only | grep -q 'server/prisma/schema\.prisma'; then
+  if ! git diff --cached --name-only | grep -q 'server/prisma/migrations/'; then
+    echo ""
+    echo "❌ schema.prisma was modified but no new migration file was found."
+    echo ""
+    echo "   RUN:"
+    echo ""
+    echo "   pnpm --filter @regionify/server db:migrate -- --name add_embed_show_header"
+    echo ""
+    echo "   Then stage the new migration file and commit again."
+    echo ""
+    exit 1
+  fi
+fi

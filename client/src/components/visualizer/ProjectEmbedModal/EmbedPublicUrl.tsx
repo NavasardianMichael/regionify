@@ -7,7 +7,6 @@ import { AppNavLink } from '@/components/ui/AppNavLink';
 type Props = {
   hasPublicUrl: boolean;
   pendingToken: boolean;
-  publicPagePath: string;
   embedPageUrl: string;
   submitting: boolean;
   onCopyUrl: () => void;
@@ -16,7 +15,6 @@ type Props = {
 export const EmbedPublicUrl: FC<Props> = ({
   hasPublicUrl,
   pendingToken,
-  publicPagePath,
   embedPageUrl,
   submitting,
   onCopyUrl,
@@ -47,7 +45,7 @@ export const EmbedPublicUrl: FC<Props> = ({
       className="min-w-0 rounded border border-neutral-200 bg-white px-2! py-1!"
     >
       <AppNavLink
-        to={publicPagePath}
+        to={embedPageUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm break-all underline!"

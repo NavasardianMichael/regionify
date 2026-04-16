@@ -58,6 +58,8 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   const formApi = form as unknown as EmbedModalFormApi;
   const [submitting, setSubmitting] = useState(false);
   const [savedToken, setSavedToken] = useState<string | null>(null);
+  const [formTouched, setFormTouched] = useState(false);
+  const [hasErrors, setHasErrors] = useState(false);
   const embedEnabled = Form.useWatch('enabled', form) === true;
   const showHeader = Form.useWatch('showHeader', form) !== false;
 
@@ -77,6 +79,8 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       showHeader: project.embed.showHeader,
     });
     setSavedToken(null);
+    setFormTouched(false);
+    setHasErrors(false);
   }, [
     formApi,
     open,
@@ -159,6 +163,13 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
     [message, project.id, t, updateProjectInList],
   );
 
+  const onFieldsChange = useCallback(() => {
+    setFormTouched(form.isFieldsTouched());
+    setHasErrors(form.getFieldsError().some(({ errors }) => errors.length > 0));
+  }, [form]);
+
+  const saveDisabled = !formTouched || hasErrors;
+
   const onModalCancel = useCallback(() => {
     if (submitting) return;
     onClose();
@@ -177,7 +188,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       title={<Title />}
       open={open}
       onCancel={onModalCancel}
-      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[1200px]! lg:w-2/3!`}
+      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[1000px]! lg:w-2/3!`}
       classNames={{
         container: 'max-h-[90vh]',
         body: 'min-h-0 max-h-[calc(90vh-180px)] overflow-y-auto',
@@ -186,7 +197,14 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       keyboard={!submitting}
       closable={{ disabled: submitting }}
       centered
-      footer={<Footer submitting={submitting} onClose={onClose} onSubmit={onFooterSubmit} />}
+      footer={
+        <Footer
+          submitting={submitting}
+          saveDisabled={saveDisabled}
+          onClose={onClose}
+          onSubmit={onFooterSubmit}
+        />
+      }
       destroyOnHidden
     >
       <EmbedForm
@@ -195,6 +213,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         titlePlaceholder={titlePlaceholder}
         descriptionPlaceholder={descriptionPlaceholder}
         onFinish={onFinish}
+        onFieldsChange={onFieldsChange}
       />
       <ShareSection
         embedEnabled={embedEnabled}
