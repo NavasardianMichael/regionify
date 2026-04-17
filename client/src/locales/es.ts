@@ -32,7 +32,7 @@ const es: CommonNs = {
     welcome: 'Crea hermosas visualizaciones interactivas de mapas regionales.',
     heroHeadline: 'Convierte datos en hermosos mapas regionales',
     heroSubheadline:
-      'Importa datos desde CSV, Excel, JSON o Google Sheets, personaliza colores, leyendas y estilos, y exporta gráficos de mapas listos para publicar.',
+      'Importa datos desde CSV, Excel, JSON o Google Sheets, personaliza colores, leyendas y estilos, y exporta gráficos de mapas listos para publicar. Pago único — sin suscripción.',
     ctaStart: 'Empezar a crear',
     ctaBadges: 'Ver precios',
     featuresTitle: 'Todo lo que necesitas para visualizar datos regionales',
@@ -111,7 +111,12 @@ const es: CommonNs = {
       {
         question: '¿Puedo incrustar un mapa en mi sitio?',
         answer:
-          'La incrustación pública e **iframe** están en el badge **Chronographer**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
+          'La incrustación pública e **iframe** están disponibles desde el badge **Explorador**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
+      },
+      {
+        question: '¿Esto es una suscripción?',
+        answer:
+          'No. Los dos planes de pago (**Explorador** y **Cronógrafo**) son pagos únicos. Paga una vez y conserva el acceso para siempre — sin cargos recurrentes, sin caducidad.',
       },
       {
         question: '¿Cómo funciona la coincidencia de regiones?',
@@ -132,8 +137,8 @@ const es: CommonNs = {
   },
   badges: {
     title: 'Elige tu badge',
-    subtitle:
-      'Lo que incluye cada nivel de badge en el visualizador (igual que los límites de tu cuenta).',
+    subtitle: 'Elige tu nivel de acceso — paga una vez, sin cargos recurrentes.',
+    oneTimeTagline: 'Pago único · Sin suscripción · Acceso de por vida',
     paymentNote:
       'Los pagos son seguros a través de Lemon Squeezy. No se almacenan datos de tarjeta en nuestros servidores.',
     paymentIssueNote: 'Si tienes algún problema con tu pago, por favor',
@@ -164,13 +169,14 @@ const es: CommonNs = {
     items: {
       observer: {
         name: 'Observador (gratis)',
-        description: 'Exportación JPEG, mapas y leyendas básicos y límite de proyectos.',
+        description:
+          'Exportación PNG y JPEG a calidad completa con marca de agua, mapas y leyendas básicos, hasta 5 proyectos.',
         buttonText: 'Badge gratuito',
       },
       explorer: {
         name: 'Explorador',
         description:
-          'PNG, SVG y JPEG a calidad completa, proyectos ilimitados y estilos avanzados.',
+          'PNG, SVG y JPEG a calidad completa, sin marca de agua, proyectos ilimitados, estilos avanzados e inserción pública.',
         buttonText: 'Comprar Explorador (pago único)',
       },
       chronographer: {

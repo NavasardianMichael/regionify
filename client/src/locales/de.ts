@@ -32,7 +32,7 @@ const de: CommonNs = {
     welcome: 'Erstellen Sie schöne interaktive Regionalkarten-Visualisierungen.',
     heroHeadline: 'Verwandeln Sie Daten in schöne Regionalkarten',
     heroSubheadline:
-      'Importieren Sie Daten aus CSV, Excel, JSON oder Google Sheets, passen Sie Farben, Legenden und Stile an und exportieren Sie druckfertige Kartengrafiken.',
+      'Importieren Sie Daten aus CSV, Excel, JSON oder Google Sheets, passen Sie Farben, Legenden und Stile an und exportieren Sie druckfertige Kartengrafiken. Einmalzahlung — kein Abo.',
     ctaStart: 'Jetzt erstellen',
     ctaBadges: 'Preise ansehen',
     featuresTitle: 'Alles, was Sie zur Visualisierung regionaler Daten brauchen',
@@ -113,7 +113,12 @@ const de: CommonNs = {
       {
         question: 'Kann ich eine Karte in meine Website einbetten?',
         answer:
-          'Öffentliche Einbettung und **iframe** sind mit dem **Chronographer**-Badge möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
+          'Öffentliche Einbettung und **iframe** sind ab dem **Entdecker**-Badge möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
+      },
+      {
+        question: 'Ist das ein Abonnement?',
+        answer:
+          'Nein. Beide kostenpflichtigen Badge-Stufen (**Entdecker** und **Chronograph**) sind Einmalzahlungen. Zahlen Sie einmal und behalten Sie dauerhaft Zugang — keine laufenden Kosten, kein Ablaufdatum.',
       },
       {
         question: 'Wie funktioniert die Regionszuordnung?',
@@ -134,7 +139,8 @@ const de: CommonNs = {
   },
   badges: {
     title: 'Wählen Sie Ihr Badge',
-    subtitle: 'Funktionen pro Badge-Stufe – wie in der App und bei Ihren Kontolimits.',
+    subtitle: 'Wählen Sie Ihren Zugangsumfang — einmal zahlen, keine laufenden Kosten.',
+    oneTimeTagline: 'Einmalzahlung · Kein Abonnement · Dauerhafter Zugang',
     paymentNote:
       'Zahlungen sind sicher über Lemon Squeezy. Keine Kartendaten werden auf unseren Servern gespeichert.',
     paymentIssueNote: 'Wenn Sie Probleme mit Ihrer Zahlung haben, wenden Sie sich bitte an',
@@ -167,13 +173,13 @@ const de: CommonNs = {
       observer: {
         name: 'Beobachter (kostenlos)',
         description:
-          'JPEG-Export, Kernfunktionen für Karten und Legenden, begrenzte Projektanzahl.',
+          'PNG- und JPEG-Export in voller Qualität mit Wasserzeichen, Grundfunktionen für Karten und Legenden, bis zu 5 Projekte.',
         buttonText: 'Kostenloses Badge',
       },
       explorer: {
         name: 'Entdecker',
         description:
-          'PNG, SVG und JPEG in voller Qualität, unbegrenzte Projekte, erweiterte Stile.',
+          'PNG, SVG und JPEG in voller Qualität, kein Wasserzeichen, unbegrenzte Projekte, erweiterte Stile und öffentliche Einbettung.',
         buttonText: 'Entdecker kaufen (einmalig, dauerhaft)',
       },
       chronographer: {

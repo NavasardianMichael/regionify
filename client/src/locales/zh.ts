@@ -32,7 +32,7 @@ const zh: CommonNs = {
     welcome: '创建精美的交互式区域地图可视化。',
     heroHeadline: '将数据转化为精美的区域地图',
     heroSubheadline:
-      '从 CSV、Excel、JSON 或 Google Sheets 导入数据，自定义颜色、图例和样式，然后导出可发布的地图图形。',
+      '从 CSV、Excel、JSON 或 Google Sheets 导入数据，自定义颜色、图例和样式，然后导出可发布的地图图形。一次性付款——无需订阅。',
     ctaStart: '开始创建',
     ctaBadges: '查看定价',
     featuresTitle: '可视化区域数据所需的一切',
@@ -102,7 +102,12 @@ const zh: CommonNs = {
       {
         question: '能把地图嵌入自己的网站吗？',
         answer:
-          '**Chronographer** 徽章支持公开嵌入与 **iframe**。每个项目可开启**公开页面**，并设置利于 **SEO** 的标题与描述。',
+          '**探索者**徽章及以上级别支持公开嵌入与 **iframe**。每个项目可开启**公开页面**，并设置利于 **SEO** 的标题与描述。',
+      },
+      {
+        question: '这是订阅制吗？',
+        answer:
+          '不是。两个付费徽章（**探索者**和**纪时者**）均为一次性付款。付一次即可永久使用——无周期性费用，永不过期。',
       },
       {
         question: '区域匹配如何工作？',
@@ -123,7 +128,8 @@ const zh: CommonNs = {
   },
   badges: {
     title: '选择您的徽章',
-    subtitle: '各徽章层级在可视化工具中的功能（与账户限制一致）。',
+    subtitle: '选择您的访问级别——一次性付款，无周期性费用。',
+    oneTimeTagline: '一次性付款 · 无订阅 · 终身访问',
     paymentNote: '通过 Lemon Squeezy 安全支付。我们的服务器不存储卡数据。',
     paymentIssueNote: '如果您在付款时遇到任何问题，请',
     paymentContactUs: '联系我们',
@@ -152,12 +158,12 @@ const zh: CommonNs = {
     items: {
       observer: {
         name: '观察者（免费）',
-        description: 'JPEG 导出、核心地图与图例功能，项目数量有限。',
+        description: '带水印的 PNG 与 JPEG 全质量导出、核心地图与图例功能，最多 5 个项目。',
         buttonText: '免费徽章',
       },
       explorer: {
         name: '探索者',
-        description: 'PNG、SVG、JPEG 全质量导出，不限项目，含高级样式。',
+        description: 'PNG、SVG、JPEG 全质量导出，无水印，不限项目，含高级样式及公开嵌入。',
         buttonText: '购买探索者（一次性）',
       },
       chronographer: {

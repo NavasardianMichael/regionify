@@ -6,7 +6,6 @@ import {
   HttpStatus,
   BADGE_DETAILS,
   type ProjectEmbedUpdateInput,
-  BADGES,
 } from '@regionify/shared';
 
 import { AppError } from '@/middleware/errorHandler.js';
@@ -54,7 +53,7 @@ export const projectEmbedService = {
   async getPublicPayloadByToken(token: string): Promise<PublicEmbedPayload> {
     const project = await projectRepository.findByEmbedToken(token);
 
-    if (!project || project.user.badge !== BADGES.chronographer) {
+    if (!project || !BADGE_DETAILS[project.user.badge]?.limits.publicEmbed) {
       throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'Embed not found');
     }
 
@@ -84,7 +83,7 @@ export const projectEmbedService = {
   }> {
     const project = await projectRepository.findByEmbedToken(token);
 
-    if (!project || project.user.badge !== BADGES.chronographer) {
+    if (!project || !BADGE_DETAILS[project.user.badge]?.limits.publicEmbed) {
       throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'Embed not found');
     }
 
@@ -131,7 +130,7 @@ export const projectEmbedService = {
       throw new AppError(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORBIDDEN,
-        'Public embed requires Chronographer badge',
+        'Public embed requires Explorer or Chronographer badge',
       );
     }
 

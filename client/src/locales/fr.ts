@@ -32,7 +32,7 @@ const fr: CommonNs = {
     welcome: 'Créez de belles visualisations de cartes régionales interactives.',
     heroHeadline: 'Transformez vos données en belles cartes régionales',
     heroSubheadline:
-      'Importez vos données depuis CSV, Excel, JSON ou Google Sheets, personnalisez couleurs, légendes et styles, puis exportez des cartes prêtes à publier.',
+      'Importez vos données depuis CSV, Excel, JSON ou Google Sheets, personnalisez couleurs, légendes et styles, puis exportez des cartes prêtes à publier. Paiement unique — aucun abonnement.',
     ctaStart: 'Commencer à créer',
     ctaBadges: 'Voir les tarifs',
     featuresTitle: 'Tout ce dont vous avez besoin pour visualiser des données régionales',
@@ -112,7 +112,12 @@ const fr: CommonNs = {
       {
         question: 'Puis-je intégrer une carte sur mon site ?',
         answer:
-          "L'intégration publique et l'**iframe** sont disponibles avec le badge **Chronographer**. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.",
+          'L’intégration publique et l’**iframe** sont disponibles avec le badge **Explorateur** et supérieur. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.',
+      },
+      {
+        question: 'Est-ce un abonnement ?',
+        answer:
+          'Non. Les deux offres payantes (**Explorateur** et **Chronographe**) sont des paiements uniques. Payez une fois et conservez l’accès pour toujours — sans frais récurrents, sans expiration.',
       },
       {
         question: 'Comment fonctionne l’appariement des régions ?',
@@ -133,7 +138,8 @@ const fr: CommonNs = {
   },
   badges: {
     title: 'Choisissez votre badge',
-    subtitle: 'Fonctions par niveau de badge, comme dans l’appli et les limites du compte.',
+    subtitle: 'Choisissez votre niveau d’accès — payez une fois, sans frais récurrents.',
+    oneTimeTagline: 'Paiement unique · Sans abonnement · Accès à vie',
     paymentNote:
       "Les paiements sont sécurisés via Lemon Squeezy. Aucune donnée de carte n'est stockée sur nos serveurs.",
     paymentIssueNote: 'Si vous rencontrez des problèmes avec votre paiement, veuillez',
@@ -164,12 +170,14 @@ const fr: CommonNs = {
     items: {
       observer: {
         name: 'Observateur (gratuit)',
-        description: 'Export JPEG, cartes et légendes de base, nombre de projets limité.',
+        description:
+          "Export PNG et JPEG en pleine qualité avec filigrane, cartes et légendes de base, jusqu'à 5 projets.",
         buttonText: 'Badge gratuit',
       },
       explorer: {
         name: 'Explorateur',
-        description: 'PNG, SVG et JPEG en pleine qualité, projets illimités et styles avancés.',
+        description:
+          'PNG, SVG et JPEG en pleine qualité, sans filigrane, projets illimités, styles avancés et intégration publique.',
         buttonText: 'Acheter Explorateur (paiement unique)',
       },
       chronographer: {

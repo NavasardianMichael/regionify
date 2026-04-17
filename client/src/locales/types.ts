@@ -85,6 +85,7 @@ export type CommonNs = {
   badges: {
     title: string;
     subtitle: string;
+    oneTimeTagline: string;
     paymentNote: string;
     paymentIssueNote: string;
     paymentContactUs: string;

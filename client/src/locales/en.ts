@@ -32,7 +32,7 @@ const en: CommonNs = {
     welcome: 'Create beautiful interactive regional map visualizations.',
     heroHeadline: 'Turn data into beautiful regional maps',
     heroSubheadline:
-      'Import your data from CSV, Excel, JSON or Google Sheets, customize colors, legends and styles, then export publication-ready map graphics.',
+      'Import your data from CSV, Excel, JSON or Google Sheets, customize colors, legends and styles, then export publication-ready map graphics. One-time pricing — no subscription ever.',
     ctaStart: 'Start creating',
     ctaBadges: 'See pricing',
     featuresTitle: 'Everything you need to visualize regional data',
@@ -111,7 +111,12 @@ const en: CommonNs = {
       {
         question: 'Can I embed a map on my website?',
         answer:
-          'Public embed and **iframe** embedding are available on the **Chronographer** badge. You can enable a **public page** per project with optional **SEO** title and description so visitors and search engines see meaningful context around the map.',
+          'Public embed and **iframe** embedding are available on the **Explorer** badge and above. You can enable a **public page** per project with optional **SEO** title and description so visitors and search engines see meaningful context around the map.',
+      },
+      {
+        question: 'Is this a subscription?',
+        answer:
+          'No. Both paid tiers (**Explorer** and **Chronographer**) are one-time payments. Pay once and keep access forever — no recurring charges, no expiry.',
       },
       {
         question: 'How does region matching work?',
@@ -132,7 +137,8 @@ const en: CommonNs = {
   },
   badges: {
     title: 'Choose Your Badge',
-    subtitle: 'What each badge tier unlocks in the visualizer (same rules as your account limits).',
+    subtitle: 'Choose your level of access — pay once, no recurring charges.',
+    oneTimeTagline: 'One-time payment · No subscription · Lifetime access',
     paymentNote: 'Payments are secure via Lemon Squeezy. No card data is stored on our servers.',
     paymentIssueNote: 'If you are experiencing any issues with your payment, please',
     paymentContactUs: 'contact us',
@@ -162,13 +168,14 @@ const en: CommonNs = {
     items: {
       observer: {
         name: 'Observer (free)',
-        description: 'JPEG export, core maps and legends, and a small project limit.',
+        description:
+          'PNG and JPEG export at full quality with watermark, core maps and legends, up to 5 projects.',
         buttonText: 'Free badge',
       },
       explorer: {
         name: 'Explorer',
         description:
-          'PNG, SVG, and JPEG at full quality, unlimited projects, and advanced styling.',
+          'PNG, SVG, and JPEG at full quality, no watermark, unlimited projects, advanced styling, and public embed.',
         buttonText: 'Buy Explorer (Lifetime)',
       },
       chronographer: {
