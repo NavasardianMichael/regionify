@@ -1,13 +1,13 @@
 import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AUTH_VALIDATION, type Plan, PLANS } from '@regionify/shared';
-import { Badge, Button, Divider, Flex, Form, Input, Typography } from 'antd';
+import { AUTH_VALIDATION, type Badge, BADGES } from '@regionify/shared';
+import { Badge as AntBadge, Button, Divider, Flex, Form, Input, Typography } from 'antd';
 import { deleteAccount, updateProfile } from '@/api/auth';
 import { selectIsLoggedIn, selectSetUser, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { planRibbonColor, planRibbonNameKey } from '@/helpers/planRibbonColor';
+import { badgeRibbonColor, badgeRibbonNameKey } from '@/helpers/badgeRibbonColor';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { Card } from '@/components/ui/Card';
 
@@ -95,16 +95,16 @@ const AccountPage: FC = () => {
 
   const isProfileDirty = (watchedName ?? '').trim() !== user.name.trim();
 
-  const accountPlan: Plan = user.plan ?? PLANS.observer;
+  const accountBadge: Badge = user.badge ?? BADGES.observer;
 
   return (
-    <Badge.Ribbon
-      text={t(planRibbonNameKey(accountPlan))}
-      color={planRibbonColor(accountPlan)}
+    <AntBadge.Ribbon
+      text={t(badgeRibbonNameKey(accountBadge))}
+      color={badgeRibbonColor(accountBadge)}
       placement="end"
       rootClassName="m-auto! w-full max-w-144 overflow-visible"
       className="top-3! font-medium"
-      data-i18n-key="plans.items.observer.name"
+      data-i18n-key="badges.items.observer.name"
     >
       <Card className="w-full overflow-visible bg-white! shadow-sm!">
         <header className="mb-8 text-center">
@@ -229,7 +229,7 @@ const AccountPage: FC = () => {
           </Button>
         </Flex>
       </Card>
-    </Badge.Ribbon>
+    </AntBadge.Ribbon>
   );
 };
 

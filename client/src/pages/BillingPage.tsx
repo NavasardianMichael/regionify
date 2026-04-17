@@ -1,15 +1,15 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type Plan, PLANS } from '@regionify/shared';
+import { type Badge, BADGES } from '@regionify/shared';
 import { Typography } from 'antd';
 import { createCheckout } from '@/api/payments';
 import { selectIsLoggedIn, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
-import { useBillingPlans } from '@/hooks/useBillingPlans';
+import { useBillingBadges } from '@/hooks/useBillingBadges';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import PlanCard from '@/components/billing/PlanCard';
-import type { PayablePlan } from '@/components/billing/types';
+import BadgeCard from '@/components/billing/BadgeCard';
+import type { PayableBadge } from '@/components/billing/types';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
@@ -19,23 +19,23 @@ const BillingPage: FC = () => {
   const user = useProfileStore(selectUser);
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
   const navigate = useNavigate();
-  const currentPlan: Plan = useMemo(() => user?.plan ?? PLANS.observer, [user?.plan]);
-  const [upgradingPlan, setUpgradingPlan] = useState<PayablePlan | null>(null);
-  const billingPlans = useBillingPlans();
+  const currentBadge: Badge = useMemo(() => user?.badge ?? BADGES.observer, [user?.badge]);
+  const [upgradingBadge, setUpgradingBadge] = useState<PayableBadge | null>(null);
+  const billingBadges = useBillingBadges();
 
   const onUpgrade = useCallback(
-    async (plan: PayablePlan) => {
+    async (badge: PayableBadge) => {
       if (!isLoggedIn) {
         navigate(ROUTES.LOGIN, { replace: true });
         return;
       }
-      setUpgradingPlan(plan);
+      setUpgradingBadge(badge);
       try {
-        const { checkoutUrl } = await createCheckout({ plan });
+        const { checkoutUrl } = await createCheckout({ badge });
         window.location.href = checkoutUrl;
       } catch {
-        message.error(t('plans.checkoutError'));
-        setUpgradingPlan(null);
+        message.error(t('badges.checkoutError'));
+        setUpgradingBadge(null);
       }
     },
     [isLoggedIn, message, navigate, t],
@@ -47,26 +47,26 @@ const BillingPage: FC = () => {
         <Typography.Title
           level={1}
           className="text-primary mb-0! w-full text-3xl font-bold"
-          data-i18n-key="plans.title"
+          data-i18n-key="badges.title"
         >
-          {t('plans.title')}
+          {t('badges.title')}
         </Typography.Title>
         <Typography.Paragraph
           className="mb-0! w-full max-w-3xl text-center text-gray-500"
-          data-i18n-key="plans.subtitle"
+          data-i18n-key="badges.subtitle"
         >
-          {t('plans.subtitle')}
+          {t('badges.subtitle')}
         </Typography.Paragraph>
       </header>
 
       <ul className="m-0 flex w-full min-w-0 list-none flex-wrap items-stretch! justify-center gap-8 p-0 md:gap-6 lg:items-start">
-        {billingPlans.map((plan) => (
-          <li key={plan.id} className="w-full flex-col md:w-80 md:shrink-0">
-            <PlanCard
-              plan={plan}
-              currentPlan={currentPlan}
+        {billingBadges.map((tier) => (
+          <li key={tier.id} className="w-full flex-col md:w-80 md:shrink-0">
+            <BadgeCard
+              tier={tier}
+              currentBadge={currentBadge}
               onUpgrade={onUpgrade}
-              upgradingPlan={upgradingPlan}
+              upgradingBadge={upgradingBadge}
             />
           </li>
         ))}
@@ -75,22 +75,22 @@ const BillingPage: FC = () => {
       <Typography.Text
         type="secondary"
         className="relative z-10 mt-10 block w-full px-1 text-center text-sm lg:text-base"
-        data-i18n-key="plans.paymentNote"
+        data-i18n-key="badges.paymentNote"
       >
-        {t('plans.paymentNote')}
+        {t('badges.paymentNote')}
       </Typography.Text>
       <Typography.Text
         type="secondary"
         className="relative z-10 block w-full px-1 text-center text-sm lg:text-base"
-        data-i18n-key="plans.paymentIssueNote"
+        data-i18n-key="badges.paymentIssueNote"
       >
-        {t('plans.paymentIssueNote')}{' '}
+        {t('badges.paymentIssueNote')}{' '}
         <AppNavLink
           className="font-semibold underline!"
           to={ROUTES.CONTACT}
-          data-i18n-key="plans.paymentContactUs"
+          data-i18n-key="badges.paymentContactUs"
         >
-          {t('plans.paymentContactUs')}
+          {t('badges.paymentContactUs')}
         </AppNavLink>
         .
       </Typography.Text>

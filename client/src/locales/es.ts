@@ -7,7 +7,7 @@ const es: CommonNs = {
     projects: 'Proyectos',
     contact: 'Contacto',
     faq: 'Preguntas frecuentes',
-    plans: 'Planes',
+    pricing: 'Precios',
     about: 'Acerca de',
     login: 'Iniciar sesión',
     account: 'Cuenta',
@@ -34,7 +34,7 @@ const es: CommonNs = {
     heroSubheadline:
       'Importa datos desde CSV, Excel, JSON o Google Sheets, personaliza colores, leyendas y estilos, y exporta gráficos de mapas listos para publicar.',
     ctaStart: 'Empezar a crear',
-    ctaPlans: 'Ver planes',
+    ctaBadges: 'Ver precios',
     featuresTitle: 'Todo lo que necesitas para visualizar datos regionales',
     featureImportTitle: 'Importación flexible',
     featureImportDesc:
@@ -81,17 +81,17 @@ const es: CommonNs = {
   about: {
     title: 'Acerca de Regionify',
     description:
-      'Regionify es una herramienta en el navegador para mapas coropléticos: conecta CSV, Excel, JSON o Google Sheets con mapas SVG regionales, ajusta leyendas y colores, y exporta imágenes o animaciones para informes y la web. Los planes superiores añaden series temporales, exportación GIF/MP4 y páginas públicas incrustables.',
+      'Regionify es una herramienta en el navegador para mapas coropléticos: conecta CSV, Excel, JSON o Google Sheets con mapas SVG regionales, ajusta leyendas y colores, y exporta imágenes o animaciones para informes y la web. Los niveles superiores añaden series temporales, exportación GIF/MP4 y páginas públicas incrustables.',
   },
   faq: {
     title: 'Preguntas frecuentes',
     intro:
-      'Respuestas directas sobre mapas coropléticos con Regionify: importación, exportación, planes, incrustaciones y coincidencia de regiones.',
+      'Respuestas directas sobre mapas coropléticos con Regionify: importación, exportación, precios, incrustaciones y coincidencia de regiones.',
     items: [
       {
         question: '¿Qué es Regionify?',
         answer:
-          'Regionify es una aplicación web para crear **mapas coropléticos** interactivos con tus datos. Eliges un mapa regional, importas valores desde **CSV**, **Excel**, **JSON** o **Google Sheets**, personalizas la leyenda y exportas imágenes o animaciones según tu plan.',
+          'Regionify es una aplicación web para crear **mapas coropléticos** interactivos con tus datos. Eliges un mapa regional, importas valores desde **CSV**, **Excel**, **JSON** o **Google Sheets**, personalizas la leyenda y exportas imágenes o animaciones según tu badge.',
       },
       {
         question: '¿Qué es un mapa coroplético?',
@@ -101,17 +101,17 @@ const es: CommonNs = {
       {
         question: '¿Qué formatos puedo importar?',
         answer:
-          'Hojas **CSV** y **Excel**, **JSON** y **Google Sheets** con sincronización en vivo en planes compatibles. Regionify usa **coincidencia difusa de texto** entre tus etiquetas y los nombres de región.',
+          'Hojas **CSV** y **Excel**, **JSON** y **Google Sheets** con sincronización en vivo en cuentas compatibles. Regionify usa **coincidencia difusa de texto** entre tus etiquetas y los nombres de región.',
       },
       {
         question: '¿Qué formatos de exportación hay?',
         answer:
-          'Depende del plan. El plan gratuito **Observer** incluye exportación **JPEG**. Los de pago añaden **PNG** y **SVG**, mayor calidad, estilos avanzados, series temporales y en **Chronographer** exportes **GIF** y **MP4** animados.',
+          'Depende del badge. El badge gratuito **Observer** incluye exportación **JPEG**. Los de pago añaden **PNG** y **SVG**, mayor calidad, estilos avanzados, series temporales y en **Chronographer** exportes **GIF** y **MP4** animados.',
       },
       {
         question: '¿Puedo incrustar un mapa en mi sitio?',
         answer:
-          'La incrustación pública e **iframe** están en el plan **Chronographer**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
+          'La incrustación pública e **iframe** están en el badge **Chronographer**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
       },
       {
         question: '¿Cómo funciona la coincidencia de regiones?',
@@ -121,32 +121,33 @@ const es: CommonNs = {
       {
         question: '¿Necesito una cuenta?',
         answer:
-          'Sí. Las cuentas guardan proyectos, facturación y el inicio de sesión opcional con Google. Consulta la página **Planes** para límites actuales.',
+          'Sí. Las cuentas guardan proyectos, facturación y el inicio de sesión opcional con Google. Consulta la página **Precios** para límites actuales.',
       },
       {
         question: '¿Cómo pido ayuda?',
         answer:
-          'Usa la página **Contacto** en la app. Para facturación, la página **Planes** indica cómo contactarnos si hay problemas.',
+          'Usa la página **Contacto** en la app. Para facturación, la página **Precios** indica cómo contactarnos si hay problemas.',
       },
     ],
   },
-  plans: {
-    title: 'Elige tu plan',
-    subtitle: 'Lo que incluye cada plan en el visualizador (igual que los límites de tu cuenta).',
+  badges: {
+    title: 'Elige tu badge',
+    subtitle:
+      'Lo que incluye cada nivel de badge en el visualizador (igual que los límites de tu cuenta).',
     paymentNote:
       'Los pagos son seguros a través de Lemon Squeezy. No se almacenan datos de tarjeta en nuestros servidores.',
     paymentIssueNote: 'Si tienes algún problema con tu pago, por favor',
     paymentContactUs: 'contáctanos',
     checkoutError: 'No se pudo iniciar el pago. Inténtalo de nuevo.',
-    currentPlan: 'Plan actual',
+    currentBadge: 'Badge actual',
     bestChoice: 'Mejor opción',
     priceFree: 'Gratis',
     priceOneTime: '{{price}} pago único',
     paymentPendingNote:
-      'Pago recibido. Tu plan puede tardar un momento en actualizarse. Actualiza la página o revisa Planes.',
-    verifyErrorNote: 'No se pudo verificar tu plan. Actualiza o revisa Planes.',
-    backToPlans: 'Volver a Planes',
-    goToPlans: 'Ir a Planes',
+      'Pago recibido. Tu badge puede tardar un momento en actualizarse. Actualiza la página o revisa Precios.',
+    verifyErrorNote: 'No se pudo verificar tu badge. Actualiza o revisa Precios.',
+    backToBadges: 'Volver a precios',
+    goToBadges: 'Ir a precios',
     rows: {
       projectsLimited: 'Hasta {{count}} proyectos guardados',
       projectsUnlimited: 'Proyectos guardados ilimitados',
@@ -164,7 +165,7 @@ const es: CommonNs = {
       observer: {
         name: 'Observador (gratis)',
         description: 'Exportación JPEG, mapas y leyendas básicos y límite de proyectos.',
-        buttonText: 'Plan gratuito',
+        buttonText: 'Badge gratuito',
       },
       explorer: {
         name: 'Explorador',
@@ -289,7 +290,7 @@ const es: CommonNs = {
       editManuallyInTable: 'Editar manualmente en tabla',
       editManuallyInText: 'Editar manualmente en texto',
       aiParserChronographerTooltip:
-        'El analizador de IA solo est\u00e1 disponible en el plan {{planName}}.',
+        'El analizador de IA solo est\u00e1 disponible con el badge {{badgeName}}.',
       connectSheets: 'Conectar Google Sheets',
       changeSheetsSource: 'Cambiar origen de Google Sheets',
       uploadCsv: 'Subir archivo CSV',
@@ -378,10 +379,10 @@ const es: CommonNs = {
       defaultMetaDescription: 'Mapa regional interactivo de {{projectName}} en Regionify.',
       saveToGenerateLink:
         'Guarda la configuración para generar el enlace de la página pública y el código de incrustación (iframe).',
-      planRequired: 'La incrustación pública requiere el plan {{planName}}.',
+      badgeRequired: 'La incrustación pública requiere el badge {{badgeName}}.',
       tooltipChronographerBody:
-        'La incrustación pública del mapa (enlace para compartir e iframe) está incluida en el plan {{planName}}.',
-      upgradePlansLink: 'Ver planes y mejorar',
+        'La incrustación pública del mapa (enlace para compartir e iframe) está incluida en el badge {{badgeName}}.',
+      upgradeBadgesLink: 'Ver precios y mejorar',
       tooltipNeedSavedProject:
         'Guarda primero tu mapa como proyecto para configurar la incrustación.',
       tooltipSelectCountry: 'Selecciona un país antes de usar la incrustación.',
@@ -420,7 +421,7 @@ const es: CommonNs = {
       height: 'Alto',
       back: 'Volver',
       downloadFormat: 'Descargar {{format}}',
-      upgradeToExplorer: 'Pasarte a {{planName}}',
+      upgradeToExplorer: 'Pasarte a {{badgeName}}',
       singleFormatHintAfterLink:
         ' para PNG, SVG, exportación fija a calidad completa y sin marca de agua.',
       qualityLimited: 'Calidad limitada al {{max}}%.',
@@ -526,10 +527,10 @@ const es: CommonNs = {
       collapseShadow: 'Sombra',
       collapseControls: 'Controles',
       collapseRegionLabels: 'Etiquetas de región',
-      freePlanNoteBeforeUpgrade:
+      freeBadgeNoteBeforeUpgrade:
         'Puedes seguir cambiando el color de fondo, pero el fondo transparente y quitar la marca de agua requieren una ',
-      freePlanUpgradeLink: 'mejora de insignia',
-      freePlanNoteAfterUpgrade: '.',
+      freeBadgeUpgradeLink: 'mejora de insignia',
+      freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Mostrar marca de agua',
       transparent: 'Transparente',
       color: 'Color',
@@ -613,7 +614,7 @@ const es: CommonNs = {
     cardRegionThumbnailAlt: 'Vista previa del mapa regional',
     limitReachedTitle: 'Límite de proyectos alcanzado',
     limitReachedContent:
-      'Has alcanzado el límite del plan gratuito Observer de {{count}} proyectos. Elimina al menos un proyecto para crear uno nuevo o actualiza tu plan.',
+      'Has alcanzado el límite del badge gratuito Observer ({{count}} proyectos). Elimina al menos un proyecto para crear uno nuevo o actualiza a un badge superior.',
   },
   common: {
     loading: 'Cargando...',
@@ -655,7 +656,7 @@ const es: CommonNs = {
     importedRegions: '{{count}} regiones importadas',
     importedRowsPeriods: '{{count}} filas importadas en {{periods}} períodos',
     timeSeriesDetected:
-      'Datos de series temporales detectados. Mejora al plan {{planName}} para animaciones.',
+      'Datos de series temporales detectados. Mejora al badge {{badgeName}} para animaciones.',
     noTimeColumnDetected:
       'No se detectó columna de tiempo (año, time, period, etc.). Datos importados como un solo período.',
     datasetMustIncludeId: 'El conjunto de datos debe incluir una columna id.',

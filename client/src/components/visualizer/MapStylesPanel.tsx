@@ -1,6 +1,6 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { BgColorsOutlined } from '@ant-design/icons';
-import { PLANS } from '@regionify/shared';
+import { BADGES } from '@regionify/shared';
 import { Collapse, type ColorPickerProps, Flex, type SwitchProps, Typography } from 'antd';
 import {
   selectBorder,
@@ -29,7 +29,7 @@ const DEBOUNCE_MS = 150;
 const MapStylesPanel: FC = () => {
   const { t } = useTypedTranslation();
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.observer;
+  const badge = user?.badge ?? BADGES.observer;
   const picture = useMapStylesStore((state) => state.picture);
   const setPicture = useMapStylesStore((state) => state.setPicture);
   const border = useMapStylesStore(selectBorder);
@@ -54,27 +54,27 @@ const MapStylesPanel: FC = () => {
   );
 
   useEffect(() => {
-    if (plan === PLANS.observer && picture.transparentBackground) {
+    if (badge === BADGES.observer && picture.transparentBackground) {
       setPicture({ transparentBackground: false });
     }
-  }, [plan, picture.transparentBackground, setPicture]);
+  }, [badge, picture.transparentBackground, setPicture]);
 
   const handleTransparentChange = useCallback<NonNullable<SwitchProps['onChange']>>(
     (checked) => {
-      if (plan === PLANS.observer) return;
+      if (badge === BADGES.observer) return;
       setPicture({ transparentBackground: checked });
     },
-    [setPicture, plan],
+    [setPicture, badge],
   );
   const handleBackgroundColorChange = useCallback<
     NonNullable<ColorPickerProps['onChangeComplete']>
   >((color) => setPicture({ backgroundColor: color.toHexString() }), [setPicture]);
   const handleShowWatermarkChange = useCallback<NonNullable<SwitchProps['onChange']>>(
     (checked) => {
-      if (plan === PLANS.observer) return;
+      if (badge === BADGES.observer) return;
       setPicture({ showWatermark: checked });
     },
-    [setPicture, plan],
+    [setPicture, badge],
   );
 
   const handleBorderShowChange = useCallback<NonNullable<SwitchProps['onChange']>>(
@@ -152,7 +152,7 @@ const MapStylesPanel: FC = () => {
         ),
         children: (
           <MapStylesBackgroundSection
-            plan={plan}
+            badge={badge}
             picture={picture}
             onTransparentChange={handleTransparentChange}
             onBackgroundColorChange={handleBackgroundColorChange}
@@ -248,7 +248,7 @@ const MapStylesPanel: FC = () => {
       },
     ],
     [
-      plan,
+      badge,
       picture,
       border,
       shadow,

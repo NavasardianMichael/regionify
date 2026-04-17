@@ -35,5 +35,5 @@ export const PROJECT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 /** Muted SVG path fill for project card map thumbnails (Tailwind gray-400). */
 export const MAP_THUMBNAIL_SVG_FILL = '#9ca3af';
 
-/** Maximum number of AI parse requests allowed per user per day (Chronographer plan). */
+/** Maximum number of AI parse requests allowed per user per day (Chronographer badge). */
 export const MAX_AI_PARSE_REQUESTS_PER_DAY = 3;

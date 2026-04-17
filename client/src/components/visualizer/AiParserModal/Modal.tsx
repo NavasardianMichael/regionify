@@ -109,7 +109,7 @@ export const AiParserModal: FC<Props> = ({
         showMessageWithClose(
           messageApi,
           'info',
-          t('messages.timeSeriesDetected', { planName: t('plans.items.chronographer.name') }),
+          t('messages.timeSeriesDetected', { badgeName: t('badges.items.chronographer.name') }),
         );
       }
       if (outcome.sideEffect === 'warn_no_time_chronographer') {

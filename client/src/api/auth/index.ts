@@ -86,7 +86,7 @@ export const register = async (payload: RegisterPayload): Promise<RegisterApiRes
 };
 
 /**
- * Get current user (requires session). Used e.g. after payment return to refresh plan.
+ * Get current user (requires session). Used e.g. after payment return to refresh badge tier.
  */
 type GetMeResponse = { success: true; data: { user: AuthApiResponse['user'] } };
 

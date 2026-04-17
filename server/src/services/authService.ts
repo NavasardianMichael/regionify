@@ -30,7 +30,7 @@ function toPublicUser(user: User): UserPublic {
     name: user.name,
     avatarUrl: user.avatarUrl,
     provider: user.provider as AuthProvider,
-    plan: user.plan as UserPublic['plan'],
+    badge: user.badge as UserPublic['badge'],
     locale: (user.locale ?? 'en') as UserPublic['locale'],
     createdAt: user.createdAt.toISOString(),
   };

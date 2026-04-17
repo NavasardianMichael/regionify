@@ -1,6 +1,6 @@
 import { type FC, useCallback, useMemo, useRef } from 'react';
-import { PLANS } from '@regionify/shared';
-import { Badge, Flex } from 'antd';
+import { BADGES } from '@regionify/shared';
+import { Badge as AntBadge, Flex } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -23,9 +23,9 @@ import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
-import { OBSERVER_PLAN_ZOOM_STACK_LIFT_PX } from '@/constants/mapViewer';
+import { OBSERVER_BADGE_ZOOM_STACK_LIFT_PX } from '@/constants/mapViewer';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { planRibbonColor, planRibbonNameKey } from '@/helpers/planRibbonColor';
+import { badgeRibbonColor, badgeRibbonNameKey } from '@/helpers/badgeRibbonColor';
 import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
 import { MapBottomLegend } from '@/components/visualizer/MapViewer/MapBottomLegend';
 import { MapFloatingLegend } from '@/components/visualizer/MapViewer/MapFloatingLegend';
@@ -40,11 +40,11 @@ import { useTimePeriodLabelDrag } from '@/components/visualizer/MapViewer/useTim
 
 type MapViewerProps = {
   className?: string;
-  /** When true (logged-in app session), show plan ribbon on the map export root block. */
-  showPlanRibbon?: boolean;
+  /** When true (logged-in app session), show badge tier ribbon on the map export root block. */
+  showBadgeRibbon?: boolean;
   /** Public embed: no card border or radius on the map frame. */
   flatEmbedChrome?: boolean;
-  /** When false, do not force observer watermark behavior based on current user plan. */
+  /** When false, do not force observer watermark behavior based on current user badge tier. */
   enforceObserverWatermark?: boolean;
 };
 
@@ -59,13 +59,13 @@ const mapFrameClassNames = (flatEmbedChrome: boolean, bottomPinnedLegend: boolea
 
 const MapViewer: FC<MapViewerProps> = ({
   className = '',
-  showPlanRibbon = false,
+  showBadgeRibbon = false,
   flatEmbedChrome = false,
   enforceObserverWatermark = true,
 }) => {
   const { t, i18n } = useTypedTranslation();
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.observer;
+  const badge = user?.badge ?? BADGES.observer;
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const timePeriods = useVisualizerStore(selectTimePeriods);
   const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
@@ -129,7 +129,7 @@ const MapViewer: FC<MapViewerProps> = ({
     return t('visualizer.mapAriaMapOf', { region });
   }, [dateLocale, selectedCountryId, t]);
 
-  const isObserverWatermarkForced = enforceObserverWatermark && plan === PLANS.observer;
+  const isObserverWatermarkForced = enforceObserverWatermark && badge === BADGES.observer;
   const showWatermarkOverlay = useMemo(
     () => isObserverWatermarkForced || picture.showWatermark,
     [isObserverWatermarkForced, picture.showWatermark],
@@ -137,7 +137,7 @@ const MapViewer: FC<MapViewerProps> = ({
 
   /** Lift only when watermark is drawn inside the map frame (not with bottom legend — see layout below). */
   const zoomStackExtraBottomPx =
-    isObserverWatermarkForced && !showBottomLegend ? OBSERVER_PLAN_ZOOM_STACK_LIFT_PX : 0;
+    isObserverWatermarkForced && !showBottomLegend ? OBSERVER_BADGE_ZOOM_STACK_LIFT_PX : 0;
 
   const mapBackgroundStyle = useMemo(
     () => ({
@@ -234,18 +234,18 @@ const MapViewer: FC<MapViewerProps> = ({
     </Flex>
   );
 
-  if (showPlanRibbon && user) {
+  if (showBadgeRibbon && user) {
     return (
-      <Badge.Ribbon
-        text={t(planRibbonNameKey(plan))}
-        color={planRibbonColor(plan)}
+      <AntBadge.Ribbon
+        text={t(badgeRibbonNameKey(badge))}
+        color={badgeRibbonColor(badge)}
         placement="end"
         rootClassName={RIBBON_ROOT_CLASSNAME}
         className="top-2! font-medium"
-        data-i18n-key="plans.items.observer.name"
+        data-i18n-key="badges.items.observer.name"
       >
         {mapExportRoot}
-      </Badge.Ribbon>
+      </AntBadge.Ribbon>
     );
   }
 

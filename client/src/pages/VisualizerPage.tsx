@@ -188,16 +188,16 @@ const VisualizerPage: FC = () => {
             data-i18n-key="visualizer.embed.tooltipChronographerBody"
           >
             {t('visualizer.embed.tooltipChronographerBody', {
-              planName: t('plans.items.chronographer.name'),
+              badgeName: t('badges.items.chronographer.name'),
             })}
           </Typography.Text>
           <Link
             to={ROUTES.BILLING}
             className="text-sm"
             style={linkStyle}
-            data-i18n-key="visualizer.embed.upgradePlansLink"
+            data-i18n-key="visualizer.embed.upgradeBadgesLink"
           >
-            {t('visualizer.embed.upgradePlansLink')}
+            {t('visualizer.embed.upgradeBadgesLink')}
           </Link>
         </Flex>
       );
@@ -430,7 +430,7 @@ const VisualizerPage: FC = () => {
           <Sentry.ErrorBoundary fallback={<ErrorFallback title={t('errors.mapRenderFailed')} />}>
             <MapViewer
               className="min-h-0 flex-1"
-              showPlanRibbon={isLoggedIn && !isAwaitingProjectFromUrl}
+              showBadgeRibbon={isLoggedIn && !isAwaitingProjectFromUrl}
             />
           </Sentry.ErrorBoundary>
         </Suspense>

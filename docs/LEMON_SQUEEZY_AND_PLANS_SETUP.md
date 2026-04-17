@@ -4,9 +4,9 @@ This doc covers what you need to provide and run to enable **user plans** (free 
 
 ---
 
-## 1. Database: Add `plan` to users
+## 1. Database: `badge` on users
 
-The Prisma schema already has the `Plan` enum and `User.plan` field. Apply it to your DB:
+The Prisma schema has the `Badge` enum and `User.badge` field. Apply it to your DB:
 
 ```bash
 cd server
@@ -14,7 +14,7 @@ npx prisma generate
 npx prisma db push
 ```
 
-Existing users get `plan = observer` (free) by default.
+Existing users get `badge = observer` (free) by default.
 
 ---
 
@@ -26,8 +26,8 @@ Existing users get `plan = observer` (free) by default.
    - Go to **Products** → **New product**.
    - Name it e.g. **Regionify Plan** (or use two products: Explorer and Chronographer).
    - Add **two variants** (one for Explorer, one for Chronographer) with the same prices as in the app:
-     - **Explorer**: one-time price **$59** (or match `PLAN_DETAILS.explorer.price` in `shared`).
-     - **Chronographer**: one-time price **$159** (or match `PLAN_DETAILS.chronographer.price`).
+     - **Explorer**: one-time price **$59** (or match `BADGE_DETAILS.explorer.price` in `shared`).
+     - **Chronographer**: one-time price **$159** (or match `BADGE_DETAILS.chronographer.price`).
    - Save the product and copy each **Variant ID** from the product/variant dropdown (e.g. **Copy ID**).
 
 ---
@@ -85,7 +85,7 @@ Ensure `CLIENT_URL` in your server env is the real origin of the client (e.g. `h
 1. **Create checkout (server)**  
    User clicks “Buy Explorer” or “Buy Chronographer” on Billing.  
    Client calls `POST /api/payments/create-checkout` with `{ plan: 'explorer' | 'chronographer' }` (with cookies).  
-   Server creates a Lemon Squeezy checkout (custom price from `PLAN_DETAILS`, `user_id` in custom data), returns `{ checkoutUrl }`.
+   Server creates a Lemon Squeezy checkout (custom price from `BADGE_DETAILS`, `user_id` in custom data), returns `{ checkoutUrl }`.
 
 2. **Redirect to Lemon Squeezy**  
    Client does `window.location.href = checkoutUrl`. User pays on Lemon Squeezy (card, PayPal, etc.).
@@ -123,4 +123,4 @@ Lemon Squeezy supports **test mode**. When creating the checkout you can pass `t
 
 ## 9. Optional: Prices in shared package
 
-Prices are defined in `shared/src/constants/plans.ts` (`PLAN_DETAILS[plan].price`). The server uses these to set `custom_price` (in cents) when creating the checkout. Keep product prices in Lemon Squeezy aligned with these values, or use custom_price (as we do) to enforce them at checkout.
+Prices are defined in `shared/src/constants/badges.ts` (`BADGE_DETAILS[badge].price`). The server uses these to set `custom_price` (in cents) when creating the checkout. Keep product prices in Lemon Squeezy aligned with these values, or use custom_price (as we do) to enforce them at checkout.

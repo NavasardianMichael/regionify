@@ -1,17 +1,17 @@
 import { ExportType } from '../types/exportTypes.js';
-import { Plan, PLANS } from '../types/plan.js';
+import { Badge, BADGES } from '../types/badge.js';
 import { EXPORT_TYPES } from './exportTypes.js';
 
 /**
- * Feature limits per plan. Each tier includes the previous tier’s capabilities.
+ * Feature limits per badge (tier). Each tier includes the previous tier’s capabilities.
  * Observer: JPEG only (capped quality), project cap. Explorer+: PNG, SVG, JPEG; full quality; advanced styles.
  * Chronographer: time-series, GIF/MP4 animation export, public embed.
  */
-export type PlanDetails = {
+export type BadgeDetails = {
   price: number; // Monthly price in USD (0 for free)
   limits: {
     maxExportQuality: number;
-    /** Allowed export formats (still + animated, by plan). */
+    /** Allowed export formats (still + animated, by tier). */
     allowedExportFormats: readonly ExportType[];
     /** Whether picture/export quality is limited (Observer only). */
     pictureQualityLimit: boolean;
@@ -32,8 +32,8 @@ export type PlanDetails = {
   };
 };
 
-export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
-  [PLANS.observer]: {
+export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
+  [BADGES.observer]: {
     price: 0,
     limits: {
       maxExportQuality: 50,
@@ -48,7 +48,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       publicEmbed: false,
     },
   },
-  [PLANS.explorer]: {
+  [BADGES.explorer]: {
     price: 59,
     limits: {
       maxExportQuality: 100,
@@ -63,7 +63,7 @@ export const PLAN_DETAILS: Record<Plan, PlanDetails> = {
       publicEmbed: false,
     },
   },
-  [PLANS.chronographer]: {
+  [BADGES.chronographer]: {
     price: 159,
     limits: {
       maxExportQuality: 100,

@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
 import { prisma } from '@/db/index.js';
-import { Plan } from '@regionify/shared';
+import { Badge } from '@regionify/shared';
 
 export type UserCreate = {
   email: string;
@@ -8,7 +8,7 @@ export type UserCreate = {
   passwordHash?: string | null;
   avatarUrl?: string | null;
   provider?: 'local' | 'google';
-  plan?: Plan;
+  badge?: Badge;
   googleId?: string | null;
   emailVerified?: boolean;
 };

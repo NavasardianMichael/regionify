@@ -1,22 +1,22 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PLANS } from '@regionify/shared';
+import { BADGES } from '@regionify/shared';
 import { Flex, Typography } from 'antd';
-import { useBillingPlans } from '@/hooks/useBillingPlans';
+import { useBillingBadges } from '@/hooks/useBillingBadges';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import PlanCard from '@/components/billing/PlanCard';
-import type { PayablePlan } from '@/components/billing/types';
+import BadgeCard from '@/components/billing/BadgeCard';
+import type { PayableBadge } from '@/components/billing/types';
 
-export const PlansSection: FC = () => {
+export const BadgesSection: FC = () => {
   const { t } = useTypedTranslation();
   const navigate = useNavigate();
-  const billingPlans = useBillingPlans();
+  const billingBadges = useBillingBadges();
 
-  const currentPlan = useMemo(() => PLANS.observer, []);
+  const currentBadge = useMemo(() => BADGES.observer, []);
 
   const onUpgrade = useCallback(
-    (_plan: PayablePlan) => {
+    (_badge: PayableBadge) => {
       void navigate(ROUTES.BILLING);
     },
     [navigate],
@@ -30,22 +30,22 @@ export const PlansSection: FC = () => {
             <Typography.Title
               level={2}
               className="text-primary mb-0! text-2xl font-bold md:text-3xl"
-              data-i18n-key="plans.title"
+              data-i18n-key="badges.title"
             >
-              {t('plans.title')}
+              {t('badges.title')}
             </Typography.Title>
-            <Typography.Paragraph className="mb-0! text-gray-500" data-i18n-key="plans.subtitle">
-              {t('plans.subtitle')}
+            <Typography.Paragraph className="mb-0! text-gray-500" data-i18n-key="badges.subtitle">
+              {t('badges.subtitle')}
             </Typography.Paragraph>
           </Flex>
           <ul className="m-0 flex w-full list-none flex-wrap items-stretch! justify-center gap-6 p-0 lg:items-start">
-            {billingPlans.map((plan) => (
-              <li key={plan.id} className="w-full md:w-80 md:shrink-0">
-                <PlanCard
-                  plan={plan}
-                  currentPlan={currentPlan}
+            {billingBadges.map((tier) => (
+              <li key={tier.id} className="w-full md:w-80 md:shrink-0">
+                <BadgeCard
+                  tier={tier}
+                  currentBadge={currentBadge}
                   onUpgrade={onUpgrade}
-                  upgradingPlan={null}
+                  upgradingBadge={null}
                 />
               </li>
             ))}

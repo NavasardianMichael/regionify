@@ -1,7 +1,7 @@
 import { type FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { PLANS } from '@regionify/shared';
+import { BADGES } from '@regionify/shared';
 import { Button, Flex, Spin, Typography } from 'antd';
 import { getMe } from '@/api/auth';
 import { selectSetUser } from '@/store/profile/selectors';
@@ -18,7 +18,7 @@ const PaymentReturnPage: FC = () => {
   const setUser = useProfileStore(selectSetUser);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [messageText, setMessageText] = useState('');
-  const [upgradedPlan, setUpgradedPlan] = useState<string | null>(null);
+  const [upgradedBadge, setUpgradedBadge] = useState<string | null>(null);
   const pollStartRef = useRef<number | null>(null);
 
   const handleContinue = useCallback(() => {
@@ -37,25 +37,25 @@ const PaymentReturnPage: FC = () => {
       if (Date.now() - start > POLL_TIMEOUT_MS) {
         if (intervalIdRef.current) clearInterval(intervalIdRef.current);
         setStatus('success');
-        setMessageText(t('plans.paymentPendingNote'));
+        setMessageText(t('badges.paymentPendingNote'));
         return;
       }
       try {
         const { user } = await getMe();
         if (cancelled) return;
         setUser(user);
-        if (user.plan !== PLANS.observer) {
+        if (user.badge !== BADGES.observer) {
           if (intervalIdRef.current) clearInterval(intervalIdRef.current);
-          setUpgradedPlan(user.plan);
+          setUpgradedBadge(user.badge);
           setStatus('success');
-          setMessageText(`You're now on the ${user.plan} plan.`);
+          setMessageText(`You're now on the ${user.badge} badge.`);
           return;
         }
       } catch {
         if (!cancelled) {
           if (intervalIdRef.current) clearInterval(intervalIdRef.current);
           setStatus('error');
-          setMessageText(t('plans.verifyErrorNote'));
+          setMessageText(t('badges.verifyErrorNote'));
         }
       }
     };
@@ -73,7 +73,7 @@ const PaymentReturnPage: FC = () => {
     return (
       <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
         <Spin size="large" />
-        <Typography.Text>Payment successful. Updating your plan...</Typography.Text>
+        <Typography.Text>Payment successful. Updating your badge...</Typography.Text>
       </Flex>
     );
   }
@@ -85,9 +85,9 @@ const PaymentReturnPage: FC = () => {
         <Button
           type="primary"
           onClick={() => navigate(ROUTES.BILLING)}
-          data-i18n-key="plans.backToPlans"
+          data-i18n-key="badges.backToBadges"
         >
-          {t('plans.backToPlans')}
+          {t('badges.backToBadges')}
         </Button>
       </Flex>
     );
@@ -101,13 +101,13 @@ const PaymentReturnPage: FC = () => {
       <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleContinue}>
         Continue to My Projects
       </Button>
-      {!upgradedPlan && (
+      {!upgradedBadge && (
         <Button
           type="link"
           onClick={() => navigate(ROUTES.BILLING)}
-          data-i18n-key="plans.goToPlans"
+          data-i18n-key="badges.goToBadges"
         >
-          {t('plans.goToPlans')}
+          {t('badges.goToBadges')}
         </Button>
       )}
     </Flex>

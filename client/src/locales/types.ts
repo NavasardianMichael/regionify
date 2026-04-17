@@ -9,7 +9,7 @@ export type CommonNs = {
     projects: string;
     contact: string;
     faq: string;
-    plans: string;
+    pricing: string;
     about: string;
     login: string;
     account: string;
@@ -40,7 +40,7 @@ export type CommonNs = {
     heroHeadline: string;
     heroSubheadline: string;
     ctaStart: string;
-    ctaPlans: string;
+    ctaBadges: string;
     featuresTitle: string;
     featureImportTitle: string;
     featureImportDesc: string;
@@ -82,21 +82,21 @@ export type CommonNs = {
     /** Answers may use **term** markers around real keywords; see `renderFaqAnswer`. */
     items: ReadonlyArray<{ question: string; answer: string }>;
   };
-  plans: {
+  badges: {
     title: string;
     subtitle: string;
     paymentNote: string;
     paymentIssueNote: string;
     paymentContactUs: string;
     checkoutError: string;
-    currentPlan: string;
+    currentBadge: string;
     bestChoice: string;
     priceFree: string;
     priceOneTime: string;
     paymentPendingNote: string;
     verifyErrorNote: string;
-    backToPlans: string;
-    goToPlans: string;
+    backToBadges: string;
+    goToBadges: string;
     rows: {
       projectsLimited: string;
       projectsUnlimited: string;
@@ -321,14 +321,14 @@ export type CommonNs = {
       copyEmbed: string;
       copied: string;
       copyFailed: string;
-      planRequired: string;
+      badgeRequired: string;
       tagSelectNoData: string;
       /** Map block: embed is Chronographer-only; shown with upgrade link */
       tooltipChronographerBody: string;
-      upgradePlansLink: string;
+      upgradeBadgesLink: string;
       tooltipNeedSavedProject: string;
       tooltipSelectCountry: string;
-      /** Standalone embed URL: disabled, wrong token, or plan no longer eligible */
+      /** Standalone embed URL: disabled, wrong token, or badge tier no longer eligible */
       embedNotFoundTitle: string;
       embedNotFoundDescription: string;
       layout: string;
@@ -454,9 +454,9 @@ export type CommonNs = {
       collapseShadow: string;
       collapseControls: string;
       collapseRegionLabels: string;
-      freePlanNoteBeforeUpgrade: string;
-      freePlanUpgradeLink: string;
-      freePlanNoteAfterUpgrade: string;
+      freeBadgeNoteBeforeUpgrade: string;
+      freeBadgeUpgradeLink: string;
+      freeBadgeNoteAfterUpgrade: string;
       showWatermark: string;
       transparent: string;
       color: string;

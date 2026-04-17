@@ -30,7 +30,7 @@ export type RegisterResponse = {
 };
 
 import type { Locale } from './locale.js';
-import type { Plan } from './plan.js';
+import type { Badge } from './badge.js';
 
 export type UserPublic = {
   id: string;
@@ -38,7 +38,7 @@ export type UserPublic = {
   name: string;
   avatarUrl: string | null;
   provider: AuthProvider;
-  plan: Plan;
+  badge: Badge;
   locale: Locale;
   createdAt: string;
 };

@@ -2,7 +2,7 @@
  * Must match the message thrown in server `projectEmbedService` when the user
  * lacks Chronographer (public embed).
  */
-export const EMBED_PLAN_ERROR_EN = 'Public embed requires Chronographer plan';
+export const EMBED_BADGE_ERROR_EN = 'Public embed requires Chronographer badge';
 
 export const SEO_TITLE_MAX = 200;
 export const SEO_DESCRIPTION_MAX = 150;

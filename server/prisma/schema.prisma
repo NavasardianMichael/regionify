@@ -19,7 +19,7 @@ enum AuthProvider {
   google
 }
 
-enum Plan {
+enum Badge {
   observer
   explorer
   chronographer
@@ -36,7 +36,7 @@ model User {
   passwordHash  String?      @map("password_hash")
   avatarUrl     String?      @map("avatar_url")
   provider      AuthProvider @default(local)
-  plan          Plan         @default(observer)
+  badge         Badge        @default(observer)
   locale        String       @default("en") @db.VarChar(5)
   googleId      String?      @unique @map("google_id")
   emailVerified Boolean      @default(false) @map("email_verified")

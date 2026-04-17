@@ -1,4 +1,4 @@
-import { type Plan, Prisma, type Project } from '@prisma/client';
+import { type Badge, Prisma, type Project } from '@prisma/client';
 import type { InputJsonValue } from '@prisma/client/runtime/library';
 
 import { prisma } from '@/db/index.js';
@@ -55,10 +55,10 @@ export const projectRepository = {
 
   async findByEmbedToken(
     token: string,
-  ): Promise<(Project & { user: { plan: Plan; locale: string } }) | null> {
+  ): Promise<(Project & { user: { badge: Badge; locale: string } }) | null> {
     return prisma.project.findFirst({
       where: { embedToken: token, embedEnabled: true },
-      include: { user: { select: { plan: true, locale: true } } },
+      include: { user: { select: { badge: true, locale: true } } },
     });
   },
 

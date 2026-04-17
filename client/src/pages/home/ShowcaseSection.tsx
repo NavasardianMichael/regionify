@@ -12,7 +12,7 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 type ShowcaseItem = {
   title: string;
   description: string;
-  planName: string;
+  badgeName: string;
   assetId: string;
 };
 
@@ -79,38 +79,38 @@ export const ShowcaseSection: FC = () => {
       {
         title: t('home.showcaseSvgTitle'),
         description: t('home.showcaseSvgDesc'),
-        planName: t('plans.items.explorer.name'),
+        badgeName: t('badges.items.explorer.name'),
         assetId: 'svg',
       },
       {
         title: t('home.showcaseGifTitle'),
         description: t('home.showcaseGifDesc'),
-        planName: t('plans.items.chronographer.name'),
+        badgeName: t('badges.items.chronographer.name'),
         assetId: 'gif',
       },
       {
         title: t('home.showcaseMp4Title'),
         description: t('home.showcaseMp4Desc'),
-        planName: t('plans.items.chronographer.name'),
+        badgeName: t('badges.items.chronographer.name'),
         assetId: 'mp4',
       },
       {
         title: t('home.showcasePublicPageTitle'),
         description: t('home.showcasePublicPageDesc'),
-        planName: t('plans.items.chronographer.name'),
+        badgeName: t('badges.items.chronographer.name'),
         assetId: 'public-page',
       },
       {
         title: t('home.showcaseEmbedTitle'),
         description: t('home.showcaseEmbedDesc'),
-        planName: t('plans.items.chronographer.name'),
+        badgeName: t('badges.items.chronographer.name'),
         assetId: 'embed',
       },
     ],
     [t],
   );
 
-  const handlePlanClick = useCallback(() => {
+  const handleBadgeClick = useCallback(() => {
     void navigate(ROUTES.BILLING);
   }, [navigate]);
 
@@ -125,7 +125,7 @@ export const ShowcaseSection: FC = () => {
           >
             {t('home.showcaseTitle')}
           </Typography.Title>
-          {items.map(({ title, description, planName, assetId }, index) => (
+          {items.map(({ title, description, badgeName, assetId }, index) => (
             <div
               key={assetId}
               className={`flex flex-col items-center gap-10 ${index > 0 ? 'border-t border-gray-200 pt-12' : ''} ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
@@ -147,10 +147,10 @@ export const ShowcaseSection: FC = () => {
                 <div>
                   <Button
                     type="primary"
-                    onClick={handlePlanClick}
-                    data-i18n-key="plans.items.explorer.name"
+                    onClick={handleBadgeClick}
+                    data-i18n-key="badges.items.explorer.name"
                   >
-                    {planName} →
+                    {badgeName} →
                   </Button>
                 </div>
               </Flex>

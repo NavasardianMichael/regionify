@@ -1,23 +1,23 @@
-import { PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { BADGE_DETAILS, BADGES } from '@regionify/shared';
 
-/** Billing UI metadata. Feature rows are built from `PLAN_DETAILS` in `useBillingPlans`. */
-export const BILLING_PLAN_DEFINITIONS = [
+/** Billing UI metadata. Feature rows are built from `BADGE_DETAILS` in `useBillingBadges`. */
+export const BILLING_BADGE_DEFINITIONS = [
   {
-    id: PLANS.observer,
-    planLocaleKey: 'observer' as const,
-    price: PLAN_DETAILS.observer.price,
-    popular: false as const,
+    id: BADGES.observer,
+    badgeLocaleKey: 'observer' as const,
+    price: BADGE_DETAILS.observer.price,
+    popular: false,
   },
   {
-    id: PLANS.explorer,
-    planLocaleKey: 'explorer' as const,
-    price: PLAN_DETAILS.explorer.price,
-    popular: false as const,
+    id: BADGES.explorer,
+    badgeLocaleKey: 'explorer' as const,
+    price: BADGE_DETAILS.explorer.price,
+    popular: true,
   },
   {
-    id: PLANS.chronographer,
-    planLocaleKey: 'chronographer' as const,
-    price: PLAN_DETAILS.chronographer.price,
-    popular: true as const,
+    id: BADGES.chronographer,
+    badgeLocaleKey: 'chronographer' as const,
+    price: BADGE_DETAILS.chronographer.price,
+    popular: false,
   },
 ] as const;

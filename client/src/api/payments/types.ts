@@ -1,7 +1,7 @@
-import type { PayablePlan } from '@/constants/plans';
+import type { PayableBadge } from '@/constants/badges';
 
 export type CreateCheckoutPayload = {
-  plan: PayablePlan;
+  badge: PayableBadge;
 };
 
 export type CreateCheckoutResponse = {

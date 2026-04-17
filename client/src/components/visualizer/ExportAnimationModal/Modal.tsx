@@ -1,5 +1,5 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { EXPORT_TYPES, PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { BADGE_DETAILS, BADGES, EXPORT_TYPES } from '@regionify/shared';
 import { Modal as AntModal } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
@@ -62,8 +62,8 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const timelineData = useVisualizerStore(selectTimelineData);
 
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.observer;
-  const { limits } = PLAN_DETAILS[plan];
+  const badge = user?.badge ?? BADGES.observer;
+  const { limits } = BADGE_DETAILS[badge];
 
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const noDataColor = useLegendStylesStore(selectNoDataColor);
@@ -78,7 +78,7 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
   const regionLabels = useMapStylesStore(selectRegionLabels);
   const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
 
-  const watermarkActive = plan === PLANS.observer || picture.showWatermark;
+  const watermarkActive = badge === BADGES.observer || picture.showWatermark;
 
   const defaultQuality = useMemo(
     () =>

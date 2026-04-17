@@ -4,7 +4,7 @@ import {
   forgotPasswordSchema,
   HttpStatus,
   loginSchema,
-  PLAN_DETAILS,
+  BADGE_DETAILS,
   registerSchema,
   resetPasswordSchema,
   updateProfileSchema,
@@ -47,7 +47,7 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res, next)
     // Enforce concurrent session limit
     await sessionRepository.deleteExpiredByUserId(result.user.id);
     const sessionCount = await sessionRepository.countActiveByUserId(result.user.id);
-    const sessionLimit = PLAN_DETAILS[result.user.plan].limits.maxConcurrentSessions;
+    const sessionLimit = BADGE_DETAILS[result.user.badge].limits.maxConcurrentSessions;
     if (sessionLimit !== null && sessionCount >= sessionLimit) {
       if (req.body.forceLogin) {
         await sessionRepository.deleteAllSessionsByUserId(result.user.id);
@@ -147,7 +147,7 @@ router.get('/google/callback', (req, res, next) => {
     }
     await sessionRepository.deleteExpiredByUserId(typedUser.id);
     const sessionCount = await sessionRepository.countActiveByUserId(typedUser.id);
-    const sessionLimit = PLAN_DETAILS[dbUser.plan].limits.maxConcurrentSessions;
+    const sessionLimit = BADGE_DETAILS[dbUser.badge].limits.maxConcurrentSessions;
     if (sessionLimit !== null && sessionCount >= sessionLimit) {
       if (req.query.state === 'force') {
         await sessionRepository.deleteAllSessionsByUserId(typedUser.id);
@@ -186,7 +186,7 @@ router.get('/google/callback', (req, res, next) => {
   })(req, res, next);
 });
 
-// GET /api/auth/me - Get current user (requires auth); used e.g. after payment return to refresh plan
+// GET /api/auth/me - Get current user (requires auth); used e.g. after payment return to refresh badge tier
 router.get('/me', requireAuth, async (req, res, next) => {
   try {
     const userId = req.session.userId!;

@@ -81,7 +81,7 @@ export const HeroSection: FC = () => {
     void navigate(ROUTES.PROJECT_NEW);
   }, [navigate]);
 
-  const handlePlans = useCallback(() => {
+  const handleBadges = useCallback(() => {
     void navigate(ROUTES.BILLING);
   }, [navigate]);
 
@@ -123,12 +123,12 @@ export const HeroSection: FC = () => {
               {t('home.ctaStart')}
             </Button>
             <Button
-              onClick={handlePlans}
+              onClick={handleBadges}
               type="dashed"
               className="border-white! bg-transparent! font-semibold text-white! hover:bg-white/5!"
-              data-i18n-key="home.ctaPlans"
+              data-i18n-key="home.ctaBadges"
             >
-              {t('home.ctaPlans')}
+              {t('home.ctaBadges')}
             </Button>
           </Flex>
         </Flex>

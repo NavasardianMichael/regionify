@@ -7,7 +7,7 @@ const zh: CommonNs = {
     projects: '项目',
     contact: '联系我们',
     faq: '常见问题',
-    plans: '计划',
+    pricing: '定价',
     about: '关于',
     login: '登录',
     account: '账户',
@@ -34,7 +34,7 @@ const zh: CommonNs = {
     heroSubheadline:
       '从 CSV、Excel、JSON 或 Google Sheets 导入数据，自定义颜色、图例和样式，然后导出可发布的地图图形。',
     ctaStart: '开始创建',
-    ctaPlans: '查看方案',
+    ctaBadges: '查看定价',
     featuresTitle: '可视化区域数据所需的一切',
     featureImportTitle: '灵活的数据导入',
     featureImportDesc: '从 CSV、Excel、JSON 文件加载数据，或直接连接 Google Sheets。',
@@ -73,16 +73,16 @@ const zh: CommonNs = {
   about: {
     title: '关于 Regionify',
     description:
-      'Regionify 是一款在浏览器中制作分级统计地图的工具：将 CSV、Excel、JSON 或 Google 表格连接到区域 SVG 地图，调整图例与配色，并导出用于报告与网页的图像或动画。更高套餐支持时间序列、GIF/MP4 导出及可嵌入的公开页面。',
+      'Regionify 是一款在浏览器中制作分级统计地图的工具：将 CSV、Excel、JSON 或 Google 表格连接到区域 SVG 地图，调整图例与配色，并导出用于报告与网页的图像或动画。更高徽章层级支持时间序列、GIF/MP4 导出及可嵌入的公开页面。',
   },
   faq: {
     title: '常见问题',
-    intro: '关于使用 Regionify 制作分级统计地图的简明解答：导入、导出、套餐、嵌入与区域匹配。',
+    intro: '关于使用 Regionify 制作分级统计地图的简明解答：导入、导出、定价、嵌入与区域匹配。',
     items: [
       {
         question: 'Regionify 是什么？',
         answer:
-          'Regionify 是一款网页应用，可用您的数据制作交互式**分级统计地图**。选择区域底图，从 **CSV**、**Excel**、**JSON** 或 **Google 表格**导入数值，设置图例，并按套餐导出高质量图片或动画。',
+          'Regionify 是一款网页应用，可用您的数据制作交互式**分级统计地图**。选择区域底图，从 **CSV**、**Excel**、**JSON** 或 **Google 表格**导入数值，设置图例，并按徽章层级导出高质量图片或动画。',
       },
       {
         question: '什么是分级统计地图（choropleth）？',
@@ -92,17 +92,17 @@ const zh: CommonNs = {
       {
         question: '可以导入哪些格式？',
         answer:
-          '支持 **CSV**、**Excel** 表格、**JSON**，以及在部分套餐下与 **Google 表格**实时同步。系统会用**模糊文本匹配**将行标签与地图区域名称对应。',
+          '支持 **CSV**、**Excel** 表格、**JSON**，以及在支持的定价层级下与 **Google 表格**实时同步。系统会用**模糊文本匹配**将行标签与地图区域名称对应。',
       },
       {
         question: '支持哪些导出格式？',
         answer:
-          '取决于套餐。免费 **Observer** 含 **JPEG** 导出；付费方案增加 **PNG**、**SVG**、更高画质与高级样式、时间序列；**Chronographer** 还提供 **GIF** 与 **MP4** 动画导出。',
+          '取决于徽章层级。免费 **Observer** 含 **JPEG** 导出；付费徽章增加 **PNG**、**SVG**、更高画质与高级样式、时间序列；**Chronographer** 还提供 **GIF** 与 **MP4** 动画导出。',
       },
       {
         question: '能把地图嵌入自己的网站吗？',
         answer:
-          '**Chronographer** 套餐支持公开嵌入与 **iframe**。每个项目可开启**公开页面**，并设置利于 **SEO** 的标题与描述。',
+          '**Chronographer** 徽章支持公开嵌入与 **iframe**。每个项目可开启**公开页面**，并设置利于 **SEO** 的标题与描述。',
       },
       {
         question: '区域匹配如何工作？',
@@ -112,30 +112,30 @@ const zh: CommonNs = {
       {
         question: '需要注册账户吗？',
         answer:
-          '需要。账户用于保存项目、计费以及可选的 Google 登录。具体限制请查看应用内的**「计划」**页面。',
+          '需要。账户用于保存项目、计费以及可选的 Google 登录。具体限制请查看应用内的**「定价」**页面。',
       },
       {
         question: '如何获取帮助？',
         answer:
-          '请使用应用内的**「联系我们」**页面。若与付款相关，**「计划」**页面也提供联系指引。',
+          '请使用应用内的**「联系我们」**页面。若与付款相关，**「定价」**页面也提供联系指引。',
       },
     ],
   },
-  plans: {
-    title: '选择您的计划',
-    subtitle: '各计划在可视化工具中的功能（与账户限制一致）。',
+  badges: {
+    title: '选择您的徽章',
+    subtitle: '各徽章层级在可视化工具中的功能（与账户限制一致）。',
     paymentNote: '通过 Lemon Squeezy 安全支付。我们的服务器不存储卡数据。',
     paymentIssueNote: '如果您在付款时遇到任何问题，请',
     paymentContactUs: '联系我们',
     checkoutError: '无法开始结账。请重试。',
-    currentPlan: '当前计划',
+    currentBadge: '当前徽章',
     bestChoice: '最佳选择',
     priceFree: '免费',
     priceOneTime: '{{price}} 一次性',
-    paymentPendingNote: '支付已收到。计划更新可能需要一点时间。请刷新页面或前往「计划」页面查看。',
-    verifyErrorNote: '无法验证您的计划。请刷新页面或前往「计划」页面查看。',
-    backToPlans: '返回计划',
-    goToPlans: '前往计划',
+    paymentPendingNote: '支付已收到。徽章更新可能需要一点时间。请刷新页面或前往「定价」页面查看。',
+    verifyErrorNote: '无法验证您的徽章。请刷新页面或前往「定价」页面查看。',
+    backToBadges: '返回定价',
+    goToBadges: '前往定价',
     rows: {
       projectsLimited: '最多 {{count}} 个已保存项目',
       projectsUnlimited: '不限已保存项目',
@@ -153,7 +153,7 @@ const zh: CommonNs = {
       observer: {
         name: '观察者（免费）',
         description: 'JPEG 导出、核心地图与图例功能，项目数量有限。',
-        buttonText: '免费计划',
+        buttonText: '免费徽章',
       },
       explorer: {
         name: '探索者',
@@ -271,8 +271,7 @@ const zh: CommonNs = {
       sheetsTabId: '表格标签页 (gid)：{{gid}}',
       editManuallyInTable: '在表格中手动编辑',
       editManuallyInText: '\u624b\u52a8\u7f16\u8f91\u6587\u672c',
-      aiParserChronographerTooltip:
-        'AI \u89e3\u6790\u5668\u4ec5\u5728 {{planName}} \u8ba1\u5212\u4e2d\u53ef\u7528\u3002',
+      aiParserChronographerTooltip: 'AI 解析器仅在 {{badgeName}} 徽章中可用。',
       connectSheets: '连接 Google 表格',
       changeSheetsSource: '更改 Google 表格来源',
       uploadCsv: '上传 CSV 文件',
@@ -355,9 +354,9 @@ const zh: CommonNs = {
       descriptionPlaceholder: '例如：在 Regionify 上查看 {{projectName}} 的互动区域地图。',
       defaultMetaDescription: '在 Regionify 上查看 {{projectName}} 的互动区域地图。',
       saveToGenerateLink: '保存设置后即可生成公开页面链接和嵌入（iframe）代码。',
-      planRequired: '公开嵌入需要 {{planName}} 方案。',
-      tooltipChronographerBody: '公开地图嵌入（分享链接与 iframe）包含在 {{planName}} 方案中。',
-      upgradePlansLink: '查看方案并升级',
+      badgeRequired: '公开嵌入需要 {{badgeName}} 徽章。',
+      tooltipChronographerBody: '公开地图嵌入（分享链接与 iframe）包含在 {{badgeName}} 徽章中。',
+      upgradeBadgesLink: '查看定价并升级',
       tooltipNeedSavedProject: '请先将地图保存为项目，再配置嵌入。',
       tooltipSelectCountry: '使用嵌入前请先选择国家。',
       tagSelectNoData: '无匹配项。输入关键词后按回车。',
@@ -394,7 +393,7 @@ const zh: CommonNs = {
       height: '高度',
       back: '返回',
       downloadFormat: '下载 {{format}}',
-      upgradeToExplorer: '升级到 {{planName}}',
+      upgradeToExplorer: '升级到 {{badgeName}}',
       singleFormatHintAfterLink: ' 以获得 PNG、SVG、全品质静态导出及无水印。',
       qualityLimited: '画质上限为 {{max}}%。',
       qualityFullHint: ' 可获得 100%。',
@@ -496,9 +495,9 @@ const zh: CommonNs = {
       collapseShadow: '阴影',
       collapseControls: '控件',
       collapseRegionLabels: '区域标签',
-      freePlanNoteBeforeUpgrade: '您仍可更改背景色，但透明背景和去除水印需要',
-      freePlanUpgradeLink: '徽章升级',
-      freePlanNoteAfterUpgrade: '。',
+      freeBadgeNoteBeforeUpgrade: '您仍可更改背景色，但透明背景和去除水印需要',
+      freeBadgeUpgradeLink: '徽章升级',
+      freeBadgeNoteAfterUpgrade: '。',
       showWatermark: '显示水印',
       transparent: '透明',
       color: '颜色',
@@ -580,7 +579,7 @@ const zh: CommonNs = {
     cardRegionThumbnailAlt: '区域地图预览',
     limitReachedTitle: '已达到项目限制',
     limitReachedContent:
-      '您已达到 Observer 免费计划的 {{count}} 个项目限制。请至少删除一个项目以创建新项目，或升级您的计划。',
+      '您已达到 Observer 免费徽章层级的 {{count}} 个项目限制。请至少删除一个项目以创建新项目，或升级到更高徽章。',
   },
   common: {
     loading: '加载中...',
@@ -619,7 +618,7 @@ const zh: CommonNs = {
     switch: '切换',
     importedRegions: '已导入 {{count}} 个区域',
     importedRowsPeriods: '已导入 {{count}} 行，共 {{periods}} 个时间段',
-    timeSeriesDetected: '检测到时间序列数据。升级到 {{planName}} 方案以使用动画。',
+    timeSeriesDetected: '检测到时间序列数据。升级到 {{badgeName}} 徽章以使用动画。',
     noTimeColumnDetected: '未检测到时间列（year、time、period 等）。数据已作为单一时间段导入。',
     datasetMustIncludeId: '数据集必须包含 id 列。',
     dataFormatMismatch: '数据格式与预期不符。下载示例以获取正确的 ID 并匹配标签。',

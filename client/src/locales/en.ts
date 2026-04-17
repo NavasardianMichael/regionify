@@ -7,7 +7,7 @@ const en: CommonNs = {
     projects: 'Projects',
     contact: 'Contact',
     faq: 'FAQ',
-    plans: 'Plans',
+    pricing: 'Pricing',
     about: 'About',
     login: 'Login',
     account: 'Account',
@@ -34,7 +34,7 @@ const en: CommonNs = {
     heroSubheadline:
       'Import your data from CSV, Excel, JSON or Google Sheets, customize colors, legends and styles, then export publication-ready map graphics.',
     ctaStart: 'Start creating',
-    ctaPlans: 'See plans',
+    ctaBadges: 'See pricing',
     featuresTitle: 'Everything you need to visualize regional data',
     featureImportTitle: 'Flexible data import',
     featureImportDesc:
@@ -86,12 +86,12 @@ const en: CommonNs = {
   faq: {
     title: 'Frequently asked questions',
     intro:
-      'Straight answers about choropleth mapping with Regionify—imports, exports, plans, embeds, and how region matching works.',
+      'Straight answers about choropleth mapping with Regionify—imports, exports, badges, embeds, and how region matching works.',
     items: [
       {
         question: 'What is Regionify?',
         answer:
-          'Regionify is a web application for building interactive **choropleth maps** from your own data. You pick a regional map (countries, states, provinces, and more), import values from **CSV**, **Excel**, **JSON**, or **Google Sheets**, style the legend, and export high-quality images or animations depending on your plan.',
+          'Regionify is a web application for building interactive **choropleth maps** from your own data. You pick a regional map (countries, states, provinces, and more), import values from **CSV**, **Excel**, **JSON**, or **Google Sheets**, style the legend, and export high-quality images or animations depending on your badge tier.',
       },
       {
         question: 'What is a choropleth map?',
@@ -101,17 +101,17 @@ const en: CommonNs = {
       {
         question: 'Which file formats can I import?',
         answer:
-          'You can import **CSV** and **Excel** spreadsheets, **JSON** data, and connect a **Google Sheet** for live sync on supported plans. Regionify uses **fuzzy text matching** to associate rows in your data with regions on the map when names are close but not identical.',
+          'You can import **CSV** and **Excel** spreadsheets, **JSON** data, and connect a **Google Sheet** for live sync on supported badge tiers. Regionify uses **fuzzy text matching** to associate rows in your data with regions on the map when names are close but not identical.',
       },
       {
         question: 'Which export formats are available?',
         answer:
-          'Export options depend on your plan. The free **Observer** plan includes **JPEG** export with core maps and legends. Paid plans add **PNG** and **SVG**, higher quality settings, advanced styling, time-series support, and animated exports (**GIF** and **MP4**) on the **Chronographer** plan.',
+          'Export options depend on your badge tier. The free **Observer** badge includes **JPEG** export with core maps and legends. Paid tiers add **PNG** and **SVG**, higher quality settings, advanced styling, time-series support, and animated exports (**GIF** and **MP4**) on the **Chronographer** badge.',
       },
       {
         question: 'Can I embed a map on my website?',
         answer:
-          'Public embed and **iframe** embedding are available on the **Chronographer** plan. You can enable a **public page** per project with optional **SEO** title and description so visitors and search engines see meaningful context around the map.',
+          'Public embed and **iframe** embedding are available on the **Chronographer** badge. You can enable a **public page** per project with optional **SEO** title and description so visitors and search engines see meaningful context around the map.',
       },
       {
         question: 'How does region matching work?',
@@ -121,31 +121,31 @@ const en: CommonNs = {
       {
         question: 'Do I need an account?',
         answer:
-          'Yes. Regionify uses accounts for saving projects, billing, and optional Google sign-in. You can review current plans and limits on the **Plans** page inside the app.',
+          'Yes. Regionify uses accounts for saving projects, billing, and optional Google sign-in. You can review current badge tiers and limits on the **Pricing** page inside the app.',
       },
       {
         question: 'How do I get help or send feedback?',
         answer:
-          'Use the **Contact** page in the app to send a message to the team. For billing issues, the **Plans** page includes guidance and a link to reach out if something went wrong with checkout.',
+          'Use the **Contact** page in the app to send a message to the team. For billing issues, the **Pricing** page includes guidance and a link to reach out if something went wrong with checkout.',
       },
     ],
   },
-  plans: {
-    title: 'Choose Your Plan',
-    subtitle: 'What each plan unlocks in the visualizer (same rules as your account limits).',
+  badges: {
+    title: 'Choose Your Badge',
+    subtitle: 'What each badge tier unlocks in the visualizer (same rules as your account limits).',
     paymentNote: 'Payments are secure via Lemon Squeezy. No card data is stored on our servers.',
     paymentIssueNote: 'If you are experiencing any issues with your payment, please',
     paymentContactUs: 'contact us',
     checkoutError: 'Could not start checkout. Please try again.',
-    currentPlan: 'Current Plan',
+    currentBadge: 'Current Badge',
     bestChoice: 'Best Choice',
     priceFree: 'Free',
     priceOneTime: '{{price}} one-time',
     paymentPendingNote:
-      'Payment received. Your plan may take a moment to update. Refresh the page or check Plans.',
-    verifyErrorNote: 'Could not verify your plan. Please refresh or check Plans.',
-    backToPlans: 'Back to Plans',
-    goToPlans: 'Go to Plans',
+      'Payment received. Your badge may take a moment to update. Refresh the page or open Pricing.',
+    verifyErrorNote: 'Could not verify your badge. Please refresh or open Pricing.',
+    backToBadges: 'Back to pricing',
+    goToBadges: 'Go to pricing',
     rows: {
       projectsLimited: 'Up to {{count}} saved projects',
       projectsUnlimited: 'Unlimited saved projects',
@@ -163,7 +163,7 @@ const en: CommonNs = {
       observer: {
         name: 'Observer (free)',
         description: 'JPEG export, core maps and legends, and a small project limit.',
-        buttonText: 'Free plan',
+        buttonText: 'Free badge',
       },
       explorer: {
         name: 'Explorer',
@@ -285,7 +285,7 @@ const en: CommonNs = {
       sheetsTabId: 'Spreadsheet tab (gid): {{gid}}',
       editManuallyInTable: 'Edit manually in table',
       editManuallyInText: 'Edit manually in text',
-      aiParserChronographerTooltip: 'AI Parser is available on the {{planName}} plan only.',
+      aiParserChronographerTooltip: 'AI Parser is available on the {{badgeName}} badge only.',
       connectSheets: 'Connect Google Sheets',
       changeSheetsSource: 'Change Google Sheets source',
       uploadCsv: 'Upload CSV File',
@@ -369,10 +369,10 @@ const en: CommonNs = {
       defaultMetaDescription: 'Interactive regional map of {{projectName}} on Regionify.',
       saveToGenerateLink:
         'Save your settings to generate the public page link and embed (iframe) code.',
-      planRequired: 'Public embed requires the {{planName}} plan.',
+      badgeRequired: 'Public embed requires the {{badgeName}} badge.',
       tooltipChronographerBody:
-        'Public map embed (share link and iframe) is included with the {{planName}} plan.',
-      upgradePlansLink: 'View plans and upgrade',
+        'Public map embed (share link and iframe) is included with the {{badgeName}} badge.',
+      upgradeBadgesLink: 'View badges and upgrade',
       tooltipNeedSavedProject: 'Save your map as a project first to configure embed.',
       tooltipSelectCountry: 'Select a country before using embed.',
       tagSelectNoData: 'No matches. Type a keyword and press Enter.',
@@ -410,7 +410,7 @@ const en: CommonNs = {
       height: 'Height',
       back: 'Back',
       downloadFormat: 'Download {{format}}',
-      upgradeToExplorer: 'Upgrade to {{planName}}',
+      upgradeToExplorer: 'Upgrade to {{badgeName}}',
       singleFormatHintAfterLink: ' for PNG, SVG, full quality and no watermark.',
       qualityLimited: 'Quality limited to {{max}}%.',
       qualityFullHint: ' for 100%.',
@@ -515,10 +515,10 @@ const en: CommonNs = {
       collapseShadow: 'Shadow',
       collapseControls: 'Controls',
       collapseRegionLabels: 'Region Labels',
-      freePlanNoteBeforeUpgrade:
+      freeBadgeNoteBeforeUpgrade:
         'You can still change the background color, but transparent background and watermark removal require an ',
-      freePlanUpgradeLink: 'upgrade of badge',
-      freePlanNoteAfterUpgrade: '.',
+      freeBadgeUpgradeLink: 'upgrade of badge',
+      freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Show watermark',
       transparent: 'Transparent',
       color: 'Color',
@@ -600,7 +600,7 @@ const en: CommonNs = {
     cardRegionThumbnailAlt: 'Region map preview',
     limitReachedTitle: 'Project limit reached',
     limitReachedContent:
-      'You have reached the Observer free plan limit of {{count}} projects. Delete at least one project to create a new one, or upgrade your plan.',
+      'You have reached the Observer free badge limit of {{count}} projects. Delete at least one project to create a new one, or upgrade your badge tier.',
   },
   common: {
     loading: 'Loading...',
@@ -649,7 +649,7 @@ const en: CommonNs = {
     importedRegions: 'Imported {{count}} regions',
     importedRowsPeriods: 'Imported {{count}} rows across {{periods}} time periods',
     timeSeriesDetected:
-      'Time series data detected. Upgrade to the {{planName}} plan for animated visualizations.',
+      'Time series data detected. Upgrade to the {{badgeName}} badge for animated visualizations.',
     noTimeColumnDetected:
       'No time column detected (year, time, period, etc.). Data imported as single period.',
     datasetMustIncludeId: 'Dataset must include an id column.',

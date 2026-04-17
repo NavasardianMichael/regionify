@@ -1,4 +1,4 @@
-import { HttpStatus, ErrorCode, PLAN_DETAILS, Plan, PLANS } from '@regionify/shared';
+import { HttpStatus, ErrorCode, BADGE_DETAILS, Badge, BADGES } from '@regionify/shared';
 import crypto from 'node:crypto';
 
 import { env } from '@/config/env.js';
@@ -6,27 +6,27 @@ import { AppError } from '@/middleware/errorHandler.js';
 import { userRepository } from '@/repositories/userRepository.js';
 import type { User } from '@prisma/client';
 
-type PayablePlan = Exclude<Plan, typeof PLANS.observer>;
+type PayableBadge = Exclude<Badge, typeof BADGES.observer>;
 
-/** Plan to Lemon Squeezy variant ID (from env). */
-function getVariantIdByPlan(plan: PayablePlan): string {
+/** Paid tier to Lemon Squeezy variant ID (from env). */
+function getVariantIdByBadge(badge: PayableBadge): string {
   const id =
-    plan === PLANS.explorer
+    badge === BADGES.explorer
       ? env.LEMON_SQUEEZY_VARIANT_ID_EXPLORER
       : env.LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER;
   if (!id) {
     throw new AppError(
       HttpStatus.SERVICE_UNAVAILABLE,
       ErrorCode.INTERNAL_ERROR,
-      'Lemon Squeezy variant not configured for this plan',
+      'Lemon Squeezy variant not configured for this badge tier',
     );
   }
   return id;
 }
 
-/** Plan to price in cents (from shared PLAN_DETAILS). */
-function getPriceCents(plan: PayablePlan): number {
-  const price = PLAN_DETAILS[plan].price;
+/** Paid tier to price in cents (from shared BADGE_DETAILS). */
+function getPriceCents(badge: PayableBadge): number {
+  const price = BADGE_DETAILS[badge].price;
   return Math.round(price * 100);
 }
 
@@ -38,10 +38,10 @@ const LEMON_SQUEEZY_API = 'https://api.lemonsqueezy.com';
 
 export const paymentService = {
   /**
-   * Create a Lemon Squeezy checkout for a plan upgrade. Returns URL to redirect the user.
+   * Create a Lemon Squeezy checkout for a badge tier upgrade. Returns URL to redirect the user.
    * Server-only; API key never sent to client.
    */
-  async createCheckout(userId: string, plan: PayablePlan): Promise<CreateCheckoutResult> {
+  async createCheckout(userId: string, badge: PayableBadge): Promise<CreateCheckoutResult> {
     const apiKey = env.LEMON_SQUEEZY_API_KEY;
     const storeId = env.LEMON_SQUEEZY_STORE_ID;
     if (!apiKey || !storeId) {
@@ -52,8 +52,8 @@ export const paymentService = {
       );
     }
 
-    const variantId = getVariantIdByPlan(plan);
-    const customPrice = getPriceCents(plan);
+    const variantId = getVariantIdByBadge(badge);
+    const customPrice = getPriceCents(badge);
     const redirectUrl = `${env.CLIENT_URL}/payments/return`;
 
     const res = await fetch(`${LEMON_SQUEEZY_API}/v1/checkouts`, {
@@ -70,7 +70,7 @@ export const paymentService = {
             custom_price: customPrice,
             product_options: {
               redirect_url: redirectUrl,
-              name: `Regionify ${plan} plan`,
+              name: `Regionify ${badge} badge`,
               description: `Lifetime access, one-time purchase.`,
             },
             checkout_data: {
@@ -129,7 +129,7 @@ export const paymentService = {
   },
 
   /**
-   * Handle order_created webhook: upgrade user plan from custom_data.user_id and variant_id.
+   * Handle order_created webhook: upgrade user badge from custom_data.user_id and variant_id.
    * Idempotent.
    */
   async handleOrderCreated(payload: {
@@ -151,17 +151,17 @@ export const paymentService = {
       ? Number(env.LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER)
       : null;
 
-    let plan: User['plan'] | null = null;
+    let badge: User['badge'] | null = null;
     if (variantExplorer !== null && variantId === variantExplorer) {
-      plan = PLANS.explorer as User['plan'];
+      badge = BADGES.explorer as User['badge'];
     } else if (variantChronographer !== null && variantId === variantChronographer) {
-      plan = PLANS.chronographer as User['plan'];
+      badge = BADGES.chronographer as User['badge'];
     }
-    if (!plan) return;
+    if (!badge) return;
 
     const user = await userRepository.findById(userId);
-    if (user && user.plan !== plan) {
-      await userRepository.update(userId, { plan });
+    if (user && user.badge !== badge) {
+      await userRepository.update(userId, { badge });
     }
   },
 };

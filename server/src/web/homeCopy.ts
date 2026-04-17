@@ -4,7 +4,7 @@ import { escapeHtml } from '@/lib/htmlEscape.js';
 export const HOME_PAGE_DEFAULT = {
   documentTitle: 'Regionify — Choropleth maps from CSV, Excel & Google Sheets',
   metaDescription:
-    'Build interactive choropleth maps in the browser: import CSV, Excel, JSON, or Google Sheets, match regions with fuzzy labels, customize legends, and export PNG, SVG, or JPEG. Time-series and embeds on higher plans.',
+    'Build interactive choropleth maps in the browser: import CSV, Excel, JSON, or Google Sheets, match regions with fuzzy labels, customize legends, and export PNG, SVG, or JPEG. Time-series and embeds on higher badge tiers.',
   metaKeywords:
     'choropleth map, regional map, CSV to map, Excel map visualization, Google Sheets map, data visualization, SVG map, Regionify',
   heading: 'Regionify',

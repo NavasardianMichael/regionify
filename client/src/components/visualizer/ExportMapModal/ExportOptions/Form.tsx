@@ -21,7 +21,7 @@ import { EXPORT_FPS, type FormProps } from '../useExportMapModal';
 export const Form: FC<FormProps> = (props) => {
   const { t } = useTypedTranslation();
   const explorerUpgradeLabel = t('visualizer.exportModal.upgradeToExplorer', {
-    planName: t('plans.items.explorer.name'),
+    badgeName: t('badges.items.explorer.name'),
   });
   const {
     exportType,

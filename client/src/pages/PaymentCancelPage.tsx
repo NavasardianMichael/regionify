@@ -17,9 +17,9 @@ const PaymentCancelPage: FC = () => {
       <Button
         type="primary"
         onClick={() => navigate(ROUTES.BILLING)}
-        data-i18n-key="plans.backToPlans"
+        data-i18n-key="badges.backToBadges"
       >
-        {t('plans.backToPlans')}
+        {t('badges.backToBadges')}
       </Button>
     </Flex>
   );

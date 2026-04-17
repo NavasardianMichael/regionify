@@ -22,7 +22,7 @@ import {
   LoadingOutlined,
   SwapOutlined,
 } from '@ant-design/icons';
-import { extractGid, PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { BADGE_DETAILS, BADGES, extractGid } from '@regionify/shared';
 import type { RadioChangeEvent, UploadProps } from 'antd';
 import { Button, Flex, Radio, Spin, theme, Tooltip, Typography, Upload } from 'antd';
 import * as XLSX from 'xlsx';
@@ -108,8 +108,8 @@ export const ImportDataPanel: FC = () => {
   const timePeriods = useVisualizerStore(selectTimePeriods);
 
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.observer;
-  const { limits } = PLAN_DETAILS[plan];
+  const badge = user?.badge ?? BADGES.observer;
+  const { limits } = BADGE_DETAILS[badge];
   const currentProject = useProjectsStore(selectCurrentProject);
   const googleUrl = useVisualizerStore((s) => s.google.url);
   const googleGid = useVisualizerStore((s) => s.google.gid);
@@ -119,11 +119,11 @@ export const ImportDataPanel: FC = () => {
 
   // Fetch remaining AI parse requests on mount for Chronographer plan users
   useEffect(() => {
-    if (plan !== PLANS.chronographer) return;
+    if (badge !== BADGES.chronographer) return;
     fetchAiRemaining()
       .then(setAiRemaining)
       .catch(() => undefined);
-  }, [plan]);
+  }, [badge]);
 
   /** Auto-detected: current data is panel/dynamic (has time dimension). */
   const hasHistoricalFormat = useMemo(() => {
@@ -367,7 +367,7 @@ export const ImportDataPanel: FC = () => {
       table: t('visualizer.importData.format.table'),
       tab_delimited: t('visualizer.importData.format.tabDelimited'),
       ai_parser:
-        plan === PLANS.chronographer ? (
+        badge === BADGES.chronographer ? (
           t('visualizer.importData.format.aiParser')
         ) : (
           <Tooltip
@@ -394,16 +394,16 @@ export const ImportDataPanel: FC = () => {
                     data-i18n-key="visualizer.importData.aiParserChronographerTooltip"
                   >
                     {t('visualizer.importData.aiParserChronographerTooltip', {
-                      planName: t('plans.items.chronographer.name'),
+                      badgeName: t('badges.items.chronographer.name'),
                     })}
                   </Typography.Text>
                   <NavLink
                     to={ROUTES.BILLING}
                     className="text-sm text-white"
                     style={linkStyle}
-                    data-i18n-key="visualizer.embed.upgradePlansLink"
+                    data-i18n-key="visualizer.embed.upgradeBadgesLink"
                   >
-                    {t('visualizer.embed.upgradePlansLink')}
+                    {t('visualizer.embed.upgradeBadgesLink')}
                   </NavLink>
                 </Flex>
               );
@@ -418,9 +418,9 @@ export const ImportDataPanel: FC = () => {
     return IMPORT_FORMAT_ORDER.map((value) => ({
       label: labelByType[value],
       value,
-      disabled: value === IMPORT_DATA_TYPES.aiParser && plan !== PLANS.chronographer,
+      disabled: value === IMPORT_DATA_TYPES.aiParser && badge !== BADGES.chronographer,
     }));
-  }, [t, plan, token.colorTextLightSolid]);
+  }, [t, badge, token.colorTextLightSolid]);
 
   const handleImportDataTypeChange = useCallback(
     (e: RadioChangeEvent) => {
@@ -635,7 +635,7 @@ export const ImportDataPanel: FC = () => {
           showMessageWithClose(
             messageApi,
             'info',
-            t('messages.timeSeriesDetected', { planName: t('plans.items.chronographer.name') }),
+            t('messages.timeSeriesDetected', { badgeName: t('badges.items.chronographer.name') }),
           );
         }
         if (limits.historicalDataImport) {

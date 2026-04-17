@@ -1,5 +1,5 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { PLAN_DETAILS } from '@regionify/shared';
+import { BADGE_DETAILS } from '@regionify/shared';
 import { Form, Modal } from 'antd';
 import { getProject, updateProjectEmbed } from '@/api/projects';
 import { selectUser } from '@/store/profile/selectors';
@@ -9,7 +9,7 @@ import { useProjectsStore } from '@/store/projects/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
-import { EMBED_PLAN_ERROR_EN, SEO_TITLE_MAX } from './constants';
+import { EMBED_BADGE_ERROR_EN, SEO_TITLE_MAX } from './constants';
 import { EmbedForm } from './EmbedForm';
 import { Footer } from './Footer';
 import {
@@ -49,10 +49,10 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   });
 
   const canUseEmbed = useMemo(() => {
-    const plan = user?.plan;
-    if (!plan) return false;
-    return PLAN_DETAILS[plan]?.limits.publicEmbed === true;
-  }, [user?.plan]);
+    const badge = user?.badge;
+    if (!badge) return false;
+    return BADGE_DETAILS[badge]?.limits.publicEmbed === true;
+  }, [user?.badge]);
 
   const [form] = Form.useForm<ProjectEmbedFormValues>();
   const formApi = form as unknown as EmbedModalFormApi;
@@ -149,9 +149,11 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         message.success(t('visualizer.embed.saveSuccess'));
       } catch (e) {
         const raw = e instanceof Error ? e.message : '';
-        if (raw === EMBED_PLAN_ERROR_EN) {
+        if (raw === EMBED_BADGE_ERROR_EN) {
           message.error(
-            t('visualizer.embed.planRequired', { planName: t('plans.items.chronographer.name') }),
+            t('visualizer.embed.badgeRequired', {
+              badgeName: t('badges.items.chronographer.name'),
+            }),
           );
         } else {
           message.error(raw || t('visualizer.embed.saveFailed'));

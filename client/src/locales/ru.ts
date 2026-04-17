@@ -7,7 +7,7 @@ const ru: CommonNs = {
     projects: 'Проекты',
     contact: 'Контакты',
     faq: 'Частые вопросы',
-    plans: 'Планы',
+    pricing: 'Тарифы',
     about: 'О приложении',
     login: 'Войти',
     account: 'Аккаунт',
@@ -34,7 +34,7 @@ const ru: CommonNs = {
     heroSubheadline:
       'Импортируйте данные из CSV, Excel, JSON или Google Sheets, настраивайте цвета, легенды и стили, а затем экспортируйте графику карт в готовом для публикации виде.',
     ctaStart: 'Начать создание',
-    ctaPlans: 'Смотреть планы',
+    ctaBadges: 'Смотреть тарифы',
     featuresTitle: 'Всё для визуализации региональных данных',
     featureImportTitle: 'Гибкий импорт данных',
     featureImportDesc:
@@ -121,31 +121,32 @@ const ru: CommonNs = {
       {
         question: 'Нужен ли аккаунт?',
         answer:
-          'Да. Аккаунты нужны для проектов, оплаты и опционального входа через Google. Актуальные лимиты — на странице **«Планы»**.',
+          'Да. Аккаунты нужны для проектов, оплаты и опционального входа через Google. Актуальные лимиты — на странице **«Тарифы»**.',
       },
       {
         question: 'Как связаться с поддержкой?',
         answer:
-          'Используйте страницу **«Контакты»** в приложении. По оплате см. страницу **«Планы»** с инструкцией, как написать нам.',
+          'Используйте страницу **«Контакты»** в приложении. По оплате см. страницу **«Тарифы»** с инструкцией, как написать нам.',
       },
     ],
   },
-  plans: {
-    title: 'Выберите план',
-    subtitle: 'Возможности по плану — как в редакторе и лимитах аккаунта.',
+  badges: {
+    title: 'Выберите бейдж',
+    subtitle: 'Возможности каждого бейджа — как в редакторе и в лимитах аккаунта.',
     paymentNote: 'Платежи защищены через Lemon Squeezy. Данные карт не хранятся на наших серверах.',
     paymentIssueNote: 'Если у вас возникли проблемы с оплатой, пожалуйста,',
     paymentContactUs: 'свяжитесь с нами',
     checkoutError: 'Не удалось начать оплату. Попробуйте ещё раз.',
-    currentPlan: 'Текущий план',
+    currentBadge: 'Текущий бейдж',
     bestChoice: 'Лучший выбор',
     priceFree: 'Бесплатно',
     priceOneTime: '{{price}} единоразово',
     paymentPendingNote:
-      'Платёж получен. Обновление плана может занять некоторое время. Обновите страницу или откройте раздел «Планы».',
-    verifyErrorNote: 'Не удалось подтвердить план. Обновите страницу или откройте раздел «Планы».',
-    backToPlans: 'Назад к планам',
-    goToPlans: 'К планам',
+      'Платёж получен. Обновление бейджа может занять некоторое время. Обновите страницу или откройте раздел «Тарифы».',
+    verifyErrorNote:
+      'Не удалось подтвердить бейдж. Обновите страницу или откройте раздел «Тарифы».',
+    backToBadges: 'Назад к тарифам',
+    goToBadges: 'К тарифам',
     rows: {
       projectsLimited: 'До {{count}} сохранённых проектов',
       projectsUnlimited: 'Неограниченно сохранённых проектов',
@@ -163,7 +164,7 @@ const ru: CommonNs = {
       observer: {
         name: 'Наблюдатель (бесплатно)',
         description: 'Экспорт JPEG, базовые карты и легенды, лимит проектов.',
-        buttonText: 'Бесплатный план',
+        buttonText: 'Бесплатный бейдж',
       },
       explorer: {
         name: 'Исследователь',
@@ -287,7 +288,7 @@ const ru: CommonNs = {
       editManuallyInText:
         '\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432\u0440\u0443\u0447\u043d\u0443\u044e \u0432 \u0442\u0435\u043a\u0441\u0442\u0435',
       aiParserChronographerTooltip:
-        '\u0418\u0418-\u043f\u0430\u0440\u0441\u0435\u0440 \u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d \u0442\u043e\u043b\u044c\u043a\u043e \u043d\u0430 \u0442\u0430\u0440\u0438\u0444\u0435 {{planName}}.',
+        '\u0418\u0418-\u043f\u0430\u0440\u0441\u0435\u0440 \u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d \u0442\u043e\u043b\u044c\u043a\u043e \u043d\u0430 \u0442\u0430\u0440\u0438\u0444\u0435 {{badgeName}}.',
       connectSheets: 'Подключить Google Таблицы',
       changeSheetsSource: 'Сменить источник Google Таблиц',
       uploadCsv: 'Загрузить CSV-файл',
@@ -373,10 +374,10 @@ const ru: CommonNs = {
       defaultMetaDescription: 'Интерактивная региональная карта «{{projectName}}» на Regionify.',
       saveToGenerateLink:
         'Сохраните настройки, чтобы получить ссылку на публичную страницу и код вставки (iframe).',
-      planRequired: 'Публичная вставка доступна на тарифе {{planName}}.',
+      badgeRequired: 'Публичная вставка доступна на тарифе {{badgeName}}.',
       tooltipChronographerBody:
-        'Публичная вставка карты (ссылка общего доступа и iframe) входит в тариф {{planName}}.',
-      upgradePlansLink: 'Тарифы и апгрейд',
+        'Публичная вставка карты (ссылка общего доступа и iframe) входит в тариф {{badgeName}}.',
+      upgradeBadgesLink: 'Тарифы и апгрейд',
       tooltipNeedSavedProject: 'Сначала сохраните карту как проект, чтобы настроить вставку.',
       tooltipSelectCountry: 'Выберите страну перед использованием вставки.',
       tagSelectNoData: 'Нет совпадений. Введите ключевое слово и нажмите Enter.',
@@ -413,7 +414,7 @@ const ru: CommonNs = {
       height: 'Высота',
       back: 'Назад',
       downloadFormat: 'Скачать {{format}}',
-      upgradeToExplorer: 'Перейти на {{planName}}',
+      upgradeToExplorer: 'Перейти на {{badgeName}}',
       singleFormatHintAfterLink: ' для PNG, SVG, полноценного экспорта статики без водяного знака.',
       qualityLimited: 'Качество ограничено {{max}}%.',
       qualityFullHint: ' для 100%.',
@@ -519,10 +520,10 @@ const ru: CommonNs = {
       collapseShadow: 'Тень',
       collapseControls: 'Элементы управления',
       collapseRegionLabels: 'Подписи регионов',
-      freePlanNoteBeforeUpgrade:
+      freeBadgeNoteBeforeUpgrade:
         'Вы по-прежнему можете менять цвет фона, но прозрачный фон и снятие водяного знака требуют ',
-      freePlanUpgradeLink: 'апгрейда значка',
-      freePlanNoteAfterUpgrade: '.',
+      freeBadgeUpgradeLink: 'апгрейда значка',
+      freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Показывать водяной знак',
       transparent: 'Прозрачный',
       color: 'Цвет',
@@ -606,7 +607,7 @@ const ru: CommonNs = {
     cardRegionThumbnailAlt: 'Предпросмотр региональной карты',
     limitReachedTitle: 'Достигнут лимит проектов',
     limitReachedContent:
-      'Вы достигли лимита бесплатного плана Observer в {{count}} проектов. Удалите хотя бы один проект, чтобы создать новый, или перейдите на более высокий план.',
+      'Вы достигли лимита бесплатного бейджа Observer в {{count}} проектов. Удалите хотя бы один проект, чтобы создать новый, или перейдите на более высокий бейдж.',
   },
   common: {
     loading: 'Загрузка...',
@@ -648,7 +649,7 @@ const ru: CommonNs = {
     importedRegions: 'Импортировано регионов: {{count}}',
     importedRowsPeriods: 'Импортировано {{count}} строк за {{periods}} периодов',
     timeSeriesDetected:
-      'Обнаружены данные временных рядов. Перейдите на тариф {{planName}} для анимаций.',
+      'Обнаружены данные временных рядов. Перейдите на тариф {{badgeName}} для анимаций.',
     noTimeColumnDetected:
       'Временная колонка не обнаружена (year, time, period и т.д.). Данные импортированы как один период.',
     datasetMustIncludeId: 'В наборе данных должна быть колонка id.',

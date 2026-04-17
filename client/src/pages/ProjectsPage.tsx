@@ -1,7 +1,7 @@
 import { type FC, lazy, startTransition, Suspense, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
-import { PLAN_DETAILS } from '@regionify/shared';
+import { BADGE_DETAILS } from '@regionify/shared';
 import { Button, Empty, Flex, Input, Modal, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { selectUser } from '@/store/profile/selectors';
@@ -85,7 +85,7 @@ const ProjectsPage: FC = () => {
   );
 
   const handleNewProject = useCallback(() => {
-    const limit = user ? PLAN_DETAILS[user.plan].limits.maxProjectsCount : null;
+    const limit = user ? BADGE_DETAILS[user.badge].limits.maxProjectsCount : null;
     if (limit !== null && projects.length >= limit) {
       Modal.warning({
         title: t('projects.limitReachedTitle'),

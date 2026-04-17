@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { EXPORT_TYPES, type ExportType, PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { BADGE_DETAILS, BADGES, EXPORT_TYPES, type ExportType } from '@regionify/shared';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -68,7 +68,7 @@ const DYNAMIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.gif, EXPORT_TYPES.mp4];
 
 const DEFAULT_SECONDS_PER_PERIOD = 1;
 
-const defaultQualityForPlan = (maxQuality: number, pictureQualityLimited: boolean): number =>
+const defaultQualityForBadge = (maxQuality: number, pictureQualityLimited: boolean): number =>
   pictureQualityLimited ? Math.min(60, maxQuality) : maxQuality;
 export const EXPORT_FPS = 30;
 
@@ -81,8 +81,8 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const timelineData = useVisualizerStore(selectTimelineData);
 
   const user = useProfileStore(selectUser);
-  const plan = user?.plan ?? PLANS.observer;
-  const { limits } = PLAN_DETAILS[plan];
+  const badge = user?.badge ?? BADGES.observer;
+  const { limits } = BADGE_DETAILS[badge];
 
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const noDataColor = useLegendStylesStore(selectNoDataColor);
@@ -98,9 +98,9 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const labelPositionsByRegionId = useMapStylesStore(selectLabelPositionsByRegionId);
 
   const maxQuality = limits.maxExportQuality;
-  const initialQuality = defaultQualityForPlan(maxQuality, limits.pictureQualityLimit);
+  const initialQuality = defaultQualityForBadge(maxQuality, limits.pictureQualityLimit);
   const allowedFormats = limits.allowedExportFormats;
-  const planSupportsDynamic = limits.historicalDataImport;
+  const badgeSupportsDynamic = limits.historicalDataImport;
 
   const exportTypeOptions = useMemo(() => {
     const allowed = ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value));
@@ -113,12 +113,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const defaultExportType = exportTypeOptions[0]?.value ?? allowedFormats[0] ?? EXPORT_TYPES.jpeg;
 
   const exportTypeInfoTooltip = useMemo(() => {
-    if (!planSupportsDynamic) return null;
+    if (!badgeSupportsDynamic) return null;
     if (hasTimelineData) {
       return 'Static image formats are not supported with panel data. Use GIF or MP4 to export the animation.';
     }
     return 'Animated formats (GIF, MP4) require panel/dynamic data with a time column. Use static image formats with current data.';
-  }, [planSupportsDynamic, hasTimelineData]);
+  }, [badgeSupportsDynamic, hasTimelineData]);
 
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   /** `null` while the user clears the field to type a new value; export uses `resolvedQuality`. */
@@ -136,7 +136,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
   const resolvedQuality = useMemo(() => {
     const q = quality;
-    if (q === null) return defaultQualityForPlan(maxQuality, limits.pictureQualityLimit);
+    if (q === null) return defaultQualityForBadge(maxQuality, limits.pictureQualityLimit);
     return Math.min(Math.max(q, 1), maxQuality);
   }, [quality, maxQuality, limits.pictureQualityLimit]);
 
@@ -150,7 +150,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     (visible: boolean) => {
       if (visible) {
         setExportType(defaultExportType);
-        setQuality(defaultQualityForPlan(maxQuality, limits.pictureQualityLimit));
+        setQuality(defaultQualityForBadge(maxQuality, limits.pictureQualityLimit));
         setSecondsPerPeriod(DEFAULT_SECONDS_PER_PERIOD);
         setStep(1);
       }
@@ -175,7 +175,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
   const handleQualityBlur = useCallback(() => {
     setQuality((q) => {
-      if (q === null) return defaultQualityForPlan(maxQuality, limits.pictureQualityLimit);
+      if (q === null) return defaultQualityForBadge(maxQuality, limits.pictureQualityLimit);
       return Math.min(Math.max(q, 1), maxQuality);
     });
   }, [maxQuality, limits.pictureQualityLimit]);
@@ -191,7 +191,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     });
   }, []);
 
-  const watermarkActive = plan === PLANS.observer || picture.showWatermark;
+  const watermarkActive = badge === BADGES.observer || picture.showWatermark;
 
   const staticStillOpts = useMemo(
     () => ({

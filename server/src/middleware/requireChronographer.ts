@@ -1,4 +1,4 @@
-import { ErrorCode, HttpStatus, PLANS } from '@regionify/shared';
+import { ErrorCode, HttpStatus, BADGES } from '@regionify/shared';
 import { type NextFunction, type Request, type Response } from 'express';
 
 import { AppError } from '@/middleware/errorHandler.js';
@@ -11,8 +11,8 @@ export async function requireChronographer(
 ): Promise<void> {
   try {
     const user = await userRepository.findById(req.session.userId!);
-    if (!user || user.plan !== PLANS.chronographer) {
-      next(new AppError(HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN, 'Chronographer plan required'));
+    if (!user || user.badge !== BADGES.chronographer) {
+      next(new AppError(HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN, 'Chronographer badge required'));
       return;
     }
     next();

@@ -16,7 +16,7 @@ export async function buildSitemapXml(siteUrl: string): Promise<string> {
     where: {
       embedEnabled: true,
       embedToken: { not: null },
-      user: { plan: 'chronographer' },
+      user: { badge: 'chronographer' },
     },
     select: { embedToken: true, updatedAt: true },
   });

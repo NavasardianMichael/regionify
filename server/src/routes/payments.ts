@@ -1,4 +1,4 @@
-import { Plan, PLANS } from '@regionify/shared';
+import { Badge, BADGES } from '@regionify/shared';
 import { type Router as ExpressRouter, Router, type Request } from 'express';
 
 import { requireAuth } from '@/middleware/requireAuth.js';
@@ -8,19 +8,19 @@ const router: ExpressRouter = Router();
 
 type RequestWithRawBody = Request & { rawBody?: Buffer };
 
-/** POST /api/payments/create-checkout - Create Lemon Squeezy checkout (auth required). Body: { plan: PLANS.explorer | PLANS.chronographer } */
+/** POST /api/payments/create-checkout - Create Lemon Squeezy checkout (auth required). Body: { badge: BADGES.explorer | BADGES.chronographer } */
 router.post('/create-checkout', requireAuth, async (req, res, next) => {
   try {
     const userId = req.session.userId!;
-    const plan = req.body?.plan as Plan;
-    if (plan !== PLANS.explorer && plan !== PLANS.chronographer) {
+    const badge = req.body?.badge as Badge;
+    if (badge !== BADGES.explorer && badge !== BADGES.chronographer) {
       res.status(400).json({
         success: false,
-        error: { code: 'VALIDATION_ERROR', message: 'plan must be explorer or chronographer' },
+        error: { code: 'VALIDATION_ERROR', message: 'badge must be explorer or chronographer' },
       });
       return;
     }
-    const result = await paymentService.createCheckout(userId, plan);
+    const result = await paymentService.createCheckout(userId, badge);
     res.status(201).json({ success: true, data: result });
   } catch (error) {
     next(error);

@@ -4,9 +4,9 @@ import {
   ErrorCode,
   getRegionEnglishLabelForMeta,
   HttpStatus,
-  PLAN_DETAILS,
+  BADGE_DETAILS,
   type ProjectEmbedUpdateInput,
-  PLANS,
+  BADGES,
 } from '@regionify/shared';
 
 import { AppError } from '@/middleware/errorHandler.js';
@@ -53,7 +53,7 @@ export const projectEmbedService = {
   async getPublicPayloadByToken(token: string): Promise<PublicEmbedPayload> {
     const project = await projectRepository.findByEmbedToken(token);
 
-    if (!project || project.user.plan !== PLANS.chronographer) {
+    if (!project || project.user.badge !== BADGES.chronographer) {
       throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'Embed not found');
     }
 
@@ -81,7 +81,7 @@ export const projectEmbedService = {
   }> {
     const project = await projectRepository.findByEmbedToken(token);
 
-    if (!project || project.user.plan !== PLANS.chronographer) {
+    if (!project || project.user.badge !== BADGES.chronographer) {
       throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'Embed not found');
     }
 
@@ -116,18 +116,18 @@ export const projectEmbedService = {
   ): Promise<{ embed: ProjectEmbedPublic }> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { plan: true },
+      select: { badge: true },
     });
 
     if (!user) {
       throw new AppError(HttpStatus.NOT_FOUND, ErrorCode.NOT_FOUND, 'User not found');
     }
 
-    if (!PLAN_DETAILS[user.plan].limits.publicEmbed) {
+    if (!BADGE_DETAILS[user.badge].limits.publicEmbed) {
       throw new AppError(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORBIDDEN,
-        'Public embed requires Chronographer plan',
+        'Public embed requires Chronographer badge',
       );
     }
 

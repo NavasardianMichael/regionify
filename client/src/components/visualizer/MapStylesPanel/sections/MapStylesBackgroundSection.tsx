@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { PLANS } from '@regionify/shared';
+import { type Badge, BADGES } from '@regionify/shared';
 import {
   ColorPicker,
   type ColorPickerProps,
@@ -15,7 +15,7 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type BackgroundSectionProps = {
-  plan: string;
+  badge: Badge;
   picture: PictureConfig;
   onTransparentChange: NonNullable<SwitchProps['onChange']>;
   onBackgroundColorChange: NonNullable<ColorPickerProps['onChangeComplete']>;
@@ -23,14 +23,14 @@ type BackgroundSectionProps = {
 };
 
 export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
-  plan,
+  badge,
   picture,
   onTransparentChange,
   onBackgroundColorChange,
   onShowWatermarkChange,
 }) => {
   const { t } = useTypedTranslation();
-  const isObserver = plan === PLANS.observer;
+  const isObserver = badge === BADGES.observer;
   const transparentChecked = isObserver ? false : picture.transparentBackground;
   const watermarkChecked = isObserver ? true : picture.showWatermark;
 
@@ -38,15 +38,15 @@ export const MapStylesBackgroundSection: FC<BackgroundSectionProps> = ({
     <Flex vertical gap="small">
       {isObserver && (
         <Typography.Text type="secondary" className="mb-2 text-[13px]">
-          {t('visualizer.mapStyles.freePlanNoteBeforeUpgrade')}
+          {t('visualizer.mapStyles.freeBadgeNoteBeforeUpgrade')}
           <AppNavLink
             to={ROUTES.BILLING}
             className="text-[13px] font-medium"
-            data-i18n-key="visualizer.mapStyles.freePlanUpgradeLink"
+            data-i18n-key="visualizer.mapStyles.freeBadgeUpgradeLink"
           >
-            {t('visualizer.mapStyles.freePlanUpgradeLink')}
+            {t('visualizer.mapStyles.freeBadgeUpgradeLink')}
           </AppNavLink>
-          {t('visualizer.mapStyles.freePlanNoteAfterUpgrade')}
+          {t('visualizer.mapStyles.freeBadgeNoteAfterUpgrade')}
         </Typography.Text>
       )}
       <Flex align="center" justify="space-between">

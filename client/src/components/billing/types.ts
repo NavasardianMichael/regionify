@@ -1,20 +1,20 @@
-import type { Plan } from '@regionify/shared';
-import type { PayablePlan } from '@/constants/plans';
+import type { Badge } from '@regionify/shared';
+import type { PayableBadge } from '@/constants/badges';
 
-export type { PayablePlan };
+export type { PayableBadge };
 
-export type PlanFeature = {
+export type BadgeFeature = {
   text: string;
   included: boolean;
 };
 
-export type BillingPlan = {
-  id: Plan;
+export type BillingBadge = {
+  id: Badge;
   name: string;
-  price: number;
-  period: string;
   description: string;
-  features: PlanFeature[];
-  popular?: boolean;
+  price: number;
+  period: 'lifetime';
+  popular: boolean;
   buttonText: string;
+  features: BadgeFeature[];
 };

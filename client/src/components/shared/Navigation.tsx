@@ -85,7 +85,7 @@ export const Navigation: FC = () => {
       { path: ROUTES.CONTACT, label: t('nav.contact'), icon: MailOutlined },
       { path: ROUTES.ABOUT, label: t('nav.about'), icon: InfoCircleOutlined },
       { path: ROUTES.FAQ, label: t('nav.faq'), icon: QuestionCircleOutlined },
-      { path: ROUTES.BILLING, label: t('nav.plans'), icon: CreditCardOutlined },
+      { path: ROUTES.BILLING, label: t('nav.pricing'), icon: CreditCardOutlined },
     ],
     [t],
   );

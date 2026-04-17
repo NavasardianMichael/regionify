@@ -7,7 +7,7 @@ const de: CommonNs = {
     projects: 'Projekte',
     contact: 'Kontakt',
     faq: 'Häufige Fragen',
-    plans: 'Pläne',
+    pricing: 'Preise',
     about: 'Über uns',
     login: 'Anmelden',
     account: 'Konto',
@@ -34,7 +34,7 @@ const de: CommonNs = {
     heroSubheadline:
       'Importieren Sie Daten aus CSV, Excel, JSON oder Google Sheets, passen Sie Farben, Legenden und Stile an und exportieren Sie druckfertige Kartengrafiken.',
     ctaStart: 'Jetzt erstellen',
-    ctaPlans: 'Pläne ansehen',
+    ctaBadges: 'Preise ansehen',
     featuresTitle: 'Alles, was Sie zur Visualisierung regionaler Daten brauchen',
     featureImportTitle: 'Flexibler Datenimport',
     featureImportDesc:
@@ -88,12 +88,12 @@ const de: CommonNs = {
   faq: {
     title: 'Häufig gestellte Fragen',
     intro:
-      'Kurze Antworten zu Choroplethen mit Regionify—Import, Export, Pläne, Einbettungen und Regionszuordnung.',
+      'Kurze Antworten zu Choroplethen mit Regionify—Import, Export, Preise, Einbettungen und Regionszuordnung.',
     items: [
       {
         question: 'Was ist Regionify?',
         answer:
-          'Regionify ist eine Webanwendung für interaktive **Choroplethenkarten** aus Ihren Daten. Sie wählen eine Regionskarte, importieren Werte aus **CSV**, **Excel**, **JSON** oder **Google Sheets**, gestalten die Legende und exportieren je nach Plan hochwertige Bilder oder Animationen.',
+          'Regionify ist eine Webanwendung für interaktive **Choroplethenkarten** aus Ihren Daten. Sie wählen eine Regionskarte, importieren Werte aus **CSV**, **Excel**, **JSON** oder **Google Sheets**, gestalten die Legende und exportieren je nach Badge-Stufe hochwertige Bilder oder Animationen.',
       },
       {
         question: 'Was ist eine Choroplethenkarte?',
@@ -103,17 +103,17 @@ const de: CommonNs = {
       {
         question: 'Welche Dateiformate kann ich importieren?',
         answer:
-          '**CSV**- und **Excel**-Tabellen, **JSON** sowie **Google Sheets** mit Live-Sync auf unterstützten Plänen. Regionify nutzt **unscharfe Textzuordnung**, damit Zeilenbeschriftungen nicht exakt den Kartennamen entsprechen müssen.',
+          '**CSV**- und **Excel**-Tabellen, **JSON** sowie **Google Sheets** mit Live-Sync auf unterstützten Tarifen. Regionify nutzt **unscharfe Textzuordnung**, damit Zeilenbeschriftungen nicht exakt den Kartennamen entsprechen müssen.',
       },
       {
         question: 'Welche Exportformate gibt es?',
         answer:
-          'Das hängt vom Plan ab. Der kostenlose **Observer**-Plan enthält **JPEG**-Export. Bezahlpläne ergänzen **PNG** und **SVG**, höhere Qualität, erweiterte Stile, Zeitreihen und auf **Chronographer** animierte **GIF**- und **MP4**-Exports.',
+          'Das hängt von Ihrer Badge-Stufe ab. Die kostenlose Stufe **Observer** umfasst **JPEG**-Export. Kostenpflichtige Badges ergänzen **PNG** und **SVG**, höhere Qualität, erweiterte Stile, Zeitreihen und auf **Chronographer** animierte **GIF**- und **MP4**-Exports.',
       },
       {
         question: 'Kann ich eine Karte in meine Website einbetten?',
         answer:
-          'Öffentliche Einbettung und **iframe** sind im **Chronographer**-Plan möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
+          'Öffentliche Einbettung und **iframe** sind mit dem **Chronographer**-Badge möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
       },
       {
         question: 'Wie funktioniert die Regionszuordnung?',
@@ -123,33 +123,33 @@ const de: CommonNs = {
       {
         question: 'Brauche ich ein Konto?',
         answer:
-          'Ja. Konten sichern Projekte, Abrechnung und optional Google-Login. Aktuelle Pläne und Limits finden Sie unter **Pläne** in der App.',
+          'Ja. Konten sichern Projekte, Abrechnung und optional Google-Login. Aktuelle Badge-Stufen und Limits finden Sie unter **Preise** in der App.',
       },
       {
         question: 'Wie erhalte ich Hilfe oder Feedback?',
         answer:
-          'Nutzen Sie die **Kontaktseite** in der App. Bei Abrechnungsproblemen finden Sie auf der **Pläne**-Seite Hinweise und einen Link zum Team.',
+          'Nutzen Sie die **Kontaktseite** in der App. Bei Abrechnungsproblemen finden Sie auf der **Preise**-Seite Hinweise und einen Link zum Team.',
       },
     ],
   },
-  plans: {
-    title: 'Wählen Sie Ihren Plan',
-    subtitle: 'Funktionen pro Plan – wie in der App und bei Ihren Kontolimits.',
+  badges: {
+    title: 'Wählen Sie Ihr Badge',
+    subtitle: 'Funktionen pro Badge-Stufe – wie in der App und bei Ihren Kontolimits.',
     paymentNote:
       'Zahlungen sind sicher über Lemon Squeezy. Keine Kartendaten werden auf unseren Servern gespeichert.',
     paymentIssueNote: 'Wenn Sie Probleme mit Ihrer Zahlung haben, wenden Sie sich bitte an',
     paymentContactUs: 'uns',
     checkoutError: 'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
-    currentPlan: 'Aktueller Plan',
+    currentBadge: 'Aktuelles Badge',
     bestChoice: 'Beste Wahl',
     priceFree: 'Kostenlos',
     priceOneTime: '{{price}} einmalig',
     paymentPendingNote:
-      'Zahlung eingegangen. Die Aktualisierung Ihres Plans kann einen Moment dauern. Laden Sie die Seite neu oder prüfen Sie unter Pläne.',
+      'Zahlung eingegangen. Die Aktualisierung Ihres Badges kann einen Moment dauern. Laden Sie die Seite neu oder öffnen Sie die Seite «Preise».',
     verifyErrorNote:
-      'Plan konnte nicht verifiziert werden. Bitte aktualisieren Sie die Seite oder prüfen Sie unter Pläne.',
-    backToPlans: 'Zurück zu Plänen',
-    goToPlans: 'Zu Plänen',
+      'Badge konnte nicht verifiziert werden. Bitte aktualisieren Sie die Seite oder öffnen Sie die Seite «Preise».',
+    backToBadges: 'Zurück zu Preisen',
+    goToBadges: 'Zu Preisen',
     rows: {
       projectsLimited: 'Bis zu {{count}} gespeicherte Projekte',
       projectsUnlimited: 'Unbegrenzt gespeicherte Projekte',
@@ -168,7 +168,7 @@ const de: CommonNs = {
         name: 'Beobachter (kostenlos)',
         description:
           'JPEG-Export, Kernfunktionen für Karten und Legenden, begrenzte Projektanzahl.',
-        buttonText: 'Kostenloser Plan',
+        buttonText: 'Kostenloses Badge',
       },
       explorer: {
         name: 'Entdecker',
@@ -294,7 +294,8 @@ const de: CommonNs = {
       sheetsTabId: 'Tabellenregister (gid): {{gid}}',
       editManuallyInTable: 'Manuell in Tabelle bearbeiten',
       editManuallyInText: 'Manuell im Text bearbeiten',
-      aiParserChronographerTooltip: 'Der KI-Parser ist nur im {{planName}}-Tarif verf\u00fcgbar.',
+      aiParserChronographerTooltip:
+        'Der KI-Parser ist nur mit dem {{badgeName}}-Badge verf\u00fcgbar.',
       connectSheets: 'Google Tabellen verbinden',
       changeSheetsSource: 'Google-Tabellenquelle ändern',
       uploadCsv: 'CSV-Datei hochladen',
@@ -382,10 +383,10 @@ const de: CommonNs = {
       defaultMetaDescription: 'Interaktive Regionskarte von {{projectName}} auf Regionify.',
       saveToGenerateLink:
         'Speichern Sie die Einstellungen, um den Link zur öffentlichen Seite und den Einbettungscode (iframe) zu erhalten.',
-      planRequired: 'Öffentliche Einbettung erfordert den Tarif {{planName}}.',
+      badgeRequired: 'Öffentliche Einbettung erfordert den Tarif {{badgeName}}.',
       tooltipChronographerBody:
-        'Öffentliche Karten-Einbettung (Freigabe-Link und iframe) ist im Tarif {{planName}} enthalten.',
-      upgradePlansLink: 'Tarife ansehen und upgraden',
+        'Öffentliche Karten-Einbettung (Freigabe-Link und iframe) ist im Tarif {{badgeName}} enthalten.',
+      upgradeBadgesLink: 'Tarife ansehen und upgraden',
       tooltipNeedSavedProject:
         'Speichern Sie die Karte zuerst als Projekt, um die Einbettung einzurichten.',
       tooltipSelectCountry: 'Wählen Sie zuerst ein Land, bevor Sie die Einbettung nutzen.',
@@ -424,7 +425,7 @@ const de: CommonNs = {
       height: 'Höhe',
       back: 'Zurück',
       downloadFormat: '{{format}} herunterladen',
-      upgradeToExplorer: 'Zu {{planName}} wechseln',
+      upgradeToExplorer: 'Zu {{badgeName}} wechseln',
       singleFormatHintAfterLink:
         ' für PNG, SVG, Stillbild-Export in voller Qualität und ohne Wasserzeichen.',
       qualityLimited: 'Qualität auf {{max}}% begrenzt.',
@@ -530,10 +531,10 @@ const de: CommonNs = {
       collapseShadow: 'Schatten',
       collapseControls: 'Steuerung',
       collapseRegionLabels: 'Regionsbeschriftungen',
-      freePlanNoteBeforeUpgrade:
+      freeBadgeNoteBeforeUpgrade:
         'Sie können weiterhin die Hintergrundfarbe ändern; transparenter Hintergrund und Entfernen des Wasserzeichens erfordern ein ',
-      freePlanUpgradeLink: 'Upgrade des Badges',
-      freePlanNoteAfterUpgrade: '.',
+      freeBadgeUpgradeLink: 'Upgrade des Badges',
+      freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Wasserzeichen anzeigen',
       transparent: 'Transparent',
       color: 'Farbe',
@@ -617,7 +618,7 @@ const de: CommonNs = {
     cardRegionThumbnailAlt: 'Vorschau der Regionskarte',
     limitReachedTitle: 'Projektlimit erreicht',
     limitReachedContent:
-      'Sie haben das Limit des kostenlosen Observer-Plans von {{count}} Projekten erreicht. Löschen Sie mindestens ein Projekt, um ein neues zu erstellen, oder upgraden Sie Ihren Plan.',
+      'Sie haben das Limit der kostenlosen Observer-Badge-Stufe von {{count}} Projekten erreicht. Löschen Sie mindestens ein Projekt, um ein neues zu erstellen, oder upgraden Sie auf eine höhere Badge-Stufe.',
   },
   common: {
     loading: 'Laden...',
@@ -659,7 +660,7 @@ const de: CommonNs = {
     importedRegions: '{{count}} Regionen importiert',
     importedRowsPeriods: '{{count}} Zeilen in {{periods}} Zeiträumen importiert',
     timeSeriesDetected:
-      'Zeitreihendaten erkannt. Wechseln Sie zum Tarif {{planName}} für Animationen.',
+      'Zeitreihendaten erkannt. Wechseln Sie zum {{badgeName}}-Badge für Animationen.',
     noTimeColumnDetected:
       'Keine Zeit-Spalte erkannt (year, time, period usw.). Daten als einzelner Zeitraum importiert.',
     datasetMustIncludeId: 'Der Datensatz muss eine id-Spalte enthalten.',

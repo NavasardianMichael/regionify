@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PLAN_DETAILS, PLANS } from '@regionify/shared';
+import { BADGE_DETAILS, BADGES } from '@regionify/shared';
 import { createProject, deleteProject as deleteProjectApi, updateProject } from '@/api/projects';
 import { selectSelectedCountryId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
@@ -59,13 +59,13 @@ export function useVisualizerPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false);
 
-  const isFreePlan = useMemo(() => !user || user.plan === PLANS.observer, [user]);
+  const isFreePlan = useMemo(() => !user || user.badge === BADGES.observer, [user]);
 
   const canUseEmbed = useMemo(() => {
-    const plan = user?.plan;
-    if (!plan) return false;
-    return PLAN_DETAILS[plan]?.limits.publicEmbed === true;
-  }, [user?.plan]);
+    const badge = user?.badge;
+    if (!badge) return false;
+    return BADGE_DETAILS[badge]?.limits.publicEmbed === true;
+  }, [user?.badge]);
 
   const handleOpenExportModal = useCallback(() => {
     setIsExportModalOpen(true);

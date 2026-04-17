@@ -1,41 +1,41 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
-import { type Plan, PLANS } from '@regionify/shared';
+import { type Badge, BADGES } from '@regionify/shared';
 import { Button, Card, Flex, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import type { BillingPlan, PayablePlan } from './types';
+import type { BillingBadge, PayableBadge } from './types';
 
-export type PlanCardProps = {
-  plan: BillingPlan;
-  currentPlan: Plan;
-  onUpgrade: (plan: PayablePlan) => void;
-  upgradingPlan: PayablePlan | null;
+export type BadgeCardProps = {
+  tier: BillingBadge;
+  currentBadge: Badge;
+  onUpgrade: (badge: PayableBadge) => void;
+  upgradingBadge: PayableBadge | null;
 };
 
-const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPlan }) => {
+const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradingBadge }) => {
   const { t } = useTypedTranslation();
-  const isCurrentPlan = plan.id === currentPlan;
-  const isUpgrading = upgradingPlan === plan.id;
+  const isCurrentBadge = tier.id === currentBadge;
+  const isUpgrading = upgradingBadge === tier.id;
 
   const handleClick = useCallback(() => {
-    if (plan.id === PLANS.explorer || plan.id === PLANS.chronographer) {
-      onUpgrade(plan.id as PayablePlan);
+    if (tier.id === BADGES.explorer || tier.id === BADGES.chronographer) {
+      onUpgrade(tier.id as PayableBadge);
     }
-  }, [plan.id, onUpgrade]);
+  }, [tier.id, onUpgrade]);
 
   const priceLabel = useMemo(() => {
-    if (plan.price === 0) {
-      return t('plans.priceFree');
+    if (tier.price === 0) {
+      return t('badges.priceFree');
     }
-    return t('plans.priceOneTime', { price: `$${plan.price}` });
-  }, [plan.price, t]);
+    return t('badges.priceOneTime', { price: `$${tier.price}` });
+  }, [tier.price, t]);
 
-  const buttonType = useMemo(() => (isCurrentPlan ? 'default' : 'primary'), [isCurrentPlan]);
+  const buttonType = useMemo(() => (isCurrentBadge ? 'default' : 'primary'), [isCurrentBadge]);
 
   const cardClassName = useMemo(
     () =>
-      `min-h-0 min-w-0 w-full flex-1 shadow-sm ${plan.popular ? 'border-primary border-2' : ''}`,
-    [plan.popular],
+      `min-h-0 min-w-0 w-full flex-1 shadow-sm ${tier.popular ? 'border-primary border-2' : ''}`,
+    [tier.popular],
   );
 
   const cardStyles = useMemo(
@@ -45,30 +45,30 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
         flexDirection: 'column' as const,
         height: '100%',
         minHeight: 0,
-        ...(plan.popular ? { overflow: 'visible' as const } : {}),
+        ...(tier.popular ? { overflow: 'visible' as const } : {}),
       },
       body: {
         flex: 1,
         display: 'flex' as const,
         flexDirection: 'column' as const,
         minHeight: 0,
-        ...(plan.popular ? { overflow: 'visible' as const } : {}),
+        ...(tier.popular ? { overflow: 'visible' as const } : {}),
       },
     }),
-    [plan.popular],
+    [tier.popular],
   );
 
   return (
     <Card className={`relative overflow-visible ${cardClassName}`} styles={cardStyles}>
-      {plan.popular ? (
+      {tier.popular ? (
         <span
           className="bg-primary pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white shadow-sm"
-          data-i18n-key="plans.bestChoice"
+          data-i18n-key="badges.bestChoice"
         >
-          {t('plans.bestChoice')}
+          {t('badges.bestChoice')}
         </span>
       ) : null}
-      <Flex vertical gap="middle" className={`min-h-0 flex-1 ${plan.popular ? 'pt-3' : ''}`}>
+      <Flex vertical gap="middle" className={`min-h-0 flex-1 ${tier.popular ? 'pt-3' : ''}`}>
         <Flex
           vertical
           align="center"
@@ -78,28 +78,28 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           <Typography.Title
             level={3}
             className="text-primary mb-0! w-full text-center text-xl font-bold"
-            data-i18n-key="plans.items.observer.name"
+            data-i18n-key="badges.items.observer.name"
           >
-            {plan.name}
+            {tier.name}
           </Typography.Title>
           <Typography.Paragraph
             className="mb-0! w-full max-w-full text-center! text-gray-500"
-            data-i18n-key="plans.items.observer.description"
+            data-i18n-key="badges.items.observer.description"
           >
-            {plan.description}
+            {tier.description}
           </Typography.Paragraph>
           <Flex align="baseline" justify="center" gap={4} className="w-full">
-            {plan.price === 0 ? (
+            {tier.price === 0 ? (
               <Typography.Text
                 className="text-primary text-4xl font-bold"
-                data-i18n-key="plans.priceFree"
+                data-i18n-key="badges.priceFree"
               >
                 {priceLabel}
               </Typography.Text>
             ) : (
               <Typography.Text
                 className="text-primary text-4xl font-bold"
-                data-i18n-key="plans.priceOneTime"
+                data-i18n-key="badges.priceOneTime"
               >
                 {priceLabel}
               </Typography.Text>
@@ -108,12 +108,12 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
         </Flex>
 
         <Flex vertical gap="small" className="min-h-0 w-full flex-1">
-          {plan.features.map((feature, index) => (
+          {tier.features.map((feature, index) => (
             <Flex key={index} align="flex-start" gap="small" className="w-full">
               <CheckOutlined className="mt-0.5 shrink-0 text-green-500" />
               <Typography.Text
                 className="text-left text-gray-700"
-                data-i18n-key="plans.rows.advancedStyles"
+                data-i18n-key="badges.rows.advancedStyles"
               >
                 {feature.text}
               </Typography.Text>
@@ -121,7 +121,7 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
           ))}
         </Flex>
 
-        {isCurrentPlan ? (
+        {isCurrentBadge ? (
           <Button
             type={buttonType}
             variant="outlined"
@@ -132,9 +132,9 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
             loading={isUpgrading}
             icon={isUpgrading ? <LoadingOutlined /> : undefined}
             onClick={handleClick}
-            data-i18n-key="plans.currentPlan"
+            data-i18n-key="badges.currentBadge"
           >
-            {t('plans.currentPlan')}
+            {t('badges.currentBadge')}
           </Button>
         ) : (
           <Button
@@ -146,9 +146,9 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
             loading={isUpgrading}
             icon={isUpgrading ? <LoadingOutlined /> : undefined}
             onClick={handleClick}
-            data-i18n-key="plans.items.explorer.buttonText"
+            data-i18n-key="badges.items.explorer.buttonText"
           >
-            {plan.buttonText}
+            {tier.buttonText}
           </Button>
         )}
       </Flex>
@@ -156,4 +156,4 @@ const PlanCard: FC<PlanCardProps> = ({ plan, currentPlan, onUpgrade, upgradingPl
   );
 };
 
-export default PlanCard;
+export default BadgeCard;

@@ -7,7 +7,7 @@ const fr: CommonNs = {
     projects: 'Projets',
     contact: 'Contact',
     faq: 'Questions fréquentes',
-    plans: 'Plans',
+    pricing: 'Tarifs',
     about: 'À propos',
     login: 'Connexion',
     account: 'Compte',
@@ -34,7 +34,7 @@ const fr: CommonNs = {
     heroSubheadline:
       'Importez vos données depuis CSV, Excel, JSON ou Google Sheets, personnalisez couleurs, légendes et styles, puis exportez des cartes prêtes à publier.',
     ctaStart: 'Commencer à créer',
-    ctaPlans: 'Voir les plans',
+    ctaBadges: 'Voir les tarifs',
     featuresTitle: 'Tout ce dont vous avez besoin pour visualiser des données régionales',
     featureImportTitle: 'Import flexible',
     featureImportDesc:
@@ -87,12 +87,12 @@ const fr: CommonNs = {
   faq: {
     title: 'Questions fréquentes',
     intro:
-      'Réponses courtes sur les cartes choroplèthes avec Regionify—imports, exports, forfaits, intégrations et appariement des régions.',
+      'Réponses courtes sur les cartes choroplèthes avec Regionify—imports, exports, tarifs, intégrations et appariement des régions.',
     items: [
       {
         question: "Qu'est-ce que Regionify ?",
         answer:
-          'Regionify est une application web pour créer des **cartes choroplèthes** interactives à partir de vos données. Vous choisissez une carte régionale, importez des valeurs depuis **CSV**, **Excel**, **JSON** ou **Google Sheets**, stylisez la légende et exportez des images ou animations selon votre forfait.',
+          'Regionify est une application web pour créer des **cartes choroplèthes** interactives à partir de vos données. Vous choisissez une carte régionale, importez des valeurs depuis **CSV**, **Excel**, **JSON** ou **Google Sheets**, stylisez la légende et exportez des images ou animations selon votre badge.',
       },
       {
         question: "Qu'est-ce qu'une carte choroplèthe ?",
@@ -102,17 +102,17 @@ const fr: CommonNs = {
       {
         question: 'Quels formats puis-je importer ?',
         answer:
-          'Tableurs **CSV** et **Excel**, **JSON** et **Google Sheets** avec synchronisation en direct sur les forfaits concernés. Regionify utilise une **correspondance textuelle floue** pour relier vos libellés aux noms des régions.',
+          'Tableurs **CSV** et **Excel**, **JSON** et **Google Sheets** avec synchronisation en direct sur les badges concernés. Regionify utilise une **correspondance textuelle floue** pour relier vos libellés aux noms des régions.',
       },
       {
         question: 'Quels formats d’export sont disponibles ?',
         answer:
-          "Cela dépend du forfait. L'offre gratuite **Observer** inclut l'export **JPEG**. Les offres payantes ajoutent **PNG** et **SVG**, une qualité plus élevée, des styles avancés, les séries temporelles et sur **Chronographer** des exports **GIF** et **MP4** animés.",
+          "Cela dépend du badge. L'offre gratuite **Observer** inclut l'export **JPEG**. Les badges payants ajoutent **PNG** et **SVG**, une qualité plus élevée, des styles avancés, les séries temporelles et sur **Chronographer** des exports **GIF** et **MP4** animés.",
       },
       {
         question: 'Puis-je intégrer une carte sur mon site ?',
         answer:
-          "L'intégration publique et l'**iframe** sont disponibles avec le forfait **Chronographer**. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.",
+          "L'intégration publique et l'**iframe** sont disponibles avec le badge **Chronographer**. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.",
       },
       {
         question: 'Comment fonctionne l’appariement des régions ?',
@@ -127,27 +127,27 @@ const fr: CommonNs = {
       {
         question: 'Comment obtenir de l’aide ?',
         answer:
-          "Utilisez la page **Contact** dans l'application. Pour la facturation, la page **Plans** indique comment nous joindre en cas de problème.",
+          "Utilisez la page **Contact** dans l'application. Pour la facturation, la page **Tarifs** indique comment nous joindre en cas de problème.",
       },
     ],
   },
-  plans: {
-    title: 'Choisissez votre plan',
-    subtitle: 'Fonctions par forfait, comme dans l’appli et les limites du compte.',
+  badges: {
+    title: 'Choisissez votre badge',
+    subtitle: 'Fonctions par niveau de badge, comme dans l’appli et les limites du compte.',
     paymentNote:
       "Les paiements sont sécurisés via Lemon Squeezy. Aucune donnée de carte n'est stockée sur nos serveurs.",
     paymentIssueNote: 'Si vous rencontrez des problèmes avec votre paiement, veuillez',
     paymentContactUs: 'nous contacter',
     checkoutError: 'Impossible de démarrer le paiement. Veuillez réessayer.',
-    currentPlan: 'Plan actuel',
+    currentBadge: 'Badge actuel',
     bestChoice: 'Meilleur choix',
     priceFree: 'Gratuit',
     priceOneTime: '{{price}} paiement unique',
     paymentPendingNote:
-      'Paiement reçu. La mise à jour de votre plan peut prendre un instant. Actualisez la page ou consultez Plans.',
-    verifyErrorNote: 'Impossible de vérifier votre plan. Actualisez ou consultez Plans.',
-    backToPlans: 'Retour aux plans',
-    goToPlans: 'Aller aux plans',
+      'Paiement reçu. La mise à jour de votre badge peut prendre un instant. Actualisez la page ou consultez Tarifs.',
+    verifyErrorNote: 'Impossible de vérifier votre badge. Actualisez ou consultez Tarifs.',
+    backToBadges: 'Retour aux tarifs',
+    goToBadges: 'Aller aux tarifs',
     rows: {
       projectsLimited: "Jusqu'à {{count}} projets enregistrés",
       projectsUnlimited: 'Projets enregistrés illimités',
@@ -165,7 +165,7 @@ const fr: CommonNs = {
       observer: {
         name: 'Observateur (gratuit)',
         description: 'Export JPEG, cartes et légendes de base, nombre de projets limité.',
-        buttonText: 'Plan gratuit',
+        buttonText: 'Badge gratuit',
       },
       explorer: {
         name: 'Explorateur',
@@ -291,7 +291,7 @@ const fr: CommonNs = {
       editManuallyInTable: 'Modifier manuellement dans le tableau',
       editManuallyInText: 'Modifier manuellement en texte',
       aiParserChronographerTooltip:
-        'L\u2019analyseur IA est disponible uniquement avec le forfait {{planName}}.',
+        'L\u2019analyseur IA est disponible uniquement avec le badge {{badgeName}}.',
       connectSheets: 'Connecter Google Sheets',
       changeSheetsSource: 'Changer la source Google Sheets',
       uploadCsv: 'Téléverser un fichier CSV',
@@ -379,10 +379,10 @@ const fr: CommonNs = {
       defaultMetaDescription: 'Carte régionale interactive de {{projectName}} sur Regionify.',
       saveToGenerateLink:
         'Enregistrez les paramètres pour générer le lien de la page publique et le code d’intégration (iframe).',
-      planRequired: 'L’intégration publique nécessite le forfait {{planName}}.',
+      badgeRequired: 'L’intégration publique nécessite le badge {{badgeName}}.',
       tooltipChronographerBody:
-        'L’intégration publique de la carte (lien de partage et iframe) est incluse dans le forfait {{planName}}.',
-      upgradePlansLink: 'Voir les forfaits et passer à l’offre supérieure',
+        'L’intégration publique de la carte (lien de partage et iframe) est incluse dans le badge {{badgeName}}.',
+      upgradeBadgesLink: 'Voir les tarifs et passer à l’offre supérieure',
       tooltipNeedSavedProject:
         'Enregistrez d’abord votre carte en tant que projet pour configurer l’intégration.',
       tooltipSelectCountry: 'Sélectionnez un pays avant d’utiliser l’intégration.',
@@ -421,7 +421,7 @@ const fr: CommonNs = {
       height: 'Hauteur',
       back: 'Retour',
       downloadFormat: 'Télécharger {{format}}',
-      upgradeToExplorer: 'Passer à {{planName}}',
+      upgradeToExplorer: 'Passer à {{badgeName}}',
       singleFormatHintAfterLink:
         ' pour PNG, SVG, export d’images pleine qualité et sans filigrane.',
       qualityLimited: 'Qualité limitée à {{max}}%.',
@@ -529,10 +529,10 @@ const fr: CommonNs = {
       collapseShadow: 'Ombre',
       collapseControls: 'Contrôles',
       collapseRegionLabels: 'Libellés des régions',
-      freePlanNoteBeforeUpgrade:
+      freeBadgeNoteBeforeUpgrade:
         'Vous pouvez toujours modifier la couleur d’arrière-plan, mais le fond transparent et la suppression du filigrane nécessitent une ',
-      freePlanUpgradeLink: 'mise à niveau du badge',
-      freePlanNoteAfterUpgrade: '.',
+      freeBadgeUpgradeLink: 'mise à niveau du badge',
+      freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Afficher le filigrane',
       transparent: 'Transparent',
       color: 'Couleur',
@@ -616,7 +616,7 @@ const fr: CommonNs = {
     cardRegionThumbnailAlt: 'Aperçu de la carte régionale',
     limitReachedTitle: 'Limite de projets atteinte',
     limitReachedContent:
-      'Vous avez atteint la limite du plan gratuit Observer de {{count}} projets. Supprimez au moins un projet pour en créer un nouveau, ou passez à un plan supérieur.',
+      'Vous avez atteint la limite du badge gratuit Observer ({{count}} projets). Supprimez au moins un projet pour en créer un nouveau, ou passez à un badge supérieur.',
   },
   common: {
     loading: 'Chargement...',
@@ -658,7 +658,7 @@ const fr: CommonNs = {
     importedRegions: '{{count}} régions importées',
     importedRowsPeriods: '{{count}} lignes importées sur {{periods}} périodes',
     timeSeriesDetected:
-      'Données de séries temporelles détectées. Passez au forfait {{planName}} pour les animations.',
+      'Données de séries temporelles détectées. Passez au badge {{badgeName}} pour les animations.',
     noTimeColumnDetected:
       'Aucune colonne de temps détectée (year, time, period, etc.). Données importées en une seule période.',
     datasetMustIncludeId: 'Le jeu de données doit contenir une colonne id.',

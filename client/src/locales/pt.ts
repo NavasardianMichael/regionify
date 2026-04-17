@@ -7,7 +7,7 @@ const pt: CommonNs = {
     projects: 'Projetos',
     contact: 'Contacto',
     faq: 'Perguntas frequentes',
-    plans: 'Planos',
+    pricing: 'Preços',
     about: 'Sobre',
     login: 'Entrar',
     account: 'Conta',
@@ -34,7 +34,7 @@ const pt: CommonNs = {
     heroSubheadline:
       'Importe dados de CSV, Excel, JSON ou Google Sheets, personalize cores, legendas e estilos e exporte gráficos de mapas prontos para publicação.',
     ctaStart: 'Começar a criar',
-    ctaPlans: 'Ver planos',
+    ctaBadges: 'Ver preços',
     featuresTitle: 'Tudo o que precisa para visualizar dados regionais',
     featureImportTitle: 'Importação flexível',
     featureImportDesc:
@@ -80,17 +80,17 @@ const pt: CommonNs = {
   about: {
     title: 'Sobre o Regionify',
     description:
-      'O Regionify é uma ferramenta no browser para mapas coropléticos: ligue CSV, Excel, JSON ou Google Sheets a mapas SVG regionais, ajuste legendas e cores, e exporte imagens ou animações para relatórios e web. Planos superiores acrescentam séries temporais, exportação GIF/MP4 e páginas públicas incorporáveis.',
+      'O Regionify é uma ferramenta no browser para mapas coropléticos: ligue CSV, Excel, JSON ou Google Sheets a mapas SVG regionais, ajuste legendas e cores, e exporte imagens ou animações para relatórios e web. Níveis superiores acrescentam séries temporais, exportação GIF/MP4 e páginas públicas incorporáveis.',
   },
   faq: {
     title: 'Perguntas frequentes',
     intro:
-      'Respostas diretas sobre mapas coropléticos com Regionify—importações, exportações, planos, incorporações e correspondência de regiões.',
+      'Respostas diretas sobre mapas coropléticos com Regionify—importações, exportações, preços, incorporações e correspondência de regiões.',
     items: [
       {
         question: 'O que é o Regionify?',
         answer:
-          'O Regionify é uma aplicação web para criar **mapas coropléticos** interativos com os seus dados. Escolhe um mapa regional, importa valores de **CSV**, **Excel**, **JSON** ou **Google Sheets**, estiliza a legenda e exporta imagens ou animações conforme o plano.',
+          'O Regionify é uma aplicação web para criar **mapas coropléticos** interativos com os seus dados. Escolhe um mapa regional, importa valores de **CSV**, **Excel**, **JSON** ou **Google Sheets**, estiliza a legenda e exporta imagens ou animações conforme o badge.',
       },
       {
         question: 'O que é um mapa coroplético?',
@@ -100,17 +100,17 @@ const pt: CommonNs = {
       {
         question: 'Que formatos posso importar?',
         answer:
-          'Folhas **CSV** e **Excel**, **JSON** e **Google Sheets** com sincronização em direto em planos suportados. O Regionify usa **correspondência de texto aproximada** entre os seus rótulos e os nomes das regiões.',
+          'Folhas **CSV** e **Excel**, **JSON** e **Google Sheets** com sincronização em direto em contas compatíveis. O Regionify usa **correspondência de texto aproximada** entre os seus rótulos e os nomes das regiões.',
       },
       {
         question: 'Que formatos de exportação existem?',
         answer:
-          'Depende do plano. O **Observer** gratuito inclui exportação **JPEG**. Os planos pagos acrescentam **PNG** e **SVG**, maior qualidade, estilos avançados, séries temporais e no **Chronographer** exportações **GIF** e **MP4** animadas.',
+          'Depende do badge. O **Observer** gratuito inclui exportação **JPEG**. Os badges pagos acrescentam **PNG** e **SVG**, maior qualidade, estilos avançados, séries temporais e no **Chronographer** exportações **GIF** e **MP4** animadas.',
       },
       {
         question: 'Posso incorporar um mapa no meu site?',
         answer:
-          'Incorporação pública e **iframe** estão disponíveis no plano **Chronographer**. Pode ativar uma **página pública** por projeto com título e meta descrição **SEO**.',
+          'Incorporação pública e **iframe** estão disponíveis no badge **Chronographer**. Pode ativar uma **página pública** por projeto com título e meta descrição **SEO**.',
       },
       {
         question: 'Como funciona a correspondência de regiões?',
@@ -120,32 +120,32 @@ const pt: CommonNs = {
       {
         question: 'Preciso de conta?',
         answer:
-          'Sim. As contas guardam projetos, faturação e login Google opcional. Veja a página **Planos** na app para limites atuais.',
+          'Sim. As contas guardam projetos, faturação e login Google opcional. Veja a página **Preços** na app para limites atuais.',
       },
       {
         question: 'Como obtenho ajuda?',
         answer:
-          'Use a página **Contacto** na aplicação. Para faturação, a página **Planos** indica como nos contactar se algo falhar.',
+          'Use a página **Contacto** na aplicação. Para faturação, a página **Preços** indica como nos contactar se algo falhar.',
       },
     ],
   },
-  plans: {
-    title: 'Escolha o seu plano',
-    subtitle: 'O que cada plano desbloqueia no visualizador (como nos limites da conta).',
+  badges: {
+    title: 'Escolha o seu badge',
+    subtitle: 'O que cada nível de badge desbloqueia no visualizador (como nos limites da conta).',
     paymentNote:
       'Os pagamentos são seguros via Lemon Squeezy. Não armazenamos dados de cartão nos nossos servidores.',
     paymentIssueNote: 'Se tiver algum problema com o seu pagamento, por favor',
     paymentContactUs: 'contacte-nos',
     checkoutError: 'Não foi possível iniciar o pagamento. Tente novamente.',
-    currentPlan: 'Plano atual',
+    currentBadge: 'Badge atual',
     bestChoice: 'Melhor escolha',
     priceFree: 'Grátis',
     priceOneTime: '{{price}} pagamento único',
     paymentPendingNote:
-      'Pagamento recebido. O seu plano pode demorar um momento a atualizar. Atualize a página ou veja Planos.',
-    verifyErrorNote: 'Não foi possível verificar o seu plano. Atualize ou veja Planos.',
-    backToPlans: 'Voltar a Planos',
-    goToPlans: 'Ir para Planos',
+      'Pagamento recebido. O seu badge pode demorar um momento a atualizar. Atualize a página ou veja Preços.',
+    verifyErrorNote: 'Não foi possível verificar o seu badge. Atualize ou veja Preços.',
+    backToBadges: 'Voltar a preços',
+    goToBadges: 'Ir para preços',
     rows: {
       projectsLimited: 'Até {{count}} projetos guardados',
       projectsUnlimited: 'Projetos guardados ilimitados',
@@ -163,7 +163,7 @@ const pt: CommonNs = {
       observer: {
         name: 'Observador (grátis)',
         description: 'Exportação JPEG, mapas e legendas essenciais, limite de projetos.',
-        buttonText: 'Plano gratuito',
+        buttonText: 'Badge gratuito',
       },
       explorer: {
         name: 'Explorador',
@@ -286,7 +286,7 @@ const pt: CommonNs = {
       editManuallyInTable: 'Editar manualmente na tabela',
       editManuallyInText: 'Editar manualmente em texto',
       aiParserChronographerTooltip:
-        'O Analisador de IA est\u00e1 dispon\u00edvel apenas no plano {{planName}}.',
+        'O Analisador de IA est\u00e1 dispon\u00edvel apenas no badge {{badgeName}}.',
       connectSheets: 'Ligar Google Sheets',
       changeSheetsSource: 'Alterar origem do Google Sheets',
       uploadCsv: 'Carregar ficheiro CSV',
@@ -374,10 +374,10 @@ const pt: CommonNs = {
       defaultMetaDescription: 'Mapa regional interativo de {{projectName}} no Regionify.',
       saveToGenerateLink:
         'Guarde as definições para gerar a ligação da página pública e o código de incorporação (iframe).',
-      planRequired: 'A incorporação pública requer o plano {{planName}}.',
+      badgeRequired: 'A incorporação pública requer o badge {{badgeName}}.',
       tooltipChronographerBody:
-        'A incorporação pública do mapa (ligação de partilha e iframe) está incluída no plano {{planName}}.',
-      upgradePlansLink: 'Ver planos e fazer upgrade',
+        'A incorporação pública do mapa (ligação de partilha e iframe) está incluída no badge {{badgeName}}.',
+      upgradeBadgesLink: 'Ver preços e fazer upgrade',
       tooltipNeedSavedProject:
         'Guarde primeiro o mapa como projeto para configurar a incorporação.',
       tooltipSelectCountry: 'Selecione um país antes de usar a incorporação.',
@@ -416,7 +416,7 @@ const pt: CommonNs = {
       height: 'Altura',
       back: 'Voltar',
       downloadFormat: 'Baixar {{format}}',
-      upgradeToExplorer: 'Atualizar para {{planName}}',
+      upgradeToExplorer: 'Atualizar para {{badgeName}}',
       singleFormatHintAfterLink:
         ' para PNG, SVG, exportação estática em qualidade total e sem marca de água.',
       qualityLimited: 'Qualidade limitada a {{max}}%.',
@@ -522,10 +522,10 @@ const pt: CommonNs = {
       collapseShadow: 'Sombra',
       collapseControls: 'Controlos',
       collapseRegionLabels: 'Etiquetas de região',
-      freePlanNoteBeforeUpgrade:
+      freeBadgeNoteBeforeUpgrade:
         'Ainda pode alterar a cor de fundo, mas fundo transparente e remoção de marca d’água requerem um ',
-      freePlanUpgradeLink: 'upgrade do distintivo',
-      freePlanNoteAfterUpgrade: '.',
+      freeBadgeUpgradeLink: 'upgrade do distintivo',
+      freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Mostrar marca d’água',
       transparent: 'Transparente',
       color: 'Cor',
@@ -609,7 +609,7 @@ const pt: CommonNs = {
     cardRegionThumbnailAlt: 'Pré-visualização do mapa regional',
     limitReachedTitle: 'Limite de projetos atingido',
     limitReachedContent:
-      'Atingiu o limite do plano gratuito Observer de {{count}} projetos. Elimine pelo menos um projeto para criar um novo ou faça upgrade do seu plano.',
+      'Atingiu o limite do badge gratuito Observer ({{count}} projetos). Elimine pelo menos um projeto para criar um novo ou faça upgrade para um badge superior.',
   },
   common: {
     loading: 'A carregar...',
@@ -651,7 +651,7 @@ const pt: CommonNs = {
     importedRegions: '{{count}} regiões importadas',
     importedRowsPeriods: '{{count}} linhas importadas em {{periods}} períodos',
     timeSeriesDetected:
-      'Dados de séries temporais detetados. Atualize para o plano {{planName}} para animações.',
+      'Dados de séries temporais detetados. Atualize para o badge {{badgeName}} para animações.',
     noTimeColumnDetected:
       'Nenhuma coluna de tempo detetada (year, time, period, etc.). Dados importados como período único.',
     datasetMustIncludeId: 'O conjunto de dados deve incluir uma coluna id.',
