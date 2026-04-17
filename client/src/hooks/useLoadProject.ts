@@ -102,6 +102,7 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
         >['position'],
         floatingPosition: project.legendStyles.floatingPosition,
         floatingSize: project.legendStyles.floatingSize,
+        floatingMapFrameSize: project.legendStyles.floatingMapFrameSize ?? null,
         transparentBackground: project.legendStyles.transparentBackground ?? false,
         backgroundColor: project.legendStyles.backgroundColor,
         noDataColor: project.legendStyles.noDataColor,

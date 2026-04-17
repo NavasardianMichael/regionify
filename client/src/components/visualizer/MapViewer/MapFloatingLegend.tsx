@@ -19,6 +19,8 @@ type MapFloatingLegendProps = {
   isDragging: boolean;
   onLegendMouseDown: (e: React.PointerEvent) => void;
   onResizeMouseDown: (e: React.PointerEvent) => void;
+  /** When set (e.g. embed), overrides store `floatingPosition` for layout only. */
+  layoutPosition?: { x: number; y: number };
 };
 
 export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
@@ -26,6 +28,7 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
   isDragging,
   onLegendMouseDown,
   onResizeMouseDown,
+  layoutPosition,
 }) => {
   const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const floatingSize = useLegendStylesStore(selectFloatingSize);
@@ -40,6 +43,9 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
 
   const floatingLegendHeightPx = floatingSize.height === 'auto' ? undefined : floatingSize.height;
   const isFloatingLegendHeightFixed = floatingSize.height !== 'auto';
+  const resolvedPosition = layoutPosition ?? floatingPosition;
+
+  const legendPointerClass = isDragging ? 'cursor-grabbing' : 'cursor-grab active:cursor-grabbing';
 
   return (
     <div
@@ -47,13 +53,13 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
       role="region"
       aria-label="Map legend"
       data-map-export-floating-legend
-      className={`p-sm absolute rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab active:cursor-grabbing'
-      } ${isFloatingLegendHeightFixed ? 'flex min-h-0 flex-col overflow-hidden' : ''}`}
+      className={`p-sm absolute rounded-lg shadow-[0_0_1px_rgba(24,41,77,0.3)] backdrop-blur-sm transition-shadow duration-200 select-none hover:shadow-[0_0_4px_rgba(24,41,77,0.3)] ${legendPointerClass} ${
+        isFloatingLegendHeightFixed ? 'flex min-h-0 flex-col overflow-hidden' : ''
+      }`}
       onPointerDown={onLegendMouseDown}
       style={{
-        left: floatingPosition.x,
-        top: floatingPosition.y,
+        left: resolvedPosition.x,
+        top: resolvedPosition.y,
         width: floatingSize.width,
         ...(floatingLegendHeightPx != null ? { height: floatingLegendHeightPx } : {}),
         backgroundColor: transparentBackground ? 'transparent' : backgroundColor,

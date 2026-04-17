@@ -41,6 +41,7 @@ export function applyFullTemporaryProjectState(merged: FullTemporaryProjectState
     position: merged.position,
     floatingPosition: merged.floatingPosition,
     floatingSize: merged.floatingSize,
+    floatingMapFrameSize: merged.floatingMapFrameSize,
     transparentBackground: merged.transparentBackground,
     backgroundColor: merged.backgroundColor,
     noDataColor: merged.noDataColor,

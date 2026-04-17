@@ -5,6 +5,7 @@ export const selectLabels = (state: LegendStylesState) => state.labels;
 export const selectTitle = (state: LegendStylesState) => state.title;
 export const selectPosition = (state: LegendStylesState) => state.position;
 export const selectFloatingPosition = (state: LegendStylesState) => state.floatingPosition;
+export const selectFloatingMapFrameSize = (state: LegendStylesState) => state.floatingMapFrameSize;
 export const selectFloatingSize = (state: LegendStylesState) => state.floatingSize;
 export const selectTransparentBackground = (state: LegendStylesState) =>
   state.transparentBackground;

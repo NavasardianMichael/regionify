@@ -53,6 +53,7 @@ export type TemporaryProjectState = Partial<
       | 'position'
       | 'floatingPosition'
       | 'floatingSize'
+      | 'floatingMapFrameSize'
       | 'transparentBackground'
       | 'backgroundColor'
       | 'noDataColor'
@@ -112,6 +113,7 @@ function getDefaultTemporaryProjectState(): FullTemporaryProjectState {
     position: LEGEND_POSITIONS.floating,
     floatingPosition: { x: 20, y: 20 },
     floatingSize: { width: 160, height: 'auto' },
+    floatingMapFrameSize: null,
     transparentBackground: false,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     noDataColor: '#E5E7EB',

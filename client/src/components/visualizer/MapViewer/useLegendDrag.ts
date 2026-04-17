@@ -12,9 +12,21 @@ const LEGEND_MIN_WIDTH_PX = 120;
 const LEGEND_MIN_HEIGHT_PX = 80;
 const LEGEND_RESIZE_CONTAINER_PADDING_PX = 8;
 
+export type EmbedLegendDragBinding = {
+  /** Top-left used for clamp math and as drag anchor (embed map pixels). */
+  layoutFloatingPosition: { x: number; y: number };
+  /** Persists drag result without updating saved project `floatingPosition` in the store. */
+  commitLayoutFloatingPosition: (p: { x: number; y: number }) => void;
+};
+
 type UseLegendDragParams = {
   containerRef: RefObject<HTMLButtonElement | null>;
   legendRef: RefObject<HTMLDivElement | null>;
+  /**
+   * When set (public embed), drag commits only via `commitLayoutFloatingPosition`;
+   * store `floatingPosition` stays the saved authoring coordinates.
+   */
+  embedLegendDrag?: EmbedLegendDragBinding | null;
 };
 
 type UseLegendDragReturn = {
@@ -27,11 +39,14 @@ type UseLegendDragReturn = {
 export function useLegendDrag({
   containerRef,
   legendRef,
+  embedLegendDrag = null,
 }: UseLegendDragParams): UseLegendDragReturn {
   const position = useLegendStylesStore(selectPosition);
   const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const floatingSize = useLegendStylesStore(selectFloatingSize);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
+
+  const effectiveFloatingPosition = embedLegendDrag?.layoutFloatingPosition ?? floatingPosition;
 
   const [isLegendDragging, setIsLegendDragging] = useState(false);
   const [isLegendResizing, setIsLegendResizing] = useState(false);
@@ -76,16 +91,16 @@ export function useLegendDrag({
         let offsetX = e.clientX - legendDragStartRef.current.x;
         let offsetY = e.clientY - legendDragStartRef.current.y;
 
-        const currentLeft = floatingPosition.x + offsetX;
-        const currentTop = floatingPosition.y + offsetY;
+        const currentLeft = effectiveFloatingPosition.x + offsetX;
+        const currentTop = effectiveFloatingPosition.y + offsetY;
 
-        if (currentLeft < 0) offsetX = -floatingPosition.x;
-        if (currentTop < 0) offsetY = -floatingPosition.y;
+        if (currentLeft < 0) offsetX = -effectiveFloatingPosition.x;
+        if (currentTop < 0) offsetY = -effectiveFloatingPosition.y;
         if (currentLeft + legendRect.width > containerRect.width) {
-          offsetX = containerRect.width - legendRect.width - floatingPosition.x;
+          offsetX = containerRect.width - legendRect.width - effectiveFloatingPosition.x;
         }
         if (currentTop + legendRect.height > containerRect.height) {
-          offsetY = containerRect.height - legendRect.height - floatingPosition.y;
+          offsetY = containerRect.height - legendRect.height - effectiveFloatingPosition.y;
         }
 
         legendOffsetRef.current = { x: offsetX, y: offsetY };
@@ -104,11 +119,11 @@ export function useLegendDrag({
 
         const maxW = Math.max(
           LEGEND_MIN_WIDTH_PX,
-          containerRect.width - floatingPosition.x - LEGEND_RESIZE_CONTAINER_PADDING_PX,
+          containerRect.width - effectiveFloatingPosition.x - LEGEND_RESIZE_CONTAINER_PADDING_PX,
         );
         const maxH = Math.max(
           LEGEND_MIN_HEIGHT_PX,
-          containerRect.height - floatingPosition.y - LEGEND_RESIZE_CONTAINER_PADDING_PX,
+          containerRect.height - effectiveFloatingPosition.y - LEGEND_RESIZE_CONTAINER_PADDING_PX,
         );
         newWidth = Math.min(newWidth, maxW);
         newHeight = Math.min(newHeight, maxH);
@@ -130,7 +145,7 @@ export function useLegendDrag({
     [
       isLegendDragging,
       isLegendResizing,
-      floatingPosition,
+      effectiveFloatingPosition,
       updateLegendTransform,
       containerRef,
       legendRef,
@@ -144,9 +159,13 @@ export function useLegendDrag({
     }
 
     if (isLegendDragging) {
-      const finalX = floatingPosition.x + legendOffsetRef.current.x;
-      const finalY = floatingPosition.y + legendOffsetRef.current.y;
-      setLegendStylesState({ floatingPosition: { x: finalX, y: finalY } });
+      const finalX = effectiveFloatingPosition.x + legendOffsetRef.current.x;
+      const finalY = effectiveFloatingPosition.y + legendOffsetRef.current.y;
+      if (embedLegendDrag) {
+        embedLegendDrag.commitLayoutFloatingPosition({ x: finalX, y: finalY });
+      } else {
+        setLegendStylesState({ floatingPosition: { x: finalX, y: finalY } });
+      }
 
       if (legendRef.current) {
         legendRef.current.style.transform = '';
@@ -172,7 +191,14 @@ export function useLegendDrag({
 
     setIsLegendDragging(false);
     setIsLegendResizing(false);
-  }, [isLegendDragging, isLegendResizing, floatingPosition, setLegendStylesState, legendRef]);
+  }, [
+    isLegendDragging,
+    isLegendResizing,
+    effectiveFloatingPosition,
+    embedLegendDrag,
+    setLegendStylesState,
+    legendRef,
+  ]);
 
   const handleResizeMouseDown = useCallback(
     (e: React.PointerEvent) => {

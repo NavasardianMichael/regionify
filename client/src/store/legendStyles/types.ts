@@ -10,6 +10,8 @@ export type LegendTitleConfig = {
   text: string;
 };
 
+export type LegendFrameSize = { width: number; height: number };
+
 export type LegendStylesState = {
   // State
   labels: LegendLabelsConfig;
@@ -17,6 +19,11 @@ export type LegendStylesState = {
   position: LegendPosition;
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };
+  /**
+   * Last measured map frame in the editor, or frame size from API when a project/embed loads.
+   * Excluded from dirty-check snapshots so window resizes do not mark the project unsaved.
+   */
+  floatingMapFrameSize: LegendFrameSize | null;
   transparentBackground: boolean;
   backgroundColor: string;
   noDataColor: string;

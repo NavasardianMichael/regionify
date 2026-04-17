@@ -40,6 +40,11 @@ export type ProjectLegendStyles = {
   position: string;
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };
+  /**
+   * Map visualization frame size (px) when the project was saved; used to scale
+   * {@link floatingPosition} on embed when the iframe/viewport differs. Omitted on legacy saves.
+   */
+  floatingMapFrameSize?: { width: number; height: number } | null;
   /** @since client: omitted on legacy projects = opaque background */
   transparentBackground?: boolean;
   backgroundColor: string;

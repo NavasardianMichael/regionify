@@ -48,6 +48,7 @@ const DEFAULT_LEGEND_STYLES = {
   position: LEGEND_POSITIONS.floating,
   floatingPosition: { x: 20, y: 20 },
   floatingSize: { width: 160, height: 'auto' as const },
+  floatingMapFrameSize: null,
   transparentBackground: false,
   backgroundColor: 'rgba(255, 255, 255, 0.95)',
   noDataColor: '#E5E7EB',

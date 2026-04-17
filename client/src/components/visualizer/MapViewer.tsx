@@ -1,10 +1,16 @@
-import { type FC, useCallback, useMemo, useRef } from 'react';
+import { type FC, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BADGES } from '@regionify/shared';
 import { Badge as AntBadge, Flex } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
-import { selectPosition } from '@/store/legendStyles/selectors';
+import {
+  selectFloatingMapFrameSize,
+  selectFloatingPosition,
+  selectFloatingSize,
+  selectPosition,
+  selectSetLegendStylesState,
+} from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
 import {
   selectActiveTimePeriod,
@@ -27,13 +33,17 @@ import { OBSERVER_BADGE_ZOOM_STACK_LIFT_PX } from '@/constants/mapViewer';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { badgeRibbonColor, badgeRibbonNameKey } from '@/helpers/badgeRibbonColor';
 import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
+import { scaleFloatingLegendPosition } from '@/helpers/scaleFloatingLegendPosition';
 import { MapBottomLegend } from '@/components/visualizer/MapViewer/MapBottomLegend';
 import { MapFloatingLegend } from '@/components/visualizer/MapViewer/MapFloatingLegend';
 import { MapPanZoomControls } from '@/components/visualizer/MapViewer/MapPanZoomControls';
 import { MapSvgCanvas } from '@/components/visualizer/MapViewer/MapSvgCanvas';
 import { MapWatermark } from '@/components/visualizer/MapViewer/MapWatermark';
 import { useLabelDrag } from '@/components/visualizer/MapViewer/useLabelDrag';
-import { useLegendDrag } from '@/components/visualizer/MapViewer/useLegendDrag';
+import {
+  type EmbedLegendDragBinding,
+  useLegendDrag,
+} from '@/components/visualizer/MapViewer/useLegendDrag';
 import { useMapPan } from '@/components/visualizer/MapViewer/useMapPan';
 import { useMapSvg } from '@/components/visualizer/MapViewer/useMapSvg';
 import { useTimePeriodLabelDrag } from '@/components/visualizer/MapViewer/useTimePeriodLabelDrag';
@@ -74,6 +84,10 @@ const MapViewer: FC<MapViewerProps> = ({
   const setMapStylesState = useMapStylesStore(selectSetMapStylesState);
   const timePeriodLabelOffset = useMapStylesStore(selectTimePeriodLabelOffset);
   const position = useLegendStylesStore(selectPosition);
+  const floatingPosition = useLegendStylesStore(selectFloatingPosition);
+  const floatingMapFrameSize = useLegendStylesStore(selectFloatingMapFrameSize);
+  const floatingSize = useLegendStylesStore(selectFloatingSize);
+  const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
   const legendItems = useLegendDataStore(useShallow(selectItemsList));
   const showBottomLegend = position === LEGEND_POSITIONS.bottom && legendItems.length > 0;
 
@@ -81,6 +95,14 @@ const MapViewer: FC<MapViewerProps> = ({
   const legendRef = useRef<HTMLDivElement>(null);
   const periodLabelRef = useRef<HTMLDivElement>(null);
   const mapTransformRef = useRef<HTMLDivElement>(null);
+  const mapExportMapAreaRef = useRef<HTMLDivElement>(null);
+  const [embedMapFrameSize, setEmbedMapFrameSize] = useState({ width: 0, height: 0 });
+  const [embedLegendRenderedSize, setEmbedLegendRenderedSize] = useState({ width: 0, height: 0 });
+  /** Embed-only: drag result in iframe pixels; does not overwrite saved project coordinates. */
+  const [embedLegendOverride, setEmbedLegendOverride] = useState<{
+    key: string;
+    position: { x: number; y: number };
+  } | null>(null);
 
   const { svgContent, isLoading, labelPositionsRef } = useMapSvg();
 
@@ -109,10 +131,112 @@ const MapViewer: FC<MapViewerProps> = ({
 
   useLabelDrag({ containerRef, svgContent, labelPositionsRef, enabled: !flatEmbedChrome });
 
+  const embedLegendOverrideKey = useMemo(
+    () =>
+      `${Number(flatEmbedChrome)}:${floatingPosition.x}:${floatingPosition.y}:${
+        floatingMapFrameSize?.width ?? 0
+      }:${floatingMapFrameSize?.height ?? 0}:${embedMapFrameSize.width}:${embedMapFrameSize.height}`,
+    [
+      flatEmbedChrome,
+      floatingPosition.x,
+      floatingPosition.y,
+      floatingMapFrameSize,
+      embedMapFrameSize.width,
+      embedMapFrameSize.height,
+    ],
+  );
+
+  useLayoutEffect(() => {
+    if (!flatEmbedChrome || position !== LEGEND_POSITIONS.floating) return;
+    const el = legendRef.current;
+    if (!el) return;
+
+    const applyLegendSize = (): void => {
+      const { width, height } = el.getBoundingClientRect();
+      const w = Math.round(width);
+      const h = Math.round(height);
+      setEmbedLegendRenderedSize((prev) =>
+        prev.width === w && prev.height === h ? prev : { width: w, height: h },
+      );
+    };
+
+    applyLegendSize();
+    const ro = new ResizeObserver(applyLegendSize);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+    };
+  }, [flatEmbedChrome, position, floatingSize.width, floatingSize.height, legendItems.length]);
+
+  const embedDisplayFloatingPosition = useMemo(() => {
+    if (!flatEmbedChrome || position !== LEGEND_POSITIONS.floating) return undefined;
+    if (embedLegendOverride?.key === embedLegendOverrideKey) {
+      return embedLegendOverride.position;
+    }
+    const legendHeightForScale =
+      floatingSize.height === 'auto' ? embedLegendRenderedSize.height : floatingSize.height;
+    const legendSizeForScale =
+      legendHeightForScale > 0 ? { width: floatingSize.width, height: legendHeightForScale } : null;
+    const scaled = scaleFloatingLegendPosition(
+      floatingPosition,
+      floatingMapFrameSize,
+      embedMapFrameSize,
+      legendSizeForScale,
+    );
+    return scaled ?? floatingPosition;
+  }, [
+    flatEmbedChrome,
+    position,
+    embedLegendOverride,
+    embedLegendOverrideKey,
+    floatingPosition,
+    floatingMapFrameSize,
+    embedMapFrameSize,
+    floatingSize.width,
+    floatingSize.height,
+    embedLegendRenderedSize.height,
+  ]);
+
+  const embedLegendDragBinding = useMemo((): EmbedLegendDragBinding | null => {
+    if (!flatEmbedChrome || position !== LEGEND_POSITIONS.floating) return null;
+    if (embedDisplayFloatingPosition == null) return null;
+    return {
+      layoutFloatingPosition: embedDisplayFloatingPosition,
+      commitLayoutFloatingPosition: (next) =>
+        setEmbedLegendOverride({ key: embedLegendOverrideKey, position: next }),
+    };
+  }, [flatEmbedChrome, position, embedDisplayFloatingPosition, embedLegendOverrideKey]);
+
   const { isLegendDragging, handleLegendMouseDown, handleResizeMouseDown } = useLegendDrag({
     containerRef,
     legendRef,
+    embedLegendDrag: embedLegendDragBinding,
   });
+
+  useLayoutEffect(() => {
+    const el = mapExportMapAreaRef.current;
+    if (!el) return;
+
+    const applySize = (): void => {
+      const { width, height } = el.getBoundingClientRect();
+      const w = Math.round(width);
+      const h = Math.round(height);
+      if (flatEmbedChrome) {
+        setEmbedMapFrameSize((prev) =>
+          prev.width === w && prev.height === h ? prev : { width: w, height: h },
+        );
+      } else if (w > 0 && h > 0) {
+        setLegendStylesState({ floatingMapFrameSize: { width: w, height: h } });
+      }
+    };
+
+    applySize();
+    const ro = new ResizeObserver(applySize);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+    };
+  }, [flatEmbedChrome, setLegendStylesState]);
 
   const showTimePeriodLabel = Boolean(activeTimePeriod && timePeriods.length > 1);
   const { isDragging: isPeriodLabelDragging, handlePeriodLabelPointerDown } =
@@ -174,6 +298,7 @@ const MapViewer: FC<MapViewerProps> = ({
           isDragging={isLegendDragging}
           onLegendMouseDown={handleLegendMouseDown}
           onResizeMouseDown={handleResizeMouseDown}
+          layoutPosition={flatEmbedChrome ? embedDisplayFloatingPosition : undefined}
         />
       )}
 
@@ -203,6 +328,7 @@ const MapViewer: FC<MapViewerProps> = ({
                 ? 'relative min-h-0 flex-1 flex-col overflow-hidden'
                 : 'relative min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-gray-200'
             }
+            ref={mapExportMapAreaRef}
             data-map-export-map-area
           >
             <Flex
@@ -222,6 +348,7 @@ const MapViewer: FC<MapViewerProps> = ({
               align="center"
               justify="center"
               className={mapFrameClassNames(flatEmbedChrome, showBottomLegend)}
+              ref={mapExportMapAreaRef}
               data-map-export-map-area
               style={mapBackgroundStyle}
             >

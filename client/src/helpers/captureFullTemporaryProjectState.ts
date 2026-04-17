@@ -29,6 +29,7 @@ export function captureFullTemporaryProjectState(): FullTemporaryProjectState {
     position: legendStylesState.position,
     floatingPosition: legendStylesState.floatingPosition,
     floatingSize: legendStylesState.floatingSize,
+    floatingMapFrameSize: legendStylesState.floatingMapFrameSize,
     transparentBackground: legendStylesState.transparentBackground,
     backgroundColor: legendStylesState.backgroundColor,
     noDataColor: legendStylesState.noDataColor,
