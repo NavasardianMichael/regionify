@@ -32,6 +32,7 @@ export type PublicEmbedPayload = {
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string[] | null;
+  showHeader: boolean;
 };
 
 function newEmbedToken(): string {
@@ -66,6 +67,7 @@ export const projectEmbedService = {
       seoTitle: project.embedSeoTitle,
       seoDescription: project.embedSeoDescription,
       seoKeywords: toKeywordArray(project.embedSeoKeywords),
+      showHeader: project.embedShowHeader,
     };
   },
 
@@ -78,6 +80,7 @@ export const projectEmbedService = {
     htmlLang: string;
     ogLocale: string;
     regionDisplayNameEn: string | null;
+    showHeader: boolean;
   }> {
     const project = await projectRepository.findByEmbedToken(token);
 
@@ -106,6 +109,7 @@ export const projectEmbedService = {
       htmlLang,
       ogLocale,
       regionDisplayNameEn,
+      showHeader: project.embedShowHeader,
     };
   },
 

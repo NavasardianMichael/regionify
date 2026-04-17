@@ -14,4 +14,5 @@ export type PublicEmbedApiResponse = {
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string[] | null;
+  showHeader: boolean;
 };

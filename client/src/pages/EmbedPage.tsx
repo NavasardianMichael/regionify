@@ -1,5 +1,5 @@
 import { type FC, useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { Flex, Spin, Typography } from 'antd';
 import { fetchPublicEmbedData, PublicEmbedNotFoundError } from '@/api/embed';
@@ -27,7 +27,7 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
     embed: {
       enabled: false,
       token: null,
-      showHeader: true,
+      showHeader: data.showHeader,
       seo: {
         title: null,
         description: null,
@@ -42,7 +42,6 @@ function buildProjectFromEmbedPayload(data: PublicEmbedApiResponse): Project {
 
 const EmbedPage: FC = () => {
   const { token } = useParams<{ token: string }>();
-  const [searchParams] = useSearchParams();
   const { t } = useTypedTranslation();
   const loadProject = useLoadProject();
   const [hasError, setHasError] = useState(false);
@@ -51,17 +50,15 @@ const EmbedPage: FC = () => {
   const [embedMeta, setEmbedMeta] = useState<{
     title: string | null;
     description: string | null;
+    showHeader: boolean;
   } | null>(null);
 
-  const headerHidden = searchParams.get('header') === '0';
+  /** When SSR did not output a header (e.g. SPA shell), render one client-side if the project allows it. */
   const showClientHeader =
-    !headerHidden && embedMeta !== null && !document.querySelector('.embed-shell-header');
-
-  useEffect(() => {
-    if (!headerHidden) return;
-    const ssrHeader = document.querySelector('.embed-shell-header');
-    if (ssrHeader) ssrHeader.remove();
-  }, [headerHidden]);
+    embedMeta !== null &&
+    embedMeta.showHeader &&
+    (embedMeta.title ?? embedMeta.description) &&
+    !document.querySelector('.embed-shell-header');
 
   useEffect(() => {
     if (!token) {
@@ -87,6 +84,7 @@ const EmbedPage: FC = () => {
         setEmbedMeta({
           title: data.seoTitle,
           description: data.seoDescription,
+          showHeader: data.showHeader,
         });
         setHasError(false);
       } catch (e) {
@@ -148,7 +146,7 @@ const EmbedPage: FC = () => {
 
   return (
     <Flex vertical className="h-full min-h-0 w-full min-w-0 flex-1 overflow-hidden">
-      {showClientHeader && (embedMeta.title ?? embedMeta.description) && (
+      {showClientHeader && embedMeta && (embedMeta.title ?? embedMeta.description) && (
         <header className="embed-shell-header">
           {embedMeta.title && <h1 className="embed-shell-title">{embedMeta.title}</h1>}
           {embedMeta.description && <p className="embed-shell-intro">{embedMeta.description}</p>}

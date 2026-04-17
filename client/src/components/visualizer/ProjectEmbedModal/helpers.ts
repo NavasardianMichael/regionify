@@ -83,18 +83,12 @@ type BuildEmbedPageUrlInput = {
   origin: string;
   token: string | null | undefined;
   enabled: boolean;
-  showHeader?: boolean;
 };
 
-export function buildEmbedPageUrl({
-  origin,
-  token,
-  enabled,
-  showHeader = true,
-}: BuildEmbedPageUrlInput): string {
+/** Public embed page URL (no query params). Header visibility is set per project and applied at SSR. */
+export function buildEmbedPageUrl({ origin, token, enabled }: BuildEmbedPageUrlInput): string {
   if (!token || !enabled) return '';
-  const base = `${origin}${getEmbedRoute(token)}`;
-  return showHeader ? base : `${base}?header=0`;
+  return `${origin}${getEmbedRoute(token)}`;
 }
 
 export function buildIframeSnippet(embedPageUrl: string): string {

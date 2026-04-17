@@ -61,7 +61,6 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   const [formTouched, setFormTouched] = useState(false);
   const [hasErrors, setHasErrors] = useState(false);
   const embedEnabled = Form.useWatch('enabled', form) === true;
-  const showHeader = Form.useWatch('showHeader', form) !== false;
 
   const currentToken = savedToken ?? project.embed.token;
 
@@ -102,9 +101,8 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         origin: window.location.origin,
         token: currentToken,
         enabled: embedEnabled,
-        showHeader,
       }),
-    [currentToken, embedEnabled, showHeader],
+    [currentToken, embedEnabled],
   );
 
   const iframeSnippet = useMemo(() => buildIframeSnippet(embedPageUrl), [embedPageUrl]);

@@ -138,7 +138,7 @@ export function setupWebClient(app: Application): void {
         frameAncestorsDirective,
       );
       const kw = meta.keywords;
-      const showHeader = req.query.header !== '0';
+      const showHeader = meta.showHeader;
       const html = renderHtmlDocument({
         siteUrl,
         meta: {
