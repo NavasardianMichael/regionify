@@ -354,15 +354,47 @@ jobs:
           echo "  Variables found:"
           sed -n 's/^\([A-Z_]*\)=.*/    - \1/p' "$ENV_TARGET"
 
-          # Compose-managed containers only: `down` does not remove orphans that lost
-          # project labels (e.g. old fixed container_name). Those still block names or
-          # volumes. Drop legacy names explicitly; named volumes are preserved (no -v).
           export COMPOSE_PROJECT_NAME=regionify
-          docker compose -f docker-compose.prod.yml down --remove-orphans || true
-          docker rm -f regionify-redis regionify-postgres regionify-server \
-                      regionify-redis-1 regionify-postgres-1 regionify-server-1 2>/dev/null || true
+
+          # Build the new server image while the old container is still serving traffic.
+          # Build is the longest step; doing it before any teardown keeps downtime minimal.
           docker compose -f docker-compose.prod.yml build server
-          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+          # Make sure infra (postgres/redis/loki/promtail/grafana) is up; do NOT restart it
+          # if already running. Recreating postgres mid-deploy risks volume/env drift.
+          docker compose -f docker-compose.prod.yml up -d --no-recreate \
+            postgres redis loki promtail grafana
+
+          # Recreate ONLY the server with the freshly built image and updated env file.
+          # --no-deps leaves postgres/redis untouched even though `server` depends on them.
+          docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate server
+
+          # Wait until the server reports healthy before declaring deploy success.
+          # Server entrypoint runs Prisma migrations before binding the port, so the health
+          # check stays in `starting` until migrations finish + Express listens.
+          echo "Waiting for regionify-server health check..."
+          HEALTHY=false
+          for i in $(seq 1 30); do
+            STATUS=$(docker inspect --format '{{.State.Health.Status}}' regionify-server 2>/dev/null || echo "unknown")
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Server healthy after $((i * 3))s"
+              HEALTHY=true
+              break
+            fi
+            sleep 3
+          done
+          if [ "$HEALTHY" != "true" ]; then
+            echo "::error::Server failed to become healthy within 90s"
+            docker compose -f docker-compose.prod.yml logs server --tail=200
+            exit 1
+          fi
+
+          # Smoke test: confirm the upstream Nginx will proxy to actually answers.
+          if ! curl -sSf -o /dev/null --max-time 5 http://127.0.0.1:9002/health; then
+            echo "::error::Server /health endpoint not responding on 127.0.0.1:9002"
+            docker compose -f docker-compose.prod.yml logs server --tail=200
+            exit 1
+          fi
 
           docker image prune -f
           cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf || true
