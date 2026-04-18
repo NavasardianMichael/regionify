@@ -23,7 +23,7 @@ docker compose -f docker-compose.prod.yml logs server --since 48h 2>&1
 
 Or: `docker ps` and `docker logs <server-container-id> --since 48h` (Compose names the server container under project `regionify`, not a fixed `container_name`).
 
-Routes: webhook is **`POST /payments/webhook`** and **`POST /api/payments/webhook`** (mounted in both places).
+Routes: webhook is **`POST /payments/webhook`** on the API subdomain (`https://api.regionify.pro/payments/webhook`). Express mounts API routes at the root only — there is no `/api` prefix anymore.
 
 Interpret **pino-http** (or JSON `req`/`res`) lines for those paths:
 
@@ -34,7 +34,7 @@ Interpret **pino-http** (or JSON `req`/`res`) lines for those paths:
 | **500** plus **`Request error`** | Uncaught error in `handleOrderCreated` (see [`errorHandler`](../server/src/middleware/errorHandler.ts)) |
 | **200** on webhook               | Handler finished without throwing — **not** proof the plan was upgraded                                 |
 
-Also check **`POST`** **`/payments/create-checkout`** / **`/api/payments/create-checkout`** around the reported time: **201** means a checkout was created for the **authenticated** session user (not proof of completed payment).
+Also check **`POST /payments/create-checkout`** around the reported time: **201** means a checkout was created for the **authenticated** session user (not proof of completed payment).
 
 ## 3. Lemon Squeezy (source of truth for payment)
 

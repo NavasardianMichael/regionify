@@ -200,14 +200,15 @@ sudo tail -20 /var/log/nginx/error.log
 
 ### Required GitHub Secrets
 
-| Secret            | Description                                              |
-| ----------------- | -------------------------------------------------------- |
-| `SSH_HOST`        | Server IP or domain                                      |
-| `SSH_USER`        | SSH username                                             |
-| `SSH_KEY`         | Private SSH key                                          |
-| `SSH_PORT`        | SSH port (optional, default: 22)                         |
-| `APP_DIR`         | Deployment directory (e.g., `/home/user/apps/regionify`) |
-| `ENV_FILE_BASE64` | Base64-encoded server .env file                          |
+| Secret              | Description                                                                                                          |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `SSH_HOST`          | Server IP or domain                                                                                                  |
+| `SSH_USER`          | SSH username                                                                                                         |
+| `SSH_KEY`           | Private SSH key                                                                                                      |
+| `SSH_PORT`          | SSH port (optional, default: 22)                                                                                     |
+| `APP_DIR`           | Deployment directory (e.g., `/home/user/apps/regionify`)                                                             |
+| `ENV_FILE_BASE64`   | Base64-encoded server .env file                                                                                      |
+| `VITE_API_BASE_URL` | API origin (no path), e.g. `https://api.regionify.pro`. Client `endpoints.ts` modules append `/auth`, `/projects`, … |
 
 ### Optional GitHub Secrets
 
@@ -222,10 +223,11 @@ sudo tail -20 /var/log/nginx/error.log
 
 1. Install Docker with Compose plugin, and Nginx (for TLS + static SPA + reverse proxy to the API).
 2. Create layout: `mkdir -p $APP_DIR/client/releases $APP_DIR/server/releases` (the first server deploy fills `server/releases/<sha>` and `server/current`).
-3. Configure Nginx to serve the SPA from `$APP_DIR/client/current` and proxy API traffic to **`127.0.0.1:9002`** (see `deployment/nginx-spa-and-api.example.conf`; adjust if `PORT` or paths differ). Avoid combining `error_page 404 = /index.html` with `try_files … /index.html` in a way that internally loops on `/index.html`.
-4. **Public embed SSR:** `GET /embed/<token>` is rendered by Express with the project’s SEO title, description, keywords, `<h1>`, and JSON-LD. The example Nginx config proxies `^/embed/[^/]+$` to Node **before** the `location /` `try_files` block so embed URLs are not served as the generic SPA `index.html`.
-5. **Verify embed HTML (production):** `curl -sS 'https://your-domain/embed/<token>' | head -c 2500` — expect `<main>`, an `<h1>` matching the embed SEO title, and `application/ld+json` with the same `name` / `description` (and `keywords` when set). If the response matches your static home `index.html` title instead, the embed `location` is not proxying to Node.
-6. Set GitHub secrets (`APP_DIR`, `SSH_*`, `ENV_FILE_BASE64`, `VITE_API_BASE_URL`, …) and push to `master`.
+3. **DNS + TLS for two hosts.** Add A records for both the SPA host (`regionify.pro`) and the API subdomain (`api.regionify.pro`) pointing at the server, then issue certs: `sudo certbot --nginx -d regionify.pro -d api.regionify.pro`.
+4. Configure Nginx with **two server blocks** — one for the SPA host (serves static files from `$APP_DIR/client/current` and SSRs `/embed/<token>` via Node) and one for the API subdomain (`api.regionify.pro`) that proxies everything to **`127.0.0.1:9002`** preserving the URI. See `deployment/nginx-spa-and-api.example.conf`. Avoid combining `error_page 404 = /index.html` with `try_files … /index.html` in a way that internally loops on `/index.html`.
+5. **Public embed SSR:** `GET /embed/<token>` is rendered by Express on the SPA host with the project’s SEO title, description, keywords, `<h1>`, and JSON-LD. The example Nginx config proxies `^/embed/[^/]+$` to Node **before** the `location /` `try_files` block so embed URLs are not served as the generic SPA `index.html`.
+6. **Verify embed HTML (production):** `curl -sS 'https://your-domain/embed/<token>' | head -c 2500` — expect `<main>`, an `<h1>` matching the embed SEO title, and `application/ld+json` with the same `name` / `description` (and `keywords` when set). If the response matches your static home `index.html` title instead, the embed `location` is not proxying to Node.
+7. Set GitHub secrets (`APP_DIR`, `SSH_*`, `ENV_FILE_BASE64`, `VITE_API_BASE_URL=https://api.regionify.pro`, …) and push to `master`. Set `GOOGLE_CALLBACK_URL` and (optionally) `API_URL` inside `.env.production` to the same API subdomain (see `server/README.md`).
 
 ### Rollback
 

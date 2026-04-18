@@ -249,7 +249,9 @@ pnpm --filter @regionify/server dev
    - `NODE_ENV=production`
    - Strong `SESSION_SECRET`
    - Production database/Redis URLs
-   - Update `CORS_ORIGINS` and `CLIENT_URL`
+   - `CLIENT_URL=https://regionify.pro` and `CORS_ORIGINS=https://regionify.pro` (the browser sends the SPA host as `Origin` on cross-subdomain XHR to the API)
+   - `API_URL=https://api.regionify.pro` (used by the server's CSP `connect-src`; the auto-derived `api.<host>` from `CLIENT_URL` in `server/src/app.ts` covers it too, but explicit is safer)
+   - `GOOGLE_CALLBACK_URL=https://api.regionify.pro/auth/google/callback` — the API lives on a dedicated subdomain, not `/api` on the SPA host. The Authorized Redirect URI in Google Cloud Console must match this value exactly.
 
 3. Run migrations:
 

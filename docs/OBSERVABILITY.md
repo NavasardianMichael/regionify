@@ -29,10 +29,10 @@ Grafana variables live in the same `server/.env.production.local` file as the re
 
 ### Required — add to `server/.env.production.local`
 
-| Variable                     | Description                                                                |
-| ---------------------------- | -------------------------------------------------------------------------- |
-| `GF_SECURITY_ADMIN_PASSWORD` | Grafana admin account password                                             |
-| `GF_SERVER_ROOT_URL`         | Full public URL of Grafana, e.g. `https://logs.regionify.mnavasardian.com` |
+| Variable                     | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `GF_SECURITY_ADMIN_PASSWORD` | Grafana admin account password                                |
+| `GF_SERVER_ROOT_URL`         | Full public URL of Grafana, e.g. `https://logs.regionify.pro` |
 
 ### Optional — ports (shell export or root `.env`)
 
@@ -84,7 +84,7 @@ open http://localhost:8002   # admin / admin
 
 ```env
 GF_SECURITY_ADMIN_PASSWORD=<secure-password>
-GF_SERVER_ROOT_URL=https://logs.regionify.mnavasardian.com
+GF_SERVER_ROOT_URL=https://logs.regionify.pro
 
 # Optional — email alerts:
 GF_SMTP_ENABLED=true
@@ -111,14 +111,14 @@ docker exec regionify-promtail wget -qO- http://loki:3100/ready
 ### 4. DNS — add an A record at your DNS provider
 
 ```
-logs.regionify.mnavasardian.com  →  <server IP>
+logs.regionify.pro  →  <server IP>
 ```
 
 ### 5. Nginx — create `/etc/nginx/sites-available/grafana`
 
 ```nginx
 server {
-    server_name logs.regionify.mnavasardian.com;
+    server_name logs.regionify.pro;
 
     location / {
         proxy_pass         http://127.0.0.1:8002;
@@ -138,12 +138,12 @@ Enable and issue SSL cert (certbot auto-adds HTTPS redirect):
 ```bash
 sudo ln -s /etc/nginx/sites-available/grafana /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d logs.regionify.mnavasardian.com
+sudo certbot --nginx -d logs.regionify.pro
 ```
 
 ### 6. Configure email alert contact point (Grafana UI, first time only)
 
-1. Log in at `https://logs.regionify.mnavasardian.com`
+1. Log in at `https://logs.regionify.pro`
 2. **Alerting → Contact points** → Edit `grafana-default-email` → add your email address
 3. **Alerting → Alert rules** → New rule:
    - Query: `sum(count_over_time({level="fatal"}[5m])) > 0`

@@ -145,10 +145,9 @@ export function createApp(): express.Application {
   configurePassport();
   app.use(passport.initialize());
 
-  // API routes: at / (api.* subdomain, path /auth/...) and /api (same host as SPA or proxies
-  // that forward with an /api prefix — both shapes are common in nginx setups).
+  // API routes mounted at root: nginx proxies api.<host> → 127.0.0.1:PORT preserving URI,
+  // so requests reach Express as /auth/..., /projects/..., /payments/webhook, etc.
   app.use(apiRoutes);
-  app.use('/api', apiRoutes);
 
   setupWebClient(app);
 

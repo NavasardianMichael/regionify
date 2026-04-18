@@ -29,7 +29,6 @@ const EMBED_NOT_FOUND_META_DESCRIPTION =
   'This public map embed is not available. The link may be invalid or the embed was disabled.';
 
 const API_PATH_PREFIXES = [
-  '/api',
   '/health',
   '/auth',
   '/contact',

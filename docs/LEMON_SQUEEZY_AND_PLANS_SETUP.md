@@ -40,7 +40,7 @@ Existing users get `badge = observer` (free) by default.
 2. **Webhook**
    - Go to **Settings** → **Webhooks**.
    - **Add webhook**:
-     - **Callback URL**: `https://your-api-domain.com/api/payments/webhook` (use your real server URL; for local dev you can use a tunnel like ngrok).
+     - **Callback URL**: `https://api.regionify.pro/payments/webhook` (production); for local dev use a tunnel like ngrok pointed at `localhost:9002`.
      - **Signing secret**: Generate a random string (6–40 chars) and store it securely.
      - **Events**: Subscribe to **Order created** (`order_created`).
    - Save. You will use the **signing secret** in server env.
@@ -76,7 +76,7 @@ Lemon Squeezy redirects the user back to your app after payment. The server uses
 
 - **Redirect URL**: `{CLIENT_URL}/payments/return`
 
-Ensure `CLIENT_URL` in your server env is the real origin of the client (e.g. `https://yourapp.com` or `http://localhost:7002` in dev — same port as Vite in `client/vite.config.ts`). No trailing slash.
+Ensure `CLIENT_URL` in your server env is the real origin of the client (`https://regionify.pro` in production, `http://localhost:7002` in dev — same port as Vite in `client/vite.config.ts`). No trailing slash.
 
 ---
 
@@ -84,17 +84,17 @@ Ensure `CLIENT_URL` in your server env is the real origin of the client (e.g. `h
 
 1. **Create checkout (server)**  
    User clicks “Buy Explorer” or “Buy Chronographer” on Billing.  
-   Client calls `POST /api/payments/create-checkout` with `{ plan: 'explorer' | 'chronographer' }` (with cookies).  
+   Client calls `POST {API_URL}/payments/create-checkout` with `{ plan: 'explorer' | 'chronographer' }` (with cookies). `API_URL` is the API subdomain configured via `VITE_API_BASE_URL` (`https://api.regionify.pro` in production).  
    Server creates a Lemon Squeezy checkout (custom price from `BADGE_DETAILS`, `user_id` in custom data), returns `{ checkoutUrl }`.
 
 2. **Redirect to Lemon Squeezy**  
    Client does `window.location.href = checkoutUrl`. User pays on Lemon Squeezy (card, PayPal, etc.).
 
 3. **Webhook: order_created**  
-   Lemon Squeezy sends `POST /api/payments/webhook` with signature. Server verifies `X-Signature`, then for `order_created` reads `meta.custom_data.user_id` and `first_order_item.variant_id`, maps variant to plan, and updates `User.plan` in the DB.
+   Lemon Squeezy sends `POST {API_URL}/payments/webhook` with signature. Server verifies `X-Signature`, then for `order_created` reads `meta.custom_data.user_id` and `first_order_item.variant_id`, maps variant to plan, and updates `User.plan` in the DB.
 
 4. **Return to your app**  
-   Lemon Squeezy redirects to `{CLIENT_URL}/payments/return`. The return page polls `GET /api/auth/me` until the user’s plan has been updated (by the webhook), then shows success.
+   Lemon Squeezy redirects to `{CLIENT_URL}/payments/return`. The return page polls `GET {API_URL}/auth/me` until the user’s plan has been updated (by the webhook), then shows success.
 
 5. **Cancel**  
    If the user closes the checkout without paying, they can navigate back to Billing manually. There is no cancel URL required for Lemon Squeezy in this flow.
