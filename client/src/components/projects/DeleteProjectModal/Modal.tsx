@@ -2,7 +2,6 @@ import { type FC } from 'react';
 import { Modal as AntModal } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import modalBodyScrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 import { Body } from './Body';
 
 type Props = {
@@ -22,7 +21,7 @@ export const DeleteProjectModal: FC<Props> = ({
 
   return (
     <AntModal
-      className={modalBodyScrollbarStyles.bodyScrollbar}
+      className="scrollbar-modal-host"
       title={t('messages.deleteProjectTitle')}
       destroyOnHidden
       open={project !== null}

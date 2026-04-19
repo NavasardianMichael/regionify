@@ -3,7 +3,6 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, InputNumber, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { ParsedRow } from '@/helpers/importDataParsers';
-import scrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 
 type TableRow = ParsedRow & { key: string };
 
@@ -159,7 +158,7 @@ export const TableView: FC<Props> = ({
 
   return (
     <Flex vertical gap="small" className="min-h-0 flex-1">
-      <div className={`${scrollbarStyles.thinScroll} min-h-0 flex-1 overflow-auto`}>
+      <div className="scrollbar-thin min-h-0 flex-1 overflow-auto">
         <Table<TableRow>
           size="small"
           rowKey="key"

@@ -1,3 +1,14 @@
+/** Items for {@link combineClassNames}: `undefined` and `null` are dropped; only non-empty trimmed strings are kept. */
+export type ClassNameArg = string | undefined | null;
+
+/** Non-empty trimmed strings only; returns `undefined` if nothing remains. */
+export function combineClassNames(parts: ClassNameArg[]): string | undefined {
+  const joined = parts
+    .filter((p): p is string => typeof p === 'string' && p.trim().length > 0)
+    .join(' ');
+  return joined || undefined;
+}
+
 /**
  * Generates a random alphanumeric ID of specified length
  * @param length - The length of the ID to generate (default: 8)
@@ -11,12 +22,3 @@ export const generateRandomId = (length = 8): string => {
   }
   return result;
 };
-
-/** Shorten a long URL for inline display; use `title={url}` for the full string. */
-export function truncateUrlForDisplay(url: string, maxChars = 56): string {
-  if (url.length <= maxChars) return url;
-  const inner = maxChars - 3;
-  const head = Math.ceil(inner / 2);
-  const tail = Math.floor(inner / 2);
-  return `${url.slice(0, head)}…${url.slice(-tail)}`;
-}

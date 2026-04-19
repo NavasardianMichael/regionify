@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { ArrowsAltOutlined, ShrinkOutlined } from '@ant-design/icons';
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 
 type Props = {
@@ -16,6 +16,7 @@ export const FullscreenToggleButton: FC<Props> = ({
   onToggle,
 }) => {
   const label = isFullscreen ? exitLabel : enterLabel;
+  const Icon = isFullscreen ? FullscreenExitOutlined : FullscreenOutlined;
 
   return (
     <Tooltip title={label}>
@@ -24,13 +25,7 @@ export const FullscreenToggleButton: FC<Props> = ({
         aria-label={label}
         className="translate-x-[-22px] translate-y-[-4px]"
         onClick={onToggle}
-        icon={
-          isFullscreen ? (
-            <ShrinkOutlined className="text-gray-500!" />
-          ) : (
-            <ArrowsAltOutlined className="text-gray-500!" />
-          )
-        }
+        icon={<Icon className="text-gray-500!" />}
       />
     </Tooltip>
   );

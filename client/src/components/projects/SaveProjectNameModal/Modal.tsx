@@ -1,6 +1,5 @@
 import { type FC, type ReactNode } from 'react';
 import { Modal as AntModal } from 'antd';
-import modalBodyScrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 import { Body } from './Body';
 
 type Props = {
@@ -29,7 +28,7 @@ export const SaveProjectNameModal: FC<Props> = ({
   onCancel,
 }) => (
   <AntModal
-    className={modalBodyScrollbarStyles.bodyScrollbar}
+    className="scrollbar-modal-host"
     title={<span data-i18n-key="visualizer.saveModalTitle">{title}</span>}
     destroyOnHidden
     open={open}

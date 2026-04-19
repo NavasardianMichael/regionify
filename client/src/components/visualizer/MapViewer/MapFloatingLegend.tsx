@@ -66,7 +66,7 @@ export const MapFloatingLegend: FC<MapFloatingLegendProps> = ({
       }}
     >
       {isFloatingLegendHeightFixed ? (
-        <div className="scrollbar-legend min-h-0 flex-1 overflow-y-auto pr-0.5">
+        <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto pr-0.5">
           <MapLegendContent
             title={title}
             labels={labels}

@@ -1,5 +1,14 @@
 import { type FC } from 'react';
 import { Flex, Input, Typography } from 'antd';
+import type { TextAreaStylesType } from 'antd/es/input/TextArea';
+
+const TEXTAREA_FILL_STYLE: TextAreaStylesType = {
+  textarea: { resize: 'none', height: '100%', overflowY: 'auto' },
+};
+
+const TEXTAREA_CLASSNAMES = {
+  textarea: 'scrollbar-thin',
+};
 
 type BodyProps = {
   text: string;
@@ -16,8 +25,8 @@ export const Body: FC<BodyProps> = ({ text, placeholder, error, onTextChange }) 
         onChange={(e) => onTextChange(e.target.value)}
         placeholder={placeholder}
         className="h-full! font-mono text-sm"
-        classNames={{ textarea: 'scrollbar-thin' }}
-        styles={{ textarea: { resize: 'none', height: '100%', overflowY: 'auto' } }}
+        classNames={TEXTAREA_CLASSNAMES}
+        styles={TEXTAREA_FILL_STYLE}
       />
     </div>
     {error ? (

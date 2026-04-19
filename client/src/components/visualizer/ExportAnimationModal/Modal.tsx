@@ -36,7 +36,6 @@ import {
   type LegendPositionExport,
 } from '@/helpers/animationExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
-import modalBodyScrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 import { Form } from './Form';
 import { Title } from './Title';
 
@@ -188,7 +187,7 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
 
   return (
     <AntModal
-      className={modalBodyScrollbarStyles.bodyScrollbar}
+      className="scrollbar-modal-host"
       title={<Title />}
       open={open}
       onCancel={onClose}
