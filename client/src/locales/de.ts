@@ -656,6 +656,8 @@ const de: CommonNs = {
     rename: 'Umbenennen',
     error: 'Etwas ist schiefgelaufen',
     language: 'Sprache',
+    modalFullscreenEnter: 'Vollbild aktivieren',
+    modalFullscreenExit: 'Vollbild verlassen',
   },
   messages: {
     projectSaved: 'Projekt gespeichert',

@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const TabHeader: FC<Props> = ({ note, switchViewButton }) => (
-  <Flex justify="space-between" align="center" gap="small">
+  <Flex justify="space-between" align="center" gap="small" className="shrink-0">
     <Typography.Text type="secondary" className="text-xs">
       {note}
     </Typography.Text>

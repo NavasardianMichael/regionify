@@ -73,6 +73,7 @@ export const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport, initialU
 
   return (
     <AntModal
+      className="scrollbar-modal-host"
       title={<Title />}
       open={open}
       onCancel={handleCancel}

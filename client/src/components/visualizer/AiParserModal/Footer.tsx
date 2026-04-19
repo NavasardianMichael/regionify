@@ -33,7 +33,7 @@ export const Footer: FC<FooterProps> = ({
   <Flex justify={hideSubmit ? 'flex-end' : 'space-between'} align="center" gap="small">
     {!hideSubmit && (
       <Button
-        color="cyan"
+        color="purple"
         variant="solid"
         icon={submitIcon}
         onClick={() => void onSubmit()}

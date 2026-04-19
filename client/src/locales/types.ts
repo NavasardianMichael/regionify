@@ -567,6 +567,8 @@ export type CommonNs = {
     rename: string;
     error: string;
     language: string;
+    modalFullscreenEnter: string;
+    modalFullscreenExit: string;
   };
   errors: {
     mapRenderFailed: string;

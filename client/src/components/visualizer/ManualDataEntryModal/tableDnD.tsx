@@ -10,6 +10,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { combineClassNames } from '@/helpers/common';
 
 export const ROW_DND_PREFIX = 'row:';
 
@@ -52,19 +53,17 @@ export const SortableBodyRow = forwardRef<HTMLTableRowElement, SortableRowProps>
       ...(isDragging ? { position: 'relative', zIndex: 9 } : {}),
     };
 
-    const mergedClassName = [
+    const mergedClassName = combineClassNames([
       className,
-      rowKey != null ? 'cursor-grab active:cursor-grabbing [&_button]:cursor-pointer' : '',
-    ]
-      .filter(Boolean)
-      .join(' ');
+      rowKey != null ? 'cursor-grab active:cursor-grabbing [&_button]:cursor-pointer' : undefined,
+    ]);
 
     return (
       <tr
         {...rest}
         ref={setRefs}
         style={style}
-        className={mergedClassName || undefined}
+        className={mergedClassName}
         {...attributes}
         {...listeners}
       >

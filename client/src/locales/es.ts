@@ -651,6 +651,8 @@ const es: CommonNs = {
     rename: 'Renombrar',
     error: 'Algo salió mal',
     language: 'Idioma',
+    modalFullscreenEnter: 'Pantalla completa',
+    modalFullscreenExit: 'Salir de pantalla completa',
   },
   messages: {
     projectSaved: 'Proyecto guardado',

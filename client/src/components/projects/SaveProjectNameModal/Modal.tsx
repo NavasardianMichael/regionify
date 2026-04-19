@@ -28,7 +28,9 @@ export const SaveProjectNameModal: FC<Props> = ({
   onCancel,
 }) => (
   <AntModal
+    className="scrollbar-modal-host"
     title={<span data-i18n-key="visualizer.saveModalTitle">{title}</span>}
+    destroyOnHidden
     open={open}
     onOk={onOk}
     onCancel={onCancel}

@@ -187,6 +187,7 @@ export const ExportAnimationModal: FC<Props> = ({ open, onClose }) => {
 
   return (
     <AntModal
+      className="scrollbar-modal-host"
       title={<Title />}
       open={open}
       onCancel={onClose}

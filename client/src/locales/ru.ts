@@ -644,6 +644,8 @@ const ru: CommonNs = {
     rename: 'Переименовать',
     error: 'Что-то пошло не так',
     language: 'Язык',
+    modalFullscreenEnter: 'Развернуть на весь экран',
+    modalFullscreenExit: 'Выйти из полноэкранного режима',
   },
   messages: {
     projectSaved: 'Проект сохранён',

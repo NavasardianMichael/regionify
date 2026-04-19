@@ -21,7 +21,9 @@ export const DeleteProjectModal: FC<Props> = ({
 
   return (
     <AntModal
+      className="scrollbar-modal-host"
       title={t('messages.deleteProjectTitle')}
+      destroyOnHidden
       open={project !== null}
       onOk={onConfirm}
       onCancel={onCancel}

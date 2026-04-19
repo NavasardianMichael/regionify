@@ -1,6 +1,6 @@
 import { type FC, useCallback, useMemo, useRef, useState } from 'react';
 import { ExperimentOutlined, TableOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Button, Modal as AntModal, Tabs } from 'antd';
+import { Button, Tabs } from 'antd';
 import { streamAiGenerate, streamAiParse } from '@/api/ai';
 import {
   selectData,
@@ -14,9 +14,9 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { commitParsedImport } from '@/helpers/commitParsedImport';
 import { datasetToTabDelimited, rowsToTabDelimited } from '@/helpers/datasetToTabDelimited';
 import { parseCSV, type ParsedRow } from '@/helpers/importDataParsers';
+import { AppExpandableModal } from '@/components/shared/AppExpandableModal';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
-import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 import { AiTab } from './AiTab';
 import { Footer } from './Footer';
 import { TabHeader } from './TabHeader';
@@ -490,21 +490,20 @@ export const AiParserModal: FC<Props> = ({
   );
 
   return (
-    <AntModal
+    <AppExpandableModal
+      destroyOnHidden
+      fullscreenToggle
+      fillBody
       title={t('visualizer.aiParserModal.title')}
       open={open}
       onCancel={handleClose}
       closable={{ disabled: isAnyStreaming }}
       keyboard={!isAnyStreaming}
-      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[1000px]! lg:w-2/3!`}
+      className="w-4/5! max-w-[1000px]! lg:w-2/3!"
       classNames={{
-        container: 'max-h-[90vh]',
-        body: 'min-h-0 h-[calc(90vh-140px)] flex flex-col gap-3',
+        body: 'gap-3',
       }}
-      maskClosable={false}
       footer={null}
-      centered
-      destroyOnHidden
       focusable={{ trap: false }}
       data-i18n-key="visualizer.aiParserModal.title"
     >
@@ -514,8 +513,8 @@ export const AiParserModal: FC<Props> = ({
         activeKey={activeMode}
         onChange={handleTabChange}
         items={tabItems}
-        className={tabsStyles.tabs}
+        className={`${tabsStyles.tabs} min-h-0 min-w-0 flex-1`}
       />
-    </AntModal>
+    </AppExpandableModal>
   );
 };

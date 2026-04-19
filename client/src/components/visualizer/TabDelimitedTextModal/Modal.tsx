@@ -1,5 +1,4 @@
 import { type FC, useCallback, useEffect, useState } from 'react';
-import { Modal as AntModal } from 'antd';
 import {
   selectData,
   selectSetVisualizerState,
@@ -12,9 +11,9 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { commitParsedImport } from '@/helpers/commitParsedImport';
 import { parseCSV } from '@/helpers/importDataParsers';
 import { serializeToTabDelimited } from '@/helpers/manualDataEntryHelpers';
+import { AppExpandableModal } from '@/components/shared/AppExpandableModal';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
-import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 import { Body } from './Body';
 import { Footer } from './Footer';
 
@@ -116,13 +115,15 @@ export const TabDelimitedTextModal: FC<Props> = ({
   }, [text, mapRegionIds, historicalDataImport, messageApi, setVisualizerState, onClose, t]);
 
   return (
-    <AntModal
+    <AppExpandableModal
+      destroyOnHidden
+      fullscreenToggle
+      fillBody
       title={t('visualizer.tabDelimitedModal.title')}
       open={open}
       onCancel={onClose}
       closable
-      className={bodyScrollbarStyles.bodyScrollbar}
-      maskClosable={false}
+      className="w-4/5! max-w-[1000px]! lg:w-2/3!"
       footer={
         <Footer
           cancelLabel={t('nav.cancel')}
@@ -132,8 +133,6 @@ export const TabDelimitedTextModal: FC<Props> = ({
           onSave={handleSave}
         />
       }
-      centered
-      destroyOnHidden
       focusable={{ trap: false }}
       data-i18n-key="visualizer.tabDelimitedModal.title"
     >
@@ -144,6 +143,6 @@ export const TabDelimitedTextModal: FC<Props> = ({
         onTextChange={handleTextChange}
         data-i18n-key="visualizer.tabDelimitedModal.placeholder"
       />
-    </AntModal>
+    </AppExpandableModal>
   );
 };

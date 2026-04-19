@@ -47,7 +47,9 @@ export const RenameProjectModal: FC<Props> = ({
 
   return (
     <AntModal
+      className="scrollbar-modal-host"
       title={t('visualizer.renameProjectTitle')}
+      destroyOnHidden
       open={isOpen}
       afterOpenChange={handleAfterOpenChange}
       onOk={handleSubmit}

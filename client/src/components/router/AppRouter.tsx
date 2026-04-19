@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 import { Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
@@ -33,23 +33,24 @@ function AppLayout() {
   const isFullBleed = isFullBleedPathname(location.pathname);
   const MainOrRegion = isEmbedRoute ? 'div' : 'main';
 
-  let mainClassName: string;
-  if (isEmbedRoute) {
-    mainClassName = 'min-h-0 min-w-0 w-full grow overflow-hidden bg-gray-100';
-  } else if (isFullBleed) {
-    mainClassName = 'grow overflow-y-auto';
-  } else {
-    mainClassName = `grow overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`;
-  }
-
-  let innerDivClassName: string;
-  if (isEmbedRoute) {
-    innerDivClassName = 'flex h-full min-h-0 w-full min-w-0 flex-col';
-  } else if (isFullBleed) {
-    innerDivClassName = 'flex min-h-full flex-col';
-  } else {
-    innerDivClassName = 'flex h-full flex-col items-stretch';
-  }
+  const { mainClassName, innerDivClassName } = useMemo(() => {
+    if (isEmbedRoute) {
+      return {
+        mainClassName: 'min-h-0 min-w-0 w-full grow overflow-hidden bg-gray-100',
+        innerDivClassName: 'flex h-full min-h-0 w-full min-w-0 flex-col',
+      };
+    }
+    if (isFullBleed) {
+      return {
+        mainClassName: 'grow overflow-y-auto',
+        innerDivClassName: 'flex min-h-full flex-col',
+      };
+    }
+    return {
+      mainClassName: `grow overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`,
+      innerDivClassName: 'flex h-full flex-col items-stretch',
+    };
+  }, [isEmbedRoute, isFullBleed]);
 
   return (
     <>

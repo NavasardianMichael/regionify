@@ -1,9 +1,9 @@
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
-import { Modal as AntModal } from 'antd';
 import type { LegendItem } from '@/store/legendData/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { generateRandomId } from '@/helpers/common';
+import { AppExpandableModal } from '@/components/shared/AppExpandableModal';
 import { Body } from './Body';
 import { Footer } from './Footer';
 
@@ -186,7 +186,10 @@ export const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) =>
   const canDelete = useMemo(() => localItems.length > 1, [localItems.length]);
 
   return (
-    <AntModal
+    <AppExpandableModal
+      destroyOnHidden
+      fullscreenToggle
+      fillBody
       title={t('visualizer.legendModal.title')}
       open={open}
       onCancel={onCancel}
@@ -200,9 +203,7 @@ export const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) =>
           onSave={handleSaveLegendRanges}
         />
       }
-      centered
       className="w-4/5! lg:w-2/3!"
-      destroyOnHidden
       data-i18n-key="visualizer.legendModal.title"
     >
       <Body
@@ -222,6 +223,6 @@ export const EditLegendModal: FC<Props> = ({ open, items, onSave, onCancel }) =>
         onColorChange={handleLegendColorChange}
         onRemove={handleRemoveLegendRange}
       />
-    </AntModal>
+    </AppExpandableModal>
   );
 };
