@@ -2,6 +2,7 @@ import { type FC } from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Flex, Modal, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import modalBodyScrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 
 type Props = {
   open: boolean;
@@ -24,6 +25,8 @@ export const UnsavedChangesModal: FC<Props> = ({
 
   return (
     <Modal
+      className={modalBodyScrollbarStyles.bodyScrollbar}
+      destroyOnHidden
       open={open}
       title={
         <Flex align="center" gap="small">

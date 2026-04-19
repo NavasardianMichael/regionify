@@ -2,6 +2,7 @@ import { type ChangeEvent, type FC, useCallback, useEffect, useState } from 'rea
 import { Modal as AntModal } from 'antd';
 import { fetchGoogleSheet } from '@/api/sheets';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import modalBodyScrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 import { Body } from './Body';
 import { Title } from './Title';
 import type { GoogleSheetImportMode } from './types';
@@ -73,6 +74,7 @@ export const GoogleSheetsModal: FC<Props> = ({ open, onClose, onImport, initialU
 
   return (
     <AntModal
+      className={modalBodyScrollbarStyles.bodyScrollbar}
       title={<Title />}
       open={open}
       onCancel={handleCancel}

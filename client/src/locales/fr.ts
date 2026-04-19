@@ -656,6 +656,8 @@ const fr: CommonNs = {
     rename: 'Renommer',
     error: "Une erreur s'est produite",
     language: 'Langue',
+    modalFullscreenEnter: 'Passer en plein écran',
+    modalFullscreenExit: 'Quitter le plein écran',
   },
   messages: {
     projectSaved: 'Projet enregistré',

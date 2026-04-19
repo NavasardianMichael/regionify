@@ -1,14 +1,14 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { BADGE_DETAILS } from '@regionify/shared';
-import { Form, Modal } from 'antd';
+import { Form } from 'antd';
 import { getProject, updateProjectEmbed } from '@/api/projects';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { selectUpdateProjectInList } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { AppExpandableModal } from '@/components/shared/AppExpandableModal';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
-import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
 import { EMBED_BADGE_ERROR_EN, SEO_TITLE_MAX } from './constants';
 import { EmbedForm } from './EmbedForm';
 import { Footer } from './Footer';
@@ -184,19 +184,19 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
   }
 
   return (
-    <Modal
+    <AppExpandableModal
+      destroyOnHidden
+      fullscreenToggle
       title={<Title />}
       open={open}
       onCancel={onModalCancel}
-      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[1000px]! lg:w-2/3!`}
+      className="w-4/5! max-w-[1000px]! lg:w-2/3!"
       classNames={{
         container: 'max-h-[90vh]',
         body: 'min-h-0 max-h-[calc(90vh-180px)] overflow-y-auto',
       }}
-      maskClosable={false}
       keyboard={!submitting}
       closable={{ disabled: submitting }}
-      centered
       footer={
         <Footer
           submitting={submitting}
@@ -205,7 +205,6 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
           onSubmit={onFooterSubmit}
         />
       }
-      destroyOnHidden
     >
       <EmbedForm
         form={form}
@@ -224,7 +223,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         copyText={copyText}
         copyLabelEmbed={copyLabelEmbed}
       />
-    </Modal>
+    </AppExpandableModal>
   );
 };
 

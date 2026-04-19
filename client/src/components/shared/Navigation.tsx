@@ -308,7 +308,7 @@ export const Navigation: FC = () => {
         size={280}
         open={mobileMenuOpen}
         onClose={closeMobileMenu}
-        destroyOnClose={false}
+        destroyOnHidden={false}
         styles={{ body: { paddingTop: 8 } }}
       >
         {drawerContent}

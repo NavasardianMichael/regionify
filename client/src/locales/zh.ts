@@ -613,6 +613,8 @@ const zh: CommonNs = {
     rename: '重命名',
     error: '出错了',
     language: '语言',
+    modalFullscreenEnter: '全屏显示',
+    modalFullscreenExit: '退出全屏',
   },
   messages: {
     projectSaved: '项目已保存',

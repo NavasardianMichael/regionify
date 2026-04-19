@@ -21,6 +21,9 @@ dist-ssr
 # Claude Code
 .claude/settings.local.json
 
+# Playwright MCP (Cursor) — generated snapshots / artifacts
+.playwright-mcp/
+
 # Editor directories and files
 .idea
 .DS_Store

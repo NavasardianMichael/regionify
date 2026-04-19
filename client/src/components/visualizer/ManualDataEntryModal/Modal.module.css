@@ -1,3 +1,5 @@
+/* Table uses scroll.x only; vertical scroll is the flex-grown wrapper in Body (pure CSS flex). */
+
 /* No gray fill on disabled editors inside this modal's table */
 .modal :global(.ant-table .ant-input-outlined.ant-input-disabled),
 .modal :global(.ant-table .ant-input-outlined[disabled]),

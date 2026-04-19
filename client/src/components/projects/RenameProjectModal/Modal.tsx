@@ -2,6 +2,7 @@ import { type FC, useCallback, useState } from 'react';
 import { Modal as AntModal } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import modalBodyScrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 import { Body } from './Body';
 
 type Props = {
@@ -47,7 +48,9 @@ export const RenameProjectModal: FC<Props> = ({
 
   return (
     <AntModal
+      className={modalBodyScrollbarStyles.bodyScrollbar}
       title={t('visualizer.renameProjectTitle')}
+      destroyOnHidden
       open={isOpen}
       afterOpenChange={handleAfterOpenChange}
       onOk={handleSubmit}

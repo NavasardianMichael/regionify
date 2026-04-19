@@ -648,6 +648,8 @@ const pt: CommonNs = {
     rename: 'Renomear',
     error: 'Algo correu mal',
     language: 'Idioma',
+    modalFullscreenEnter: 'Ecrã inteiro',
+    modalFullscreenExit: 'Sair do ecrã inteiro',
   },
   messages: {
     projectSaved: 'Projeto guardado',

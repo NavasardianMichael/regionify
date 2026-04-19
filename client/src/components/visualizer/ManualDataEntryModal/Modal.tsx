@@ -1,10 +1,10 @@
 import { type FC, useCallback, useMemo } from 'react';
 import type { TablePaginationConfig, TableProps } from 'antd';
-import { ConfigProvider, Modal as AntModal, Table } from 'antd';
+import { ConfigProvider, Table } from 'antd';
 import type { FilterValue, SorterResult, TableCurrentDataSource } from 'antd/es/table/interface';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import type { DataRow } from '@/helpers/manualDataEntryHelpers';
-import bodyScrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
+import { AppExpandableModal } from '@/components/shared/AppExpandableModal';
 import { Body } from './Body';
 import { Footer } from './Footer';
 import { SelectColumnHeader } from './SelectColumnHeader';
@@ -153,7 +153,7 @@ export const ManualDataEntryModal: FC<Props> = ({
         dataSource={tableData}
         rowSelection={rowSelection}
         pagination={false}
-        scroll={{ x: 'max-content', y: '65vh' }}
+        scroll={{ x: 'max-content' }}
         sortDirections={['ascend', 'descend']}
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={onTableChange}
@@ -181,12 +181,14 @@ export const ManualDataEntryModal: FC<Props> = ({
   }, [handleApplyData]);
 
   return (
-    <AntModal
+    <AppExpandableModal
+      destroyOnHidden
+      fullscreenToggle
+      fillBody
       title={t('visualizer.manualEntry.title')}
       open={open}
       onCancel={handleCancel}
       closable
-      maskClosable={false}
       footer={
         <Footer
           showSave={!isGoogleSheetsReadOnly}
@@ -196,9 +198,7 @@ export const ManualDataEntryModal: FC<Props> = ({
           onSave={handleFooterSave}
         />
       }
-      centered
-      className={`${bodyScrollbarStyles.bodyScrollbar} ${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
-      destroyOnHidden
+      className={`${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
       focusable={{ trap: false }}
       data-i18n-key="visualizer.manualEntry.title"
     >
@@ -212,6 +212,6 @@ export const ManualDataEntryModal: FC<Props> = ({
           onAddMissingRow={handleAddMissingRow}
         />
       </ConfigProvider>
-    </AntModal>
+    </AppExpandableModal>
   );
 };

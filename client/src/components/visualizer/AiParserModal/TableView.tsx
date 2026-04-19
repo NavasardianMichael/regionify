@@ -3,7 +3,7 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Input, InputNumber, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { ParsedRow } from '@/helpers/importDataParsers';
-import scrollbarStyles from '@/components/visualizer/modalBodyScrollbar.module.css';
+import scrollbarStyles from '@/components/shared/modalBodyScrollbar.module.css';
 
 type TableRow = ParsedRow & { key: string };
 

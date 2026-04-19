@@ -1,0 +1,94 @@
+/*
+ * Thin scrollbars for Ant Design Modal content (body, nested overflow regions, tables, textareas).
+ * `AppExpandableModal` applies `bodyScrollbar` by default; use the same class on other `Modal` roots.
+ */
+.bodyScrollbar :global(.ant-modal-body),
+.bodyScrollbar :global(.ant-table-body),
+.bodyScrollbar :global(.ant-table-content),
+.bodyScrollbar :global(.ant-modal-body textarea),
+.bodyScrollbar :global(.ant-modal-body pre) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar,
+.bodyScrollbar :global(.ant-modal-body pre)::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar-track,
+.bodyScrollbar :global(.ant-modal-body pre)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar-thumb,
+.bodyScrollbar :global(.ant-modal-body pre)::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 2px;
+}
+
+.bodyScrollbar :global(.ant-modal-body)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-table-body)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-table-content)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-modal-body textarea)::-webkit-scrollbar-thumb:hover,
+.bodyScrollbar :global(.ant-modal-body pre)::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-400);
+}
+
+/* Nested scroll hosts (e.g. flex + overflow-auto wrappers inside the body). */
+.bodyScrollbar :global(.ant-modal-body *) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.bodyScrollbar :global(.ant-modal-body *)::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.bodyScrollbar :global(.ant-modal-body *)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bodyScrollbar :global(.ant-modal-body *)::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 2px;
+}
+
+.bodyScrollbar :global(.ant-modal-body *)::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-400);
+}
+
+/* Standalone thin scrollbar for arbitrary scroll containers (e.g. table wrappers). */
+.thinScroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.thinScroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.thinScroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thinScroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 2px;
+}
+
+.thinScroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-400);
+}

@@ -45,8 +45,8 @@ export const Body: FC<BodyProps> = ({
   const gridCols = EDIT_LEGEND_GRID_COLS;
 
   return (
-    <Flex vertical gap="small" className="py-md">
-      <Flex gap={4} justify="end">
+    <Flex vertical gap="small" className="py-md min-h-0 min-w-0 flex-1">
+      <Flex gap={4} justify="end" className="shrink-0">
         <Tooltip title={sortTooltipTitle}>
           <Button
             type="text"
@@ -70,7 +70,7 @@ export const Body: FC<BodyProps> = ({
         </Tooltip>
       </Flex>
 
-      <div className={`grid ${gridCols} gap-2 text-xs font-medium text-gray-500`}>
+      <div className={`grid shrink-0 ${gridCols} gap-2 text-xs font-medium text-gray-500`}>
         <span />
         <Typography.Text
           className="text-xs text-gray-500"
@@ -99,7 +99,7 @@ export const Body: FC<BodyProps> = ({
         <span />
       </div>
 
-      <Flex vertical className="max-h-4/5 overflow-y-auto">
+      <Flex vertical className="min-h-0 min-w-0 flex-1 overflow-y-auto">
         {localItems.map((item, index) => (
           <LegendItemRow
             key={item.id}
@@ -124,7 +124,12 @@ export const Body: FC<BodyProps> = ({
         title={t('visualizer.legendModal.addRange')}
         data-i18n-key="visualizer.legendModal.addRange"
       >
-        <Button type="dashed" icon={<PlusOutlined />} onClick={onAddRange} className="w-full" />
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          onClick={onAddRange}
+          className="w-full shrink-0"
+        />
       </Tooltip>
     </Flex>
   );

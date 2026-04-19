@@ -637,6 +637,8 @@ const en: CommonNs = {
     rename: 'Rename',
     error: 'Something went wrong',
     language: 'Language',
+    modalFullscreenEnter: 'Expand to fullscreen',
+    modalFullscreenExit: 'Exit fullscreen',
   },
   errors: {
     mapRenderFailed: 'We are sorry, map failed to render.',
