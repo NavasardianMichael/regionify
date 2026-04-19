@@ -134,8 +134,13 @@ export const AiParserModal: FC<Props> = ({
       title={t('visualizer.aiParserModal.title')}
       open={open}
       onCancel={handleClose}
-      closable
-      className={bodyScrollbarStyles.bodyScrollbar}
+      closable={{ disabled: isStreaming }}
+      keyboard={!isStreaming}
+      className={`${bodyScrollbarStyles.bodyScrollbar} w-4/5! max-w-[1000px]! lg:w-2/3!`}
+      classNames={{
+        container: 'max-h-[90vh]',
+        body: 'min-h-0 h-[calc(90vh-180px)] flex flex-col',
+      }}
       maskClosable={false}
       footer={
         <Footer
@@ -166,6 +171,7 @@ export const AiParserModal: FC<Props> = ({
         onInputChange={setInputText}
         showOutput={showOutput}
         outputText={outputText}
+        onOutputChange={setOutputText}
         isStreaming={isStreaming}
       />
     </AntModal>

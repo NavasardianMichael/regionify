@@ -2,7 +2,7 @@ import { ErrorCode, HttpStatus } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 import { z } from 'zod';
 
-import { env } from '@/config/env.js';
+import { env, isDev } from '@/config/env.js';
 import { AppError } from '@/middleware/errorHandler.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { requireChronographer } from '@/middleware/requireChronographer.js';
@@ -28,7 +28,7 @@ router.post(
   requireChronographer,
   validate(aiParseSchema),
   async (req, res, next) => {
-    if (!env.ANTHROPIC_API_KEY) {
+    if (!env.GEMINI_API_KEY) {
       next(
         new AppError(
           HttpStatus.SERVICE_UNAVAILABLE,
@@ -50,7 +50,7 @@ router.post(
 
     const generator = streamAiParse(text, mapRegionIds, userId);
 
-    // Abort the Anthropic stream if the client disconnects
+    // Abort the Gemini stream if the client disconnects
     req.on('close', () => {
       void generator.return(undefined);
     });
@@ -77,8 +77,16 @@ router.post(
     } catch (error) {
       // Headers already sent — write an SSE error event instead of using next()
       logger.error({ err: error }, 'AI parse stream error');
-      const message =
-        error instanceof AppError ? error.message : 'AI parsing failed. Please try again.';
+      let message: string;
+      if (error instanceof AppError) {
+        message = error.message;
+      } else if (isDev) {
+        // Surface the original error in development to aid debugging
+        const original = error instanceof Error ? error.message : String(error);
+        message = `AI parsing failed: ${original}`;
+      } else {
+        message = 'AI parsing failed. Please try again.';
+      }
       res.write(`data: ${JSON.stringify({ error: message })}\n\n`);
       res.end();
     }

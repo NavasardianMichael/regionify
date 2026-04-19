@@ -1083,47 +1083,6 @@ export const ImportDataPanel: FC = () => {
 
       {importActionComponents[importDataType]}
 
-      <Flex vertical gap="small" className="p-sm! min-w-0 rounded-md bg-gray-50">
-        <Typography.Text
-          className="text-xs font-semibold text-gray-500"
-          data-i18n-key="visualizer.importData.expectedFormat"
-        >
-          {t('visualizer.importData.expectedFormat')}
-        </Typography.Text>
-        <ImportFormatExamples
-          importDataType={importDataType}
-          hasHistoricalFormat={hasHistoricalFormat}
-        />
-      </Flex>
-
-      <Flex gap="small" align="center" wrap="wrap" className="text-xs text-gray-500">
-        <Typography.Text className="text-xs text-gray-500">
-          {t('visualizer.importData.regionIdsNote')}{' '}
-          <Tooltip
-            title={
-              !selectedCountryId ? t('visualizer.importData.downloadTooltipNoCountry') : undefined
-            }
-            data-i18n-key="visualizer.importData.downloadTooltipNoCountry"
-          >
-            <span>
-              <Button
-                type="text"
-                size="small"
-                icon={isDownloadingSample ? <LoadingOutlined /> : null}
-                onClick={handleDownloadSampleOnly}
-                disabled={!selectedCountryId || svgTitles.length === 0 || isDownloadingSample}
-                loading={isDownloadingSample}
-                className="h-auto p-0! align-baseline text-xs font-medium!"
-                aria-label={t('messages.downloadSample')}
-              >
-                {!isDownloadingSample && t('visualizer.importData.downloadLink')}
-              </Button>
-            </span>
-          </Tooltip>{' '}
-          {t('visualizer.importData.sampleNoteSuffix')}
-        </Typography.Text>
-      </Flex>
-
       {isManualModalOpen && (
         <Suspense fallback={<Spin />}>
           <ManualDataEntryModal
@@ -1170,6 +1129,47 @@ export const ImportDataPanel: FC = () => {
           />
         </Suspense>
       )}
+
+      <Flex vertical gap="small" className="p-sm! min-w-0 rounded-md bg-gray-50">
+        <Typography.Text
+          className="text-xs font-semibold text-gray-500"
+          data-i18n-key="visualizer.importData.expectedFormat"
+        >
+          {t('visualizer.importData.expectedFormat')}
+        </Typography.Text>
+        <ImportFormatExamples
+          importDataType={importDataType}
+          hasHistoricalFormat={hasHistoricalFormat}
+        />
+      </Flex>
+
+      <Flex gap="small" align="center" wrap="wrap" className="text-xs text-gray-500">
+        <Typography.Text className="text-xs text-gray-500">
+          {t('visualizer.importData.regionIdsNote')}{' '}
+          <Tooltip
+            title={
+              !selectedCountryId ? t('visualizer.importData.downloadTooltipNoCountry') : undefined
+            }
+            data-i18n-key="visualizer.importData.downloadTooltipNoCountry"
+          >
+            <span>
+              <Button
+                type="text"
+                size="small"
+                icon={isDownloadingSample ? <LoadingOutlined /> : null}
+                onClick={handleDownloadSampleOnly}
+                disabled={!selectedCountryId || svgTitles.length === 0 || isDownloadingSample}
+                loading={isDownloadingSample}
+                className="h-auto p-0! align-baseline text-xs font-medium!"
+                aria-label={t('messages.downloadSample')}
+              >
+                {!isDownloadingSample && t('visualizer.importData.downloadLink')}
+              </Button>
+            </span>
+          </Tooltip>{' '}
+          {t('visualizer.importData.sampleNoteSuffix')}
+        </Typography.Text>
+      </Flex>
     </Flex>
   );
 };

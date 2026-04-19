@@ -54,8 +54,8 @@ const envSchema = z.object({
   MAIL_API_URL: z.string().url(),
   MAIL_API_KEY: z.string(),
 
-  // Anthropic (AI parser feature — Chronographer plan only)
-  ANTHROPIC_API_KEY: z.string().optional(),
+  // Google Gemini (AI parser feature — Chronographer plan only)
+  GEMINI_API_KEY: z.string().optional(),
 
   // Lemon Squeezy (one-time checkouts; webhook for order_created)
   LEMON_SQUEEZY_API_KEY: z.string().optional(),

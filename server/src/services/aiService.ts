@@ -1,7 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenAI } from '@google/genai';
 import { ErrorCode, HttpStatus } from '@regionify/shared';
 
-import { env } from '@/config/env.js';
+import { env, isDev } from '@/config/env.js';
 import { redis } from '@/lib/redis.js';
 import { AppError } from '@/middleware/errorHandler.js';
 
@@ -10,6 +10,9 @@ import { AppError } from '@/middleware/errorHandler.js';
 export const MAX_AI_PARSE_REQUESTS_PER_DAY = 3;
 export const MAX_AI_PARSE_INPUT_CHARS = 50_000;
 export const AI_PARSE_MAX_TOKENS = 8192;
+
+// Sentinel value surfaced to clients in dev to indicate the daily cap is disabled.
+const UNLIMITED_REMAINING = 9999;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,6 +48,7 @@ async function incrementAiParseCount(userId: string): Promise<number> {
 }
 
 export async function getAiParseRemaining(userId: string): Promise<number> {
+  if (isDev) return UNLIMITED_REMAINING;
   const count = await getAiParseCount(userId);
   return Math.max(0, MAX_AI_PARSE_REQUESTS_PER_DAY - count);
 }
@@ -85,18 +89,22 @@ export async function* streamAiParse(
   mapRegionIds: string[],
   userId: string,
 ): AsyncGenerator<AiStreamEvent> {
-  const count = await incrementAiParseCount(userId);
-  if (count > MAX_AI_PARSE_REQUESTS_PER_DAY) {
-    throw new AppError(
-      HttpStatus.TOO_MANY_REQUESTS,
-      ErrorCode.RATE_LIMITED,
-      `Daily AI parse limit of ${MAX_AI_PARSE_REQUESTS_PER_DAY} requests reached. Resets in 24 hours.`,
-    );
+  if (isDev) {
+    // Dev mode: skip the daily cap and Redis tracking entirely.
+    yield { type: 'remaining', count: UNLIMITED_REMAINING };
+  } else {
+    const count = await incrementAiParseCount(userId);
+    if (count > MAX_AI_PARSE_REQUESTS_PER_DAY) {
+      throw new AppError(
+        HttpStatus.TOO_MANY_REQUESTS,
+        ErrorCode.RATE_LIMITED,
+        `Daily AI parse limit of ${MAX_AI_PARSE_REQUESTS_PER_DAY} requests reached. Resets in 24 hours.`,
+      );
+    }
+    yield { type: 'remaining', count: MAX_AI_PARSE_REQUESTS_PER_DAY - count };
   }
 
-  yield { type: 'remaining', count: MAX_AI_PARSE_REQUESTS_PER_DAY - count };
-
-  if (!env.ANTHROPIC_API_KEY) {
+  if (!env.GEMINI_API_KEY) {
     throw new AppError(
       HttpStatus.SERVICE_UNAVAILABLE,
       ErrorCode.INTERNAL_ERROR,
@@ -104,30 +112,36 @@ export async function* streamAiParse(
     );
   }
 
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+  const controller = new AbortController();
 
-  const stream = client.messages.stream({
-    model: 'claude-3-5-haiku-20241022',
-    temperature: 0,
-    max_tokens: AI_PARSE_MAX_TOKENS,
-    system: buildSystemPrompt(mapRegionIds),
-    messages: [
-      { role: 'user', content: text },
-      // Assistant prefill: forces Claude to start with the correct header format
-      { role: 'assistant', content: 'id\t' },
+  const stream = await ai.models.generateContentStream({
+    model: 'gemini-2.5-flash',
+    contents: [
+      { role: 'user', parts: [{ text }] },
+      // Model prefill: forces Gemini to continue with the correct header format
+      { role: 'model', parts: [{ text: 'id\t' }] },
     ],
-    stop_sequences: ['\n\n\n'],
+    config: {
+      systemInstruction: buildSystemPrompt(mapRegionIds),
+      temperature: 0,
+      maxOutputTokens: AI_PARSE_MAX_TOKENS,
+      stopSequences: ['\n\n\n'],
+      thinkingConfig: { thinkingBudget: 0 },
+      abortSignal: controller.signal,
+    },
   });
 
   try {
-    for await (const event of stream) {
-      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-        yield { type: 'delta', text: event.delta.text };
+    for await (const chunk of stream) {
+      const delta = chunk.text;
+      if (delta) {
+        yield { type: 'delta', text: delta };
       }
     }
     yield { type: 'done' };
   } finally {
     // Ensure the underlying stream is cleaned up if the caller returns early
-    stream.abort();
+    controller.abort();
   }
 }
