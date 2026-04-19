@@ -1,0 +1,32 @@
+/* Make antd card-type Tabs fill the modal body so each tab pane stretches vertically. */
+.tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.tabs :global(.ant-tabs-content-holder) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.tabs :global(.ant-tabs-content) {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+}
+
+/* Only the active pane should be a flex column - inactive panes must remain
+   `display: none` (set by antd) so we don't render both tabs simultaneously. */
+.tabs :global(.ant-tabs-tabpane-active) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+}

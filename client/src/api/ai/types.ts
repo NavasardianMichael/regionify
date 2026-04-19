@@ -3,6 +3,12 @@ export type AiParsePayload = {
   mapRegionIds: string[];
 };
 
+export type AiGeneratePayload = {
+  prompt: string;
+  mapRegionIds: string[];
+  countryName?: string;
+};
+
 type AiRemainingData = {
   remaining: number;
 };

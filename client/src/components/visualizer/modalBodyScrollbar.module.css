@@ -44,3 +44,27 @@
 .bodyScrollbar :global(.ant-modal-body pre)::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-gray-400);
 }
+
+/* Standalone thin scrollbar for arbitrary scroll containers (e.g. table wrappers). */
+.thinScroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}
+
+.thinScroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.thinScroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thinScroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 2px;
+}
+
+.thinScroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-400);
+}

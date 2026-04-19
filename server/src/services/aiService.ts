@@ -53,62 +53,97 @@ export async function getAiParseRemaining(userId: string): Promise<number> {
   return Math.max(0, MAX_AI_PARSE_REQUESTS_PER_DAY - count);
 }
 
-// ─── System prompt ────────────────────────────────────────────────────────────
+// ─── System prompts ───────────────────────────────────────────────────────────
 
-function buildSystemPrompt(mapRegionIds: string[]): string {
-  const regionBlock =
-    mapRegionIds.length > 0
-      ? `The target map has the following valid region IDs:\n<region_ids>\n${mapRegionIds.join('\n')}\n</region_ids>\n\n`
-      : '';
+function buildRegionBlock(mapRegionIds: string[]): string {
+  if (mapRegionIds.length === 0) return '';
+  return `The target map has the following valid region IDs:\n<region_ids>\n${mapRegionIds.join('\n')}\n</region_ids>\n\n`;
+}
 
-  const idRule =
-    mapRegionIds.length > 0
-      ? '- id: MUST be one of the valid region IDs listed above. Match each data point to the closest valid region ID using the region name, code, or any other contextual hint. Omit rows you cannot confidently match.'
-      : '- id: ISO region code (e.g. US-TX, DE, FR). Infer from region names when possible.';
+function buildIdRule(mapRegionIds: string[]): string {
+  return mapRegionIds.length > 0
+    ? '- id: MUST be one of the valid region IDs listed above. Match each data point to the closest valid region ID using the region name, code, or any other contextual hint. Omit rows you cannot confidently match.'
+    : '- id: ISO region code (e.g. US-TX, DE, FR). Infer from region names when possible.';
+}
 
+function buildParserSystemPrompt(mapRegionIds: string[]): string {
   return `You are a data transformation tool. Convert the user's input into tab-delimited regional data.
 
-${regionBlock}Output format (columns separated by a single tab character):
+${buildRegionBlock(mapRegionIds)}Output format (columns separated by a single tab character):
   Static data:   id<TAB>label<TAB>value
   Time-series:   id<TAB>label<TAB>value<TAB>time
 
 Rules:
 - Output ONLY the tab-delimited data. No explanations, no markdown, no code fences.
 - First line is always the header row (id, label, value; add time only if data has a time dimension).
-${idRule}
+${buildIdRule(mapRegionIds)}
 - label: human-readable region name as provided in the input (or inferred if not given).
 - value: numeric (integer or decimal). Omit rows with no parseable numeric value.
 - time: year or period label. Include only for time-series data.
-- If the user provides generation instructions (e.g. "make up population data for EU countries") rather than raw data to transform, generate realistic plausible data following the same output format and rules above.`;
+- If the user input is incomplete or ambiguous, prefer omitting rows over fabricating values.`;
 }
 
-// ─── Streaming ────────────────────────────────────────────────────────────────
+function buildCountryBlock(countryName?: string): string {
+  if (!countryName) return '';
+  return `The map represents subdivisions of <country>${countryName}</country>. The valid region IDs listed below are the subdivisions of this country.
 
-export async function* streamAiParse(
-  text: string,
-  mapRegionIds: string[],
-  userId: string,
-): AsyncGenerator<AiStreamEvent> {
-  if (isDev) {
-    // Dev mode: skip the daily cap and Redis tracking entirely.
-    yield { type: 'remaining', count: UNLIMITED_REMAINING };
-  } else {
-    const count = await incrementAiParseCount(userId);
-    if (count > MAX_AI_PARSE_REQUESTS_PER_DAY) {
-      throw new AppError(
-        HttpStatus.TOO_MANY_REQUESTS,
-        ErrorCode.RATE_LIMITED,
-        `Daily AI parse limit of ${MAX_AI_PARSE_REQUESTS_PER_DAY} requests reached. Resets in 24 hours.`,
-      );
-    }
-    yield { type: 'remaining', count: MAX_AI_PARSE_REQUESTS_PER_DAY - count };
+`;
+}
+
+function buildCountryDefaultRule(countryName?: string): string {
+  if (!countryName) {
+    return '- If the user prompt does not specify a geographic context, generate data for the regions listed above.';
   }
+  return `- If the user prompt does not specify a country or area, default to ${countryName} and generate data for its subdivisions listed above. If the user explicitly references a different country/area, follow the user's request and ignore this default.`;
+}
 
+function buildGeneratorSystemPrompt(mapRegionIds: string[], countryName?: string): string {
+  return `You are a data generator for regional choropleth maps. Given a free-form user prompt describing what to produce (e.g. "population by region in 2023"), output a realistic, plausible dataset in tab-delimited regional format.
+
+${buildCountryBlock(countryName)}${buildRegionBlock(mapRegionIds)}Output format (columns separated by a single tab character):
+  Static data:   id<TAB>label<TAB>value
+  Time-series:   id<TAB>label<TAB>value<TAB>time
+
+Rules:
+- Output ONLY the tab-delimited data. No explanations, no markdown, no code fences.
+- First line is always the header row (id, label, value; add time only when the prompt asks for multiple periods or a time series).
+${buildIdRule(mapRegionIds)}
+- label: human-readable region name.
+- value: realistic numeric estimate (integer or decimal) consistent with the prompt's domain. Use coherent units across the dataset.
+- time: include only when the prompt requests a time dimension. Use plain year or period labels (e.g. 2020).
+- Cover all relevant regions implied by the prompt; if the prompt is broad (e.g. "all regions"), include every region ID listed above.
+${buildCountryDefaultRule(countryName)}
+- Prefer realistic, well-known approximate values over arbitrary numbers. Round to a sensible precision for the domain.`;
+}
+
+// ─── Internal: rate-limit + Gemini stream ─────────────────────────────────────
+
+async function* checkAiQuota(userId: string): AsyncGenerator<AiStreamEvent> {
+  if (isDev) {
+    yield { type: 'remaining', count: UNLIMITED_REMAINING };
+    return;
+  }
+  const count = await incrementAiParseCount(userId);
+  if (count > MAX_AI_PARSE_REQUESTS_PER_DAY) {
+    throw new AppError(
+      HttpStatus.TOO_MANY_REQUESTS,
+      ErrorCode.RATE_LIMITED,
+      `Daily AI request limit of ${MAX_AI_PARSE_REQUESTS_PER_DAY} reached. Resets in 24 hours.`,
+    );
+  }
+  yield { type: 'remaining', count: MAX_AI_PARSE_REQUESTS_PER_DAY - count };
+}
+
+async function* runGeminiStream(
+  systemPrompt: string,
+  userText: string,
+  temperature: number,
+): AsyncGenerator<AiStreamEvent> {
   if (!env.GEMINI_API_KEY) {
     throw new AppError(
       HttpStatus.SERVICE_UNAVAILABLE,
       ErrorCode.INTERNAL_ERROR,
-      'AI parser is not configured on this server.',
+      'AI service is not configured on this server.',
     );
   }
 
@@ -118,13 +153,13 @@ export async function* streamAiParse(
   const stream = await ai.models.generateContentStream({
     model: 'gemini-2.5-flash',
     contents: [
-      { role: 'user', parts: [{ text }] },
+      { role: 'user', parts: [{ text: userText }] },
       // Model prefill: forces Gemini to continue with the correct header format
       { role: 'model', parts: [{ text: 'id\t' }] },
     ],
     config: {
-      systemInstruction: buildSystemPrompt(mapRegionIds),
-      temperature: 0,
+      systemInstruction: systemPrompt,
+      temperature,
       maxOutputTokens: AI_PARSE_MAX_TOKENS,
       stopSequences: ['\n\n\n'],
       thinkingConfig: { thinkingBudget: 0 },
@@ -144,4 +179,25 @@ export async function* streamAiParse(
     // Ensure the underlying stream is cleaned up if the caller returns early
     controller.abort();
   }
+}
+
+// ─── Public streaming APIs ────────────────────────────────────────────────────
+
+export async function* streamAiParse(
+  text: string,
+  mapRegionIds: string[],
+  userId: string,
+): AsyncGenerator<AiStreamEvent> {
+  yield* checkAiQuota(userId);
+  yield* runGeminiStream(buildParserSystemPrompt(mapRegionIds), text, 0);
+}
+
+export async function* streamAiGenerate(
+  prompt: string,
+  mapRegionIds: string[],
+  countryName: string | undefined,
+  userId: string,
+): AsyncGenerator<AiStreamEvent> {
+  yield* checkAiQuota(userId);
+  yield* runGeminiStream(buildGeneratorSystemPrompt(mapRegionIds, countryName), prompt, 0.7);
 }

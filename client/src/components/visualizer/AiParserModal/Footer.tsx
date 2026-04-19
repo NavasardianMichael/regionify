@@ -1,54 +1,55 @@
-import { type FC } from 'react';
+import { type FC, type ReactNode } from 'react';
 import { Button, Flex } from 'antd';
 
-type Phase = 'input' | 'streaming' | 'result' | 'error';
-
 type FooterProps = {
-  phase: Phase;
   isStreaming: boolean;
   hasInput: boolean;
+  isDirty: boolean;
   cancelLabel: string;
   saveLabel: string;
   parsingLabel: string;
   submitLabel: string;
+  submitIcon: ReactNode;
+  hideSubmit?: boolean;
   onClose: () => void;
   onSubmit: () => void;
   onApply: () => void;
 };
 
 export const Footer: FC<FooterProps> = ({
-  phase,
   isStreaming,
   hasInput,
+  isDirty,
   cancelLabel,
   saveLabel,
   parsingLabel,
   submitLabel,
+  submitIcon,
+  hideSubmit = false,
   onClose,
   onSubmit,
   onApply,
-}) => {
-  if (phase === 'result') {
-    return (
-      <Flex justify="flex-end" gap="small">
-        <Button onClick={onClose}>{cancelLabel}</Button>
-        <Button type="primary" onClick={onApply}>
-          {saveLabel}
-        </Button>
-      </Flex>
-    );
-  }
-  return (
-    <Flex justify="flex-end" gap="small">
-      <Button onClick={onClose}>{cancelLabel}</Button>
+}) => (
+  <Flex justify={hideSubmit ? 'flex-end' : 'space-between'} align="center" gap="small">
+    {!hideSubmit && (
       <Button
-        type="primary"
+        color="cyan"
+        variant="solid"
+        icon={submitIcon}
         onClick={() => void onSubmit()}
         loading={isStreaming}
         disabled={isStreaming || !hasInput}
       >
         {isStreaming ? parsingLabel : submitLabel}
       </Button>
+    )}
+    <Flex gap="small">
+      <Button onClick={onClose} disabled={isStreaming}>
+        {cancelLabel}
+      </Button>
+      <Button type="primary" onClick={onApply} disabled={isStreaming || !isDirty}>
+        {saveLabel}
+      </Button>
     </Flex>
-  );
-};
+  </Flex>
+);

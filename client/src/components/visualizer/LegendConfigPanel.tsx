@@ -2,6 +2,7 @@ import { type FC, lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import {
   BarChartOutlined,
   BgColorsOutlined,
+  ColumnHeightOutlined,
   EditOutlined,
   InfoCircleOutlined,
   PlusOutlined,
@@ -30,8 +31,12 @@ import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
 import { selectNoDataColor, selectSetLegendStylesState } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
+import { selectData, selectTimelineData } from '@/store/mapData/selectors';
+import { useVisualizerStore } from '@/store/mapData/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { samplePaletteColor } from '@/helpers/samplePaletteColor';
+import { useAppFeedback } from '@/components/shared/useAppFeedback';
+import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
 import { LegendItemRow } from '@/components/visualizer/LegendItemRow';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
 
@@ -159,6 +164,7 @@ const PALETTE_BY_ID = new Map<string, string[]>(
 
 const LegendConfigPanel: FC = () => {
   const { t } = useTypedTranslation();
+  const { message: messageApi } = useAppFeedback();
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -172,6 +178,8 @@ const LegendConfigPanel: FC = () => {
   const reorderItems = useLegendDataStore(selectReorderItems);
   const noDataColor = useLegendStylesStore(selectNoDataColor);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
+  const data = useVisualizerStore(selectData);
+  const timelineData = useVisualizerStore(selectTimelineData);
 
   const legendItems = useMemo(
     () => items.allIds.map((id) => items.byId[id]),
@@ -202,6 +210,40 @@ const LegendConfigPanel: FC = () => {
   const handleAddLegendRange = useCallback(() => {
     addItem({ name: 'New Range', min: 0, max: 100, color: '#6B7280' });
   }, [addItem]);
+
+  const handleNormalizeRanges = useCallback(() => {
+    const values: number[] = [];
+    for (const id of data.allIds) {
+      const v = data.byId[id]?.value;
+      if (typeof v === 'number' && !Number.isNaN(v)) values.push(v);
+    }
+    for (const periodKey of Object.keys(timelineData)) {
+      const ds = timelineData[periodKey];
+      if (!ds) continue;
+      for (const id of ds.allIds) {
+        const v = ds.byId[id]?.value;
+        if (typeof v === 'number' && !Number.isNaN(v)) values.push(v);
+      }
+    }
+    if (values.length === 0 || legendItems.length === 0) {
+      showMessageWithClose(
+        messageApi,
+        'warning',
+        t('visualizer.legendConfig.normalizeRangesNoData'),
+      );
+      return;
+    }
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const count = legendItems.length;
+    const step = (max - min) / count;
+    const normalized = legendItems.map((item, index) => ({
+      ...item,
+      min: Number((min + step * index).toFixed(2)),
+      max: Number((min + step * (index + 1)).toFixed(2)),
+    }));
+    setItems(normalized);
+  }, [data, legendItems, messageApi, setItems, t, timelineData]);
 
   const handleApplyPalette = useCallback(
     (palette: string[]) => {
@@ -332,6 +374,20 @@ const LegendConfigPanel: FC = () => {
               className="text-gray-500"
               aria-label={t('visualizer.legendConfig.expandEditAria')}
               data-i18n-key="visualizer.legendConfig.expandEditAria"
+            />
+          </Tooltip>
+          <Tooltip
+            title={t('visualizer.legendConfig.normalizeRanges')}
+            data-i18n-key="visualizer.legendConfig.normalizeRanges"
+          >
+            <Button
+              type="text"
+              icon={<ColumnHeightOutlined />}
+              size="small"
+              onClick={handleNormalizeRanges}
+              className="text-gray-500"
+              aria-label={t('visualizer.legendConfig.normalizeRangesAria')}
+              data-i18n-key="visualizer.legendConfig.normalizeRangesAria"
             />
           </Tooltip>
         </Flex>

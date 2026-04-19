@@ -1,32 +1,33 @@
 import { AI_ENDPOINTS } from './endpoints';
-import type { AiParsePayload, AiRemainingResponse } from './types';
+import type { AiGeneratePayload, AiParsePayload, AiRemainingResponse } from './types';
 
 type SseErrorPayload = { error: string };
 type SseDeltaPayload = { delta: string };
 type SseMetaPayload = { meta: { remaining: number } };
 
 /**
- * Streams an AI parse request via Server-Sent Events.
- * Calls `onDelta` for each text chunk and `onRemaining` once with the updated
- * daily request count received from the server.
+ * Consume an SSE stream from an AI endpoint.
+ * Calls `onDelta` for each text chunk and `onRemaining` once when the server
+ * reports the updated daily quota.
  */
-export const streamAiParse = async (
-  payload: AiParsePayload,
+async function consumeAiStream(
+  url: string,
+  body: unknown,
   onDelta: (text: string) => void,
   onRemaining: (count: number) => void,
   signal?: AbortSignal,
-): Promise<void> => {
-  const response = await fetch(AI_ENDPOINTS.parse, {
+): Promise<void> {
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
     signal,
   });
 
   if (!response.ok) {
-    const data = (await response.json()) as { error?: { message?: string } };
-    throw new Error(data.error?.message ?? 'AI parsing failed. Please try again.');
+    const data = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
+    throw new Error(data.error?.message ?? 'AI request failed. Please try again.');
   }
 
   if (!response.body) {
@@ -75,10 +76,32 @@ export const streamAiParse = async (
       }
     }
   }
-};
+}
 
 /**
- * Fetches the remaining daily AI parse request count for the authenticated user.
+ * Streams an AI parse request via Server-Sent Events.
+ * The server normalizes the user's raw/dirty input into tab-delimited regional data.
+ */
+export const streamAiParse = (
+  payload: AiParsePayload,
+  onDelta: (text: string) => void,
+  onRemaining: (count: number) => void,
+  signal?: AbortSignal,
+): Promise<void> => consumeAiStream(AI_ENDPOINTS.parse, payload, onDelta, onRemaining, signal);
+
+/**
+ * Streams an AI generate request via Server-Sent Events.
+ * The server fabricates a plausible regional dataset from the user's prompt.
+ */
+export const streamAiGenerate = (
+  payload: AiGeneratePayload,
+  onDelta: (text: string) => void,
+  onRemaining: (count: number) => void,
+  signal?: AbortSignal,
+): Promise<void> => consumeAiStream(AI_ENDPOINTS.generate, payload, onDelta, onRemaining, signal);
+
+/**
+ * Fetches the remaining daily AI request count for the authenticated user.
  */
 export const fetchAiRemaining = async (): Promise<number> => {
   const response = await fetch(AI_ENDPOINTS.remaining, {

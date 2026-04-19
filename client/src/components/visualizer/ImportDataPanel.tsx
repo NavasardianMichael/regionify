@@ -57,6 +57,7 @@ import {
   sanitizeFilename,
 } from '@/helpers/importDataParsers';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { getRegionDisplayName } from '@/helpers/regionDisplay';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
@@ -1123,6 +1124,7 @@ export const ImportDataPanel: FC = () => {
             open={isAiParserModalOpen}
             onClose={() => setIsAiParserModalOpen(false)}
             mapRegionIds={svgTitles}
+            countryName={getRegionDisplayName(selectedCountryId) ?? undefined}
             historicalDataImport={limits.historicalDataImport}
             remaining={aiRemaining}
             onRemainingChange={setAiRemaining}

@@ -299,7 +299,7 @@ const fr: CommonNs = {
       editManuallyInTable: 'Modifier manuellement dans le tableau',
       editManuallyInText: 'Modifier manuellement en texte',
       aiParserChronographerTooltip:
-        'L\u2019analyseur IA est disponible uniquement avec le badge {{badgeName}}.',
+        'L\u2019Agent IA est disponible uniquement avec le badge {{badgeName}}.',
       connectSheets: 'Connecter Google Sheets',
       changeSheetsSource: 'Changer la source Google Sheets',
       uploadCsv: 'Téléverser un fichier CSV',
@@ -312,7 +312,7 @@ const fr: CommonNs = {
         sheets: 'Google Sheets',
         table: 'Tableau (manuel)',
         tabDelimited: 'Texte délimité par tabulations (manuel)',
-        aiParser: 'Analyseur IA',
+        aiParser: 'Agent IA',
       },
     },
     importFormatTooltip: {
@@ -487,16 +487,34 @@ const fr: CommonNs = {
       pasteMissingId: 'Une colonne id est requise sur la première ligne (voir l’exemple).',
     },
     aiParserModal: {
-      title: 'Analyseur IA',
+      title: 'Agent IA',
       limitedRequestsNote:
-        'L\u2019analyse IA est limit\u00e9e \u00e0 {{max}} utilisations par jour. Il vous en reste {{count}} aujourd\u2019hui.',
-      placeholder: 'Describe your data or paste raw text for the AI to structure\u2026',
+        'Les requ\u00eates IA sont limit\u00e9es \u00e0 {{max}} par jour. Il vous en reste {{count}} aujourd\u2019hui.',
+      placeholder:
+        'Collez des donn\u00e9es brutes\u00a0; l\u2019IA les normalisera au format attendu (id, label, value, time en option)\u2026',
       submit: 'Analyser avec l\u2019IA',
       parsing: 'Analyse en cours\u2026',
       parseError: 'L\u2019analyse IA a \u00e9chou\u00e9. Veuillez r\u00e9essayer.',
       limitReached:
-        'Limite quotidienne d\u2019analyse IA atteinte. R\u00e9initialisation dans 24 heures.',
+        'Limite quotidienne de requ\u00eates IA atteinte. R\u00e9initialisation dans 24 heures.',
       inputTooLong: 'La saisie d\u00e9passe {{max}} caract\u00e8res.',
+      switchToTable: 'Passer \u00e0 la vue tableau',
+      switchToAi: 'Passer \u00e0 la vue IA',
+      tableEmpty: 'Aucune ligne. Ajoutez-en une manuellement ou ex\u00e9cutez l\u2019IA.',
+      tableAddRow: 'Ajouter une ligne',
+      columnId: 'ID',
+      columnLabel: 'Libell\u00e9',
+      columnValue: 'Valeur',
+      columnTime: 'P\u00e9riode',
+      tabParser: 'Analyseur',
+      tabGenerator: 'G\u00e9n\u00e9rateur',
+      generatorPlaceholder:
+        'D\u00e9crivez le jeu de donn\u00e9es \u00e0 g\u00e9n\u00e9rer (ex.\u00a0: \u00ab\u202fPopulation des pays de l\u2019UE en 2023\u202f\u00bb)\u2026',
+      generatorSubmit: 'G\u00e9n\u00e9rer avec l\u2019IA',
+      generatorParsing: 'G\u00e9n\u00e9ration\u2026',
+      generatorError: 'La g\u00e9n\u00e9ration IA a \u00e9chou\u00e9. Veuillez r\u00e9essayer.',
+      generatorEmptyResult:
+        'L\u2019IA n\u2019a renvoy\u00e9 aucune ligne exploitable. Affinez votre invite et r\u00e9essayez.',
     },
     legendConfig: {
       sectionTitle: 'Configuration de la légende',
@@ -504,6 +522,10 @@ const fr: CommonNs = {
       sortDescending: 'Trier par ordre décroissant',
       expandEdit: 'Agrandir pour modifier',
       expandEditAria: 'Agrandir pour modifier',
+      normalizeRanges: 'Normaliser les plages',
+      normalizeRangesAria:
+        'R\u00e9partir les plages \u00e9galement entre le minimum et le maximum actuels',
+      normalizeRangesNoData: 'Aucune donn\u00e9e num\u00e9rique \u00e0 normaliser',
       addRange: 'Ajouter une plage',
       addRangeAria: 'Ajouter une plage de légende',
       collapseRanges: 'Plages',

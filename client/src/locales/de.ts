@@ -301,7 +301,7 @@ const de: CommonNs = {
       editManuallyInTable: 'Manuell in Tabelle bearbeiten',
       editManuallyInText: 'Manuell im Text bearbeiten',
       aiParserChronographerTooltip:
-        'Der KI-Parser ist nur mit dem {{badgeName}}-Badge verf\u00fcgbar.',
+        'Der KI-Agent ist nur mit dem {{badgeName}}-Badge verf\u00fcgbar.',
       connectSheets: 'Google Tabellen verbinden',
       changeSheetsSource: 'Google-Tabellenquelle ändern',
       uploadCsv: 'CSV-Datei hochladen',
@@ -314,7 +314,7 @@ const de: CommonNs = {
         sheets: 'Google Sheets',
         table: 'Tabelle (manuell)',
         tabDelimited: 'Tab-getrennter Text (manuell)',
-        aiParser: 'KI-Parser',
+        aiParser: 'KI-Agent',
       },
     },
     importFormatTooltip: {
@@ -488,15 +488,34 @@ const de: CommonNs = {
       pasteMissingId: 'In der ersten Zeile ist eine id-Spalte erforderlich (siehe Beispiel).',
     },
     aiParserModal: {
-      title: 'KI-Parser',
+      title: 'KI-Agent',
       limitedRequestsNote:
-        'Die KI-Analyse ist auf {{max}} Nutzungen pro Tag begrenzt. Heute haben Sie noch {{count}} übrig.',
-      placeholder: 'Describe your data or paste raw text for the AI to structure…',
+        'KI-Anfragen sind auf {{max}} pro Tag begrenzt. Heute haben Sie noch {{count}} übrig.',
+      placeholder:
+        'Fügen Sie unsaubere Daten ein und die KI normalisiert sie in das erwartete Format (id, label, value, optional time)…',
       submit: 'Mit KI analysieren',
       parsing: 'Analysiere…',
       parseError: 'KI-Analyse fehlgeschlagen. Bitte versuchen Sie es erneut.',
-      limitReached: 'Tägliches KI-Analyselimit erreicht. Wird in 24 Stunden zurückgesetzt.',
+      limitReached: 'Tägliches KI-Anfragelimit erreicht. Wird in 24 Stunden zurückgesetzt.',
       inputTooLong: 'Eingabe überschreitet {{max}} Zeichen.',
+      switchToTable: 'Zur Tabellenansicht wechseln',
+      switchToAi: 'Zur KI-Ansicht wechseln',
+      tableEmpty:
+        'Noch keine Zeilen. Fügen Sie eine Zeile manuell hinzu oder führen Sie die KI aus.',
+      tableAddRow: 'Zeile hinzufügen',
+      columnId: 'ID',
+      columnLabel: 'Bezeichnung',
+      columnValue: 'Wert',
+      columnTime: 'Zeit',
+      tabParser: 'Parser',
+      tabGenerator: 'Generator',
+      generatorPlaceholder:
+        'Beschreiben Sie den zu generierenden Datensatz (z. B. „Bevölkerung der EU-Länder 2023")…',
+      generatorSubmit: 'Mit KI generieren',
+      generatorParsing: 'Generiere…',
+      generatorError: 'KI-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+      generatorEmptyResult:
+        'Die KI lieferte keine verwendbaren Zeilen. Verfeinern Sie Ihren Prompt und versuchen Sie es erneut.',
     },
     legendConfig: {
       sectionTitle: 'Legendenkonfiguration',
@@ -504,6 +523,9 @@ const de: CommonNs = {
       sortDescending: 'Absteigend sortieren',
       expandEdit: 'Zum Bearbeiten erweitern',
       expandEditAria: 'Zum Bearbeiten erweitern',
+      normalizeRanges: 'Bereiche normalisieren',
+      normalizeRangesAria: 'Bereiche gleichmäßig zwischen aktuellem Min und Max verteilen',
+      normalizeRangesNoData: 'Keine numerischen Daten zum Normalisieren',
       addRange: 'Bereich hinzufügen',
       addRangeAria: 'Legendenbereich hinzufügen',
       collapseRanges: 'Bereiche',

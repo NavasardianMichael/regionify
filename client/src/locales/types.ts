@@ -415,6 +415,21 @@ export type CommonNs = {
       parseError: string;
       limitReached: string;
       inputTooLong: string;
+      switchToTable: string;
+      switchToAi: string;
+      tableEmpty: string;
+      tableAddRow: string;
+      columnId: string;
+      columnLabel: string;
+      columnValue: string;
+      columnTime: string;
+      tabParser: string;
+      tabGenerator: string;
+      generatorPlaceholder: string;
+      generatorSubmit: string;
+      generatorParsing: string;
+      generatorError: string;
+      generatorEmptyResult: string;
     };
     legendConfig: {
       sectionTitle: string;
@@ -422,6 +437,9 @@ export type CommonNs = {
       sortDescending: string;
       expandEdit: string;
       expandEditAria: string;
+      normalizeRanges: string;
+      normalizeRangesAria: string;
+      normalizeRangesNoData: string;
       addRange: string;
       addRangeAria: string;
       collapseRanges: string;
