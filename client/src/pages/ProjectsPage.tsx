@@ -157,7 +157,13 @@ const ProjectsPage: FC = () => {
                 </Empty>
               </Flex>
             ) : (
-              <Flex wrap="wrap" gap="middle" justify="center" className="pb-md sm:justify-start!">
+              <Flex
+                wrap="wrap"
+                gap="middle"
+                justify="center"
+                align="stretch"
+                className="pb-md content-start sm:justify-start!"
+              >
                 {filteredProjects.map((project) => (
                   <ProjectCard
                     key={project.id}

@@ -251,12 +251,15 @@ const ProjectCard = memo<ProjectCardProps>(
     );
 
     return (
-      <div className="relative w-full sm:max-w-80">
+      <div className="relative flex min-h-0 w-full flex-col sm:max-w-80">
         {isOpening && <ProjectCardOpeningOverlay />}
         <Card
           hoverable
-          className="w-full"
-          classNames={{ root: 'border-gray-300 border' }}
+          className="min-h-0 w-full flex-1"
+          classNames={{
+            root: 'border-gray-300 flex min-h-0 flex-1 flex-col border',
+            body: 'flex min-h-0 flex-1 flex-col',
+          }}
           cover={
             isThumbnailLoading ? (
               <ProjectCardCoverLoading />
