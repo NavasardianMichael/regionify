@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { type FC, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { DownloadOutlined, InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import {
@@ -6,6 +6,7 @@ import {
   Flex,
   InputNumber,
   Progress,
+  Radio,
   Select,
   Slider,
   Switch,
@@ -15,6 +16,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { getAnimationTotalFrames } from '@/helpers/animationExport';
+import type { PdfPageFormat } from '@/helpers/pdfExport';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import { EXPORT_FPS, type FormProps } from '../useExportMapModal';
 
@@ -38,6 +40,7 @@ export const Form: FC<FormProps> = (props) => {
     progress,
     isSvgFormat,
     isAnimationFormat,
+    isPdfFormat,
     hasTimelineData,
     selectedCountryId,
     allowedFormats,
@@ -54,7 +57,31 @@ export const Form: FC<FormProps> = (props) => {
     handleNext,
     showQualityControl,
     downloadButtonLabel,
+    pdfPageFormat,
+    pdfOrientation,
+    pdfPageFormatOptions,
+    handlePdfPageFormatChange,
+    handlePdfOrientationChange,
   } = props;
+
+  const pdfFormatLabels = useMemo(
+    (): Record<PdfPageFormat, string> => ({
+      a4: t('visualizer.exportModal.pdfFormatA4'),
+      a3: t('visualizer.exportModal.pdfFormatA3'),
+      letter: t('visualizer.exportModal.pdfFormatLetter'),
+      legal: t('visualizer.exportModal.pdfFormatLegal'),
+    }),
+    [t],
+  );
+
+  const localizedPdfFormatOptions = useMemo(
+    () =>
+      pdfPageFormatOptions.map((o) => ({
+        value: o.value,
+        label: pdfFormatLabels[o.value],
+      })),
+    [pdfPageFormatOptions, pdfFormatLabels],
+  );
 
   return (
     <Flex vertical gap="middle" className="py-md min-w-0 px-1">
@@ -94,6 +121,58 @@ export const Form: FC<FormProps> = (props) => {
           </Typography.Text>
         )}
       </Flex>
+
+      {isPdfFormat && (
+        <>
+          <Flex vertical gap="small">
+            <Typography.Text
+              className="text-sm text-gray-600"
+              data-i18n-key="visualizer.exportModal.pdfPageFormatLabel"
+            >
+              {t('visualizer.exportModal.pdfPageFormatLabel')}
+            </Typography.Text>
+            <Select<PdfPageFormat>
+              value={pdfPageFormat}
+              onChange={handlePdfPageFormatChange}
+              options={localizedPdfFormatOptions}
+              className="w-full"
+              disabled={isExporting}
+              aria-label={t('visualizer.exportModal.pdfPageFormatLabel')}
+            />
+          </Flex>
+          <Flex vertical gap="small">
+            <Typography.Text
+              className="text-sm text-gray-600"
+              data-i18n-key="visualizer.exportModal.pdfOrientationLabel"
+            >
+              {t('visualizer.exportModal.pdfOrientationLabel')}
+            </Typography.Text>
+            <Radio.Group
+              value={pdfOrientation}
+              onChange={handlePdfOrientationChange}
+              optionType="button"
+              buttonStyle="outline"
+              block
+              disabled={isExporting}
+              className="px-0.5!"
+              aria-label={t('visualizer.exportModal.pdfOrientationLabel')}
+            >
+              <Radio.Button
+                value="portrait"
+                data-i18n-key="visualizer.exportModal.pdfOrientationPortrait"
+              >
+                {t('visualizer.exportModal.pdfOrientationPortrait')}
+              </Radio.Button>
+              <Radio.Button
+                value="landscape"
+                data-i18n-key="visualizer.exportModal.pdfOrientationLandscape"
+              >
+                {t('visualizer.exportModal.pdfOrientationLandscape')}
+              </Radio.Button>
+            </Radio.Group>
+          </Flex>
+        </>
+      )}
 
       {showQualityControl && (
         <Flex vertical gap="small" className="min-w-0">
@@ -210,6 +289,10 @@ export const Form: FC<FormProps> = (props) => {
         <Progress percent={Math.round(progress * 100)} status="active" strokeColor="#18294D" />
       )}
 
+      {isExporting && isPdfFormat && hasTimelineData && (
+        <Progress percent={Math.round(progress * 100)} status="active" strokeColor="#18294D" />
+      )}
+
       {isExporting && isSvgFormat && (
         <Typography.Text
           type="secondary"
@@ -220,7 +303,17 @@ export const Form: FC<FormProps> = (props) => {
         </Typography.Text>
       )}
 
-      {isSvgFormat ? (
+      {isExporting && isPdfFormat && !hasTimelineData && (
+        <Typography.Text
+          type="secondary"
+          className="block w-full text-center text-sm"
+          data-i18n-key="visualizer.exportModal.exportPdfBuilding"
+        >
+          {t('visualizer.exportModal.exportPdfBuilding')}
+        </Typography.Text>
+      )}
+
+      {isSvgFormat || isPdfFormat ? (
         <Button
           type="primary"
           icon={<DownloadOutlined />}

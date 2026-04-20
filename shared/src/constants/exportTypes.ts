@@ -5,4 +5,5 @@ export const EXPORT_TYPES = {
   jpeg: 'jpeg',
   gif: 'gif',
   mp4: 'mp4',
+  pdf: 'pdf',
 } as const;

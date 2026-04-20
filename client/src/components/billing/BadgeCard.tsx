@@ -16,6 +16,7 @@ const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradin
   const { t } = useTypedTranslation();
   const isCurrentBadge = tier.id === currentBadge;
   const isUpgrading = upgradingBadge === tier.id;
+  const showPopularHighlight = tier.popular && currentBadge !== BADGES.chronographer;
 
   const handleClick = useCallback(() => {
     if (tier.id === BADGES.explorer || tier.id === BADGES.chronographer) {
@@ -34,8 +35,8 @@ const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradin
 
   const cardClassName = useMemo(
     () =>
-      `min-h-0 min-w-0 w-full flex-1 shadow-sm ${tier.popular ? 'border-primary border-2' : ''}`,
-    [tier.popular],
+      `min-h-0 min-w-0 w-full flex-1 shadow-sm ${showPopularHighlight ? 'border-primary border-2' : ''}`,
+    [showPopularHighlight],
   );
 
   const cardStyles = useMemo(
@@ -45,22 +46,22 @@ const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradin
         flexDirection: 'column' as const,
         height: '100%',
         minHeight: 0,
-        ...(tier.popular ? { overflow: 'visible' as const } : {}),
+        ...(showPopularHighlight ? { overflow: 'visible' as const } : {}),
       },
       body: {
         flex: 1,
         display: 'flex' as const,
         flexDirection: 'column' as const,
         minHeight: 0,
-        ...(tier.popular ? { overflow: 'visible' as const } : {}),
+        ...(showPopularHighlight ? { overflow: 'visible' as const } : {}),
       },
     }),
-    [tier.popular],
+    [showPopularHighlight],
   );
 
   return (
     <Card className={`relative overflow-visible ${cardClassName}`} styles={cardStyles}>
-      {tier.popular ? (
+      {showPopularHighlight ? (
         <span
           className="bg-primary pointer-events-none absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap text-white shadow-sm"
           data-i18n-key="badges.bestChoice"
@@ -68,7 +69,11 @@ const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradin
           {t('badges.bestChoice')}
         </span>
       ) : null}
-      <Flex vertical gap="middle" className={`min-h-0 flex-1 ${tier.popular ? 'pt-3' : ''}`}>
+      <Flex
+        vertical
+        gap="middle"
+        className={`min-h-0 flex-1 ${showPopularHighlight ? 'pt-3' : ''}`}
+      >
         <Flex
           vertical
           align="center"

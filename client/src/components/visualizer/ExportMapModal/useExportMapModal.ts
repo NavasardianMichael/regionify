@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { BADGE_DETAILS, BADGES, EXPORT_TYPES, type ExportType } from '@regionify/shared';
+import type { RadioChangeEvent } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
@@ -31,10 +32,12 @@ import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
+import { PDF_PAGE_FORMAT_OPTIONS } from '@/constants/pdfExport';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   exportAnimationAsGif,
   exportAnimationAsVideo,
+  type FrameOptions,
   generateAnimationPreviewCanvas,
   getAnimationTotalFrames,
   type LegendPositionExport,
@@ -50,6 +53,12 @@ import {
   triggerDownload,
 } from '@/helpers/mapExport';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import {
+  exportMapAsMultiPagePdf,
+  exportMapAsSinglePagePdf,
+  type PdfOrientation,
+  type PdfPageFormat,
+} from '@/helpers/pdfExport';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { useExportCrop } from './Crop/useExportCrop';
 
@@ -59,12 +68,19 @@ const ALL_EXPORT_OPTIONS: ExportTypeOption[] = [
   { value: EXPORT_TYPES.png, label: 'PNG' },
   { value: EXPORT_TYPES.svg, label: 'SVG' },
   { value: EXPORT_TYPES.jpeg, label: 'JPEG' },
+  { value: EXPORT_TYPES.pdf, label: 'PDF' },
   { value: EXPORT_TYPES.gif, label: 'GIF (Animation)' },
   { value: EXPORT_TYPES.mp4, label: 'Video (MP4)' },
 ];
 
 const STATIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg];
 const DYNAMIC_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.gif, EXPORT_TYPES.mp4];
+const PDF_EXPORT_TYPES: ExportType[] = [EXPORT_TYPES.pdf];
+const QUALITY_CONTROLLED_STATIC_EXPORT_TYPES: ExportType[] = [
+  EXPORT_TYPES.png,
+  EXPORT_TYPES.jpeg,
+  EXPORT_TYPES.pdf,
+];
 
 const DEFAULT_SECONDS_PER_PERIOD = 1;
 
@@ -105,9 +121,13 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const exportTypeOptions = useMemo(() => {
     const allowed = ALL_EXPORT_OPTIONS.filter((o) => allowedFormats.includes(o.value));
     if (hasTimelineData) {
-      return allowed.filter((o) => DYNAMIC_EXPORT_TYPES.includes(o.value));
+      return allowed.filter(
+        (o) => DYNAMIC_EXPORT_TYPES.includes(o.value) || PDF_EXPORT_TYPES.includes(o.value),
+      );
     }
-    return allowed.filter((o) => STATIC_EXPORT_TYPES.includes(o.value));
+    return allowed.filter(
+      (o) => STATIC_EXPORT_TYPES.includes(o.value) || PDF_EXPORT_TYPES.includes(o.value),
+    );
   }, [allowedFormats, hasTimelineData]);
 
   const defaultExportType = exportTypeOptions[0]?.value ?? allowedFormats[0] ?? EXPORT_TYPES.jpeg;
@@ -115,7 +135,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const exportTypeInfoTooltip = useMemo(() => {
     if (!badgeSupportsDynamic) return null;
     if (hasTimelineData) {
-      return 'Static image formats are not supported with panel data. Use GIF or MP4 to export the animation.';
+      return 'PDF exports as a multi-page document — one page per time period. Use GIF or MP4 for animated export.';
     }
     return 'Animated formats (GIF, MP4) require panel/dynamic data with a time column. Use static image formats with current data.';
   }, [badgeSupportsDynamic, hasTimelineData]);
@@ -127,12 +147,15 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     DEFAULT_SECONDS_PER_PERIOD,
   );
   const [smoothTransitions, setSmoothTransitions] = useState(true);
+  const [pdfPageFormat, setPdfPageFormat] = useState<PdfPageFormat>('a4');
+  const [pdfOrientation, setPdfOrientation] = useState<PdfOrientation>('portrait');
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState<1 | 2>(1);
 
   const isSvgFormat = exportType === EXPORT_TYPES.svg;
   const isAnimationFormat = exportType === EXPORT_TYPES.gif || exportType === EXPORT_TYPES.mp4;
+  const isPdfFormat = exportType === EXPORT_TYPES.pdf;
 
   const resolvedQuality = useMemo(() => {
     const q = quality;
@@ -152,6 +175,8 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         setExportType(defaultExportType);
         setQuality(defaultQualityForBadge(maxQuality, limits.pictureQualityLimit));
         setSecondsPerPeriod(DEFAULT_SECONDS_PER_PERIOD);
+        setPdfPageFormat('a4');
+        setPdfOrientation('portrait');
         setStep(1);
       }
     },
@@ -161,6 +186,16 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const handleExportTypeChange = useCallback((value: ExportType) => {
     setExportType(value);
   }, []);
+
+  const handlePdfPageFormatChange = useCallback(
+    (value: PdfPageFormat) => setPdfPageFormat(value),
+    [],
+  );
+
+  const handlePdfOrientationChange = useCallback(
+    (e: RadioChangeEvent) => setPdfOrientation(e.target.value as PdfOrientation),
+    [],
+  );
 
   const handleQualityInputChange = useCallback((value: number | null) => {
     setQuality(value);
@@ -330,6 +365,47 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         return;
       }
 
+      if (isPdfFormat) {
+        if (hasTimelineData) {
+          const rawSvg = await loadMapSvg(selectedCountryId!);
+          if (!rawSvg) throw new Error('Failed to load map SVG');
+          const pdfFrameOptions: FrameOptions = {
+            legendItems: animationBaseOptions.legendItems,
+            noDataColor: animationBaseOptions.noDataColor,
+            border: animationBaseOptions.border,
+            shadow: animationBaseOptions.shadow,
+            picture: animationBaseOptions.picture,
+            legendDraw: animationBaseOptions.legendDraw,
+            legendPosition: animationBaseOptions.legendPosition,
+            regionLabels: animationBaseOptions.regionLabels,
+            labelPositions: animationBaseOptions.labelPositions,
+          };
+          await exportMapAsMultiPagePdf({
+            rawSvg,
+            timePeriods,
+            timelineData,
+            quality: resolvedQuality,
+            fileName,
+            frameOptions: pdfFrameOptions,
+            watermark: watermarkActive ? { text: 'Regionify' } : undefined,
+            onProgress: setProgress,
+            pageFormat: pdfPageFormat,
+            orientation: pdfOrientation,
+          });
+        } else {
+          await exportMapAsSinglePagePdf({
+            quality: resolvedQuality,
+            fileName,
+            stillOpts: resolvedStillOpts,
+            pageFormat: pdfPageFormat,
+            orientation: pdfOrientation,
+          });
+        }
+        message.success(t('messages.mapExportedAs', { format: 'PDF' }), 5);
+        onClose();
+        return;
+      }
+
       if (isAnimationFormat) {
         if (!hasTimelineData) {
           message.warning(t('messages.importHistoricalFirst'));
@@ -394,8 +470,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     exportType,
     isSvgFormat,
     isAnimationFormat,
+    isPdfFormat,
     hasTimelineData,
     selectedCountryId,
+    timePeriods,
+    timelineData,
+    watermarkActive,
     crop,
     animationBaseOptions,
     message,
@@ -403,13 +483,16 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     resolvedSecondsPerPeriod,
     resolvedStillOpts,
     smoothTransitions,
+    pdfPageFormat,
+    pdfOrientation,
     onClose,
     t,
   ]);
 
-  const showQualityControl = useMemo(() => {
-    return exportType === EXPORT_TYPES.png || exportType === EXPORT_TYPES.jpeg || isAnimationFormat;
-  }, [exportType, isAnimationFormat]);
+  const showQualityControl = useMemo(
+    () => QUALITY_CONTROLLED_STATIC_EXPORT_TYPES.includes(exportType) || isAnimationFormat,
+    [exportType, isAnimationFormat],
+  );
 
   const downloadButtonLabel = useMemo(() => {
     if (exportType === EXPORT_TYPES.gif)
@@ -440,10 +523,16 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     resolvedSecondsPerPeriod,
     smoothTransitions,
     setSmoothTransitions,
+    pdfPageFormat,
+    pdfOrientation,
+    pdfPageFormatOptions: PDF_PAGE_FORMAT_OPTIONS,
+    handlePdfPageFormatChange,
+    handlePdfOrientationChange,
     isExporting,
     progress,
     isSvgFormat,
     isAnimationFormat,
+    isPdfFormat,
     hasTimelineData,
     selectedCountryId,
     allowedFormats,

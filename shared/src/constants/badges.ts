@@ -37,7 +37,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
     price: 0,
     limits: {
       maxExportQuality: 100,
-      allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.jpeg],
+      allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.jpeg, EXPORT_TYPES.pdf],
       allowedAnimationFormats: [],
       pictureQualityLimit: false,
       maxProjectsCount: 5,
@@ -52,7 +52,12 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
     price: 49,
     limits: {
       maxExportQuality: 100,
-      allowedExportFormats: [EXPORT_TYPES.png, EXPORT_TYPES.svg, EXPORT_TYPES.jpeg],
+      allowedExportFormats: [
+        EXPORT_TYPES.png,
+        EXPORT_TYPES.svg,
+        EXPORT_TYPES.jpeg,
+        EXPORT_TYPES.pdf,
+      ],
       allowedAnimationFormats: [],
       pictureQualityLimit: false,
       maxProjectsCount: null,
@@ -73,6 +78,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
         EXPORT_TYPES.jpeg,
         EXPORT_TYPES.gif,
         EXPORT_TYPES.mp4,
+        EXPORT_TYPES.pdf,
       ],
       allowedAnimationFormats: [EXPORT_TYPES.gif, EXPORT_TYPES.mp4],
       pictureQualityLimit: false,

@@ -362,6 +362,16 @@ export type CommonNs = {
       exportFramesProcessed: string;
       /** Step 1 while SVG composite export runs. */
       exportSvgBuilding: string;
+      /** Step 1 while PDF export runs. */
+      exportPdfBuilding: string;
+      pdfPageFormatLabel: string;
+      pdfFormatA4: string;
+      pdfFormatA3: string;
+      pdfFormatLetter: string;
+      pdfFormatLegal: string;
+      pdfOrientationLabel: string;
+      pdfOrientationPortrait: string;
+      pdfOrientationLandscape: string;
     };
     manualEntry: {
       title: string;

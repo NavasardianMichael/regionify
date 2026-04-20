@@ -498,7 +498,7 @@ const triggerDownload = (blob: Blob, fileName: string): void => {
   URL.revokeObjectURL(url);
 };
 
-type FrameOptions = Pick<
+export type FrameOptions = Pick<
   AnimationExportOptions,
   | 'legendItems'
   | 'noDataColor'
@@ -512,7 +512,7 @@ type FrameOptions = Pick<
 >;
 
 /** Render a single frame canvas for the given time period (no interpolation). */
-const renderFrame = async (
+export const renderFrame = async (
   rawSvg: string,
   data: DataSet,
   period: string,
