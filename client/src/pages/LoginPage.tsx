@@ -17,6 +17,7 @@ import {
   clearTemporaryProjectState,
   getReturnUrl,
   getTemporaryProjectState,
+  isSafeReturnUrl,
   mergeTemporaryStateWithDefaults,
   setSkipNewProjectResetOnce,
 } from '@/helpers/temporaryProjectState';
@@ -106,7 +107,7 @@ const LoginPage: FC = () => {
 
         message.success(t('messages.loggedInSuccess'), 5);
 
-        if (pendingReturnUrl) {
+        if (pendingReturnUrl && isSafeReturnUrl(pendingReturnUrl)) {
           clearReturnUrl();
           if (
             pendingReturnUrl === ROUTES.PROJECT_NEW ||
@@ -116,6 +117,7 @@ const LoginPage: FC = () => {
           }
           navigate(pendingReturnUrl, { replace: true });
         } else {
+          clearReturnUrl();
           setSkipNewProjectResetOnce();
           navigate(ROUTES.PROJECT_NEW, { replace: true });
         }
@@ -123,10 +125,11 @@ const LoginPage: FC = () => {
         message.success(t('messages.loggedInSuccess'), 5);
 
         const returnUrl = pendingReturnUrl ?? getReturnUrl();
-        if (returnUrl) {
+        if (returnUrl && isSafeReturnUrl(returnUrl)) {
           clearReturnUrl();
           navigate(returnUrl, { replace: true });
         } else {
+          clearReturnUrl();
           navigate(ROUTES.HOME);
         }
       }

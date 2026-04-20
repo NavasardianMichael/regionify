@@ -35,7 +35,12 @@ export function readClientEntryAssets(clientDistDir: string): ClientEntryAssets 
   }
 
   const raw = readFileSync(manifestPath, 'utf-8');
-  const manifest = JSON.parse(raw) as Record<string, ManifestEntry>;
+  let manifest: Record<string, ManifestEntry>;
+  try {
+    manifest = JSON.parse(raw) as Record<string, ManifestEntry>;
+  } catch (cause) {
+    throw new Error(`Corrupted Vite manifest at ${manifestPath}`, { cause });
+  }
 
   const entry = manifest['index.html'];
   if (!entry?.file) {

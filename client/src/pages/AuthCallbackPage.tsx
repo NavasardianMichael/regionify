@@ -1,7 +1,7 @@
 import { type FC, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Flex, Spin } from 'antd';
-import type { UserPublic } from '@/api/auth/types';
+import { getMe } from '@/api/auth';
 import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
@@ -11,21 +11,19 @@ import {
   clearTemporaryProjectState,
   getReturnUrl,
   getTemporaryProjectState,
+  isSafeReturnUrl,
   mergeTemporaryStateWithDefaults,
   setSkipNewProjectResetOnce,
 } from '@/helpers/temporaryProjectState';
 
 const AuthCallbackPage: FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const setUser = useProfileStore(selectSetUser);
 
   useEffect(() => {
-    const userParam = searchParams.get('user');
-
-    if (userParam) {
+    const run = async () => {
       try {
-        const user = JSON.parse(atob(userParam)) as UserPublic;
+        const { user } = await getMe();
         setUser(user);
 
         const pendingReturnUrl = getReturnUrl();
@@ -37,7 +35,7 @@ const AuthCallbackPage: FC = () => {
           applyFullTemporaryProjectState(merged);
           clearTemporaryProjectState();
 
-          if (pendingReturnUrl) {
+          if (pendingReturnUrl && isSafeReturnUrl(pendingReturnUrl)) {
             clearReturnUrl();
             if (
               pendingReturnUrl === ROUTES.PROJECT_NEW ||
@@ -47,15 +45,17 @@ const AuthCallbackPage: FC = () => {
             }
             navigate(pendingReturnUrl, { replace: true });
           } else {
+            clearReturnUrl();
             setSkipNewProjectResetOnce();
             navigate(ROUTES.PROJECT_NEW, { replace: true });
           }
         } else {
           const returnUrl = pendingReturnUrl ?? getReturnUrl();
-          if (returnUrl) {
+          if (returnUrl && isSafeReturnUrl(returnUrl)) {
             clearReturnUrl();
             navigate(returnUrl, { replace: true });
           } else {
+            clearReturnUrl();
             navigate(ROUTES.PROJECTS, { replace: true });
           }
         }
@@ -63,10 +63,10 @@ const AuthCallbackPage: FC = () => {
         setUser(null);
         navigate(ROUTES.HOME, { replace: true });
       }
-    } else {
-      navigate(ROUTES.HOME, { replace: true });
-    }
-  }, [navigate, searchParams, setUser]);
+    };
+
+    void run();
+  }, [navigate, setUser]);
 
   return (
     <Flex align="center" justify="center" className="h-full w-full">

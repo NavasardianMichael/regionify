@@ -176,12 +176,8 @@ router.get('/google/callback', (req, res, next) => {
         })
         .catch((createErr) => logger.error({ err: createErr }, 'Failed to create session record'));
 
-      // Fetch public user data to pass to client
-      const publicUser = await authService.getUserById(typedUser.id);
-      const userParam = Buffer.from(JSON.stringify(publicUser)).toString('base64');
-
-      // Redirect to client app with user data
-      res.redirect(`${env.CLIENT_URL}/auth/callback?user=${encodeURIComponent(userParam)}`);
+      // Session cookie carries identity — redirect without embedding user data in the URL
+      res.redirect(`${env.CLIENT_URL}/auth/callback`);
     });
   })(req, res, next);
 });
@@ -298,7 +294,7 @@ router.post('/verify-email', authLimiter, validate(verifyEmailSchema), async (re
 });
 
 // DELETE /api/auth/account
-router.delete('/account', requireAuth, async (req, res, next) => {
+router.delete('/account', requireAuth, authLimiter, async (req, res, next) => {
   try {
     const userId = req.session.userId!;
 

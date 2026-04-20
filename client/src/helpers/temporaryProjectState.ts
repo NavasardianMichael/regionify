@@ -258,6 +258,11 @@ export function saveReturnUrl(url: string): void {
   }
 }
 
+/** Returns true only for safe same-origin relative paths (starts with `/`, not `//`). */
+export function isSafeReturnUrl(url: string): boolean {
+  return url.startsWith('/') && !url.startsWith('//');
+}
+
 /**
  * Get return URL from localStorage
  */

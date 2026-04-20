@@ -167,6 +167,7 @@ async function* runGeminiStream(
     },
   });
 
+  const timeoutId = setTimeout(() => controller.abort(), 60_000);
   try {
     for await (const chunk of stream) {
       const delta = chunk.text;
@@ -176,6 +177,7 @@ async function* runGeminiStream(
     }
     yield { type: 'done' };
   } finally {
+    clearTimeout(timeoutId);
     // Ensure the underlying stream is cleaned up if the caller returns early
     controller.abort();
   }
