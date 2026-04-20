@@ -118,19 +118,18 @@ export const Body: FC<BodyProps> = ({
             onRemove={onRemove}
           />
         ))}
+        <Tooltip
+          title={t('visualizer.legendModal.addRange')}
+          data-i18n-key="visualizer.legendModal.addRange"
+        >
+          <Button
+            type="dashed"
+            icon={<PlusOutlined />}
+            onClick={onAddRange}
+            className="w-full shrink-0"
+          />
+        </Tooltip>
       </Flex>
-
-      <Tooltip
-        title={t('visualizer.legendModal.addRange')}
-        data-i18n-key="visualizer.legendModal.addRange"
-      >
-        <Button
-          type="dashed"
-          icon={<PlusOutlined />}
-          onClick={onAddRange}
-          className="w-full shrink-0"
-        />
-      </Tooltip>
     </Flex>
   );
 };

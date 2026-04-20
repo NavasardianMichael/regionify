@@ -190,7 +190,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
       title={<Title />}
       open={open}
       onCancel={onModalCancel}
-      className="w-4/5! max-w-[1000px]! lg:w-2/3!"
+      className="lg:w-2/3!max-w-250! w-4/5!"
       classNames={{
         container: 'max-h-[90vh]',
         body: 'min-h-0 max-h-[calc(90vh-180px)] overflow-y-auto',

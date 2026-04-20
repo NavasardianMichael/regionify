@@ -23,7 +23,7 @@ export const FullscreenToggleButton: FC<Props> = ({
       <Button
         type="text"
         aria-label={label}
-        className="translate-x-[-22px] translate-y-[-4px]"
+        className="-translate-x-5.5 translate-y-[-4px]"
         onClick={onToggle}
         icon={<Icon className="text-gray-500!" />}
       />

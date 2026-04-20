@@ -499,7 +499,7 @@ export const AiParserModal: FC<Props> = ({
       onCancel={handleClose}
       closable={{ disabled: isAnyStreaming }}
       keyboard={!isAnyStreaming}
-      className="w-4/5! max-w-[1000px]! lg:w-2/3!"
+      className="w-4/5! max-w-250! lg:w-2/3!"
       classNames={{
         body: 'gap-3',
       }}

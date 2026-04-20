@@ -198,7 +198,7 @@ export const ManualDataEntryModal: FC<Props> = ({
           onSave={handleFooterSave}
         />
       }
-      className={`${styles.modal} w-4/5! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
+      className={`${styles.modal} w-4/5! max-w-250! lg:w-2/3! [&_.ant-table-tbody>tr>td.ant-table-cell]:text-xs [&_.ant-table-thead>tr>th]:text-xs`}
       focusable={{ trap: false }}
       data-i18n-key="visualizer.manualEntry.title"
     >

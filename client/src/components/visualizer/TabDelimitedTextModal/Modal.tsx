@@ -123,7 +123,7 @@ export const TabDelimitedTextModal: FC<Props> = ({
       open={open}
       onCancel={onClose}
       closable
-      className="w-4/5! max-w-[1000px]! lg:w-2/3!"
+      className="w-4/5! max-w-250! lg:w-2/3!"
       footer={
         <Footer
           cancelLabel={t('nav.cancel')}

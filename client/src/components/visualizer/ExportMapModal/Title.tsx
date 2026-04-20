@@ -14,7 +14,7 @@ export const Title: FC<TitleProps> = ({ variant }) => {
   const isCrop = variant === 'crop';
 
   return (
-    <Flex align="center" gap="small" className="mb-6!">
+    <Flex align="center" gap="small">
       {isCrop ? (
         <ScissorOutlined className="text-primary" />
       ) : (
