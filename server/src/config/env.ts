@@ -57,12 +57,12 @@ const envSchema = z.object({
   // Google Gemini (AI parser feature — Chronographer plan only)
   GEMINI_API_KEY: z.string().optional(),
 
-  // Lemon Squeezy (one-time checkouts; webhook for order_created)
-  LEMON_SQUEEZY_API_KEY: z.string().optional(),
-  LEMON_SQUEEZY_STORE_ID: z.string().optional(),
-  LEMON_SQUEEZY_VARIANT_ID_EXPLORER: z.string().optional(),
-  LEMON_SQUEEZY_VARIANT_ID_CHRONOGRAPHER: z.string().optional(),
-  LEMON_SQUEEZY_WEBHOOK_SECRET: z.string().optional(),
+  // Paddle Billing (one-time checkouts; webhook for transaction.completed)
+  PADDLE_API_KEY: z.string().optional(),
+  PADDLE_WEBHOOK_SECRET: z.string().optional(),
+  PADDLE_PRICE_ID_EXPLORER: z.string().optional(),
+  PADDLE_PRICE_ID_CHRONOGRAPHER: z.string().optional(),
+  PADDLE_SANDBOX: z.string().optional(), // "true" = sandbox API, omit or any other value = live
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -94,7 +94,7 @@ export function createApp(): express.Application {
   // Rate limiting (apply to all routes)
   app.use(generalLimiter);
 
-  // Body parsing (store raw body for Lemon Squeezy webhook signature verification).
+  // Body parsing (store raw body for Paddle webhook signature verification).
   app.use(
     express.json({
       limit: '100kb',

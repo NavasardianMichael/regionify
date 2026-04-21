@@ -48,7 +48,11 @@ const PaymentReturnPage: FC = () => {
           if (intervalIdRef.current) clearInterval(intervalIdRef.current);
           setUpgradedBadge(user.badge);
           setStatus('success');
-          setMessageText(`You're now on the ${user.badge} badge.`);
+          const badgeName =
+            user.badge === BADGES.explorer
+              ? t('badges.items.explorer.name')
+              : t('badges.items.chronographer.name');
+          setMessageText(t('badges.badgeUpgraded', { badge: badgeName }));
           return;
         }
       } catch {
@@ -73,7 +77,7 @@ const PaymentReturnPage: FC = () => {
     return (
       <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
         <Spin size="large" />
-        <Typography.Text>Payment successful. Updating your badge...</Typography.Text>
+        <Typography.Text>{t('badges.paymentVerifying')}</Typography.Text>
       </Flex>
     );
   }
@@ -96,10 +100,10 @@ const PaymentReturnPage: FC = () => {
   return (
     <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
       <CheckCircleOutlined className="text-6xl text-green-500" />
-      <Typography.Title level={3}>Payment successful</Typography.Title>
+      <Typography.Title level={3}>{t('badges.paymentSuccessTitle')}</Typography.Title>
       <Typography.Text type="secondary">{messageText}</Typography.Text>
       <Button type="primary" icon={<CheckCircleOutlined />} onClick={handleContinue}>
-        Continue to My Projects
+        {t('badges.continueToProjects')}
       </Button>
       {!upgradedBadge && (
         <Button

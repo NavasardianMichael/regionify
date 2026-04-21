@@ -142,7 +142,7 @@ const de: CommonNs = {
     subtitle: 'Wählen Sie Ihren Zugangsumfang — einmal zahlen, keine laufenden Kosten.',
     oneTimeTagline: 'Einmalzahlung · Kein Abonnement · Dauerhafter Zugang',
     paymentNote:
-      'Zahlungen sind sicher über Lemon Squeezy. Keine Kartendaten werden auf unseren Servern gespeichert.',
+      'Zahlungen sind sicher über Paddle. Keine Kartendaten werden auf unseren Servern gespeichert.',
     paymentIssueNote: 'Wenn Sie Probleme mit Ihrer Zahlung haben, wenden Sie sich bitte an',
     paymentContactUs: 'uns',
     checkoutError: 'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',
@@ -156,6 +156,10 @@ const de: CommonNs = {
       'Badge konnte nicht verifiziert werden. Bitte aktualisieren Sie die Seite oder öffnen Sie die Seite «Preise».',
     backToBadges: 'Zurück zu Preisen',
     goToBadges: 'Zu Preisen',
+    badgeUpgraded: 'Sie sind jetzt auf dem {{badge}}-Badge.',
+    paymentVerifying: 'Zahlung erfolgreich. Badge wird aktualisiert…',
+    paymentSuccessTitle: 'Zahlung erfolgreich',
+    continueToProjects: 'Zu meinen Projekten',
     rows: {
       projectsLimited: 'Bis zu {{count}} gespeicherte Projekte',
       projectsUnlimited: 'Unbegrenzt gespeicherte Projekte',

@@ -8,7 +8,7 @@ const router: ExpressRouter = Router();
 
 type RequestWithRawBody = Request & { rawBody?: Buffer };
 
-/** POST /api/payments/create-checkout - Create Lemon Squeezy checkout (auth required). Body: { badge: BADGES.explorer | BADGES.chronographer } */
+/** POST /api/payments/create-checkout - Create Paddle checkout (auth required). Body: { badge: BADGES.explorer | BADGES.chronographer } */
 router.post('/create-checkout', requireAuth, async (req, res, next) => {
   try {
     const userId = req.session.userId!;
@@ -27,11 +27,10 @@ router.post('/create-checkout', requireAuth, async (req, res, next) => {
   }
 });
 
-/** POST /api/payments/webhook - Lemon Squeezy webhook (no auth). Verifies X-Signature and handles order_created. */
+/** POST /api/payments/webhook - Paddle webhook (no auth). Verifies Paddle-Signature and handles transaction.completed. */
 router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   const rawBody = req.rawBody;
-  const signature = req.get('X-Signature') ?? '';
-  const eventName = req.get('X-Event-Name');
+  const signature = req.get('Paddle-Signature') ?? '';
 
   if (!rawBody) {
     res
@@ -47,14 +46,15 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
     return;
   }
 
-  if (eventName !== 'order_created') {
+  const body = req.body as { event_type?: string };
+  if (body.event_type !== 'transaction.completed') {
     res.status(200).send();
     return;
   }
 
-  const payload = req.body as Parameters<typeof paymentService.handleOrderCreated>[0];
+  const payload = req.body as Parameters<typeof paymentService.handleTransactionCompleted>[0];
   paymentService
-    .handleOrderCreated(payload)
+    .handleTransactionCompleted(payload)
     .then(() => res.status(200).send())
     .catch(next);
 });

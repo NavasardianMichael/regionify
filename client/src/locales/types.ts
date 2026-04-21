@@ -98,6 +98,10 @@ export type CommonNs = {
     verifyErrorNote: string;
     backToBadges: string;
     goToBadges: string;
+    badgeUpgraded: string;
+    paymentVerifying: string;
+    paymentSuccessTitle: string;
+    continueToProjects: string;
     rows: {
       projectsLimited: string;
       projectsUnlimited: string;
