@@ -140,7 +140,7 @@ const es: CommonNs = {
     subtitle: 'Elige tu nivel de acceso — paga una vez, sin cargos recurrentes.',
     oneTimeTagline: 'Pago único · Sin suscripción · Acceso de por vida',
     paymentNote:
-      'Los pagos son seguros a través de Lemon Squeezy. No se almacenan datos de tarjeta en nuestros servidores.',
+      'Los pagos son seguros a través de Paddle. No se almacenan datos de tarjeta en nuestros servidores.',
     paymentIssueNote: 'Si tienes algún problema con tu pago, por favor',
     paymentContactUs: 'contáctanos',
     checkoutError: 'No se pudo iniciar el pago. Inténtalo de nuevo.',
@@ -153,6 +153,10 @@ const es: CommonNs = {
     verifyErrorNote: 'No se pudo verificar tu badge. Actualiza o revisa Precios.',
     backToBadges: 'Volver a precios',
     goToBadges: 'Ir a precios',
+    badgeUpgraded: 'Ahora tienes el badge {{badge}}.',
+    paymentVerifying: 'Pago exitoso. Actualizando tu badge…',
+    paymentSuccessTitle: 'Pago exitoso',
+    continueToProjects: 'Ir a mis proyectos',
     rows: {
       projectsLimited: 'Hasta {{count}} proyectos guardados',
       projectsUnlimited: 'Proyectos guardados ilimitados',

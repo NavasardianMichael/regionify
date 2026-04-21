@@ -36,7 +36,7 @@ export const ROUTES = {
   AUTH_CALLBACK: '/auth/callback',
   ACCOUNT_DELETED: '/account-deleted',
 
-  // Payment return/cancel (Lemon Squeezy redirect)
+  // Payment return/cancel (Paddle redirect)
   PAYMENTS_RETURN: '/payments/return',
   PAYMENTS_CANCEL: '/payments/cancel',
 } as const;
