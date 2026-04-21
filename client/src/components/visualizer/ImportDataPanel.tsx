@@ -25,7 +25,6 @@ import {
 import { BADGE_DETAILS, BADGES, extractGid } from '@regionify/shared';
 import type { RadioChangeEvent, UploadProps } from 'antd';
 import { Button, Flex, Radio, Spin, theme, Tooltip, Typography, Upload } from 'antd';
-import * as XLSX from 'xlsx';
 import { fetchAiRemaining } from '@/api/ai';
 import {
   selectClearTimelineData,
@@ -47,6 +46,7 @@ import type { ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@/constants/data';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { writeRowsToXlsxFile } from '@/helpers/excelAsync';
 import {
   convertToRegionData,
   IMPORT_FORMAT_ORDER,
@@ -205,11 +205,8 @@ export const ImportDataPanel: FC = () => {
           mimeType = 'application/json';
           break;
         case 'excel': {
-          const worksheet = XLSX.utils.json_to_sheet(rows);
-          const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
           const filename = `${projectName}${suffix}.xlsx`;
-          XLSX.writeFile(workbook, filename);
+          await writeRowsToXlsxFile(filename, rows);
           setIsDownloading(false);
           return;
         }
@@ -303,10 +300,7 @@ export const ImportDataPanel: FC = () => {
           mimeType = 'application/json';
           break;
         case 'excel': {
-          const worksheet = XLSX.utils.json_to_sheet(rows);
-          const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-          XLSX.writeFile(workbook, `${baseName}.xlsx`);
+          await writeRowsToXlsxFile(`${baseName}.xlsx`, rows);
           setIsDownloadingSample(false);
           return;
         }
@@ -735,10 +729,10 @@ export const ImportDataPanel: FC = () => {
       // Handle Excel files differently (binary)
       if (importDataType === 'excel') {
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
           try {
             const buffer = e.target?.result as ArrayBuffer;
-            const parsed = parseExcel(buffer);
+            const parsed = await parseExcel(buffer);
 
             if (parsed.length === 0) {
               showMessageWithClose(messageApi, 'warning', t('messages.noValidDataExcel'));

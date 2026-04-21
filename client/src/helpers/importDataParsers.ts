@@ -2,7 +2,6 @@
  * Parsers and helpers for import data (CSV, Excel, JSON).
  * Used by ImportDataPanel to normalize user data into region format.
  */
-import * as XLSX from 'xlsx';
 import type { RegionData } from '@/store/mapData/types';
 import type { ImportDataType } from '@/types/mapData';
 import { mapDataToSvgRegions } from '@/helpers/textSimilarity';
@@ -91,37 +90,7 @@ export const parseCSV = (content: string): ParseCSVResult => {
   return data;
 };
 
-export const parseExcel = (buffer: ArrayBuffer): ParsedRow[] => {
-  const workbook = XLSX.read(buffer, { type: 'array' });
-  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet);
-
-  const data: ParsedRow[] = [];
-
-  for (const row of jsonData) {
-    const keys = Object.keys(row);
-
-    const idKey = keys.find((key) => key.toLowerCase() === 'id');
-    const labelKey = keys.find((key) =>
-      /^(label|region|name|area|province|state|country)/i.test(String(key)),
-    );
-    const valueKey = keys.find((key) =>
-      /^(value|count|amount|number|data|total|population)/i.test(String(key)),
-    );
-    const timeKey = keys.find((key) => TIME_COLUMN_PATTERN.test(String(key)));
-
-    const id = idKey ? String(row[idKey] ?? '').trim() : undefined;
-    const label = String(row[labelKey ?? keys[idKey ? 1 : 0]] ?? '');
-    const value = parseFloat(String(row[valueKey ?? keys[idKey ? 2 : 1]] ?? ''));
-    const timePeriod = timeKey ? String(row[timeKey] ?? '') : undefined;
-
-    if (id && label && !isNaN(value)) {
-      data.push({ id, label, value, timePeriod: timePeriod || undefined });
-    }
-  }
-
-  return data;
-};
+export { parseExcelBuffer as parseExcel } from '@/helpers/excelAsync';
 
 export const parseJSON = (content: string): ParsedRow[] => {
   try {

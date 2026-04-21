@@ -150,11 +150,8 @@ export const Form: FC<FormProps> = (props) => {
             <Radio.Group
               value={pdfOrientation}
               onChange={handlePdfOrientationChange}
-              optionType="button"
-              buttonStyle="outline"
-              block
+              optionType="default"
               disabled={isExporting}
-              className="px-0.5!"
               aria-label={t('visualizer.exportModal.pdfOrientationLabel')}
             >
               <Radio.Button
