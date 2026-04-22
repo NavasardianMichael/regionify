@@ -1,0 +1,93 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
+  slug: string;
+  ogImage?: string;
+  datasetJsonLd?: object;
+  divisionsJsonLd?: object;
+}
+
+const {
+  seoTitle,
+  seoDescription,
+  seoKeywords,
+  slug,
+  ogImage,
+  datasetJsonLd,
+  divisionsJsonLd,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const canonicalUrl = `https://regionify.com${base}${slug}/`;
+const ogImageUrl = ogImage ? `https://regionify.com${base}assets/${slug}/${ogImage}` : `https://regionify.com/og-image.jpg`;
+
+const softwareAppJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Regionify',
+  description:
+    'Create choropleth maps for any country or region. Import data, customize styling, and export as PNG, SVG, GIF, MP4, or PDF.',
+  url: 'https://regionify.com',
+  applicationCategory: 'DataVisualization',
+  offers: [
+    { '@type': 'Offer', name: 'Observer', price: '0', priceCurrency: 'USD' },
+    { '@type': 'Offer', name: 'Explorer', price: '49', priceCurrency: 'USD' },
+    { '@type': 'Offer', name: 'Chronographer', price: '149', priceCurrency: 'USD' },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{seoTitle}</title>
+    <meta name="description" content={seoDescription} />
+    <meta name="keywords" content={seoKeywords} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:title" content={seoTitle} />
+    <meta property="og:description" content={seoDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Regionify" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seoTitle} />
+    <meta name="twitter:description" content={seoDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="icon" href="/favicon.ico" />
+
+    {
+      datasetJsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(datasetJsonLd)}
+        />
+      )
+    }
+    {
+      divisionsJsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(divisionsJsonLd)}
+        />
+      )
+    }
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(softwareAppJsonLd)}
+    />
+  </head>
+  <body class="bg-white text-gray-900">
+    <slot />
+  </body>
+</html>

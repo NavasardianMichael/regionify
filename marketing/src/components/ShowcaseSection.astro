@@ -1,0 +1,96 @@
+---
+import ShowcaseItem from './ShowcaseItem.astro';
+import type { CountryRow } from '@/data/parseCountries';
+
+interface Props {
+  country: CountryRow;
+}
+
+const { country } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const assetBase = `${base}assets/${country.slug}/`;
+
+type ShowcaseItemDef = {
+  title: string;
+  description: string;
+  badge: string;
+  asset: string;
+  assetType: 'image' | 'video' | 'gif';
+};
+
+const allItems: ShowcaseItemDef[] = [
+  {
+    title: `${country.name_en} choropleth map`,
+    description: `Visualize ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()} as a choropleth map. Color regions by any numeric dataset — population, GDP, unemployment, health outcomes, and more. Export as PNG, JPEG, or PDF.`,
+    badge: 'All plans',
+    asset: country.asset_static,
+    assetType: 'image',
+  },
+  {
+    title: 'Vector SVG export',
+    description: `Export your ${country.name_en} map as a scalable vector graphic (SVG). Ideal for print publications, editorial illustrations, and web use — scales to any resolution without quality loss.`,
+    badge: 'Explorer & above',
+    asset: country.asset_svg,
+    assetType: 'image',
+  },
+  {
+    title: 'Animated GIF',
+    description: `Bring your ${country.name_en} data to life. Import historical time-series data and export a looping animated GIF showing how regional values changed over time.`,
+    badge: 'Chronographer only',
+    asset: country.asset_gif,
+    assetType: 'gif',
+  },
+  {
+    title: 'MP4 video export',
+    description: `Export your ${country.name_en} time-series map as an MP4 video. Perfect for presentations, reports, and social media posts where motion communicates change more clearly than static images.`,
+    badge: 'Chronographer only',
+    asset: country.asset_mp4,
+    assetType: 'video',
+  },
+  {
+    title: 'Public share page',
+    description: `Share your ${country.name_en} choropleth map with a public link. Anyone with the URL can view the full interactive map — no account or login required.`,
+    badge: 'Explorer & above',
+    asset: country.asset_embed_page,
+    assetType: 'image',
+  },
+  {
+    title: 'Embeddable iframe',
+    description: `Embed your ${country.name_en} choropleth map directly on any website, article, or dashboard with a single iframe snippet. Fully responsive and always up to date.`,
+    badge: 'Explorer & above',
+    asset: country.asset_iframe,
+    assetType: 'image',
+  },
+];
+
+const items = allItems.filter((item) => item.asset && item.asset.trim() !== '');
+---
+
+{
+  items.length > 0 && (
+    <section class="bg-white py-16 md:py-24">
+      <div class="mx-auto max-w-6xl px-4 md:px-6">
+        <h2 class="text-primary mb-2 text-center text-2xl font-bold md:text-3xl">
+          What you can create with {country.name_en}
+        </h2>
+        <p class="mb-12 text-center text-base text-gray-500">
+          From static maps to animated time-series — every format, ready to export.
+        </p>
+
+        <div class="flex flex-col gap-12">
+          {items.map((item, i) => (
+            <ShowcaseItem
+              title={item.title}
+              description={item.description}
+              badge={item.badge}
+              assetPath={`${assetBase}${item.asset}`}
+              assetType={item.assetType}
+              reverse={i % 2 === 1}
+              index={i}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

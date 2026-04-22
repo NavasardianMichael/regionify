@@ -1,0 +1,34 @@
+---
+interface Props {
+  countryName: string;
+  divisionType: string;
+}
+
+const { countryName, divisionType } = Astro.props;
+---
+
+<section class="bg-primary py-16 md:py-24">
+  <div class="mx-auto max-w-6xl px-4 text-center md:px-6">
+    <h2 class="mb-4 text-3xl font-bold text-white md:text-4xl">
+      Create your own {countryName} choropleth map
+    </h2>
+    <p class="mx-auto mb-8 max-w-xl text-lg text-white/80">
+      Import your data, color {divisionType.toLowerCase()} by any metric, and export in seconds.
+      Free to start — no credit card required.
+    </p>
+    <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <a
+        href="https://regionify.com/projects/new"
+        class="rounded border border-white/70 px-8 py-3 text-base font-medium text-white transition-opacity hover:opacity-80"
+      >
+        Start for free
+      </a>
+      <a
+        href="https://regionify.com/billing"
+        class="text-base font-medium text-white/70 hover:text-white transition-colors"
+      >
+        View pricing →
+      </a>
+    </div>
+  </div>
+</section>

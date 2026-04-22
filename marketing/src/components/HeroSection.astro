@@ -1,0 +1,57 @@
+---
+import { formatNumber, formatArea } from '@/data/parseCountries';
+import type { CountryRow } from '@/data/parseCountries';
+
+interface Props {
+  country: CountryRow;
+}
+
+const { country } = Astro.props;
+---
+
+<section class="bg-primary py-16 md:py-24">
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="mb-4 text-5xl">{country.flag_emoji}</p>
+      <h1 class="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+        {country.name_en}
+        {country.name_local !== country.name_en && (
+          <span class="block text-2xl font-normal text-white/70 md:text-3xl mt-2">
+            {country.name_local}
+          </span>
+        )}
+      </h1>
+      <p class="mb-8 text-lg text-white/80 md:text-xl leading-relaxed">
+        {country.intro_text}
+      </p>
+
+      <div class="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
+          <p class="text-xs font-medium uppercase tracking-wide text-white/60">Capital</p>
+          <p class="mt-1 text-base font-semibold">{country.capital}</p>
+        </div>
+        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
+          <p class="text-xs font-medium uppercase tracking-wide text-white/60">Population</p>
+          <p class="mt-1 text-base font-semibold">{formatNumber(country.population)}</p>
+        </div>
+        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
+          <p class="text-xs font-medium uppercase tracking-wide text-white/60">Area</p>
+          <p class="mt-1 text-base font-semibold">{formatArea(country.area_km2)}</p>
+        </div>
+        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
+          <p class="text-xs font-medium uppercase tracking-wide text-white/60">
+            {country.division_type}
+          </p>
+          <p class="mt-1 text-base font-semibold">{country.division_count}</p>
+        </div>
+      </div>
+
+      <a
+        href="https://regionify.com/projects/new"
+        class="inline-block rounded border border-white/70 px-8 py-3 text-base font-medium text-white transition-opacity hover:opacity-80"
+      >
+        Create your {country.name_en} map
+      </a>
+    </div>
+  </div>
+</section>

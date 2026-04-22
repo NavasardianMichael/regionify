@@ -214,6 +214,12 @@ export function setupWebClient(app: Application): void {
       .send(buildRobotsTxt(siteUrl));
   });
 
+  const marketingStaticDir = env.MARKETING_STATIC_DIR;
+  if (marketingStaticDir && existsSync(marketingStaticDir)) {
+    app.use('/maps', express.static(marketingStaticDir, { index: 'index.html' }));
+    logger.info({ marketingStaticDir }, 'Marketing pages served at /maps');
+  }
+
   app.use(express.static(staticDir, { index: false, fallthrough: true }));
 
   app.get('/{*path}', (req: Request, res: Response, next) => {

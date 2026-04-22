@@ -1,0 +1,26 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-gray-200 bg-white py-8">
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <div class="flex flex-col items-center gap-3 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left">
+      <p>
+        © {year}
+        <a href="https://regionify.com" class="text-primary hover:underline font-medium">
+          Regionify
+        </a>
+        — Create choropleth maps for any country or region.
+      </p>
+      <div class="flex gap-6">
+        <a href="https://regionify.com" class="hover:text-primary transition-colors">Home</a>
+        <a href="https://regionify.com/pricing" class="hover:text-primary transition-colors"
+          >Pricing</a
+        >
+        <a href="https://regionify.com/contact" class="hover:text-primary transition-colors"
+          >Contact</a
+        >
+      </div>
+    </div>
+  </div>
+</footer>

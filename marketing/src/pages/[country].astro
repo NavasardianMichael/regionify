@@ -1,0 +1,79 @@
+---
+import CtaSection from '@/components/CtaSection.astro';
+import DivisionsSection from '@/components/DivisionsSection.astro';
+import Footer from '@/components/Footer.astro';
+import HeroSection from '@/components/HeroSection.astro';
+import MapPreview from '@/components/MapPreview.astro';
+import Nav from '@/components/Nav.astro';
+import ShowcaseSection from '@/components/ShowcaseSection.astro';
+import { getCountries, getDivisionsForCountry } from '@/data/parseCountries';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+
+export async function getStaticPaths() {
+  const countries = getCountries();
+  return countries.map((country) => ({
+    params: { country: country.slug },
+    props: { country },
+  }));
+}
+
+const { country } = Astro.props;
+const divisions = getDivisionsForCountry(country.region_id);
+
+const datasetJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `${country.dataset_label} — ${country.name_en}`,
+  description: `Regional ${country.dataset_label.toLowerCase()} data for ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()}. Data year: ${country.dataset_year}.`,
+  creator: {
+    '@type': 'Organization',
+    name: country.dataset_source,
+    url: country.dataset_source_url,
+  },
+  datePublished: country.dataset_year,
+  spatialCoverage: {
+    '@type': 'Place',
+    name: country.name_en,
+  },
+  variableMeasured: {
+    '@type': 'PropertyValue',
+    name: country.dataset_label,
+    unitText: country.dataset_unit,
+  },
+  url: country.dataset_source_url,
+};
+
+const divisionsJsonLd =
+  divisions.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Table',
+        about: {
+          '@type': 'Place',
+          name: country.name_en,
+        },
+        name: `${country.name_en} ${country.division_type} — ${country.dataset_label}`,
+        description: `Table of ${country.division_count} ${country.division_type.toLowerCase()} of ${country.name_en} with ${country.dataset_label.toLowerCase()} values (${country.dataset_year}).`,
+      }
+    : undefined;
+---
+
+<MarketingLayout
+  seoTitle={country.seo_title}
+  seoDescription={country.seo_description}
+  seoKeywords={country.seo_keywords}
+  slug={country.slug}
+  ogImage={country.asset_static || undefined}
+  datasetJsonLd={datasetJsonLd}
+  divisionsJsonLd={divisionsJsonLd}
+>
+  <Nav />
+  <main>
+    <HeroSection country={country} />
+    {divisions.length > 0 && <MapPreview country={country} divisions={divisions} />}
+    <ShowcaseSection country={country} />
+    {divisions.length > 0 && <DivisionsSection country={country} divisions={divisions} />}
+    <CtaSection countryName={country.name_en} divisionType={country.division_type} />
+  </main>
+  <Footer />
+</MarketingLayout>
