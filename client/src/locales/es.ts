@@ -148,6 +148,7 @@ const es: CommonNs = {
     bestChoice: 'Mejor opción',
     priceFree: 'Gratis',
     priceOneTime: '{{price}} pago único',
+    localCurrencyNote: 'Precios mostrados en tu moneda local.',
     paymentPendingNote:
       'Pago recibido. Tu badge puede tardar un momento en actualizarse. Actualiza la página o revisa Precios.',
     verifyErrorNote: 'No se pudo verificar tu badge. Actualiza o revisa Precios.',

@@ -149,6 +149,7 @@ const fr: CommonNs = {
     bestChoice: 'Meilleur choix',
     priceFree: 'Gratuit',
     priceOneTime: '{{price}} paiement unique',
+    localCurrencyNote: 'Prix affichés dans votre devise locale.',
     paymentPendingNote:
       'Paiement reçu. La mise à jour de votre badge peut prendre un instant. Actualisez la page ou consultez Tarifs.',
     verifyErrorNote: 'Impossible de vérifier votre badge. Actualisez ou consultez Tarifs.',

@@ -138,6 +138,7 @@ const zh: CommonNs = {
     bestChoice: '最佳选择',
     priceFree: '免费',
     priceOneTime: '{{price}} 一次性',
+    localCurrencyNote: '价格以您当地货币显示。',
     paymentPendingNote: '支付已收到。徽章更新可能需要一点时间。请刷新页面或前往「定价」页面查看。',
     verifyErrorNote: '无法验证您的徽章。请刷新页面或前往「定价」页面查看。',
     backToBadges: '返回定价',

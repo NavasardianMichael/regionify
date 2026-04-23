@@ -29,6 +29,19 @@ export type CreateCheckoutResult = {
   checkoutUrl: string;
 };
 
+export type LocalizedPrices = { explorer: string | null; chronographer: string | null };
+
+type PaddlePricingPreviewResponse = {
+  data?: {
+    details?: {
+      line_items?: Array<{
+        price?: { id?: string };
+        formatted_totals?: { total?: string };
+      }>;
+    };
+  };
+};
+
 type TransactionCompletedPayload = {
   data?: {
     custom_data?: { user_id?: string };
@@ -90,6 +103,62 @@ export const paymentService = {
     }
 
     return { checkoutUrl };
+  },
+
+  /**
+   * Call Paddle Pricing Preview API and return formatted totals for paid badge tiers.
+   * Returns null for a badge if its price ID is not configured.
+   */
+  async getPricingPreview(customerIp: string): Promise<LocalizedPrices> {
+    const explorerPriceId = env.PADDLE_PRICE_ID_EXPLORER;
+    const chronographerPriceId = env.PADDLE_PRICE_ID_CHRONOGRAPHER;
+
+    if (!explorerPriceId && !chronographerPriceId) {
+      return { explorer: null, chronographer: null };
+    }
+
+    const apiKey = env.PADDLE_API_KEY;
+    if (!apiKey) {
+      return { explorer: null, chronographer: null };
+    }
+
+    const items = [
+      ...(explorerPriceId ? [{ price_id: explorerPriceId, quantity: 1 }] : []),
+      ...(chronographerPriceId ? [{ price_id: chronographerPriceId, quantity: 1 }] : []),
+    ];
+
+    const res = await fetch(`${PADDLE_API_BASE}/pricing-preview`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ items, customer_ip_address: customerIp || undefined }),
+    });
+
+    if (!res.ok) {
+      const err = (await res.json().catch(() => ({}))) as { error?: { detail?: string } };
+      const detail = err.error?.detail ?? res.statusText;
+      throw new AppError(
+        HttpStatus.BAD_GATEWAY,
+        ErrorCode.INTERNAL_ERROR,
+        `Paddle pricing preview failed: ${detail}`,
+      );
+    }
+
+    const json = (await res.json()) as PaddlePricingPreviewResponse;
+    const lineItems = json.data?.details?.line_items ?? [];
+
+    const findTotal = (priceId: string | undefined): string | null => {
+      if (!priceId) return null;
+      const item = lineItems.find((li) => li.price?.id === priceId);
+      return item?.formatted_totals?.total ?? null;
+    };
+
+    return {
+      explorer: findTotal(explorerPriceId),
+      chronographer: findTotal(chronographerPriceId),
+    };
   },
 
   /**

@@ -1,5 +1,5 @@
 import { PAYMENT_ENDPOINTS } from './endpoints';
-import type { CreateCheckoutPayload, CreateCheckoutResponse } from './types';
+import type { CreateCheckoutPayload, CreateCheckoutResponse, LocalizedPrices } from './types';
 
 type ApiResult<T> = { success: true; data: T } | { success: false; error: { message: string } };
 
@@ -23,5 +23,12 @@ export async function createCheckout(
     throw new Error(msg);
   }
 
+  return data.data;
+}
+
+export async function getPricingPreview(): Promise<LocalizedPrices> {
+  const response = await fetch(PAYMENT_ENDPOINTS.pricingPreview);
+  const data = (await response.json()) as ApiResult<LocalizedPrices>;
+  if (!response.ok || !data.success) throw new Error('Failed to fetch pricing');
   return data.data;
 }

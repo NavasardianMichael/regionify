@@ -147,6 +147,7 @@ const en: CommonNs = {
     bestChoice: 'Best Choice',
     priceFree: 'Free',
     priceOneTime: '{{price}} one-time',
+    localCurrencyNote: 'Prices shown in your local currency.',
     paymentPendingNote:
       'Payment received. Your badge may take a moment to update. Refresh the page or open Pricing.',
     verifyErrorNote: 'Could not verify your badge. Please refresh or open Pricing.',

@@ -7,3 +7,5 @@ export type CreateCheckoutPayload = {
 export type CreateCheckoutResponse = {
   checkoutUrl: string;
 };
+
+export type LocalizedPrices = { explorer: string | null; chronographer: string | null };
