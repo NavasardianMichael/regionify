@@ -10,9 +10,18 @@ export type BadgeCardProps = {
   currentBadge: Badge;
   onUpgrade: (badge: PayableBadge) => void;
   upgradingBadge: PayableBadge | null;
+  localizedPrice?: string;
+  hideButton?: boolean;
 };
 
-const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradingBadge }) => {
+const BadgeCard: FC<BadgeCardProps> = ({
+  tier,
+  currentBadge,
+  onUpgrade,
+  upgradingBadge,
+  localizedPrice,
+  hideButton = false,
+}) => {
   const { t } = useTypedTranslation();
   const isCurrentBadge = tier.id === currentBadge;
   const isUpgrading = upgradingBadge === tier.id;
@@ -28,8 +37,11 @@ const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradin
     if (tier.price === 0) {
       return t('badges.priceFree');
     }
+    if (localizedPrice) {
+      return t('badges.priceOneTime', { price: localizedPrice });
+    }
     return t('badges.priceOneTime', { price: `$${tier.price}` });
-  }, [tier.price, t]);
+  }, [tier.price, localizedPrice, t]);
 
   const buttonType = useMemo(() => (isCurrentBadge ? 'default' : 'primary'), [isCurrentBadge]);
 
@@ -126,36 +138,37 @@ const BadgeCard: FC<BadgeCardProps> = ({ tier, currentBadge, onUpgrade, upgradin
           ))}
         </Flex>
 
-        {isCurrentBadge ? (
-          <Button
-            type={buttonType}
-            variant="outlined"
-            color="default"
-            block
-            className="mt-auto shrink-0"
-            disabled
-            loading={isUpgrading}
-            icon={isUpgrading ? <LoadingOutlined /> : undefined}
-            onClick={handleClick}
-            data-i18n-key="badges.currentBadge"
-          >
-            {t('badges.currentBadge')}
-          </Button>
-        ) : (
-          <Button
-            type={buttonType}
-            variant="solid"
-            color="primary"
-            block
-            className="mt-auto shrink-0"
-            loading={isUpgrading}
-            icon={isUpgrading ? <LoadingOutlined /> : undefined}
-            onClick={handleClick}
-            data-i18n-key="badges.items.explorer.buttonText"
-          >
-            {tier.buttonText}
-          </Button>
-        )}
+        {!hideButton &&
+          (isCurrentBadge ? (
+            <Button
+              type={buttonType}
+              variant="outlined"
+              color="default"
+              block
+              className="mt-auto shrink-0"
+              disabled
+              loading={isUpgrading}
+              icon={isUpgrading ? <LoadingOutlined /> : undefined}
+              onClick={handleClick}
+              data-i18n-key="badges.currentBadge"
+            >
+              {t('badges.currentBadge')}
+            </Button>
+          ) : (
+            <Button
+              type={buttonType}
+              variant="solid"
+              color="primary"
+              block
+              className="mt-auto shrink-0"
+              loading={isUpgrading}
+              icon={isUpgrading ? <LoadingOutlined /> : undefined}
+              onClick={handleClick}
+              data-i18n-key="badges.items.explorer.buttonText"
+            >
+              {tier.buttonText}
+            </Button>
+          ))}
       </Flex>
     </Card>
   );

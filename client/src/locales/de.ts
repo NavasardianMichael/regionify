@@ -150,6 +150,7 @@ const de: CommonNs = {
     bestChoice: 'Beste Wahl',
     priceFree: 'Kostenlos',
     priceOneTime: '{{price}} einmalig',
+    localCurrencyNote: 'Preise werden in Ihrer lokalen Währung angezeigt.',
     paymentPendingNote:
       'Zahlung eingegangen. Die Aktualisierung Ihres Badges kann einen Moment dauern. Laden Sie die Seite neu oder öffnen Sie die Seite «Preise».',
     verifyErrorNote:

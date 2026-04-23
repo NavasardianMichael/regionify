@@ -147,6 +147,7 @@ const ru: CommonNs = {
     bestChoice: 'Лучший выбор',
     priceFree: 'Бесплатно',
     priceOneTime: '{{price}} единоразово',
+    localCurrencyNote: 'Цены отображаются в вашей местной валюте.',
     paymentPendingNote:
       'Платёж получен. Обновление бейджа может занять некоторое время. Обновите страницу или откройте раздел «Тарифы».',
     verifyErrorNote:

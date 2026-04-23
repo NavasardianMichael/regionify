@@ -2,6 +2,7 @@ import { type FC, useMemo } from 'react';
 import { type Badge } from '@regionify/shared';
 import { Flex, Typography } from 'antd';
 import { useBillingBadges } from '@/hooks/useBillingBadges';
+import { usePricingPreview } from '@/hooks/usePricingPreview';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
@@ -17,6 +18,8 @@ const SECTION_VARIANTS = {
       'm-0 flex w-full list-none flex-wrap items-stretch! justify-center gap-6 p-0 lg:items-start',
     itemClassName: 'w-full md:w-80 md:shrink-0',
     listGap: 'large' as const,
+    hideButtons: true,
+    showUpgradeLink: true,
     showPaymentNotes: false,
   },
   billing: {
@@ -27,6 +30,8 @@ const SECTION_VARIANTS = {
       'm-0 flex w-full min-w-0 list-none flex-wrap items-stretch! justify-center gap-8 p-0 md:gap-6 lg:items-start',
     itemClassName: 'w-full flex-col md:w-80 md:shrink-0',
     listGap: 'middle' as const,
+    hideButtons: false,
+    showUpgradeLink: false,
     showPaymentNotes: true,
   },
 };
@@ -46,6 +51,7 @@ const BadgesSection: FC<BadgesSectionProps> = ({
 }) => {
   const { t } = useTypedTranslation();
   const billingBadges = useBillingBadges();
+  const { prices } = usePricingPreview();
 
   const variantConfig = useMemo(() => SECTION_VARIANTS[variant], [variant]);
 
@@ -81,10 +87,39 @@ const BadgesSection: FC<BadgesSectionProps> = ({
               currentBadge={currentBadge}
               onUpgrade={onUpgrade}
               upgradingBadge={upgradingBadge}
+              hideButton={variantConfig.hideButtons}
+              localizedPrice={
+                tier.id === 'explorer'
+                  ? (prices?.explorer ?? undefined)
+                  : tier.id === 'chronographer'
+                    ? (prices?.chronographer ?? undefined)
+                    : undefined
+              }
             />
           </li>
         ))}
       </ul>
+
+      <Flex vertical gap="small">
+        {variantConfig.showUpgradeLink ? (
+          <Flex justify="center">
+            <AppNavLink
+              to={ROUTES.BILLING}
+              className="bg-primary my-0 rounded-lg font-semibold text-white underline!"
+              data-i18n-key="badges.goToBadges"
+            >
+              {t('badges.goToBadges')}
+            </AppNavLink>
+          </Flex>
+        ) : null}
+
+        {prices !== null &&
+        [prices.explorer, prices.chronographer].some((p) => p !== null && !p.startsWith('$')) ? (
+          <Typography.Text type="secondary" className="text-center text-sm">
+            {t('badges.localCurrencyNote')}
+          </Typography.Text>
+        ) : null}
+      </Flex>
 
       {variantConfig.showPaymentNotes ? (
         <>

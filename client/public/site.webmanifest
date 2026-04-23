@@ -1,12 +1,28 @@
 {
   "name": "Regionify - Interactive Map Visualization",
   "short_name": "Regionify",
-  "description": "Create beautiful interactive regional map visualizations with customizable legends and data import",
+  "description": "Turn data into interactive choropleth maps — import CSV, Excel, JSON or Google Sheets, animate time-series, and export or embed your maps. One-time pricing.",
+  "id": "/",
   "start_url": "/visualizer",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "theme_color": "#18294D",
   "background_color": "#ffffff",
+  "categories": ["productivity", "utilities"],
   "icons": [
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
@@ -17,13 +33,13 @@
       "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
-      "src": "/favicon-96x96.png",
-      "sizes": "96x96",
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ]
 }

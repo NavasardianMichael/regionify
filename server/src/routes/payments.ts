@@ -8,6 +8,16 @@ const router: ExpressRouter = Router();
 
 type RequestWithRawBody = Request & { rawBody?: Buffer };
 
+/** GET /api/payments/pricing-preview - Return Paddle localized prices for paid badges (no auth). */
+router.get('/pricing-preview', async (req, res, next) => {
+  try {
+    const data = await paymentService.getPricingPreview(req.ip ?? '');
+    res.json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+});
+
 /** POST /api/payments/create-checkout - Create Paddle checkout (auth required). Body: { badge: BADGES.explorer | BADGES.chronographer } */
 router.post('/create-checkout', requireAuth, async (req, res, next) => {
   try {

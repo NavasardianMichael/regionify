@@ -34,12 +34,14 @@ Existing users get `badge = observer` (free) by default.
 
 ## 3. Paddle: Webhook endpoint
 
-1. Go to **Developer Tools → Webhooks → New endpoint**.
+1. Go to **Developer Tools → Notifications → New destination**.
 2. Set the **URL**:
    - Production: `https://api.regionify.mnavasardian.com/payments/webhook`
-   - Dev (local): use a tunnel like ngrok → `https://your-tunnel.ngrok.io/payments/webhook`
+   - Dev (local): use a tunnel like ngrok → `https://your-tunnel.ngrok-free.app/payments/webhook`
 3. Subscribe to the **`transaction.completed`** event only.
 4. Save and copy the **Signing secret** — this is your `PADDLE_WEBHOOK_SECRET`.
+
+> **Sandbox note:** The sandbox dashboard has no "Webhooks → recent deliveries" view. Use **Developer Tools → Simulations** to fire test events at your endpoint instead of completing a real checkout.
 
 ---
 
@@ -126,8 +128,8 @@ Paddle integration is **one-time payment** only. No subscriptions.
    - **Card number**: `4242 4242 4242 4242`
    - **Expiry**: any future date
    - **CVC**: any 3 digits
-4. After payment, check **Developer Tools → Webhooks → recent deliveries** in the Paddle sandbox dashboard to confirm `transaction.completed` was sent and your server returned 200.
-5. To test idempotency, click **Resend** on the webhook delivery — your server should return 200 without making a duplicate DB write.
+4. After payment, check **Developer Tools → Simulations** in the Paddle sandbox dashboard. Create a **New simulation → transaction.completed**, paste your ngrok webhook URL, and fire it. Confirm your server returned 200 in the simulation response.
+5. To test idempotency, run the simulation a second time — your server should return 200 again without making a duplicate DB write.
 
 ---
 
@@ -182,11 +184,13 @@ Your tunnel webhook URL will be: `https://<tunnel-host>/payments/webhook`
 
 #### Step 5 — Register the sandbox webhook endpoint
 
-1. **Developer Tools → Webhooks → New endpoint.**
+1. **Developer Tools → Notifications → New destination.**
 2. URL: your tunnel URL from Step 4 (e.g. `https://xxxx.ngrok-free.app/payments/webhook`).
 3. Events: select **`transaction.completed`** only. Deselect everything else.
-4. Save. Click the endpoint to open it and copy the **Signing secret** (`pdl_ntfset_...`).
+4. Save. Click the destination to open it and copy the **Signing secret** (`pdl_ntfset_...`).
 5. This is your `PADDLE_WEBHOOK_SECRET` for the dev env.
+
+> **Note:** The sandbox dashboard has no "recent deliveries" view for webhooks. To send test events to your endpoint, use **Developer Tools → Simulations** (see Step 7).
 
 #### Step 6 — Fill in `server/.env.development.local`
 

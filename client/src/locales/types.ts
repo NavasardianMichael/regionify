@@ -94,6 +94,7 @@ export type CommonNs = {
     bestChoice: string;
     priceFree: string;
     priceOneTime: string;
+    localCurrencyNote: string;
     paymentPendingNote: string;
     verifyErrorNote: string;
     backToBadges: string;
