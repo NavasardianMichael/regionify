@@ -3,3 +3,4 @@ node_modules/
 .astro/
 public/svgs/
 public/logo.png
+public/favicon.ico

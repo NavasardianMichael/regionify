@@ -6,7 +6,8 @@ interface Props {
   seoDescription: string;
   seoKeywords: string;
   slug: string;
-  ogImage?: string;
+  /** Path beginning with `/` (e.g. `/assets/...` or `/svgs/...`). */
+  ogImagePublicPath?: string;
   datasetJsonLd?: object;
   divisionsJsonLd?: object;
 }
@@ -16,22 +17,24 @@ const {
   seoDescription,
   seoKeywords,
   slug,
-  ogImage,
+  ogImagePublicPath,
   datasetJsonLd,
   divisionsJsonLd,
 } = Astro.props;
 
-const base = import.meta.env.BASE_URL;
-const canonicalUrl = `https://regionify.com${base}${slug}/`;
-const ogImageUrl = ogImage ? `https://regionify.com${base}assets/${slug}/${ogImage}` : `https://regionify.com/og-image.jpg`;
+const CLIENT_URL = import.meta.env.CLIENT_URL;
+const canonicalUrl = `${CLIENT_URL}/${slug}/`;
+const ogImageUrl = ogImagePublicPath
+  ? `${CLIENT_URL}${ogImagePublicPath}`
+  : `${CLIENT_URL}/og-image.jpg`;
 
 const softwareAppJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'Regionify',
   description:
-    'Create choropleth maps for any country or region. Import data, customize styling, and export as PNG, SVG, GIF, MP4, or PDF.',
-  url: 'https://regionify.com',
+    'Create choropleth maps for any country or region. Import from CSV, Excel, JSON, Google Sheets (including live sync), pasted tabular data, or AI-assisted parsing of unstructured text; customize styling and legends; export as PNG, SVG, GIF, MP4, or PDF.',
+  url: CLIENT_URL,
   applicationCategory: 'DataVisualization',
   offers: [
     { '@type': 'Offer', name: 'Observer', price: '0', priceCurrency: 'USD' },

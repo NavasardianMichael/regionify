@@ -216,8 +216,8 @@ export function setupWebClient(app: Application): void {
 
   const marketingStaticDir = env.MARKETING_STATIC_DIR;
   if (marketingStaticDir && existsSync(marketingStaticDir)) {
-    app.use('/maps', express.static(marketingStaticDir, { index: 'index.html' }));
-    logger.info({ marketingStaticDir }, 'Marketing pages served at /maps');
+    app.use(express.static(marketingStaticDir, { index: 'index.html', fallthrough: true }));
+    logger.info({ marketingStaticDir }, 'Marketing static mounted at / (fallthrough)');
   }
 
   app.use(express.static(staticDir, { index: false, fallthrough: true }));

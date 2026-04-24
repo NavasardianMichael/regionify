@@ -44,7 +44,7 @@ const envSchema = z.object({
   // Static client directory (set in Docker image for SSR HTML shells)
   CLIENT_STATIC_DIR: z.string().optional(),
 
-  // Static marketing directory (Astro SSG output, served at /maps/*)
+  // Static marketing directory (Astro SSG output; root-relative URLs, fallthrough if no file)
   MARKETING_STATIC_DIR: z.string().optional(),
 
   // Rate limiting

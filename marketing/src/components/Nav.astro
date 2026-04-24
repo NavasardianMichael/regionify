@@ -1,22 +1,21 @@
 ---
-const base = import.meta.env.BASE_URL;
+import { Link } from '@/components/ui/Link.tsx';
+
+const CLIENT_URL = import.meta.env.CLIENT_URL;
 ---
 
-<nav class="bg-primary sticky top-0 z-50 shadow-md">
-  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-    <a href="https://regionify.com" class="flex items-center gap-2">
-      <img
-        src={`${base}logo.png`}
-        alt="Regionify"
-        class="h-8 w-auto"
-        loading="eager"
-      />
-    </a>
+<nav class="sticky top-0 z-50 shrink-0 border-b border-gray-200 bg-white shadow-sm">
+  <div
+    class="flex items-center justify-between gap-2 px-3 py-3 md:px-6"
+  >
     <a
-      href="https://regionify.com/projects/new"
-      class="rounded border border-white/70 px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-80"
+      href={CLIENT_URL}
+      class="flex shrink-0 items-center outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_img]:max-h-10 [&_img]:w-auto [&_img]:max-w-[min(160px,42vw)] [&_img]:object-contain [&_img]:object-left md:[&_img]:max-h-11"
     >
-      Open App
+      <img src="/logo.png" alt="Regionify" loading="eager" fetchpriority="high" />
     </a>
+    <Link appearance="primary" href={`${CLIENT_URL}/projects/new`}>
+      Open App
+    </Link>
   </div>
 </nav>

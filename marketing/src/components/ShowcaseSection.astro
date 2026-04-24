@@ -1,14 +1,13 @@
 ---
 import ShowcaseItem from './ShowcaseItem.astro';
 import type { CountryRow } from '@/data/parseCountries';
+import { resolveShowcasePublicUrl } from '@/helpers/resolveShowcasePublicUrl';
 
 interface Props {
   country: CountryRow;
 }
 
 const { country } = Astro.props;
-const base = import.meta.env.BASE_URL;
-const assetBase = `${base}assets/${country.slug}/`;
 
 type ShowcaseItemDef = {
   title: string;
@@ -63,7 +62,18 @@ const allItems: ShowcaseItemDef[] = [
   },
 ];
 
-const items = allItems.filter((item) => item.asset && item.asset.trim() !== '');
+const items = allItems
+  .filter((item) => item.asset && item.asset.trim() !== '')
+  .map((item) => ({
+    ...item,
+    assetPath: resolveShowcasePublicUrl(
+      country.slug,
+      item.asset,
+      country.map_file,
+      item.assetType,
+    ),
+  }))
+  .filter((item): item is typeof item & { assetPath: string } => item.assetPath !== null);
 ---
 
 {
@@ -83,7 +93,7 @@ const items = allItems.filter((item) => item.asset && item.asset.trim() !== '');
               title={item.title}
               description={item.description}
               badge={item.badge}
-              assetPath={`${assetBase}${item.asset}`}
+              assetPath={item.assetPath}
               assetType={item.assetType}
               reverse={i % 2 === 1}
               index={i}

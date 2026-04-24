@@ -1,8 +1,9 @@
 ---
+import Nav from '@/components/Nav.astro';
+import { Link } from '@/components/ui/Link.tsx';
 import { getCountries } from '@/data/parseCountries';
 
 const countries = getCountries();
-const base = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -15,24 +16,14 @@ const base = import.meta.env.BASE_URL;
       name="description"
       content="Browse choropleth maps for countries worldwide. Explore administrative divisions, regional data, and geographic visualizations — all created with Regionify."
     />
-    <link rel="canonical" href={`https://regionify.com${base}`} />
+    <link rel="canonical" href={`${import.meta.env.CLIENT_URL}/`} />
     <link rel="icon" href="/favicon.ico" />
     <style>
       @import '../styles/global.css';
     </style>
   </head>
   <body class="bg-white">
-    <nav class="bg-primary sticky top-0 z-50 shadow-md">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-        <a href="https://regionify.com" class="text-xl font-bold text-white">Regionify</a>
-        <a
-          href="https://regionify.com/projects/new"
-          class="rounded border border-white/70 px-4 py-1.5 text-sm font-medium text-white hover:opacity-80"
-        >
-          Open App
-        </a>
-      </div>
-    </nav>
+    <Nav />
 
     <main class="mx-auto max-w-6xl px-4 py-16 md:px-6">
       <h1 class="text-primary mb-4 text-3xl font-bold md:text-4xl">
@@ -47,27 +38,28 @@ const base = import.meta.env.BASE_URL;
         {
           countries.map((c) => (
             <li>
-              <a
-                href={`${base}${c.slug}/`}
-                class="hover:border-primary flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 transition-colors hover:bg-gray-50"
-              >
-                <span class="text-2xl">{c.flag_emoji}</span>
-                <div>
-                  <p class="text-sm font-semibold text-gray-800">{c.name_en}</p>
-                  <p class="text-xs text-gray-400">
-                    {c.division_count} {c.division_type.toLowerCase()}
-                  </p>
-                </div>
-              </a>
+              <Link appearance="card" href={`/${c.slug}/`}>
+                <span class="flex w-full items-center gap-3 text-left">
+                  <span class="text-2xl">{c.flag_emoji}</span>
+                  <span class="min-w-0">
+                    <span class="block text-sm font-semibold text-gray-800">{c.name_en}</span>
+                    <span class="block text-xs text-gray-400">
+                      {c.division_count} {c.division_type.toLowerCase()}
+                    </span>
+                  </span>
+                </span>
+              </Link>
             </li>
           ))
         }
       </ul>
     </main>
 
-    <footer class="border-t border-gray-200 py-8 text-center text-sm text-gray-400">
-      <a href="https://regionify.com" class="text-primary hover:underline">Regionify</a> — Create
-      choropleth maps for any country or region.
+    <footer class="border-t border-gray-200 py-8 text-center text-sm text-gray-500">
+      <Link href={import.meta.env.CLIENT_URL} variant="muted">
+        Regionify
+      </Link>
+      — Create choropleth maps for any country or region.
     </footer>
   </body>
 </html>

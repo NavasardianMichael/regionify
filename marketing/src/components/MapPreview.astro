@@ -1,6 +1,7 @@
 ---
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { Link } from '@/components/ui/Link.tsx';
 import { formatNumber } from '@/data/parseCountries';
 import type { CountryRow, DivisionRow } from '@/data/parseCountries';
 
@@ -34,7 +35,21 @@ for (const div of divisions) {
 let svgContent = '';
 try {
   let raw = readFileSync(join(process.cwd(), 'public/svgs', country.map_file), 'utf-8');
-  raw = raw.replace(/\s+width="[^"]*"/, '').replace(/\s+height="[^"]*"/, '');
+  raw = raw.replace(/^\uFEFF/, '').replace(/^<\?xml[^>]*\?>\s*/i, '');
+  // Remove fixed pixel dimensions so CSS can size the map; amCharts exports often omit viewBox,
+  // which makes intrinsic width ~0 in flex/grid — add a loose viewBox + preserveAspectRatio.
+  raw = raw.replace(/\s+width="[^"]*"/gi, '').replace(/\s+height="[^"]*"/gi, '');
+  if (!/\bviewBox\s*=/i.test(raw)) {
+    raw = raw.replace(
+      /<svg(\s[^>]*)>/i,
+      '<svg$1 viewBox="0 0 820 1250" width="100%" preserveAspectRatio="xMidYMid meet">',
+    );
+  } else {
+    raw = raw.replace(
+      /<svg(\s[^>]*)>/i,
+      '<svg$1 width="100%" preserveAspectRatio="xMidYMid meet">',
+    );
+  }
   // Inject fill color and stroke for each matched path
   raw = raw.replace(/(<path\s[^>]*?)id="([^"]+)"([^>]*?>)/g, (_match, pre, id, post) => {
     const entry = colorMap.get(id);
@@ -50,29 +65,31 @@ const minDivision = divisions.reduce((a, b) => (a.value < b.value ? a : b));
 const maxDivision = divisions.reduce((a, b) => (a.value > b.value ? a : b));
 ---
 
-<section class="bg-gray-50 py-16 md:py-20">
-  <div class="mx-auto max-w-6xl px-4 md:px-6">
+<section class="w-full bg-gray-50 py-16 md:py-20">
+  <div class="mx-auto w-full max-w-6xl px-4 md:px-6">
     <h2 class="text-primary mb-2 text-center text-2xl font-bold md:text-3xl">
       {country.dataset_label}
     </h2>
-    <p class="mb-8 text-center text-sm text-gray-500">
+    <p class="mx-auto mb-8 max-w-4xl text-center text-sm text-gray-500">
       {country.name_en} · {country.dataset_year} · Source:
-      <a
+      <Link
         href={country.dataset_source_url}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-primary hover:underline"
+        variant="default"
       >
         {country.dataset_source}
-      </a>
+      </Link>
     </p>
 
-    <div class="flex flex-col items-center gap-8 md:flex-row md:items-start md:gap-12">
-      <div class="w-full max-w-lg flex-1">
+    <div
+      class="grid w-full min-w-0 grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_20rem] md:items-start md:gap-x-12 md:gap-y-0"
+    >
+      <div class="min-w-0 w-full justify-self-center md:justify-self-stretch">
         {
           svgContent ? (
             <div
-              class="w-full"
+              class="mx-auto w-full max-w-[32rem] [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-w-full"
               aria-label={`Choropleth map of ${country.name_en} showing ${country.dataset_label}`}
               set:html={svgContent}
             />
@@ -84,7 +101,7 @@ const maxDivision = divisions.reduce((a, b) => (a.value > b.value ? a : b));
         }
       </div>
 
-      <div class="w-full max-w-sm flex-shrink-0 space-y-4">
+      <aside class="w-full min-w-0 space-y-4 md:max-w-none">
         <div>
           <div
             class="h-4 w-full rounded"
@@ -130,23 +147,23 @@ const maxDivision = divisions.reduce((a, b) => (a.value > b.value ? a : b));
           </div>
         </div>
 
-        <div class="rounded-lg border border-gray-200 bg-white p-4">
+        <div class="w-full min-w-0 rounded-lg border border-gray-200 bg-white p-4">
           <p class="text-xs font-medium uppercase tracking-wide text-gray-400">About this data</p>
-          <p class="mt-2 text-sm leading-relaxed text-gray-600">
+          <p class="mt-2 min-w-0 text-sm leading-relaxed break-words text-gray-600">
             {country.dataset_label} across {country.division_count}
             {country.division_type.toLowerCase()} of {country.name_en} ({country.dataset_year}).
             Data sourced from
-            <a
+            <Link
               href={country.dataset_source_url}
               target="_blank"
               rel="noopener noreferrer"
-              class="text-primary hover:underline"
+              variant="default"
             >
               {country.dataset_source}
-            </a>.
+            </Link>.
           </p>
         </div>
-      </div>
+      </aside>
     </div>
   </div>
 </section>

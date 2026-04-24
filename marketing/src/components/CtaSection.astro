@@ -1,34 +1,31 @@
 ---
+import { Link } from '@/components/ui/Link.tsx';
+
 interface Props {
   countryName: string;
   divisionType: string;
 }
 
 const { countryName, divisionType } = Astro.props;
+const CLIENT_URL = import.meta.env.CLIENT_URL;
 ---
 
 <section class="bg-primary py-16 md:py-24">
-  <div class="mx-auto max-w-6xl px-4 text-center md:px-6">
-    <h2 class="mb-4 text-3xl font-bold text-white md:text-4xl">
+  <div class="mx-auto w-full max-w-6xl px-4 text-center md:px-6">
+    <h2 class="mx-auto mb-4 w-full max-w-4xl text-3xl font-bold text-white md:text-4xl">
       Create your own {countryName} choropleth map
     </h2>
-    <p class="mx-auto mb-8 max-w-xl text-lg text-white/80">
+    <p class="mx-auto mb-8 w-full max-w-[36rem] text-pretty text-lg text-white/80">
       Import your data, color {divisionType.toLowerCase()} by any metric, and export in seconds.
       Free to start — no credit card required.
     </p>
     <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-      <a
-        href="https://regionify.com/projects/new"
-        class="rounded border border-white/70 px-8 py-3 text-base font-medium text-white transition-opacity hover:opacity-80"
-      >
+      <Link appearance="dashed" colorScheme="dark" href={`${CLIENT_URL}/projects/new`}>
         Start for free
-      </a>
-      <a
-        href="https://regionify.com/billing"
-        class="text-base font-medium text-white/70 hover:text-white transition-colors"
-      >
+      </Link>
+      <Link appearance="dashed" colorScheme="dark" href={`${CLIENT_URL}/billing`}>
         View pricing →
-      </a>
+      </Link>
     </div>
   </div>
 </section>

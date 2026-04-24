@@ -7,6 +7,7 @@ import MapPreview from '@/components/MapPreview.astro';
 import Nav from '@/components/Nav.astro';
 import ShowcaseSection from '@/components/ShowcaseSection.astro';
 import { getCountries, getDivisionsForCountry } from '@/data/parseCountries';
+import { resolveOgImagePublicPath } from '@/helpers/resolveShowcasePublicUrl';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 
 export async function getStaticPaths() {
@@ -19,6 +20,11 @@ export async function getStaticPaths() {
 
 const { country } = Astro.props;
 const divisions = getDivisionsForCountry(country.region_id);
+const ogImagePublicPath = resolveOgImagePublicPath(
+  country.slug,
+  country.asset_static,
+  country.map_file,
+);
 
 const datasetJsonLd = {
   '@context': 'https://schema.org',
@@ -63,12 +69,12 @@ const divisionsJsonLd =
   seoDescription={country.seo_description}
   seoKeywords={country.seo_keywords}
   slug={country.slug}
-  ogImage={country.asset_static || undefined}
+  ogImagePublicPath={ogImagePublicPath}
   datasetJsonLd={datasetJsonLd}
   divisionsJsonLd={divisionsJsonLd}
 >
   <Nav />
-  <main>
+  <main class="w-full min-w-0">
     <HeroSection country={country} />
     {divisions.length > 0 && <MapPreview country={country} divisions={divisions} />}
     <ShowcaseSection country={country} />

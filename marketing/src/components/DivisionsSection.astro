@@ -1,4 +1,5 @@
 ---
+import { Link } from '@/components/ui/Link.tsx';
 import { formatNumber, formatArea } from '@/data/parseCountries';
 import type { CountryRow, DivisionRow } from '@/data/parseCountries';
 
@@ -60,12 +61,16 @@ const sorted = [...divisions].sort((a, b) => b.value - a.value);
     </div>
 
     <p class="mt-4 text-center text-xs text-gray-400">
-      Source: <a
+      Source:{' '}
+      <Link
         href={country.dataset_source_url}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-primary hover:underline">{country.dataset_source}</a
-      > · {country.dataset_year} · Sorted by {country.dataset_label} (highest first)
+        variant="default"
+      >
+        {country.dataset_source}
+      </Link>{' '}
+      · {country.dataset_year} · Sorted by {country.dataset_label} (highest first)
     </p>
   </div>
 </section>

@@ -1,29 +1,50 @@
 ---
+import { join } from 'node:path';
+import { Link } from '@/components/ui/Link.tsx';
 import { formatNumber, formatArea } from '@/data/parseCountries';
 import type { CountryRow } from '@/data/parseCountries';
+import { readSvgHeroWatermarkFromFile } from '@/helpers/prepareSvgHeroWatermark';
 
 interface Props {
   country: CountryRow;
 }
 
 const { country } = Astro.props;
+
+const heroSvg = readSvgHeroWatermarkFromFile(
+  join(process.cwd(), 'public/svgs', country.map_file),
+);
+const heroMapDataUrl = heroSvg
+  ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(heroSvg)}`
+  : null;
 ---
 
-<section class="bg-primary py-16 md:py-24">
-  <div class="mx-auto max-w-6xl px-4 md:px-6">
-    <div class="mx-auto max-w-3xl text-center">
-      <p class="mb-4 text-5xl">{country.flag_emoji}</p>
-      <h1 class="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+<section
+  class="bg-primary relative overflow-hidden px-4 py-20 sm:px-6 md:py-28 lg:py-32"
+>
+  {
+    heroMapDataUrl && (
+      <img
+        src={heroMapDataUrl}
+        alt="Background image layer"
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10 select-none"
+      />
+    )
+  }
+  <div class="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
+    <div class="mx-auto w-full max-w-3xl text-center">
+      <h1 class="mb-4 text-4xl font-bold text-white">
         {country.name_en}
         {country.name_local !== country.name_en && (
-          <span class="block text-2xl font-normal text-white/70 md:text-3xl mt-2">
-            {country.name_local}
-          </span>
+            <>({country.name_local})</>
         )}
       </h1>
-      <p class="mb-8 text-lg text-white/80 md:text-xl leading-relaxed">
+
+      <p class="mb-8 text-white/80 leading-relaxed">
         {country.intro_text}
       </p>
+
 
       <div class="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
         <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
@@ -46,12 +67,13 @@ const { country } = Astro.props;
         </div>
       </div>
 
-      <a
-        href="https://regionify.com/projects/new"
-        class="inline-block rounded border border-white/70 px-8 py-3 text-base font-medium text-white transition-opacity hover:opacity-80"
+      <Link
+        appearance="dashed"
+        colorScheme="dark"
+        href={`${import.meta.env.CLIENT_URL}/projects/new`}
       >
-        Create your {country.name_en} map
-      </a>
+        Create your map of {country.name_en}
+      </Link>
     </div>
   </div>
 </section>
