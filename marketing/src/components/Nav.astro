@@ -1,0 +1,22 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+
+<nav class="bg-primary sticky top-0 z-50 shadow-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
+    <a href="https://regionify.com" class="flex items-center gap-2">
+      <img
+        src={`${base}logo.png`}
+        alt="Regionify"
+        class="h-8 w-auto"
+        loading="eager"
+      />
+    </a>
+    <a
+      href="https://regionify.com/projects/new"
+      class="rounded border border-white/70 px-4 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-80"
+    >
+      Open App
+    </a>
+  </div>
+</nav>

@@ -1,0 +1,71 @@
+---
+import { formatNumber, formatArea } from '@/data/parseCountries';
+import type { CountryRow, DivisionRow } from '@/data/parseCountries';
+
+interface Props {
+  country: CountryRow;
+  divisions: DivisionRow[];
+}
+
+const { country, divisions } = Astro.props;
+
+const sorted = [...divisions].sort((a, b) => b.value - a.value);
+---
+
+<section class="bg-gray-50 py-16 md:py-20">
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <h2 class="text-primary mb-2 text-center text-2xl font-bold md:text-3xl">
+      {country.name_en} — {country.division_type} by {country.dataset_label}
+    </h2>
+    <p class="mb-8 text-center text-sm text-gray-500">
+      {country.division_count} administrative divisions · Data: {country.dataset_year}
+    </p>
+
+    <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-200" style="background-color: rgba(24,41,77,0.06)">
+            <th class="text-primary px-4 py-3 text-left font-semibold"
+              >{country.division_type.replace(/s$/, '')}</th
+            >
+            <th class="text-primary px-4 py-3 text-left font-semibold">Local name</th>
+            <th class="text-primary px-4 py-3 text-right font-semibold"
+              >{country.dataset_label} ({country.dataset_unit})</th
+            >
+            <th class="text-primary px-4 py-3 text-right font-semibold">Population</th>
+            <th class="text-primary px-4 py-3 text-right font-semibold">Area</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            sorted.map((div, i) => (
+              <tr
+                class:list={[
+                  'border-b border-gray-100 transition-colors hover:bg-gray-50',
+                  i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50',
+                ]}
+              >
+                <td class="px-4 py-3 font-medium text-gray-800">{div.name_en}</td>
+                <td class="px-4 py-3 text-gray-500">{div.name_local}</td>
+                <td class="px-4 py-3 text-right font-semibold text-gray-800">
+                  {formatNumber(div.value)}
+                </td>
+                <td class="px-4 py-3 text-right text-gray-500">{formatNumber(div.population)}</td>
+                <td class="px-4 py-3 text-right text-gray-500">{formatArea(div.area_km2)}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-4 text-center text-xs text-gray-400">
+      Source: <a
+        href={country.dataset_source_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-primary hover:underline">{country.dataset_source}</a
+      > · {country.dataset_year} · Sorted by {country.dataset_label} (highest first)
+    </p>
+  </div>
+</section>
