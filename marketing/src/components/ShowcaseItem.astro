@@ -1,5 +1,6 @@
 ---
-import { Link } from '@/components/ui/Link.tsx';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 
 interface Props {
   title: string;
@@ -14,11 +15,11 @@ interface Props {
 const { title, description, badge, assetPath, assetType, reverse = false, index } = Astro.props;
 
 const badgeColors: Record<string, string> = {
-  'All plans': 'bg-gray-100 text-gray-600',
-  'Explorer & above': 'bg-primary-100 text-primary-700',
-  'Chronographer only': 'bg-primary text-white',
+  'Observer (free)': 'bg-primary text-white',
+  'Explorer': 'bg-cyan-500 text-white',
+  'Chronographer': 'bg-amber-500 text-white',
 };
-const badgeClass = badgeColors[badge] ?? 'bg-gray-100 text-gray-600';
+const badgeClass = badgeColors[badge] ?? 'bg-primary text-white';
 ---
 
 <div
@@ -31,12 +32,12 @@ const badgeClass = badgeColors[badge] ?? 'bg-gray-100 text-gray-600';
     <span class:list={['inline-block rounded-full px-3 py-1 text-xs font-medium mb-3', badgeClass]}>
       {badge}
     </span>
-    <h3 class="text-primary mb-3 text-xl font-semibold">{title}</h3>
+    <MarketingTitle level={3} className="mb-3">{title}</MarketingTitle>
     <p class="text-base leading-relaxed text-gray-500">{description}</p>
     <p class="mt-4">
-      <Link variant="default" href={`${import.meta.env.CLIENT_URL}/projects/new`}>
-        Try it free →
-      </Link>
+      <MarketingButton type="link" href={`${import.meta.env.CLIENT_URL}/projects/new`}>
+        {badge === 'Observer (free)' ? 'Try it free →' : `Try it with the "${badge}" badge →`}
+      </MarketingButton>
     </p>
   </div>
 

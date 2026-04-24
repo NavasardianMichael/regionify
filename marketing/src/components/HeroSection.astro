@@ -1,6 +1,7 @@
 ---
 import { join } from 'node:path';
-import { Link } from '@/components/ui/Link.tsx';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 import { formatNumber, formatArea } from '@/data/parseCountries';
 import type { CountryRow } from '@/data/parseCountries';
 import { readSvgHeroWatermarkFromFile } from '@/helpers/prepareSvgHeroWatermark';
@@ -34,12 +35,12 @@ const heroMapDataUrl = heroSvg
   }
   <div class="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
     <div class="mx-auto w-full max-w-3xl text-center">
-      <h1 class="mb-4 text-4xl font-bold text-white">
+      <MarketingTitle level={1} colorScheme="dark" className="mb-4">
         {country.name_en}
         {country.name_local !== country.name_en && (
             <>({country.name_local})</>
         )}
-      </h1>
+      </MarketingTitle>
 
       <p class="mb-8 text-white/80 leading-relaxed">
         {country.intro_text}
@@ -67,13 +68,13 @@ const heroMapDataUrl = heroSvg
         </div>
       </div>
 
-      <Link
-        appearance="dashed"
+      <MarketingButton
+        type="dashed"
         colorScheme="dark"
         href={`${import.meta.env.CLIENT_URL}/projects/new`}
       >
         Create your map of {country.name_en}
-      </Link>
+      </MarketingButton>
     </div>
   </div>
 </section>

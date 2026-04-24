@@ -1,5 +1,6 @@
 ---
-import { Link } from '@/components/ui/Link.tsx';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 import { formatNumber, formatArea } from '@/data/parseCountries';
 import type { CountryRow, DivisionRow } from '@/data/parseCountries';
 
@@ -15,9 +16,9 @@ const sorted = [...divisions].sort((a, b) => b.value - a.value);
 
 <section class="bg-gray-50 py-16 md:py-20">
   <div class="mx-auto max-w-6xl px-4 md:px-6">
-    <h2 class="text-primary mb-2 text-center text-2xl font-bold md:text-3xl">
+    <MarketingTitle level={2} className="mb-2 text-center">
       {country.name_en} — {country.division_type} by {country.dataset_label}
-    </h2>
+    </MarketingTitle>
     <p class="mb-8 text-center text-sm text-gray-500">
       {country.division_count} administrative divisions · Data: {country.dataset_year}
     </p>
@@ -62,14 +63,14 @@ const sorted = [...divisions].sort((a, b) => b.value - a.value);
 
     <p class="mt-4 text-center text-xs text-gray-400">
       Source:{' '}
-      <Link
+      <MarketingButton
+        type="link"
         href={country.dataset_source_url}
         target="_blank"
         rel="noopener noreferrer"
-        variant="default"
       >
         {country.dataset_source}
-      </Link>{' '}
+      </MarketingButton>{' '}
       · {country.dataset_year} · Sorted by {country.dataset_label} (highest first)
     </p>
   </div>

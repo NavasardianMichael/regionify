@@ -1,6 +1,7 @@
 ---
 import Nav from '@/components/Nav.astro';
-import { Link } from '@/components/ui/Link.tsx';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 import { getCountries } from '@/data/parseCountries';
 
 const countries = getCountries();
@@ -26,9 +27,9 @@ const countries = getCountries();
     <Nav />
 
     <main class="mx-auto max-w-6xl px-4 py-16 md:px-6">
-      <h1 class="text-primary mb-4 text-3xl font-bold md:text-4xl">
+      <MarketingTitle level={1} className="mb-4">
         Choropleth maps by country
-      </h1>
+      </MarketingTitle>
       <p class="mb-10 text-lg text-gray-500">
         Explore administrative divisions, regional data, and geographic visualizations for countries
         worldwide.
@@ -38,7 +39,7 @@ const countries = getCountries();
         {
           countries.map((c) => (
             <li>
-              <Link appearance="card" href={`/${c.slug}/`}>
+              <MarketingButton type="card" href={`/${c.slug}/`}>
                 <span class="flex w-full items-center gap-3 text-left">
                   <span class="text-2xl">{c.flag_emoji}</span>
                   <span class="min-w-0">
@@ -48,7 +49,7 @@ const countries = getCountries();
                     </span>
                   </span>
                 </span>
-              </Link>
+              </MarketingButton>
             </li>
           ))
         }
@@ -56,9 +57,9 @@ const countries = getCountries();
     </main>
 
     <footer class="border-t border-gray-200 py-8 text-center text-sm text-gray-500">
-      <Link href={import.meta.env.CLIENT_URL} variant="muted">
+      <MarketingButton type="link" muted href={import.meta.env.CLIENT_URL}>
         Regionify
-      </Link>
+      </MarketingButton>
       — Create choropleth maps for any country or region.
     </footer>
   </body>

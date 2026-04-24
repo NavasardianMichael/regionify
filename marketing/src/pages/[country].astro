@@ -76,7 +76,6 @@ const divisionsJsonLd =
   <Nav />
   <main class="w-full min-w-0">
     <HeroSection country={country} />
-    {divisions.length > 0 && <MapPreview country={country} divisions={divisions} />}
     <ShowcaseSection country={country} />
     {divisions.length > 0 && <DivisionsSection country={country} divisions={divisions} />}
     <CtaSection countryName={country.name_en} divisionType={country.division_type} />

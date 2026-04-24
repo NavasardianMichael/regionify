@@ -1,5 +1,6 @@
 ---
-import { Link } from '@/components/ui/Link.tsx';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 
 interface Props {
   countryName: string;
@@ -12,20 +13,20 @@ const CLIENT_URL = import.meta.env.CLIENT_URL;
 
 <section class="bg-primary py-16 md:py-24">
   <div class="mx-auto w-full max-w-6xl px-4 text-center md:px-6">
-    <h2 class="mx-auto mb-4 w-full max-w-4xl text-3xl font-bold text-white md:text-4xl">
-      Create your own {countryName} choropleth map
-    </h2>
-    <p class="mx-auto mb-8 w-full max-w-[36rem] text-pretty text-lg text-white/80">
+    <MarketingTitle level={2} colorScheme="dark" className="mx-auto mb-4 w-full max-w-4xl">
+      Create your own choropleth map of <br /> {countryName} <br /> with Regionify
+    </MarketingTitle>
+    <p class="mx-auto mb-8 w-full max-w-144 text-pretty text-lg text-white/80">
       Import your data, color {divisionType.toLowerCase()} by any metric, and export in seconds.
       Free to start — no credit card required.
     </p>
     <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-      <Link appearance="dashed" colorScheme="dark" href={`${CLIENT_URL}/projects/new`}>
+      <MarketingButton type="dashed" colorScheme="dark" href={`${CLIENT_URL}/projects/new`}>
         Start for free
-      </Link>
-      <Link appearance="dashed" colorScheme="dark" href={`${CLIENT_URL}/billing`}>
+      </MarketingButton>
+      <MarketingButton type="dashed" colorScheme="dark" href={`${CLIENT_URL}/billing`}>
         View pricing →
-      </Link>
+      </MarketingButton>
     </div>
   </div>
 </section>

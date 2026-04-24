@@ -6,7 +6,7 @@
 # - APP_DIR: Deployment root (e.g. /home/user/apps/regionify)
 # - ENV_FILE_BASE64: Base64-encoded server .env.production (POSTGRES_*, app vars)
 # - VITE_API_BASE_URL: Client API base URL (client builds only)
-# - MARKETING_CLIENT_URL: Production app URL linked from marketing pages (e.g. https://app.regionify.com)
+# - CLIENT_URL: Production app URL linked from marketing pages (e.g. https://app.regionify.com)
 #
 # OPTIONAL GITHUB SECRETS (Sentry source-map uploads):
 # - SENTRY_ORG: Sentry organization slug
@@ -194,7 +194,7 @@ jobs:
       - name: Build marketing
         run: pnpm run build:marketing
         env:
-          CLIENT_URL: ${{ secrets.MARKETING_CLIENT_URL }}
+          CLIENT_URL: ${{ secrets.CLIENT_URL }}
 
       - name: Create marketing archive
         run: tar -czf marketing-build.tar.gz -C marketing/dist .

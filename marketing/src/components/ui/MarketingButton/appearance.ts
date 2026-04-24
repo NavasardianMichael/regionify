@@ -1,5 +1,5 @@
-/** Same roles as Ant Design `Button` `type`, plus full-width grid tile links. */
-export type MarketingButtonType = 'primary' | 'secondary' | 'dashed' | 'default' | 'card';
+/** Same roles as Ant Design `Button` `type`, plus full-width grid tile links and inline text links. */
+export type MarketingButtonType = 'primary' | 'secondary' | 'dashed' | 'default' | 'card' | 'link';
 
 const focusOutline =
   'transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
@@ -13,8 +13,21 @@ const buttonSizeDefault = 'px-4 py-1.5 text-sm justify-center';
 const buttonSizeCard =
   'h-auto min-h-0 w-full justify-start px-4 py-3 text-sm font-normal shadow-sm';
 
+const focusRing =
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+
+function linkTypeClasses(colorScheme: 'light' | 'dark', muted: boolean): string {
+  if (colorScheme === 'dark') {
+    return `inline text-sm font-medium text-white underline-offset-4 hover:underline ${focusRing}`;
+  }
+  if (muted) {
+    return `inline text-sm text-gray-500 underline-offset-4 transition-colors hover:text-primary hover:underline ${focusRing}`;
+  }
+  return `inline text-sm font-medium text-primary underline-offset-4 hover:underline ${focusRing}`;
+}
+
 export function buttonTypeClasses(
-  visual: MarketingButtonType,
+  visual: Exclude<MarketingButtonType, 'link'>,
   colorScheme: 'light' | 'dark',
 ): string {
   if (visual === 'card') {
@@ -46,11 +59,15 @@ export function buttonTypeClasses(
   }
 }
 
-/** Classes for `<button>` or button-styled `<a>`. */
+/** Classes for `<button>`, button-styled `<a>`, or inline text `<a>`. */
 export function composeButtonClasses(
   appearance: MarketingButtonType,
   colorScheme: 'light' | 'dark',
+  muted = false,
 ): string {
+  if (appearance === 'link') {
+    return linkTypeClasses(colorScheme, muted);
+  }
   const size = appearance === 'card' ? buttonSizeCard : buttonSizeDefault;
   return [buttonBase, size, buttonTypeClasses(appearance, colorScheme)].join(' ');
 }

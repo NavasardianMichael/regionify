@@ -1,5 +1,5 @@
 ---
-import { Link } from '@/components/ui/Link.tsx';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 
 const CLIENT_URL = import.meta.env.CLIENT_URL;
 ---
@@ -14,8 +14,8 @@ const CLIENT_URL = import.meta.env.CLIENT_URL;
     >
       <img src="/logo.png" alt="Regionify" loading="eager" fetchpriority="high" />
     </a>
-    <Link appearance="primary" href={`${CLIENT_URL}/projects/new`}>
+    <MarketingButton type="primary" href={`${CLIENT_URL}/projects/new`}>
       Open App
-    </Link>
+    </MarketingButton>
   </div>
 </nav>
