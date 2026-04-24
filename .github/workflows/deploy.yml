@@ -6,6 +6,7 @@
 # - APP_DIR: Deployment root (e.g. /home/user/apps/regionify)
 # - ENV_FILE_BASE64: Base64-encoded server .env.production (POSTGRES_*, app vars)
 # - VITE_API_BASE_URL: Client API base URL (client builds only)
+# - MARKETING_CLIENT_URL: Production app URL linked from marketing pages (e.g. https://app.regionify.com)
 #
 # OPTIONAL GITHUB SECRETS (Sentry source-map uploads):
 # - SENTRY_ORG: Sentry organization slug
@@ -51,6 +52,7 @@ jobs:
     outputs:
       deploy_client: ${{ steps.flags.outputs.deploy_client }}
       deploy_server: ${{ steps.flags.outputs.deploy_server }}
+      deploy_marketing: ${{ steps.flags.outputs.deploy_marketing }}
       needs_client_build: ${{ steps.flags.outputs.needs_client_build }}
       release_name: ${{ github.sha }}
     steps:
@@ -68,6 +70,8 @@ jobs:
               - 'server/**'
             shared_pkg:
               - 'shared/**'
+            marketing_pkg:
+              - 'marketing/**'
             workspace:
               - 'package.json'
               - 'pnpm-lock.yaml'
@@ -104,10 +108,17 @@ jobs:
           if [ "$deploy_client" = "true" ] || [ "$deploy_server" = "true" ]; then
             needs_client_build=true
           fi
+          deploy_marketing=false
+          if [ "${{ steps.filter.outputs.marketing_pkg }}" = "true" ] || \
+             [ "${{ steps.filter.outputs.shared_pkg }}" = "true" ] || \
+             [ "${{ steps.filter.outputs.workspace }}" = "true" ]; then
+            deploy_marketing=true
+          fi
           echo "deploy_client=$deploy_client" >> "$GITHUB_OUTPUT"
           echo "deploy_server=$deploy_server" >> "$GITHUB_OUTPUT"
+          echo "deploy_marketing=$deploy_marketing" >> "$GITHUB_OUTPUT"
           echo "needs_client_build=$needs_client_build" >> "$GITHUB_OUTPUT"
-          echo "deploy_client=$deploy_client deploy_server=$deploy_server needs_client_build=$needs_client_build"
+          echo "deploy_client=$deploy_client deploy_server=$deploy_server deploy_marketing=$deploy_marketing needs_client_build=$needs_client_build"
 
   build-client:
     name: Build / client
@@ -152,6 +163,47 @@ jobs:
         with:
           name: client-build
           path: client-build.tar.gz
+          retention-days: 1
+
+  build-marketing:
+    name: Build / marketing
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.deploy_marketing == 'true'
+    concurrency:
+      group: build-marketing
+      cancel-in-progress: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build marketing
+        run: pnpm run build:marketing
+        env:
+          CLIENT_URL: ${{ secrets.MARKETING_CLIENT_URL }}
+
+      - name: Create marketing archive
+        run: tar -czf marketing-build.tar.gz -C marketing/dist .
+
+      - name: Upload marketing artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: marketing-build
+          path: marketing-build.tar.gz
           retention-days: 1
 
   build-server:
@@ -227,14 +279,16 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-production
-    needs: [changes, build-client, build-server]
+    needs: [changes, build-client, build-server, build-marketing]
     if: |
       always() &&
-      (needs.changes.outputs.deploy_client == 'true' || needs.changes.outputs.deploy_server == 'true') &&
+      (needs.changes.outputs.deploy_client == 'true' || needs.changes.outputs.deploy_server == 'true' || needs.changes.outputs.deploy_marketing == 'true') &&
       (needs.build-client.result == 'success' || needs.build-client.result == 'skipped') &&
       (needs.build-server.result == 'success' || needs.build-server.result == 'skipped') &&
+      (needs.build-marketing.result == 'success' || needs.build-marketing.result == 'skipped') &&
       needs.build-client.result != 'failure' &&
-      needs.build-server.result != 'failure'
+      needs.build-server.result != 'failure' &&
+      needs.build-marketing.result != 'failure'
     steps:
       - name: Download client artifact
         if: needs.changes.outputs.deploy_client == 'true'
@@ -247,6 +301,12 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: server-build
+
+      - name: Download marketing artifact
+        if: needs.changes.outputs.deploy_marketing == 'true'
+        uses: actions/download-artifact@v7
+        with:
+          name: marketing-build
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.10.0
@@ -297,6 +357,38 @@ jobs:
           cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
           rm -f /tmp/client-build.tar.gz
           echo "Client deployed"
+          EOF
+
+      # ── Deploy marketing (static files) ──────────────────────────────────
+
+      - name: Copy marketing bundle to host
+        if: needs.changes.outputs.deploy_marketing == 'true'
+        run: |
+          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+            marketing-build.tar.gz \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
+
+      - name: Deploy marketing
+        if: needs.changes.outputs.deploy_marketing == 'true'
+        run: |
+          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+            "${{ secrets.APP_DIR }}" \
+            "${{ needs.changes.outputs.release_name }}" \
+            "${{ env.KEEP_RELEASES }}" << 'EOF'
+          set -e
+          APP_DIR="$1"; RELEASE_NAME="$2"; KEEP_RELEASES="$3"
+          RELEASES_DIR="$APP_DIR/marketing/releases"
+          NEW_RELEASE="$RELEASES_DIR/$RELEASE_NAME"
+
+          echo "Deploying marketing: $RELEASE_NAME"
+          mkdir -p "$NEW_RELEASE"
+          tar -xzf /tmp/marketing-build.tar.gz -C "$NEW_RELEASE"
+          chmod -R 755 "$NEW_RELEASE"
+          ln -sfn "$NEW_RELEASE" "$APP_DIR/marketing/current"
+
+          cd "$RELEASES_DIR" && ls -t | tail -n +$((KEEP_RELEASES + 1)) | xargs -r rm -rf
+          rm -f /tmp/marketing-build.tar.gz
+          echo "Marketing deployed"
           EOF
 
       # ── Deploy server (Docker) AFTER client is on disk ───────────────────
@@ -412,6 +504,9 @@ jobs:
           fi
           if [ "${{ needs.changes.outputs.deploy_client }}" = "true" ]; then
             echo "- Client (static files under \`client/current\`)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "${{ needs.changes.outputs.deploy_marketing }}" = "true" ]; then
+            echo "- Marketing (static files under \`marketing/current\`)" >> "$GITHUB_STEP_SUMMARY"
           fi
           if [ "${{ needs.changes.outputs.deploy_server }}" = "true" ]; then
             echo "- Database migrations (container entrypoint)" >> "$GITHUB_STEP_SUMMARY"
