@@ -16,21 +16,14 @@ type ShowcaseItemDef = {
   description: string;
   badge: string;
   asset: string;
-  assetType: 'image' | 'video' | 'gif';
+  assetType: 'image' | 'video' | 'gif' | 'iframe';
 };
 
 const allItems: ShowcaseItemDef[] = [
   {
     title: `${country.name_en} choropleth map`,
-    description: `Visualize ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()} as a choropleth map. Color regions by any numeric dataset — population, GDP, unemployment, health outcomes, and more. Export as PNG, JPEG, or PDF.`,
+    description: `Visualize ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()} as a choropleth map. Color regions by any numeric dataset — population, GDP, unemployment, health outcomes, and more. Export as PNG, SVG, or PDF.`,
     badge: 'Observer (free)',
-    asset: country.asset_static,
-    assetType: 'image',
-  },
-  {
-    title: 'Vector SVG export',
-    description: `Export your ${country.name_en} map as a scalable vector graphic (SVG). Ideal for print publications, editorial illustrations, and web use — scales to any resolution without quality loss.`,
-    badge: 'Explorer',
     asset: country.asset_svg,
     assetType: 'image',
   },
@@ -55,26 +48,36 @@ const allItems: ShowcaseItemDef[] = [
     asset: country.asset_embed_page,
     assetType: 'image',
   },
-  {
-    title: 'Embeddable iframe',
-    description: `Embed your ${country.name_en} choropleth map directly on any website, article, or dashboard with a single iframe snippet. Fully responsive and always up to date.`,
-    badge: 'Explorer',
-    asset: country.asset_iframe,
-    assetType: 'image',
-  },
+  ...(country.embed_public_url
+    ? [
+        {
+          title: 'Embeddable iframe',
+          description: `Embed your ${country.name_en} choropleth map directly on any website, article, or dashboard with a single iframe snippet. Fully responsive and always up to date.`,
+          badge: 'Explorer',
+          asset: country.embed_public_url,
+          assetType: 'iframe' as const,
+        },
+      ]
+    : []),
 ];
 
 const items = allItems
   .filter((item) => item.asset && item.asset.trim() !== '')
-  .map((item) => ({
-    ...item,
-    assetPath: resolveShowcasePublicUrl(
-      country.slug,
-      item.asset,
-      country.map_file,
-      item.assetType,
-    ),
-  }))
+  .map((item) => {
+    // iframe items carry a full URL — no local file resolution needed
+    if (item.assetType === 'iframe') {
+      return { ...item, assetPath: item.asset };
+    }
+    return {
+      ...item,
+      assetPath: resolveShowcasePublicUrl(
+        country.slug,
+        item.asset,
+        country.map_file,
+        item.assetType,
+      ),
+    };
+  })
   .filter((item): item is typeof item & { assetPath: string } => item.assetPath !== null);
 ---
 

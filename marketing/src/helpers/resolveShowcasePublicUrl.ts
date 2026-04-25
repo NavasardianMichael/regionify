@@ -4,7 +4,7 @@ import { join } from 'node:path';
 /**
  * Public URL for a file under `public/assets/{slug}/`. If missing, image types fall back to
  * `public/svgs/{mapFile}` so pages work before optional screenshots are added (see
- * `data/showcase-assets/` + `scripts/copy-assets.js`).
+ * `assets/{slug}/showcases/` + `scripts/copy-assets.js` + `scripts/generate-showcase-assets.mjs`).
  */
 export function resolveShowcasePublicUrl(
   slug: string,

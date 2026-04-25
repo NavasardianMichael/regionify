@@ -1,0 +1,36 @@
+{
+  "description": "National annual series are from the World Bank Open Data API (optional). Subnational choropleth data: one long-format `data.csv` per country. The World Bank series does not provide per-region panels.",
+  "world_bank": {
+    "license": "https://www.worldbank.org/en/about/legal",
+    "home": "https://data.worldbank.org/"
+  },
+  "subnational": {
+    "note": "Map divisions and base regional metrics: see meta.json `dataset_source` and `data.csv` for this country."
+  },
+  "russia_panel": {
+    "last_panel_fetch": "2026-04-25T01:19:21.566Z",
+    "region_count": 83,
+    "year": 2023,
+    "grdp": {
+      "wikipedia": "https://en.wikipedia.org/wiki/List_of_Russian_federal_subjects_by_GRDP",
+      "primary_ref": "Table cites Rosstat (rosstat.gov.ru) via Wikipedia; values are nominal GRDP in billion RUB, converted to USD with World Bank official exchange rate (PA.NUS.FCRF)."
+    },
+    "wikidata": {
+      "sparql": "https://query.wikidata.org/sparql",
+      "note": "Population (P1082) and area (P2046) in km²; code P300 = ISO 3166-2."
+    },
+    "world_bank": {
+      "indicator_fx": "PA.NUS.FCRF"
+    },
+    "gdp_per_capita": {
+      "method": "GRDP (nominal) in USD (total) ÷ population from Wikidata; same units as national GDP p.c. (rough regional analog)."
+    },
+    "fetch_report": {
+      "year": 2023,
+      "rub_per_usd": 85.1620083333333,
+      "wikipedia_page": "List_of_Russian_federal_subjects_by_GRDP",
+      "missing_wd": [],
+      "missing_wiki": []
+    }
+  }
+}

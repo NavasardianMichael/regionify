@@ -7,7 +7,7 @@ interface Props {
   description: string;
   badge: string;
   assetPath: string;
-  assetType: 'image' | 'video' | 'gif';
+  assetType: 'image' | 'video' | 'gif' | 'iframe';
   reverse?: boolean;
   index: number;
 }
@@ -44,7 +44,15 @@ const badgeClass = badgeColors[badge] ?? 'bg-primary text-white';
   <div class="min-w-0 flex-1">
     <div class="aspect-video w-full overflow-hidden rounded-lg border border-dashed border-gray-300 bg-gray-50">
       {
-        assetType === 'video' ? (
+        assetType === 'iframe' ? (
+          <iframe
+            src={assetPath}
+            class="h-full w-full border-0"
+            title={`${title} — Regionify embed`}
+            loading="lazy"
+            sandbox="allow-scripts allow-same-origin"
+          />
+        ) : assetType === 'video' ? (
           <video
             src={assetPath}
             autoplay

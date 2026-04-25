@@ -3,10 +3,9 @@ import CtaSection from '@/components/CtaSection.astro';
 import DivisionsSection from '@/components/DivisionsSection.astro';
 import Footer from '@/components/Footer.astro';
 import HeroSection from '@/components/HeroSection.astro';
-import MapPreview from '@/components/MapPreview.astro';
 import Nav from '@/components/Nav.astro';
 import ShowcaseSection from '@/components/ShowcaseSection.astro';
-import { getCountries, getDivisionsForCountry } from '@/data/parseCountries';
+import { getCountries, getDivisionsForSlug } from '@/data/parseCountries';
 import { resolveOgImagePublicPath } from '@/helpers/resolveShowcasePublicUrl';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 
@@ -19,10 +18,10 @@ export async function getStaticPaths() {
 }
 
 const { country } = Astro.props;
-const divisions = getDivisionsForCountry(country.region_id);
+const divisions = getDivisionsForSlug(country.slug);
 const ogImagePublicPath = resolveOgImagePublicPath(
   country.slug,
-  country.asset_static,
+  country.asset_svg,
   country.map_file,
 );
 

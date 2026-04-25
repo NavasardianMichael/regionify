@@ -1,0 +1,13 @@
+{
+  "description": "National annual series are from the World Bank Open Data API. Subnational (first-level) population and economic values for choropleth mapping are from official regional statistics in marketing metadata (e.g. national statistical service) and `data.csv`; the World Bank series does not provide per-marz panels.",
+  "world_bank": {
+    "license": "https://www.worldbank.org/en/about/legal",
+    "home": "https://data.worldbank.org/"
+  },
+  "subnational": {
+    "note": "One long-format `data.csv`: name_en, name_local, svg_id, year, population, area_km2, value. Static map uses latest year in the file or `meta.dataset_year` when that year exists."
+  },
+  "showcase_generation": {
+    "note": "Showcase images from `scripts/generate-showcase-assets.mjs`: `data.csv` + map SVG. GIF/WebM: multi-year → last two years; else high/low region for the display year."
+  }
+}

@@ -1,9 +1,14 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { parse } from 'csv-parse/sync';
+
+import {
+  divisionsForDisplayYear,
+  parseMarketingDataContent,
+  resolveDisplayYear,
+} from '@/data/marketingCsv';
 
 // process.cwd() is the marketing/ project root in both dev and build contexts
-const dataDir = join(process.cwd(), 'data');
+const assetsDir = join(process.cwd(), 'assets');
 
 export type CountryRow = {
   slug: string;
@@ -29,12 +34,14 @@ export type CountryRow = {
   seo_description: string;
   seo_keywords: string;
   intro_text: string;
-  asset_static: string;
   asset_svg: string;
   asset_gif: string;
   asset_mp4: string;
   asset_embed_page: string;
-  asset_iframe: string;
+  /** Public embed URL — when set, the iframe showcase renders a live <iframe> */
+  embed_public_url?: string;
+  /** Default seconds per time period for animation exports (optional). */
+  seconds_per_period?: number;
 };
 
 export type DivisionRow = {
@@ -47,25 +54,100 @@ export type DivisionRow = {
   value: number;
 };
 
-function readCsv<T>(filename: string): T[] {
-  const content = readFileSync(join(dataDir, filename), 'utf-8');
-  return parse(content, {
-    columns: true,
-    skip_empty_lines: true,
-    cast: true,
-  }) as T[];
+type MetaJson = Partial<CountryRow> & {
+  slug: string;
+  region_id: string;
+  /** When set, prefer this survey year in `data.csv` for the static map; if absent for that year, use latest `year` in the file. */
+  dataset_year?: string;
+};
+
+function listCountrySlugs(): string[] {
+  let entries: string[];
+  try {
+    entries = readdirSync(assetsDir);
+  } catch {
+    return [];
+  }
+  return entries.filter((name) => {
+    if (name.startsWith('.') || name.startsWith('_')) return false;
+    const full = join(assetsDir, name);
+    try {
+      if (!statSync(full).isDirectory()) return false;
+    } catch {
+      return false;
+    }
+    const metaPath = join(full, 'meta.json');
+    const dataPath = join(full, 'data.csv');
+    try {
+      return statSync(metaPath).isFile() && statSync(dataPath).isFile();
+    } catch {
+      return false;
+    }
+  });
+}
+
+function loadCountryFromSlug(slug: string): CountryRow {
+  const dir = join(assetsDir, slug);
+  const meta = JSON.parse(readFileSync(join(dir, 'meta.json'), 'utf-8')) as MetaJson;
+  const dataContent = readFileSync(join(dir, 'data.csv'), 'utf-8');
+  const { longRows } = parseMarketingDataContent(dataContent, meta);
+  const displayYear = resolveDisplayYear(meta, longRows);
+  const divisions = divisionsForDisplayYear(longRows, displayYear, meta.region_id ?? slug);
+  const division_count = divisions.length;
+
+  return {
+    slug: meta.slug ?? slug,
+    region_id: meta.region_id ?? slug,
+    map_file: meta.map_file ?? '',
+    name_en: meta.name_en ?? '',
+    name_local: meta.name_local ?? '',
+    flag_emoji: meta.flag_emoji ?? '',
+    capital: meta.capital ?? '',
+    population: Number(meta.population ?? 0),
+    area_km2: Number(meta.area_km2 ?? 0),
+    continent: meta.continent ?? '',
+    subregion: meta.subregion ?? '',
+    official_languages: meta.official_languages ?? '',
+    division_type: meta.division_type ?? '',
+    division_count,
+    dataset_label: meta.dataset_label ?? '',
+    dataset_unit: meta.dataset_unit ?? '',
+    dataset_year: String(displayYear),
+    dataset_source: meta.dataset_source ?? '',
+    dataset_source_url: meta.dataset_source_url ?? '',
+    seo_title: meta.seo_title ?? '',
+    seo_description: meta.seo_description ?? '',
+    seo_keywords: meta.seo_keywords ?? '',
+    intro_text: meta.intro_text ?? '',
+    asset_svg: meta.asset_svg ?? '',
+    asset_gif: meta.asset_gif ?? '',
+    asset_mp4: meta.asset_mp4 ?? '',
+    asset_embed_page: meta.asset_embed_page ?? '',
+    embed_public_url: meta.embed_public_url,
+    seconds_per_period: meta.seconds_per_period,
+  };
 }
 
 export function getCountries(): CountryRow[] {
-  return readCsv<CountryRow>('countries.csv');
+  const slugs = listCountrySlugs();
+  const countries = slugs.map(loadCountryFromSlug);
+  countries.sort((a, b) => a.name_en.localeCompare(b.name_en, 'en'));
+  return countries;
 }
 
-export function getDivisions(): DivisionRow[] {
-  return readCsv<DivisionRow>('divisions.csv');
+export function getDivisionsForSlug(slug: string): DivisionRow[] {
+  const dir = join(assetsDir, slug);
+  const meta = JSON.parse(readFileSync(join(dir, 'meta.json'), 'utf-8')) as MetaJson;
+  const dataContent = readFileSync(join(dir, 'data.csv'), 'utf-8');
+  const { longRows } = parseMarketingDataContent(dataContent, meta);
+  const displayYear = resolveDisplayYear(meta, longRows);
+  return divisionsForDisplayYear(longRows, displayYear, meta.region_id ?? slug);
 }
 
 export function getDivisionsForCountry(regionId: string): DivisionRow[] {
-  return getDivisions().filter((d) => d.region_id === regionId);
+  const slug = getCountries().find((c) => c.region_id === regionId)?.slug;
+  if (!slug) return [];
+  return getDivisionsForSlug(slug);
 }
 
 export function formatNumber(n: number): string {
