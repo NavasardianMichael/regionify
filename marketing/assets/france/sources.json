@@ -1,0 +1,22 @@
+{
+  "eurostat": {
+    "dataset": "nama_10r_2gdp",
+    "unit": "EUR_HAB (GDP per capita in EUR)",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10r_2gdp?geo=FR1&geo=FRB&geo=FRC&geo=FRD&geo=FRE&geo=FRF&geo=FRG&geo=FRH&geo=FRI&geo=FRJ&geo=FRK&geo=FRL&geo=FRM&unit=EUR_HAB",
+    "last_fetched": "2026-04-25T23:33:55.992Z"
+  },
+  "world_bank": {
+    "indicator_fx": "PA.NUS.FCRF (FRA)",
+    "rates": {
+      "2020": 1.1421961089494,
+      "2021": 1.1827403100775,
+      "2022": 1.0530486381323,
+      "2023": 1.081268627451,
+      "2024": 1.08238046875,
+      "2025": 1.1299831372549
+    }
+  },
+  "wikidata": {
+    "note": "Population and area via ISO-3166-2 codes."
+  }
+}

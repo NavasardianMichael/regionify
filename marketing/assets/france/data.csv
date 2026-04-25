@@ -1,0 +1,66 @@
+name_en,name_local,svg_id,year,population,area_km2,value
+Île-de-France,Île-de-France,FR-IDF,2021,12463067,12012,50222.35
+Île-de-France,Île-de-France,FR-IDF,2022,12463067,12012,60016.22
+Île-de-France,Île-de-France,FR-IDF,2023,12463067,12012,61779.28
+Île-de-France,Île-de-France,FR-IDF,2024,12463067,12012,64210.32
+Île-de-France,Île-de-France,FR-IDF,2025,12463067,12012,
+Centre-Val de Loire,Centre-Val de Loire,FR-CVL,2021,2587031,39151,25787.57
+Centre-Val de Loire,Centre-Val de Loire,FR-CVL,2022,2587031,39151,29913.15
+Centre-Val de Loire,Centre-Val de Loire,FR-CVL,2023,2587031,39151,32184.42
+Centre-Val de Loire,Centre-Val de Loire,FR-CVL,2024,2587031,39151,32798.08
+Centre-Val de Loire,Centre-Val de Loire,FR-CVL,2025,2587031,39151,
+Bourgogne-Franche-Comté,Bourgogne-Franche-Comté,FR-BFC,2021,2802670,47784,25280.27
+Bourgogne-Franche-Comté,Bourgogne-Franche-Comté,FR-BFC,2022,2802670,47784,29723.22
+Bourgogne-Franche-Comté,Bourgogne-Franche-Comté,FR-BFC,2023,2802670,47784,30797.16
+Bourgogne-Franche-Comté,Bourgogne-Franche-Comté,FR-BFC,2024,2802670,47784,31597.02
+Bourgogne-Franche-Comté,Bourgogne-Franche-Comté,FR-BFC,2025,2802670,47784,
+Normandy,Normandie,FR-NOR,2021,3345842,29906,25618.47
+Normandy,Normandie,FR-NOR,2022,3345842,29906,30387.96
+Normandy,Normandie,FR-NOR,2023,3345842,29906,31906.96
+Normandy,Normandie,FR-NOR,2024,3345842,29906,32613.3
+Normandy,Normandie,FR-NOR,2025,3345842,29906,
+Hauts-de-France,Hauts-de-France,FR-HDF,2021,5992194,31813,24012.03
+Hauts-de-France,Hauts-de-France,FR-HDF,2022,5992194,31813,28393.75
+Hauts-de-France,Hauts-de-France,FR-HDF,2023,5992194,31813,29594.87
+Hauts-de-France,Hauts-de-France,FR-HDF,2024,5992194,31813,30395.97
+Hauts-de-France,Hauts-de-France,FR-HDF,2025,5992194,31813,
+Grand Est,Grand Est,FR-GES,2021,5563378,57433,25533.92
+Grand Est,Grand Est,FR-GES,2022,5563378,57433,30387.96
+Grand Est,Grand Est,FR-GES,2023,5563378,57433,31999.45
+Grand Est,Grand Est,FR-GES,2024,5563378,57433,32705.69
+Grand Est,Grand Est,FR-GES,2025,5563378,57433,
+Pays de la Loire,Pays de la Loire,FR-PDL,2021,3907156,32082,28154.95
+Pays de la Loire,Pays de la Loire,FR-PDL,2022,3907156,32082,32667.06
+Pays de la Loire,Pays de la Loire,FR-PDL,2023,3907156,32082,33941.61
+Pays de la Loire,Pays de la Loire,FR-PDL,2024,3907156,32082,34645.86
+Pays de la Loire,Pays de la Loire,FR-PDL,2025,3907156,32082,
+Brittany,Bretagne,FR-BRE,2021,3449370,27208,26802.16
+Brittany,Bretagne,FR-BRE,2022,3449370,27208,31432.55
+Brittany,Bretagne,FR-BRE,2023,3449370,27208,32739.32
+Brittany,Bretagne,FR-BRE,2024,3449370,27208,33814.36
+Brittany,Bretagne,FR-BRE,2025,3449370,27208,
+Nouvelle-Aquitaine,Nouvelle-Aquitaine,FR-NAQ,2021,6150451,84061,26802.16
+Nouvelle-Aquitaine,Nouvelle-Aquitaine,FR-NAQ,2022,6150451,84061,31242.62
+Nouvelle-Aquitaine,Nouvelle-Aquitaine,FR-NAQ,2023,6150451,84061,32831.8
+Nouvelle-Aquitaine,Nouvelle-Aquitaine,FR-NAQ,2024,6150451,84061,33444.8
+Nouvelle-Aquitaine,Nouvelle-Aquitaine,FR-NAQ,2025,6150451,84061,
+Occitania,Occitanie,FR-OCC,2021,6124653,72724,26548.52
+Occitania,Occitanie,FR-OCC,2022,6124653,72724,30862.77
+Occitania,Occitanie,FR-OCC,2023,6124653,72724,32461.87
+Occitania,Occitanie,FR-OCC,2024,6124653,72724,33167.63
+Occitania,Occitanie,FR-OCC,2025,6124653,72724,
+Auvergne-Rhône-Alpes,Auvergne-Rhône-Alpes,FR-ARA,2021,8205557,69711,30437.79
+Auvergne-Rhône-Alpes,Auvergne-Rhône-Alpes,FR-ARA,2022,8205557,69711,35705.85
+Auvergne-Rhône-Alpes,Auvergne-Rhône-Alpes,FR-ARA,2023,8205557,69711,37825.94
+Auvergne-Rhône-Alpes,Auvergne-Rhône-Alpes,FR-ARA,2024,8205557,69711,38710.97
+Auvergne-Rhône-Alpes,Auvergne-Rhône-Alpes,FR-ARA,2025,8205557,69711,
+Provence-Alpes-Côte d'Azur,Provence-Alpes-Côte d'Azur,FR-PAC,2021,5218960,31400,32551.52
+Provence-Alpes-Côte d'Azur,Provence-Alpes-Côte d'Azur,FR-PAC,2022,5218960,31400,39979.16
+Provence-Alpes-Côte d'Azur,Provence-Alpes-Côte d'Azur,FR-PAC,2023,5218960,31400,37456
+Provence-Alpes-Côte d'Azur,Provence-Alpes-Côte d'Azur,FR-PAC,2024,5218960,31400,38618.58
+Provence-Alpes-Côte d'Azur,Provence-Alpes-Côte d'Azur,FR-PAC,2025,5218960,31400,
+FR-COR,,FR-COR,2021,,,26633.07
+FR-COR,,FR-COR,2022,,,31052.7
+FR-COR,,FR-COR,2023,,,33294.22
+FR-COR,,FR-COR,2024,,,34645.86
+FR-COR,,FR-COR,2025,,,

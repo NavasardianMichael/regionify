@@ -14,13 +14,16 @@
  *
  * Dataset: https://ec.europa.eu/eurostat/databrowser/view/NAMA_10R_2GDP
  */
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DATA_CSV_HEADER } from '../lib/marketingDataCsv.ts';
 
-const EUROSTAT_TSV_URL =
-  'https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/nama_10r_2gdp';
-const WB_FX_BASE = 'https://api.worldbank.org/v2/country';
+// JSON-stat 2.0 endpoint — respects geo/time filters, compact response
+const EUROSTAT_STATS_URL =
+  'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10r_2gdp';
+// ECB Data Portal — annual average USD per EUR exchange rate
+const ECB_EURUSD_URL =
+  'https://data-api.ecb.europa.eu/service/data/EXR/A.USD.EUR.SP00.A?format=jsondata&detail=dataonly';
 const WD_ENDPOINT = 'https://query.wikidata.org/sparql';
 
 const UA = { 'User-Agent': 'RegionifyMarketing/1.0 (panel fetch; contact: regionify.pro)' };
@@ -35,54 +38,48 @@ type MetaConfig = {
 };
 
 // ---------------------------------------------------------------------------
-// Eurostat TSV
+// Eurostat JSON-stat 2.0 — properly filtered, compact response
 // ---------------------------------------------------------------------------
 
-async function fetchEurostatTsv(
+type EurostatJsonStat = {
+  id: string[];
+  size: number[];
+  dimension: {
+    geo: { category: { index: Record<string, number>; label: Record<string, string> } };
+    time: { category: { index: Record<string, number>; label: Record<string, string> } };
+  };
+  value: Record<string, number | null>;
+};
+
+async function fetchEurostatStats(
   nutsCodes: string[],
   years: number[],
 ): Promise<Map<string, Map<number, number>>> {
-  const geoParam = nutsCodes.join(',');
-  const timeParam = years.join(',');
-  const url = `${EUROSTAT_TSV_URL}?geo=${geoParam}&unit=EUR_HAB&time=${timeParam}&format=TSV`;
+  // Each geo and time must be a separate query parameter for proper filtering
+  const params = new URLSearchParams({ unit: 'EUR_HAB', lang: 'EN' });
+  for (const code of nutsCodes) params.append('geo', code);
+  for (const yr of years) params.append('time', String(yr));
 
+  const url = `${EUROSTAT_STATS_URL}?${params.toString()}`;
   const res = await fetch(url, { headers: UA, signal: AbortSignal.timeout(30_000) });
-  if (!res.ok) throw new Error(`Eurostat TSV: HTTP ${res.status}`);
-  const text = await res.text();
+  if (!res.ok) throw new Error(`Eurostat: HTTP ${res.status} — ${await res.text()}`);
 
-  const lines = text.split('\n').filter(Boolean);
-  if (lines.length < 2) throw new Error('Eurostat TSV: empty response');
-
-  // Header: "freq,unit,geo\TIME_PERIOD\t2019 \t2020 \t..."
-  const headerCols = lines[0]!.split('\t');
-  const yearCols: number[] = [];
-  const yearColIdx: number[] = [];
-  headerCols.forEach((col, i) => {
-    if (i === 0) return; // skip the key column
-    const y = Number(col.trim());
-    if (Number.isFinite(y) && y > 1990) {
-      yearCols.push(y);
-      yearColIdx.push(i);
-    }
-  });
+  const d = (await res.json()) as EurostatJsonStat;
+  const geoIndex = d.dimension.geo.category.index; // NUTS code → 0-based position
+  const timeIndex = d.dimension.time.category.index; // year string → 0-based position
+  const numTimes = d.size[d.id.indexOf('time')] ?? years.length;
 
   const result = new Map<string, Map<number, number>>();
-  for (const line of lines.slice(1)) {
-    const cols = line.split('\t');
-    const key = cols[0]?.trim() ?? '';
-    // key is "A,EUR_HAB,GEO_CODE"
-    const geoCode = key.split(',').pop()?.trim() ?? '';
-    if (!geoCode || !nutsCodes.includes(geoCode)) continue;
-
+  for (const [nutsCode, geoPos] of Object.entries(geoIndex)) {
     const yearMap = new Map<number, number>();
-    for (let j = 0; j < yearColIdx.length; j++) {
-      const rawVal = cols[yearColIdx[j]!]?.trim().replace(/[^0-9.]/g, '');
-      const val = rawVal ? Number(rawVal) : NaN;
-      if (Number.isFinite(val) && val > 0) {
-        yearMap.set(yearCols[j]!, val);
+    for (const [yearStr, timePos] of Object.entries(timeIndex)) {
+      const flatIdx = geoPos * numTimes + timePos;
+      const val = d.value[String(flatIdx)];
+      if (val != null && Number.isFinite(val) && val > 0) {
+        yearMap.set(Number(yearStr), val);
       }
     }
-    if (yearMap.size > 0) result.set(geoCode, yearMap);
+    if (yearMap.size > 0) result.set(nutsCode, yearMap);
   }
   return result;
 }
@@ -91,28 +88,28 @@ async function fetchEurostatTsv(
 // World Bank FX (local currency per USD)
 // ---------------------------------------------------------------------------
 
-async function fetchLcuPerUsd(
-  wbCountryCode: string,
-  years: number[],
-): Promise<Record<number, number>> {
+/** Returns annual average USD per 1 EUR from the ECB Data Portal. */
+async function fetchUsdPerEur(years: number[]): Promise<Record<number, number>> {
   const minY = Math.min(...years);
   const maxY = Math.max(...years);
-  const url = `${WB_FX_BASE}/${wbCountryCode}/indicator/PA.NUS.FCRF?format=json&date=${minY - 1}:${maxY + 1}&per_page=20`;
-  const res = await fetch(url, { headers: UA, signal: AbortSignal.timeout(15_000) });
-  if (!res.ok) throw new Error(`World Bank FX (${wbCountryCode}): HTTP ${res.status}`);
-  const j = (await res.json()) as [unknown, Array<{ date: string; value: number | null }>];
-  const rows = Array.isArray(j) ? j[1] : [];
+  const url = `${ECB_EURUSD_URL}&startPeriod=${minY - 1}&endPeriod=${maxY + 1}`;
+  const res = await fetch(url, { headers: UA, signal: AbortSignal.timeout(20_000) });
+  if (!res.ok) throw new Error(`ECB FX: HTTP ${res.status}`);
+  type EcbJson = {
+    structure: {
+      dimensions: { observation: Array<{ id: string; values: Array<{ id: string }> }> };
+    };
+    dataSets: Array<{ series: Record<string, { observations: Record<string, [number]> }> }>;
+  };
+  const d = (await res.json()) as EcbJson;
+  const timeDim = d.structure.dimensions.observation.find((dim) => dim.id === 'TIME_PERIOD');
+  const timeValues = timeDim?.values ?? [];
+  const series = Object.values(d.dataSets[0]?.series ?? {})[0];
+  const obs = series?.observations ?? {};
   const result: Record<number, number> = {};
-  for (const row of rows) {
-    const y = Number(row.date);
-    if (Number.isFinite(y) && row.value != null) result[y] = Number(row.value);
-  }
-  // Eurozone countries: PA.NUS.FCRF returns EUR/USD for the euro area
-  // If no values returned (e.g. country uses EUR natively), try "EMU"
-  if (Object.keys(result).length === 0) {
-    console.warn(`  FX: no PA.NUS.FCRF for ${wbCountryCode}, falling back to EMU`);
-    const fallback = await fetchLcuPerUsd('EMU', years);
-    return fallback;
+  for (const [idxStr, val] of Object.entries(obs)) {
+    const yearStr = timeValues[Number(idxStr)]?.id;
+    if (yearStr && val[0] != null) result[Number(yearStr)] = val[0];
   }
   return result;
 }
@@ -169,19 +166,6 @@ SELECT ?code ?pop ?area (SAMPLE(?en) AS ?en) (SAMPLE(?local) AS ?local) WHERE {
 }
 
 // ---------------------------------------------------------------------------
-// SVG id extraction (to get the list of region codes in the map)
-// ---------------------------------------------------------------------------
-
-function extractSvgIds(mapFilePath: string): string[] {
-  const raw = readFileSync(mapFilePath, 'utf-8');
-  const ids: string[] = [];
-  const re = /\bid="([A-Z]{2}-[A-Z0-9]+)"/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(raw)) !== null) ids.push(m[1]!);
-  return [...new Set(ids)];
-}
-
-// ---------------------------------------------------------------------------
 // CSV helpers
 // ---------------------------------------------------------------------------
 
@@ -231,9 +215,9 @@ export default async function runEurostat(ctx: PanelFetchContext): Promise<void>
   );
   console.log(`  Source: Eurostat nama_10r_2gdp (EUR_HAB) + World Bank FX (${wbCode})`);
 
-  const [eurostatData, fxRates, wdRegions] = await Promise.all([
-    fetchEurostatTsv(nutsCodes, years),
-    fetchLcuPerUsd(wbCode, years),
+  const [eurostatData, usdPerEurRates, wdRegions] = await Promise.all([
+    fetchEurostatStats(nutsCodes, years),
+    fetchUsdPerEur(years),
     wdQid ? fetchWikidataByIsoCodes(svgIds, wdQid) : Promise.resolve(new Map<string, WdRegion>()),
   ]);
 
@@ -253,7 +237,7 @@ export default async function runEurostat(ctx: PanelFetchContext): Promise<void>
 
     for (const yr of years) {
       const eurPerCapita = nutsYearMap?.get(yr);
-      const lcuPerUsd = fxRates[yr];
+      const lcuPerUsd = usdPerEurRates[yr];
 
       let gdpUsd: number | '' = '';
       if (eurPerCapita != null && lcuPerUsd != null && lcuPerUsd > 0) {
@@ -294,10 +278,10 @@ export default async function runEurostat(ctx: PanelFetchContext): Promise<void>
         eurostat: {
           dataset: 'nama_10r_2gdp',
           unit: 'EUR_HAB (GDP per capita in EUR)',
-          url: `${EUROSTAT_TSV_URL}?geo=${nutsCodes.join(',')}&unit=EUR_HAB`,
+          url: `${EUROSTAT_STATS_URL}?geo=${nutsCodes.join('&geo=')}&unit=EUR_HAB`,
           last_fetched: new Date().toISOString(),
         },
-        world_bank: { indicator_fx: `PA.NUS.FCRF (${wbCode})`, rates: fxRates },
+        world_bank: { indicator_fx: `PA.NUS.FCRF (${wbCode})`, rates: usdPerEurRates },
         wikidata: { note: 'Population and area via ISO-3166-2 codes.' },
       },
       null,
