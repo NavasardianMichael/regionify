@@ -8,11 +8,15 @@ interface Props {
   badge: string;
   assetPath: string;
   assetType: 'image' | 'video' | 'gif' | 'iframe';
+  /** Accessible name for embedded content (required for iframes). */
+  frameTitle?: string;
   reverse?: boolean;
   index: number;
 }
 
-const { title, description, badge, assetPath, assetType, reverse = false, index } = Astro.props;
+const { title, description, badge, assetPath, assetType, frameTitle, reverse = false, index } = Astro.props;
+
+const iframeAccessibleTitle = frameTitle ?? title;
 
 const badgeClass = 'bg-primary text-white';
 ---
@@ -51,6 +55,7 @@ const badgeClass = 'bg-primary text-white';
         ) : assetType === 'iframe' ? (
           <iframe
             src={assetPath}
+            title={iframeAccessibleTitle}
             class="h-full w-full border-none"
             allowfullscreen
             loading="lazy"

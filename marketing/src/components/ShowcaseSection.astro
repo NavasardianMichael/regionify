@@ -19,6 +19,7 @@ type ShowcaseItemDef = {
   badge: string;
   assetPath: string;
   assetType: 'image' | 'video' | 'gif' | 'iframe';
+  frameTitle?: string;
 };
 
 /** Tracked map of live demo embed URLs (updated by playwright; required for production builds). */
@@ -68,6 +69,7 @@ const allItems: ShowcaseItemDef[] = [
           badge: 'Explorer',
           assetPath: embedUrl,
           assetType: 'iframe' as const,
+          frameTitle: `Interactive ${name_en} choropleth map — live Regionify embed`,
         },
       ]
     : []),
@@ -91,6 +93,7 @@ const allItems: ShowcaseItemDef[] = [
           badge={item.badge}
           assetPath={item.assetPath}
           assetType={item.assetType}
+          frameTitle={item.frameTitle}
           reverse={i % 2 === 1}
           index={i}
         />
