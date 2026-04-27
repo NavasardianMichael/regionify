@@ -1,8 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { parse } from 'csv-parse/sync';
 
-// process.cwd() is the marketing/ project root in both dev and build contexts
 const dataDir = join(process.cwd(), 'data');
 
 export type CountryRow = {
@@ -15,11 +13,15 @@ export type CountryRow = {
   division_count: number;
 };
 
+type CountriesMap = Record<string, Omit<CountryRow, 'slug' | 'region_id'>>;
+
 export function getCountries(): CountryRow[] {
-  const content = readFileSync(join(dataDir, 'countries.csv'), 'utf-8');
-  return parse(content, {
-    columns: true,
-    skip_empty_lines: true,
-    cast: true,
-  }) as CountryRow[];
+  const map: CountriesMap = JSON.parse(readFileSync(join(dataDir, 'countries.json'), 'utf-8'));
+  return Object.entries(map).map(([slug, meta]) => ({ slug, region_id: slug, ...meta }));
+}
+
+export function getCountry(slug: string): CountryRow | null {
+  const map: CountriesMap = JSON.parse(readFileSync(join(dataDir, 'countries.json'), 'utf-8'));
+  const meta = map[slug];
+  return meta ? { slug, region_id: slug, ...meta } : null;
 }

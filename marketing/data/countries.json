@@ -3,1332 +3,1652 @@
     "name_en": "Afghanistan",
     "name_local": "افغانستان",
     "capital": "Kabul",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 34
   },
   "albania": {
     "name_en": "Albania",
     "name_local": "Shqipëria",
     "capital": "Tirana",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 12
   },
   "algeria": {
     "name_en": "Algeria",
     "name_local": "الجزائر",
     "capital": "Algiers",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 48
   },
   "americanSamoa": {
     "name_en": "American Samoa",
     "name_local": "Amerika Samoa",
     "capital": "Pago Pago",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 5
   },
   "andorra": {
     "name_en": "Andorra",
     "name_local": "Andorra",
     "capital": "Andorra la Vella",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 7
   },
   "angola": {
     "name_en": "Angola",
     "name_local": "Angola",
     "capital": "Luanda",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 18
   },
   "anguilla": {
     "name_en": "Anguilla",
     "name_local": "Anguilla",
     "capital": "The Valley",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 15
   },
   "antiguaAndBarbuda": {
     "name_en": "Antigua and Barbuda",
     "name_local": "Antigua and Barbuda",
     "capital": "Saint John's",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 8
   },
   "argentina": {
     "name_en": "Argentina",
     "name_local": "Argentina",
     "capital": "Buenos Aires",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 24
   },
   "armenia": {
     "name_en": "Armenia",
     "name_local": "Հայաստան",
     "capital": "Yerevan",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 11
   },
   "aruba": {
     "name_en": "Aruba",
     "name_local": "Aruba",
     "capital": "Oranjestad",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 1
   },
   "australia": {
     "name_en": "Australia",
     "name_local": "Australia",
     "capital": "Canberra",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 8
   },
   "austria": {
     "name_en": "Austria",
     "name_local": "Österreich",
     "capital": "Vienna",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 9
   },
   "azerbaijan": {
     "name_en": "Azerbaijan",
     "name_local": "Azərbaycan",
     "capital": "Baku",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 77
   },
   "bahamas": {
     "name_en": "Bahamas",
     "name_local": "Bahamas",
     "capital": "Nassau",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 32
   },
   "bahrain": {
     "name_en": "Bahrain",
     "name_local": "البحرين",
     "capital": "Manama",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 5
   },
   "bangladesh": {
     "name_en": "Bangladesh",
     "name_local": "বাংলাদেশ",
     "capital": "Dhaka",
-    "division_type": "Divisions"
+    "division_type": "Divisions",
+    "division_count": 7
   },
   "barbados": {
     "name_en": "Barbados",
     "name_local": "Barbados",
     "capital": "Bridgetown",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 11
   },
   "belarus": {
     "name_en": "Belarus",
     "name_local": "Беларусь",
     "capital": "Minsk",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 7
   },
   "belgium": {
     "name_en": "Belgium",
     "name_local": "België",
     "capital": "Brussels",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 11
   },
   "belize": {
     "name_en": "Belize",
     "name_local": "Belize",
     "capital": "Belmopan",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 6
   },
   "benin": {
     "name_en": "Benin",
     "name_local": "Bénin",
     "capital": "Porto-Novo",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 12
   },
   "bermuda": {
     "name_en": "Bermuda",
     "name_local": "Bermuda",
     "capital": "Hamilton",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 11
   },
   "bhutan": {
     "name_en": "Bhutan",
     "name_local": "འབྲུག",
     "capital": "Thimphu",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 20
   },
   "bolivia": {
     "name_en": "Bolivia",
     "name_local": "Bolivia",
     "capital": "Sucre",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 9
   },
   "botswana": {
     "name_en": "Botswana",
     "name_local": "Botswana",
     "capital": "Gaborone",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 9
   },
   "brazil": {
     "name_en": "Brazil",
     "name_local": "Brasil",
     "capital": "Brasília",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 27
   },
   "britishVirginIslands": {
     "name_en": "British Virgin Islands",
     "name_local": "British Virgin Islands",
     "capital": "Road Town",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 1
   },
   "bruneiDarussalam": {
     "name_en": "Brunei",
     "name_local": "Brunei Darussalam",
     "capital": "Bandar Seri Begawan",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 4
   },
   "bulgaria": {
     "name_en": "Bulgaria",
     "name_local": "България",
     "capital": "Sofia",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 28
   },
   "burkinaFaso": {
     "name_en": "Burkina Faso",
     "name_local": "Burkina Faso",
     "capital": "Ouagadougou",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 13
   },
   "burundi": {
     "name_en": "Burundi",
     "name_local": "Burundi",
     "capital": "Gitega",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 17
   },
   "cambodia": {
     "name_en": "Cambodia",
     "name_local": "កម្ពុជា",
     "capital": "Phnom Penh",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 24
   },
   "cameroon": {
     "name_en": "Cameroon",
     "name_local": "Cameroun",
     "capital": "Yaoundé",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 10
   },
   "canada": {
     "name_en": "Canada",
     "name_local": "Canada",
     "capital": "Ottawa",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 13
   },
   "capeVerde": {
     "name_en": "Cape Verde",
     "name_local": "Cabo Verde",
     "capital": "Praia",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 22
   },
   "caribbeanNetherlands": {
     "name_en": "Caribbean Netherlands",
     "name_local": "Caribisch Nederland",
     "capital": "Kralendijk",
-    "division_type": "Islands"
+    "division_type": "Islands",
+    "division_count": 3
   },
   "caymanIslands": {
     "name_en": "Cayman Islands",
     "name_local": "Cayman Islands",
     "capital": "George Town",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 1
   },
   "centralAfricanRepublic": {
     "name_en": "Central African Republic",
     "name_local": "République centrafricaine",
     "capital": "Bangui",
-    "division_type": "Prefectures"
+    "division_type": "Prefectures",
+    "division_count": 17
   },
   "chad": {
     "name_en": "Chad",
     "name_local": "تشاد",
     "capital": "N'Djamena",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 22
   },
   "channelIslands": {
     "name_en": "Channel Islands",
     "name_local": "Channel Islands",
     "capital": "Saint Helier",
-    "division_type": "Islands"
+    "division_type": "Islands",
+    "division_count": 27
   },
   "chile": {
     "name_en": "Chile",
     "name_local": "Chile",
     "capital": "Santiago",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 15
   },
   "china": {
     "name_en": "China",
     "name_local": "中国",
     "capital": "Beijing",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 34
+  },
+  "christmasIsland": {
+    "name_en": "Christmas Island",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
+  },
+  "cocosIslands": {
+    "name_en": "Cocos Islands",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "colombia": {
     "name_en": "Colombia",
     "name_local": "Colombia",
     "capital": "Bogotá",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 33
   },
   "comoros": {
     "name_en": "Comoros",
     "name_local": "Comores",
     "capital": "Moroni",
-    "division_type": "Islands"
+    "division_type": "Islands",
+    "division_count": 3
   },
   "congo": {
     "name_en": "Republic of the Congo",
     "name_local": "République du Congo",
     "capital": "Brazzaville",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 12
   },
   "congoDR": {
     "name_en": "DR Congo",
     "name_local": "République démocratique du Congo",
     "capital": "Kinshasa",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 26
   },
   "cookIslands": {
     "name_en": "Cook Islands",
     "name_local": "Cook Islands",
     "capital": "Avarua",
-    "division_type": "Islands"
+    "division_type": "Islands",
+    "division_count": 11
   },
   "costaRica": {
     "name_en": "Costa Rica",
     "name_local": "Costa Rica",
     "capital": "San José",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 8
   },
   "croatia": {
     "name_en": "Croatia",
     "name_local": "Hrvatska",
     "capital": "Zagreb",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 21
   },
   "cuba": {
     "name_en": "Cuba",
     "name_local": "Cuba",
     "capital": "Havana",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 16
   },
   "curacao": {
     "name_en": "Curaçao",
     "name_local": "Curaçao",
     "capital": "Willemstad",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 1
   },
   "cyprus": {
     "name_en": "Cyprus",
     "name_local": "Κύπρος",
     "capital": "Nicosia",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 6
   },
   "czechRepublic": {
     "name_en": "Czech Republic",
     "name_local": "Česká republika",
     "capital": "Prague",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 14
   },
   "denmark": {
     "name_en": "Denmark",
     "name_local": "Danmark",
     "capital": "Copenhagen",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 5
   },
   "djibouti": {
     "name_en": "Djibouti",
     "name_local": "Djibouti",
     "capital": "Djibouti",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 6
   },
   "dominica": {
     "name_en": "Dominica",
     "name_local": "Dominica",
     "capital": "Roseau",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 10
   },
   "dominicanRepublic": {
     "name_en": "Dominican Republic",
     "name_local": "República Dominicana",
     "capital": "Santo Domingo",
-    "division_type": "Provinces"
-  },
-  "eSwatini": {
-    "name_en": "Eswatini",
-    "name_local": "eSwatini",
-    "capital": "Mbabane",
-    "division_type": "Regions"
+    "division_type": "Provinces",
+    "division_count": 32
   },
   "eastTimor": {
     "name_en": "East Timor",
     "name_local": "Timor-Leste",
     "capital": "Dili",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 13
   },
   "ecuador": {
     "name_en": "Ecuador",
     "name_local": "Ecuador",
     "capital": "Quito",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 24
   },
   "egypt": {
     "name_en": "Egypt",
     "name_local": "مصر",
     "capital": "Cairo",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 29
   },
   "elSalvador": {
     "name_en": "El Salvador",
     "name_local": "El Salvador",
     "capital": "San Salvador",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 14
   },
   "equatorialGuinea": {
     "name_en": "Equatorial Guinea",
     "name_local": "Guinea Ecuatorial",
     "capital": "Malabo",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 7
   },
   "eritrea": {
     "name_en": "Eritrea",
     "name_local": "ኤርትራ",
     "capital": "Asmara",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 6
   },
   "estonia": {
     "name_en": "Estonia",
     "name_local": "Eesti",
     "capital": "Tallinn",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 15
+  },
+  "eSwatini": {
+    "name_en": "Eswatini",
+    "name_local": "eSwatini",
+    "capital": "Mbabane",
+    "division_type": "Regions",
+    "division_count": 4
   },
   "ethiopia": {
     "name_en": "Ethiopia",
     "name_local": "ኢትዮጵያ",
     "capital": "Addis Ababa",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 11
   },
   "falklandIslands": {
     "name_en": "Falkland Islands",
     "name_local": "Falkland Islands",
     "capital": "Stanley",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 1
   },
   "faroeIslands": {
     "name_en": "Faroe Islands",
     "name_local": "Føroyar",
     "capital": "Tórshavn",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 6
   },
   "fijiEast": {
     "name_en": "Fiji",
     "name_local": "Fiji",
     "capital": "Suva",
-    "division_type": "Divisions"
+    "division_type": "Divisions",
+    "division_count": 2
   },
   "finland": {
     "name_en": "Finland",
     "name_local": "Suomi",
     "capital": "Helsinki",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 19
   },
   "france": {
     "name_en": "France",
     "name_local": "France",
     "capital": "Paris",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 22
   },
   "frenchGuiana": {
     "name_en": "French Guiana",
     "name_local": "Guyane française",
     "capital": "Cayenne",
-    "division_type": "Arrondissements"
+    "division_type": "Arrondissements",
+    "division_count": 2
   },
   "frenchPolynesia": {
     "name_en": "French Polynesia",
     "name_local": "Polynésie française",
     "capital": "Papeete",
-    "division_type": "Communes"
+    "division_type": "Communes",
+    "division_count": 5
   },
   "gabon": {
     "name_en": "Gabon",
     "name_local": "Gabon",
     "capital": "Libreville",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 9
   },
   "gambia": {
     "name_en": "Gambia",
     "name_local": "Gambia",
     "capital": "Banjul",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 6
   },
   "georgia": {
     "name_en": "Georgia",
     "name_local": "საქართველო",
     "capital": "Tbilisi",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 12
   },
   "germany": {
     "name_en": "Germany",
     "name_local": "Deutschland",
     "capital": "Berlin",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 16
   },
   "ghana": {
     "name_en": "Ghana",
     "name_local": "Ghana",
     "capital": "Accra",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 10
   },
   "gibraltar": {
     "name_en": "Gibraltar",
     "name_local": "Gibraltar",
     "capital": "Gibraltar",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 1
   },
   "greece": {
     "name_en": "Greece",
     "name_local": "Ελλάδα",
     "capital": "Athens",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 14
   },
   "greenland": {
     "name_en": "Greenland",
     "name_local": "Kalaallit Nunaat",
     "capital": "Nuuk",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 6
   },
   "grenada": {
     "name_en": "Grenada",
     "name_local": "Grenada",
     "capital": "Saint George's",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 7
   },
   "guadeloupe": {
     "name_en": "Guadeloupe",
     "name_local": "Guadeloupe",
     "capital": "Basse-Terre",
-    "division_type": "Cantons"
+    "division_type": "Cantons",
+    "division_count": 1
   },
   "guam": {
     "name_en": "Guam",
     "name_local": "Guam",
     "capital": "Hagåtña",
-    "division_type": "Villages"
+    "division_type": "Villages",
+    "division_count": 1
   },
   "guatemala": {
     "name_en": "Guatemala",
     "name_local": "Guatemala",
     "capital": "Guatemala City",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 22
   },
   "guinea": {
     "name_en": "Guinea",
     "name_local": "Guinée",
     "capital": "Conakry",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 8
   },
   "guineaBissau": {
     "name_en": "Guinea-Bissau",
     "name_local": "Guiné-Bissau",
     "capital": "Bissau",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 9
   },
   "guyana": {
     "name_en": "Guyana",
     "name_local": "Guyana",
     "capital": "Georgetown",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 10
   },
   "haiti": {
     "name_en": "Haiti",
     "name_local": "Haïti",
     "capital": "Port-au-Prince",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 10
   },
   "honduras": {
     "name_en": "Honduras",
     "name_local": "Honduras",
     "capital": "Tegucigalpa",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 18
   },
   "hongKong": {
     "name_en": "Hong Kong",
     "name_local": "香港",
     "capital": "Hong Kong",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 18
   },
   "hungary": {
     "name_en": "Hungary",
     "name_local": "Magyarország",
     "capital": "Budapest",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 40
   },
   "iceland": {
     "name_en": "Iceland",
     "name_local": "Ísland",
     "capital": "Reykjavik",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 18
   },
   "india": {
     "name_en": "India",
     "name_local": "भारत",
     "capital": "New Delhi",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 36
   },
   "indonesia": {
     "name_en": "Indonesia",
     "name_local": "Indonesia",
     "capital": "Jakarta",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 38
   },
   "iran": {
     "name_en": "Iran",
     "name_local": "ایران",
     "capital": "Tehran",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 31
   },
   "iraq": {
     "name_en": "Iraq",
     "name_local": "العراق",
     "capital": "Baghdad",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 18
   },
   "ireland": {
     "name_en": "Ireland",
     "name_local": "Éire",
     "capital": "Dublin",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 27
   },
   "isleOfMan": {
     "name_en": "Isle of Man",
     "name_local": "Mannin",
     "capital": "Douglas",
-    "division_type": "Sheadings"
+    "division_type": "Sheadings",
+    "division_count": 1
   },
   "israel": {
     "name_en": "Israel",
     "name_local": "ישראל",
     "capital": "Jerusalem",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 8
   },
   "italy": {
     "name_en": "Italy",
     "name_local": "Italia",
     "capital": "Rome",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 24
   },
   "ivoryCoast": {
     "name_en": "Ivory Coast",
     "name_local": "Côte d'Ivoire",
     "capital": "Yamoussoukro",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 19
   },
   "jamaica": {
     "name_en": "Jamaica",
     "name_local": "Jamaica",
     "capital": "Kingston",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 14
   },
   "japan": {
     "name_en": "Japan",
     "name_local": "日本",
     "capital": "Tokyo",
-    "division_type": "Prefectures"
+    "division_type": "Prefectures",
+    "division_count": 47
   },
   "jersey": {
     "name_en": "Jersey",
     "name_local": "Jersey",
     "capital": "Saint Helier",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 1
   },
   "jordan": {
     "name_en": "Jordan",
     "name_local": "الأردن",
     "capital": "Amman",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 12
   },
   "kazakhstan": {
     "name_en": "Kazakhstan",
     "name_local": "Қазақстан",
     "capital": "Astana",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 15
   },
   "kenya": {
     "name_en": "Kenya",
     "name_local": "Kenya",
     "capital": "Nairobi",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 47
   },
   "kiribati": {
     "name_en": "Kiribati",
     "name_local": "Kiribati",
     "capital": "South Tarawa",
-    "division_type": "Islands"
+    "division_type": "Islands",
+    "division_count": 3
   },
   "kosovo": {
     "name_en": "Kosovo",
     "name_local": "Kosovë",
     "capital": "Pristina",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 7
   },
   "kuwait": {
     "name_en": "Kuwait",
     "name_local": "الكويت",
     "capital": "Kuwait City",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 6
   },
   "kyrgyzstan": {
     "name_en": "Kyrgyzstan",
     "name_local": "Кыргызстан",
     "capital": "Bishkek",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 7
   },
   "laos": {
     "name_en": "Laos",
     "name_local": "ລາວ",
     "capital": "Vientiane",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 17
   },
   "latvia": {
     "name_en": "Latvia",
     "name_local": "Latvija",
     "capital": "Riga",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 119
   },
   "lebanon": {
     "name_en": "Lebanon",
     "name_local": "لبنان",
     "capital": "Beirut",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 6
   },
   "lesotho": {
     "name_en": "Lesotho",
     "name_local": "Lesotho",
     "capital": "Maseru",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 10
   },
   "liberia": {
     "name_en": "Liberia",
     "name_local": "Liberia",
     "capital": "Monrovia",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 15
   },
   "libya": {
     "name_en": "Libya",
     "name_local": "ليبيا",
     "capital": "Tripoli",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 22
   },
   "liechtenstein": {
     "name_en": "Liechtenstein",
     "name_local": "Liechtenstein",
     "capital": "Vaduz",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 11
   },
   "lithuania": {
     "name_en": "Lithuania",
     "name_local": "Lietuva",
     "capital": "Vilnius",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 10
   },
   "luxembourg": {
     "name_en": "Luxembourg",
     "name_local": "Lëtzebuerg",
     "capital": "Luxembourg City",
-    "division_type": "Cantons"
+    "division_type": "Cantons",
+    "division_count": 3
   },
   "macao": {
     "name_en": "Macao",
     "name_local": "澳門",
     "capital": "Macao",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 2
   },
   "madagascar": {
     "name_en": "Madagascar",
     "name_local": "Madagasikara",
     "capital": "Antananarivo",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 22
   },
   "malawi": {
     "name_en": "Malawi",
     "name_local": "Malawi",
     "capital": "Lilongwe",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 28
   },
   "malaysia": {
     "name_en": "Malaysia",
     "name_local": "Malaysia",
     "capital": "Kuala Lumpur",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 17
   },
   "maldives": {
     "name_en": "Maldives",
     "name_local": "ދިވެހިރާއްޖެ",
     "capital": "Malé",
-    "division_type": "Atolls"
+    "division_type": "Atolls",
+    "division_count": 1
   },
   "mali": {
     "name_en": "Mali",
     "name_local": "Mali",
     "capital": "Bamako",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 9
+  },
+  "malta": {
+    "name_en": "Malta",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 5
+  },
+  "marshallIslands": {
+    "name_en": "Marshall Islands",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "martinique": {
     "name_en": "Martinique",
     "name_local": "Martinique",
     "capital": "Fort-de-France",
-    "division_type": "Arrondissements"
+    "division_type": "Arrondissements",
+    "division_count": 1
   },
   "mauritania": {
     "name_en": "Mauritania",
     "name_local": "موريتانيا",
     "capital": "Nouakchott",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 13
   },
   "mauritius": {
     "name_en": "Mauritius",
     "name_local": "Mauritius",
     "capital": "Port Louis",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 9
   },
   "mayotte": {
     "name_en": "Mayotte",
     "name_local": "Mayotte",
     "capital": "Mamoudzou",
-    "division_type": "Cantons"
+    "division_type": "Cantons",
+    "division_count": 1
   },
   "mexico": {
     "name_en": "Mexico",
     "name_local": "México",
     "capital": "Mexico City",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 32
+  },
+  "micronesia": {
+    "name_en": "Micronesia",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "moldova": {
     "name_en": "Moldova",
     "name_local": "Moldova",
     "capital": "Chișinău",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 37
+  },
+  "monaco": {
+    "name_en": "Monaco",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "mongolia": {
     "name_en": "Mongolia",
     "name_local": "Монгол улс",
     "capital": "Ulaanbaatar",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 22
   },
   "montenegro": {
     "name_en": "Montenegro",
     "name_local": "Crna Gora",
     "capital": "Podgorica",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 22
+  },
+  "montserrat": {
+    "name_en": "Montserrat",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "morocco": {
     "name_en": "Morocco",
     "name_local": "المغرب",
     "capital": "Rabat",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 16
   },
   "mozambique": {
     "name_en": "Mozambique",
     "name_local": "Moçambique",
     "capital": "Maputo",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 11
   },
   "myanmar": {
     "name_en": "Myanmar",
     "name_local": "မြန်မာ",
     "capital": "Naypyidaw",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 14
   },
   "namibia": {
     "name_en": "Namibia",
     "name_local": "Namibia",
     "capital": "Windhoek",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 14
+  },
+  "nauru": {
+    "name_en": "Nauru",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "nepal": {
     "name_en": "Nepal",
     "name_local": "नेपाल",
     "capital": "Kathmandu",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 14
   },
   "netherlands": {
     "name_en": "Netherlands",
     "name_local": "Nederland",
     "capital": "Amsterdam",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 12
   },
   "newCaledonia": {
     "name_en": "New Caledonia",
     "name_local": "Nouvelle-Calédonie",
     "capital": "Nouméa",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 3
   },
   "newZealand": {
     "name_en": "New Zealand",
     "name_local": "Aotearoa",
     "capital": "Wellington",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 17
   },
   "nicaragua": {
     "name_en": "Nicaragua",
     "name_local": "Nicaragua",
     "capital": "Managua",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 17
   },
   "niger": {
     "name_en": "Niger",
     "name_local": "Niger",
     "capital": "Niamey",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 8
   },
   "nigeria": {
     "name_en": "Nigeria",
     "name_local": "Nigeria",
     "capital": "Abuja",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 37
   },
-  "northKorea": {
-    "name_en": "North Korea",
-    "name_local": "조선민주주의인민공화국",
-    "capital": "Pyongyang",
-    "division_type": "Provinces"
-  },
-  "northMacedonia": {
-    "name_en": "North Macedonia",
-    "name_local": "Северна Македонија",
-    "capital": "Skopje",
-    "division_type": "Municipalities"
+  "niue": {
+    "name_en": "Niue",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "northernMarianaIslands": {
     "name_en": "Northern Mariana Islands",
     "name_local": "Northern Mariana Islands",
     "capital": "Saipan",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 4
+  },
+  "northKorea": {
+    "name_en": "North Korea",
+    "name_local": "조선민주주의인민공화국",
+    "capital": "Pyongyang",
+    "division_type": "Provinces",
+    "division_count": 11
+  },
+  "northMacedonia": {
+    "name_en": "North Macedonia",
+    "name_local": "Северна Македонија",
+    "capital": "Skopje",
+    "division_type": "Municipalities",
+    "division_count": 86
   },
   "norway": {
     "name_en": "Norway",
     "name_local": "Norge",
     "capital": "Oslo",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 19
   },
   "oman": {
     "name_en": "Oman",
     "name_local": "عُمان",
     "capital": "Muscat",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 17
   },
   "pakistan": {
     "name_en": "Pakistan",
     "name_local": "پاکستان",
     "capital": "Islamabad",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 8
   },
   "palau": {
     "name_en": "Palau",
     "name_local": "Palau",
     "capital": "Ngerulmud",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 16
   },
   "palestine": {
     "name_en": "Palestine",
     "name_local": "فلسطين",
     "capital": "Ramallah",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 17
   },
   "panama": {
     "name_en": "Panama",
     "name_local": "Panamá",
     "capital": "Panama City",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 13
   },
   "papuaNewGuinea": {
     "name_en": "Papua New Guinea",
     "name_local": "Papua New Guinea",
     "capital": "Port Moresby",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 20
   },
   "paraguay": {
     "name_en": "Paraguay",
     "name_local": "Paraguay",
     "capital": "Asunción",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 18
   },
   "peru": {
     "name_en": "Peru",
     "name_local": "Perú",
     "capital": "Lima",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 27
   },
   "philippines": {
     "name_en": "Philippines",
     "name_local": "Pilipinas",
     "capital": "Manila",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 81
+  },
+  "pitcairnIslands": {
+    "name_en": "Pitcairn Islands",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "poland": {
     "name_en": "Poland",
     "name_local": "Polska",
     "capital": "Warsaw",
-    "division_type": "Voivodeships"
+    "division_type": "Voivodeships",
+    "division_count": 16
   },
   "portugal": {
     "name_en": "Portugal",
     "name_local": "Portugal",
     "capital": "Lisbon",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 20
   },
   "puertoRico": {
     "name_en": "Puerto Rico",
     "name_local": "Puerto Rico",
     "capital": "San Juan",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 79
   },
   "qatar": {
     "name_en": "Qatar",
     "name_local": "قطر",
     "capital": "Doha",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 7
   },
   "reunion": {
     "name_en": "Réunion",
     "name_local": "La Réunion",
     "capital": "Saint-Denis",
-    "division_type": "Arrondissements"
+    "division_type": "Arrondissements",
+    "division_count": 1
   },
   "romania": {
     "name_en": "Romania",
     "name_local": "România",
     "capital": "Bucharest",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 42
   },
   "russia": {
     "name_en": "Russia",
     "name_local": "Россия",
     "capital": "Moscow",
-    "division_type": "Federal Subjects"
+    "division_type": "Federal Subjects",
+    "division_count": 83
   },
   "rwanda": {
     "name_en": "Rwanda",
     "name_local": "Rwanda",
     "capital": "Kigali",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 5
+  },
+  "saintMartin": {
+    "name_en": "Saint Martin",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "samoa": {
     "name_en": "Samoa",
     "name_local": "Sāmoa",
     "capital": "Apia",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 11
   },
   "sanMarino": {
     "name_en": "San Marino",
     "name_local": "San Marino",
     "capital": "San Marino",
-    "division_type": "Castles"
+    "division_type": "Castles",
+    "division_count": 9
   },
   "saoTomeAndPrincipe": {
     "name_en": "São Tomé and Príncipe",
     "name_local": "São Tomé e Príncipe",
     "capital": "São Tomé",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 2
   },
   "saudiArabia": {
     "name_en": "Saudi Arabia",
     "name_local": "المملكة العربية السعودية",
     "capital": "Riyadh",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 13
   },
   "senegal": {
     "name_en": "Senegal",
     "name_local": "Sénégal",
     "capital": "Dakar",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 14
   },
   "serbia": {
     "name_en": "Serbia",
     "name_local": "Србија",
     "capital": "Belgrade",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 30
   },
   "seychelles": {
     "name_en": "Seychelles",
     "name_local": "Seychelles",
     "capital": "Victoria",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 26
   },
   "sierraLeone": {
     "name_en": "Sierra Leone",
     "name_local": "Sierra Leone",
     "capital": "Freetown",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 4
   },
   "singapore": {
     "name_en": "Singapore",
     "name_local": "新加坡",
     "capital": "Singapore",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 5
+  },
+  "sintMaarten": {
+    "name_en": "Sint Maarten",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "slovakia": {
     "name_en": "Slovakia",
     "name_local": "Slovensko",
     "capital": "Bratislava",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 8
   },
   "slovenia": {
     "name_en": "Slovenia",
     "name_local": "Slovenija",
     "capital": "Ljubljana",
-    "division_type": "Municipalities"
+    "division_type": "Municipalities",
+    "division_count": 12
   },
   "solomonIslands": {
     "name_en": "Solomon Islands",
     "name_local": "Solomon Islands",
     "capital": "Honiara",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 10
   },
   "somalia": {
     "name_en": "Somalia",
     "name_local": "Soomaaliya",
     "capital": "Mogadishu",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 18
   },
   "southAfrica": {
     "name_en": "South Africa",
     "name_local": "South Africa",
     "capital": "Pretoria",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 10
   },
   "southKorea": {
     "name_en": "South Korea",
     "name_local": "대한민국",
     "capital": "Seoul",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 17
   },
   "southSudan": {
     "name_en": "South Sudan",
     "name_local": "South Sudan",
     "capital": "Juba",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 10
   },
   "spain": {
     "name_en": "Spain",
     "name_local": "España",
     "capital": "Madrid",
-    "division_type": "Autonomous Communities"
+    "division_type": "Autonomous Communities",
+    "division_count": 17
   },
   "sriLanka": {
     "name_en": "Sri Lanka",
     "name_local": "ශ්‍රී ලංකාව",
     "capital": "Colombo",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 25
   },
   "stHelena": {
     "name_en": "Saint Helena",
     "name_local": "Saint Helena",
     "capital": "Jamestown",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 8
   },
   "stKittsAndNevis": {
     "name_en": "Saint Kitts and Nevis",
     "name_local": "Saint Kitts and Nevis",
     "capital": "Basseterre",
-    "division_type": "Parishes"
+    "division_type": "Parishes",
+    "division_count": 14
   },
   "stLucia": {
     "name_en": "Saint Lucia",
     "name_local": "Saint Lucia",
     "capital": "Castries",
-    "division_type": "Quarters"
+    "division_type": "Quarters",
+    "division_count": 10
   },
   "sudan": {
     "name_en": "Sudan",
     "name_local": "السودان",
     "capital": "Khartoum",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 18
   },
   "suriname": {
     "name_en": "Suriname",
     "name_local": "Suriname",
     "capital": "Paramaribo",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 10
   },
   "svalbardAndJanMayen": {
     "name_en": "Svalbard and Jan Mayen",
     "name_local": "Svalbard og Jan Mayen",
     "capital": "Longyearbyen",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 2
   },
   "sweden": {
     "name_en": "Sweden",
     "name_local": "Sverige",
     "capital": "Stockholm",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 21
   },
   "switzerland": {
     "name_en": "Switzerland",
     "name_local": "Schweiz",
     "capital": "Bern",
-    "division_type": "Cantons"
+    "division_type": "Cantons",
+    "division_count": 27
   },
   "syria": {
     "name_en": "Syria",
     "name_local": "سوريا",
     "capital": "Damascus",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 14
   },
   "taiwan": {
     "name_en": "Taiwan",
     "name_local": "台灣",
     "capital": "Taipei",
-    "division_type": "Counties"
+    "division_type": "Counties",
+    "division_count": 22
   },
   "tajikistan": {
     "name_en": "Tajikistan",
     "name_local": "Тоҷикистон",
     "capital": "Dushanbe",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 4
   },
   "tanzania": {
     "name_en": "Tanzania",
     "name_local": "Tanzania",
     "capital": "Dodoma",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 30
   },
   "thailand": {
     "name_en": "Thailand",
     "name_local": "ประเทศไทย",
     "capital": "Bangkok",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 78
   },
   "tibet": {
     "name_en": "Tibet",
     "name_local": "བོད།",
     "capital": "Lhasa",
-    "division_type": "Prefectures"
+    "division_type": "Prefectures",
+    "division_count": 7
   },
   "togo": {
     "name_en": "Togo",
     "name_local": "Togo",
     "capital": "Lomé",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 5
+  },
+  "tokelau": {
+    "name_en": "Tokelau",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "tonga": {
     "name_en": "Tonga",
     "name_local": "Tonga",
     "capital": "Nukuʻalofa",
-    "division_type": "Divisions"
+    "division_type": "Divisions",
+    "division_count": 5
   },
   "trinidadAndTobago": {
     "name_en": "Trinidad and Tobago",
     "name_local": "Trinidad and Tobago",
     "capital": "Port of Spain",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 15
   },
   "tunisia": {
     "name_en": "Tunisia",
     "name_local": "تونس",
     "capital": "Tunis",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 24
   },
   "turkey": {
     "name_en": "Turkey",
     "name_local": "Türkiye",
     "capital": "Ankara",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 81
   },
   "turkmenistan": {
     "name_en": "Turkmenistan",
     "name_local": "Türkmenistan",
     "capital": "Ashgabat",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 5
   },
   "turksAndCaicosIslands": {
     "name_en": "Turks and Caicos Islands",
     "name_local": "Turks and Caicos Islands",
     "capital": "Cockburn Town",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 6
+  },
+  "tuvalu": {
+    "name_en": "Tuvalu",
+    "name_local": "",
+    "capital": "",
+    "division_type": "",
+    "division_count": 1
   },
   "uganda": {
     "name_en": "Uganda",
     "name_local": "Uganda",
     "capital": "Kampala",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 112
   },
   "ukraine": {
     "name_en": "Ukraine",
     "name_local": "Україна",
     "capital": "Kyiv",
-    "division_type": "Oblasts"
+    "division_type": "Oblasts",
+    "division_count": 27
   },
   "unitedArabEmirates": {
     "name_en": "United Arab Emirates",
     "name_local": "الإمارات العربية المتحدة",
     "capital": "Abu Dhabi",
-    "division_type": "Emirates"
+    "division_type": "Emirates",
+    "division_count": 10
   },
   "unitedKingdom": {
     "name_en": "United Kingdom",
     "name_local": "United Kingdom",
     "capital": "London",
-    "division_type": "Countries"
+    "division_type": "Countries",
+    "division_count": 16
   },
   "uruguay": {
     "name_en": "Uruguay",
     "name_local": "Uruguay",
     "capital": "Montevideo",
-    "division_type": "Departments"
+    "division_type": "Departments",
+    "division_count": 19
   },
   "usa": {
     "name_en": "United States",
     "name_local": "United States",
     "capital": "Washington, D.C.",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 51
   },
   "usVirginIslands": {
     "name_en": "U.S. Virgin Islands",
     "name_local": "U.S. Virgin Islands",
     "capital": "Charlotte Amalie",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 3
   },
   "uzbekistan": {
     "name_en": "Uzbekistan",
     "name_local": "Oʻzbekiston",
     "capital": "Tashkent",
-    "division_type": "Regions"
+    "division_type": "Regions",
+    "division_count": 16
   },
   "vanuatu": {
     "name_en": "Vanuatu",
     "name_local": "Vanuatu",
     "capital": "Port Vila",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 6
   },
   "venezuela": {
     "name_en": "Venezuela",
     "name_local": "Venezuela",
     "capital": "Caracas",
-    "division_type": "States"
+    "division_type": "States",
+    "division_count": 28
   },
   "vietnam": {
     "name_en": "Vietnam",
     "name_local": "Việt Nam",
     "capital": "Hanoi",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 64
   },
   "wallisAndFutuna": {
     "name_en": "Wallis and Futuna",
     "name_local": "Wallis-et-Futuna",
     "capital": "Mata-Utu",
-    "division_type": "Districts"
+    "division_type": "Districts",
+    "division_count": 3
   },
   "yemen": {
     "name_en": "Yemen",
     "name_local": "اليمن",
     "capital": "Sanaa",
-    "division_type": "Governorates"
+    "division_type": "Governorates",
+    "division_count": 21
   },
   "zambia": {
     "name_en": "Zambia",
     "name_local": "Zambia",
     "capital": "Lusaka",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 10
   },
   "zimbabwe": {
     "name_en": "Zimbabwe",
     "name_local": "Zimbabwe",
     "capital": "Harare",
-    "division_type": "Provinces"
+    "division_type": "Provinces",
+    "division_count": 10
   }
 }
