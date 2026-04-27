@@ -1,4 +1,6 @@
 ---
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { BASE } from '@/helpers/commons';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton';
 import ShowcaseItem from './ShowcaseItem.astro';
@@ -17,8 +19,11 @@ type ShowcaseItemDef = {
   description: string;
   badge: string;
   assetPath: string;
-  assetType: 'image' | 'video' | 'gif';
+  assetType: 'image' | 'video' | 'gif' | 'iframe';
 };
+
+const embedUrlFile = join(process.cwd(), 'assets', slug, `${slug}-embed-url.txt`);
+const embedUrl = existsSync(embedUrlFile) ? readFileSync(embedUrlFile, 'utf-8').trim() : null;
 
 const allItems: ShowcaseItemDef[] = [
   {
@@ -56,6 +61,17 @@ const allItems: ShowcaseItemDef[] = [
     assetPath: `${BASE}/assets/${slug}/${slug}-embed-page.png`,
     assetType: 'image',
   },
+  ...(embedUrl
+    ? [
+        {
+          title: 'Embeddable iframe',
+          description: `Embed your ${name_en} choropleth map anywhere with a single line of HTML. The iframe stays live — viewers always see the latest version of your map, no re-publishing needed.`,
+          badge: 'Explorer',
+          assetPath: embedUrl,
+          assetType: 'iframe' as const,
+        },
+      ]
+    : []),
 ];
 ---
 
