@@ -1,3 +1,4 @@
+import os from 'node:os';
 import { chromium, type BrowserContext, type Page } from 'playwright';
 import { config as loadEnv } from 'dotenv';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
@@ -443,44 +444,95 @@ async function generateAssetsForCountry(
 // Entry point
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Worker: owns one browser context and processes its slice of countries
+// ---------------------------------------------------------------------------
+
+async function runWorker(
+  workerId: number,
+  countries: Country[],
+  browser: Awaited<ReturnType<typeof chromium.launch>>,
+): Promise<void> {
+  const tag = `[worker ${workerId}]`;
+  const context = await browser.newContext({
+    acceptDownloads: true,
+    viewport: { width: 1440, height: 900 },
+    storageState: AUTH_STATE_FILE,
+  });
+  const page = await context.newPage();
+
+  try {
+    for (const country of countries) {
+      console.log(`${tag} starting ${country.name}`);
+      await generateAssetsForCountry(page, context, country);
+      console.log(`${tag} finished ${country.name}`);
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Entry point
+// ---------------------------------------------------------------------------
+
 async function main(): Promise<void> {
   if (!EMAIL || !PASSWORD) {
     console.error('Set REGIONIFY_EMAIL and REGIONIFY_PASSWORD in marketing/.env');
     process.exit(1);
   }
 
+  // Each Chromium context uses ~250–350 MB. Cap at free RAM / 300 MB, but never
+  // more than the country count or the logical CPU count.
+  const freeRamMb = os.freemem() / 1024 / 1024;
+  const byRam = Math.max(1, Math.floor(freeRamMb / 300));
+  const byCpu = os.cpus().length;
+  const defaultWorkers = Math.min(byRam, byCpu, COUNTRIES.length);
+  const CONCURRENCY = Math.min(
+    Math.max(1, Number(process.env.PLAYWRIGHT_WORKERS ?? defaultWorkers)),
+    COUNTRIES.length,
+  );
+
   const browser = await chromium.launch({ headless: false, slowMo: 80 });
-  const hasSavedState = existsSync(AUTH_STATE_FILE);
-  const context = await browser.newContext({
+
+  // Phase 1: ensure a valid auth state file exists (sequential, one context)
+  const authContext = await browser.newContext({
     acceptDownloads: true,
     viewport: { width: 1440, height: 900 },
-    ...(hasSavedState ? { storageState: AUTH_STATE_FILE } : {}),
+    ...(existsSync(AUTH_STATE_FILE) ? { storageState: AUTH_STATE_FILE } : {}),
   });
-  const page = await context.newPage();
+  const authPage = await authContext.newPage();
 
   try {
-    if (hasSavedState) {
-      // Verify the saved session is still valid by navigating to the app
-      await page.goto(`${BASE_URL}/projects`);
-      await page.waitForLoadState('networkidle', { timeout: 15_000 });
-      const stillLoggedIn = !page.url().includes('/login');
-      if (stillLoggedIn) {
+    if (existsSync(AUTH_STATE_FILE)) {
+      await authPage.goto(`${BASE_URL}/projects`);
+      // cspell:ignore networkidle
+      await authPage.waitForLoadState('networkidle', { timeout: 15_000 });
+      if (!authPage.url().includes('/login')) {
         console.log('✓ Resumed saved session (login skipped)');
       } else {
         console.log('  → Saved session expired — logging in fresh…');
-        await login(page, context);
+        await login(authPage, authContext);
       }
     } else {
-      await login(page, context);
+      await login(authPage, authContext);
     }
-    for (const country of COUNTRIES) {
-      await generateAssetsForCountry(page, context, country);
-    }
+  } finally {
+    await authContext.close();
+  }
+
+  // Phase 2: distribute countries across workers, all sharing the saved auth state
+  console.log(`\n⚡ Running ${CONCURRENCY} parallel worker(s) for ${COUNTRIES.length} countries\n`);
+
+  // Round-robin distribution: worker 0 gets indices 0, N, 2N… worker 1 gets 1, N+1…
+  const slices: Country[][] = Array.from({ length: CONCURRENCY }, () => []);
+  COUNTRIES.forEach((c, i) => slices[i % CONCURRENCY].push(c));
+
+  try {
+    await Promise.all(slices.map((slice, id) => runWorker(id, slice, browser)));
     console.log('\n✅  All done — assets saved to marketing/assets/');
   } catch (err) {
     console.error('\n✗  Script failed:', err);
-    // Save a debug screenshot to help diagnose the failure
-    await page.screenshot({ path: join(ASSETS_ROOT, '_error.png') }).catch(() => {});
     throw err;
   } finally {
     await browser.close();
