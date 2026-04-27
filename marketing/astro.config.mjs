@@ -14,6 +14,7 @@ if (typeof site !== 'string' || site.length === 0) {
 
 export default defineConfig({
   site,
+  base: '/marketing',
   integrations: [react(), sitemap()],
   vite: {
     envPrefix: ['PUBLIC_', 'CLIENT_'],
