@@ -1,3 +1,237 @@
-slug,region_id,map_file,name_en,name_local,flag_emoji,capital,population,area_km2,continent,subregion,official_languages,division_type,division_count,dataset_label,dataset_unit,dataset_year,dataset_source,dataset_source_url,seo_title,seo_description,seo_keywords,asset_static,asset_svg,asset_gif,asset_mp4,asset_embed_page,asset_embed_url
-armenia,armenia,armenia.svg,Armenia,Հայաստան,🇦🇲,Yerevan,2971966,29743,Asia,Western Asia,Armenian,Marzes,11,GDP per capita by marz,USD,2022,Armenian Statistical Service,https://www.armstat.am/en/,"Armenia Choropleth Map – Marzes & Regional Data | Regionify","Explore Armenia's 11 marzes with an interactive choropleth map. Visualize GDP per capita, population density, and geographic data by administrative region. Create custom maps with Regionify.","Armenia choropleth map, Armenian marzes map, Armenia administrative divisions, Armenia regional GDP map, marz visualization Armenia, Armenia economic map",armenia-static.png,armenia.svg,armenia-animation.gif,armenia-video.mp4,armenia-embed-page.png,https://regionify.pro/embed/-5pQssgZ8xpbBRfbcFQrOq7TTnLiCRHO
-russia,russia,russia.svg,Russia,Россия,🇷🇺,Moscow,144100000,17098242,Europe,Eastern Europe,Russian,Federal Subjects,85,GRP per capita by federal subject,Thousand RUB,2022,Federal State Statistics Service (Rosstat),https://rosstat.gov.ru/,"Russia Choropleth Map – Federal Subjects & Regional Data | Regionify","Explore Russia's 85 federal subjects with an interactive choropleth map. Visualize gross regional product, population distribution, and geographic data by administrative division. Create custom maps with Regionify.","Russia choropleth map, Russian federal subjects map, Russia administrative divisions, Russia regional GRP map, oblasts visualization, Russia economic map",russia-static.png,russia.svg,russia-animation.gif,russia-video.mp4,russia-embed-page.png,https://regionify.pro/embed/ZduLE38qKabDoKz6hRkPtdjFux1H9p2b
+slug,region_id,name_en,name_local,capital,division_type,division_count
+afghanistan,afghanistan,Afghanistan,افغانستان,Kabul,Provinces,34
+albania,albania,Albania,Shqipëria,Tirana,Counties,12
+algeria,algeria,Algeria,الجزائر,Algiers,Provinces,48
+americanSamoa,americanSamoa,American Samoa,Amerika Samoa,Pago Pago,Districts,5
+andorra,andorra,Andorra,Andorra,Andorra la Vella,Parishes,7
+angola,angola,Angola,Angola,Luanda,Provinces,18
+anguilla,anguilla,Anguilla,Anguilla,The Valley,Districts,15
+antiguaAndBarbuda,antiguaAndBarbuda,Antigua and Barbuda,Antigua and Barbuda,Saint John's,Parishes,8
+argentina,argentina,Argentina,Argentina,Buenos Aires,Provinces,24
+armenia,armenia,Armenia,Հայաստան,Yerevan,Provinces,11
+aruba,aruba,Aruba,Aruba,Oranjestad,Regions,1
+australia,australia,Australia,Australia,Canberra,States,8
+austria,austria,Austria,Österreich,Vienna,States,9
+azerbaijan,azerbaijan,Azerbaijan,Azərbaycan,Baku,Districts,77
+bahamas,bahamas,Bahamas,Bahamas,Nassau,Districts,32
+bahrain,bahrain,Bahrain,البحرين,Manama,Governorates,5
+bangladesh,bangladesh,Bangladesh,বাংলাদেশ,Dhaka,Divisions,7
+barbados,barbados,Barbados,Barbados,Bridgetown,Parishes,11
+belarus,belarus,Belarus,Беларусь,Minsk,Regions,7
+belgium,belgium,Belgium,België,Brussels,Provinces,11
+belize,belize,Belize,Belize,Belmopan,Districts,6
+benin,benin,Benin,Bénin,Porto-Novo,Departments,12
+bermuda,bermuda,Bermuda,Bermuda,Hamilton,Parishes,11
+bhutan,bhutan,Bhutan,འབྲུག,Thimphu,Districts,20
+bolivia,bolivia,Bolivia,Bolivia,Sucre,Departments,9
+botswana,botswana,Botswana,Botswana,Gaborone,Districts,9
+brazil,brazil,Brazil,Brasil,Brasília,States,27
+britishVirginIslands,britishVirginIslands,British Virgin Islands,British Virgin Islands,Road Town,Districts,1
+bruneiDarussalam,bruneiDarussalam,Brunei,Brunei Darussalam,Bandar Seri Begawan,Districts,4
+bulgaria,bulgaria,Bulgaria,България,Sofia,Provinces,28
+burkinaFaso,burkinaFaso,Burkina Faso,Burkina Faso,Ouagadougou,Regions,13
+burundi,burundi,Burundi,Burundi,Gitega,Provinces,17
+cambodia,cambodia,Cambodia,កម្ពុជា,Phnom Penh,Provinces,24
+cameroon,cameroon,Cameroon,Cameroun,Yaoundé,Regions,10
+canada,canada,Canada,Canada,Ottawa,Provinces,13
+capeVerde,capeVerde,Cape Verde,Cabo Verde,Praia,Municipalities,22
+caribbeanNetherlands,caribbeanNetherlands,Caribbean Netherlands,Caribisch Nederland,Kralendijk,Islands,3
+caymanIslands,caymanIslands,Cayman Islands,Cayman Islands,George Town,Districts,1
+centralAfricanRepublic,centralAfricanRepublic,Central African Republic,République centrafricaine,Bangui,Prefectures,17
+chad,chad,Chad,تشاد,N'Djamena,Provinces,22
+channelIslands,channelIslands,Channel Islands,Channel Islands,Saint Helier,Islands,27
+chile,chile,Chile,Chile,Santiago,Regions,15
+china,china,China,中国,Beijing,Provinces,34
+christmasIsland,christmasIsland,Christmas Island,,,,1
+cocosIslands,cocosIslands,Cocos Islands,,,,1
+colombia,colombia,Colombia,Colombia,Bogotá,Departments,33
+comoros,comoros,Comoros,Comores,Moroni,Islands,3
+congo,congo,Republic of the Congo,République du Congo,Brazzaville,Departments,12
+congoDR,congoDR,DR Congo,République démocratique du Congo,Kinshasa,Provinces,26
+cookIslands,cookIslands,Cook Islands,Cook Islands,Avarua,Islands,11
+costaRica,costaRica,Costa Rica,Costa Rica,San José,Provinces,8
+croatia,croatia,Croatia,Hrvatska,Zagreb,Counties,21
+cuba,cuba,Cuba,Cuba,Havana,Provinces,16
+curacao,curacao,Curaçao,Curaçao,Willemstad,Districts,1
+cyprus,cyprus,Cyprus,Κύπρος,Nicosia,Districts,6
+czechRepublic,czechRepublic,Czech Republic,Česká republika,Prague,Regions,14
+denmark,denmark,Denmark,Danmark,Copenhagen,Regions,5
+djibouti,djibouti,Djibouti,Djibouti,Djibouti,Regions,6
+dominica,dominica,Dominica,Dominica,Roseau,Parishes,10
+dominicanRepublic,dominicanRepublic,Dominican Republic,República Dominicana,Santo Domingo,Provinces,32
+eastTimor,eastTimor,East Timor,Timor-Leste,Dili,Municipalities,13
+ecuador,ecuador,Ecuador,Ecuador,Quito,Provinces,24
+egypt,egypt,Egypt,مصر,Cairo,Governorates,29
+elSalvador,elSalvador,El Salvador,El Salvador,San Salvador,Departments,14
+equatorialGuinea,equatorialGuinea,Equatorial Guinea,Guinea Ecuatorial,Malabo,Provinces,7
+eritrea,eritrea,Eritrea,ኤርትራ,Asmara,Regions,6
+estonia,estonia,Estonia,Eesti,Tallinn,Counties,15
+eSwatini,eSwatini,Eswatini,eSwatini,Mbabane,Regions,4
+ethiopia,ethiopia,Ethiopia,ኢትዮጵያ,Addis Ababa,Regions,11
+falklandIslands,falklandIslands,Falkland Islands,Falkland Islands,Stanley,Districts,1
+faroeIslands,faroeIslands,Faroe Islands,Føroyar,Tórshavn,Municipalities,6
+fijiEast,fijiEast,Fiji,Fiji,Suva,Divisions,2
+finland,finland,Finland,Suomi,Helsinki,Regions,19
+france,france,France,France,Paris,Regions,22
+frenchGuiana,frenchGuiana,French Guiana,Guyane française,Cayenne,Arrondissements,2
+frenchPolynesia,frenchPolynesia,French Polynesia,Polynésie française,Papeete,Communes,5
+gabon,gabon,Gabon,Gabon,Libreville,Provinces,9
+gambia,gambia,Gambia,Gambia,Banjul,Regions,6
+georgia,georgia,Georgia,საქართველო,Tbilisi,Regions,12
+germany,germany,Germany,Deutschland,Berlin,States,16
+ghana,ghana,Ghana,Ghana,Accra,Regions,10
+gibraltar,gibraltar,Gibraltar,Gibraltar,Gibraltar,Districts,1
+greece,greece,Greece,Ελλάδα,Athens,Regions,14
+greenland,greenland,Greenland,Kalaallit Nunaat,Nuuk,Municipalities,6
+grenada,grenada,Grenada,Grenada,Saint George's,Parishes,7
+guadeloupe,guadeloupe,Guadeloupe,Guadeloupe,Basse-Terre,Cantons,1
+guam,guam,Guam,Guam,Hagåtña,Villages,1
+guatemala,guatemala,Guatemala,Guatemala,Guatemala City,Departments,22
+guinea,guinea,Guinea,Guinée,Conakry,Regions,8
+guineaBissau,guineaBissau,Guinea-Bissau,Guiné-Bissau,Bissau,Regions,9
+guyana,guyana,Guyana,Guyana,Georgetown,Regions,10
+haiti,haiti,Haiti,Haïti,Port-au-Prince,Departments,10
+honduras,honduras,Honduras,Honduras,Tegucigalpa,Departments,18
+hongKong,hongKong,Hong Kong,香港,Hong Kong,Districts,18
+hungary,hungary,Hungary,Magyarország,Budapest,Counties,40
+iceland,iceland,Iceland,Ísland,Reykjavik,Regions,18
+india,india,India,भारत,New Delhi,States,36
+indonesia,indonesia,Indonesia,Indonesia,Jakarta,Provinces,38
+iran,iran,Iran,ایران,Tehran,Provinces,31
+iraq,iraq,Iraq,العراق,Baghdad,Governorates,18
+ireland,ireland,Ireland,Éire,Dublin,Counties,27
+isleOfMan,isleOfMan,Isle of Man,Mannin,Douglas,Sheadings,1
+israel,israel,Israel,ישראל,Jerusalem,Districts,8
+italy,italy,Italy,Italia,Rome,Regions,24
+ivoryCoast,ivoryCoast,Ivory Coast,Côte d'Ivoire,Yamoussoukro,Districts,19
+jamaica,jamaica,Jamaica,Jamaica,Kingston,Parishes,14
+japan,japan,Japan,日本,Tokyo,Prefectures,47
+jersey,jersey,Jersey,Jersey,Saint Helier,Parishes,1
+jordan,jordan,Jordan,الأردن,Amman,Governorates,12
+kazakhstan,kazakhstan,Kazakhstan,Қазақстан,Astana,Regions,15
+kenya,kenya,Kenya,Kenya,Nairobi,Counties,47
+kiribati,kiribati,Kiribati,Kiribati,South Tarawa,Islands,3
+kosovo,kosovo,Kosovo,Kosovë,Pristina,Districts,7
+kuwait,kuwait,Kuwait,الكويت,Kuwait City,Governorates,6
+kyrgyzstan,kyrgyzstan,Kyrgyzstan,Кыргызстан,Bishkek,Regions,7
+laos,laos,Laos,ລາວ,Vientiane,Provinces,17
+latvia,latvia,Latvia,Latvija,Riga,Municipalities,119
+lebanon,lebanon,Lebanon,لبنان,Beirut,Governorates,6
+lesotho,lesotho,Lesotho,Lesotho,Maseru,Districts,10
+liberia,liberia,Liberia,Liberia,Monrovia,Counties,15
+libya,libya,Libya,ليبيا,Tripoli,Districts,22
+liechtenstein,liechtenstein,Liechtenstein,Liechtenstein,Vaduz,Municipalities,11
+lithuania,lithuania,Lithuania,Lietuva,Vilnius,Counties,10
+luxembourg,luxembourg,Luxembourg,Lëtzebuerg,Luxembourg City,Cantons,3
+macao,macao,Macao,澳門,Macao,Parishes,2
+madagascar,madagascar,Madagascar,Madagasikara,Antananarivo,Regions,22
+malawi,malawi,Malawi,Malawi,Lilongwe,Districts,28
+malaysia,malaysia,Malaysia,Malaysia,Kuala Lumpur,States,17
+maldives,maldives,Maldives,ދިވެހިރާއްޖެ,Malé,Atolls,1
+mali,mali,Mali,Mali,Bamako,Regions,9
+malta,malta,Malta,,,,5
+marshallIslands,marshallIslands,Marshall Islands,,,,1
+martinique,martinique,Martinique,Martinique,Fort-de-France,Arrondissements,1
+mauritania,mauritania,Mauritania,موريتانيا,Nouakchott,Regions,13
+mauritius,mauritius,Mauritius,Mauritius,Port Louis,Districts,9
+mayotte,mayotte,Mayotte,Mayotte,Mamoudzou,Cantons,1
+mexico,mexico,Mexico,México,Mexico City,States,32
+micronesia,micronesia,Micronesia,,,,1
+moldova,moldova,Moldova,Moldova,Chișinău,Districts,37
+monaco,monaco,Monaco,,,,1
+mongolia,mongolia,Mongolia,Монгол улс,Ulaanbaatar,Provinces,22
+montenegro,montenegro,Montenegro,Crna Gora,Podgorica,Municipalities,22
+montserrat,montserrat,Montserrat,,,,1
+morocco,morocco,Morocco,المغرب,Rabat,Regions,16
+mozambique,mozambique,Mozambique,Moçambique,Maputo,Provinces,11
+myanmar,myanmar,Myanmar,မြန်မာ,Naypyidaw,States,14
+namibia,namibia,Namibia,Namibia,Windhoek,Regions,14
+nauru,nauru,Nauru,,,,1
+nepal,nepal,Nepal,नेपाल,Kathmandu,Provinces,14
+netherlands,netherlands,Netherlands,Nederland,Amsterdam,Provinces,12
+newCaledonia,newCaledonia,New Caledonia,Nouvelle-Calédonie,Nouméa,Provinces,3
+newZealand,newZealand,New Zealand,Aotearoa,Wellington,Regions,17
+nicaragua,nicaragua,Nicaragua,Nicaragua,Managua,Departments,17
+niger,niger,Niger,Niger,Niamey,Regions,8
+nigeria,nigeria,Nigeria,Nigeria,Abuja,States,37
+niue,niue,Niue,,,,1
+northernMarianaIslands,northernMarianaIslands,Northern Mariana Islands,Northern Mariana Islands,Saipan,Municipalities,4
+northKorea,northKorea,North Korea,조선민주주의인민공화국,Pyongyang,Provinces,11
+northMacedonia,northMacedonia,North Macedonia,Северна Македонија,Skopje,Municipalities,86
+norway,norway,Norway,Norge,Oslo,Counties,19
+oman,oman,Oman,عُمان,Muscat,Governorates,17
+pakistan,pakistan,Pakistan,پاکستان,Islamabad,Provinces,8
+palau,palau,Palau,Palau,Ngerulmud,States,16
+palestine,palestine,Palestine,فلسطين,Ramallah,Governorates,17
+panama,panama,Panama,Panamá,Panama City,Provinces,13
+papuaNewGuinea,papuaNewGuinea,Papua New Guinea,Papua New Guinea,Port Moresby,Provinces,20
+paraguay,paraguay,Paraguay,Paraguay,Asunción,Departments,18
+peru,peru,Peru,Perú,Lima,Regions,27
+philippines,philippines,Philippines,Pilipinas,Manila,Regions,81
+pitcairnIslands,pitcairnIslands,Pitcairn Islands,,,,1
+poland,poland,Poland,Polska,Warsaw,Voivodeships,16
+portugal,portugal,Portugal,Portugal,Lisbon,Districts,20
+puertoRico,puertoRico,Puerto Rico,Puerto Rico,San Juan,Municipalities,79
+qatar,qatar,Qatar,قطر,Doha,Municipalities,7
+reunion,reunion,Réunion,La Réunion,Saint-Denis,Arrondissements,1
+romania,romania,Romania,România,Bucharest,Counties,42
+russia,russia,Russia,Россия,Moscow,Federal Subjects,83
+rwanda,rwanda,Rwanda,Rwanda,Kigali,Provinces,5
+saintMartin,saintMartin,Saint Martin,,,,1
+samoa,samoa,Samoa,Sāmoa,Apia,Districts,11
+sanMarino,sanMarino,San Marino,San Marino,San Marino,Castles,9
+saoTomeAndPrincipe,saoTomeAndPrincipe,São Tomé and Príncipe,São Tomé e Príncipe,São Tomé,Districts,2
+saudiArabia,saudiArabia,Saudi Arabia,المملكة العربية السعودية,Riyadh,Regions,13
+senegal,senegal,Senegal,Sénégal,Dakar,Regions,14
+serbia,serbia,Serbia,Србија,Belgrade,Districts,30
+seychelles,seychelles,Seychelles,Seychelles,Victoria,Districts,26
+sierraLeone,sierraLeone,Sierra Leone,Sierra Leone,Freetown,Provinces,4
+singapore,singapore,Singapore,新加坡,Singapore,Districts,5
+sintMaarten,sintMaarten,Sint Maarten,,,,1
+slovakia,slovakia,Slovakia,Slovensko,Bratislava,Regions,8
+slovenia,slovenia,Slovenia,Slovenija,Ljubljana,Municipalities,12
+solomonIslands,solomonIslands,Solomon Islands,Solomon Islands,Honiara,Provinces,10
+somalia,somalia,Somalia,Soomaaliya,Mogadishu,Regions,18
+southAfrica,southAfrica,South Africa,South Africa,Pretoria,Provinces,10
+southKorea,southKorea,South Korea,대한민국,Seoul,Provinces,17
+southSudan,southSudan,South Sudan,South Sudan,Juba,States,10
+spain,spain,Spain,España,Madrid,Autonomous Communities,17
+sriLanka,sriLanka,Sri Lanka,ශ්‍රී ලංකාව,Colombo,Provinces,25
+stHelena,stHelena,Saint Helena,Saint Helena,Jamestown,Districts,8
+stKittsAndNevis,stKittsAndNevis,Saint Kitts and Nevis,Saint Kitts and Nevis,Basseterre,Parishes,14
+stLucia,stLucia,Saint Lucia,Saint Lucia,Castries,Quarters,10
+sudan,sudan,Sudan,السودان,Khartoum,States,18
+suriname,suriname,Suriname,Suriname,Paramaribo,Districts,10
+svalbardAndJanMayen,svalbardAndJanMayen,Svalbard and Jan Mayen,Svalbard og Jan Mayen,Longyearbyen,Districts,2
+sweden,sweden,Sweden,Sverige,Stockholm,Counties,21
+switzerland,switzerland,Switzerland,Schweiz,Bern,Cantons,27
+syria,syria,Syria,سوريا,Damascus,Governorates,14
+taiwan,taiwan,Taiwan,台灣,Taipei,Counties,22
+tajikistan,tajikistan,Tajikistan,Тоҷикистон,Dushanbe,Regions,4
+tanzania,tanzania,Tanzania,Tanzania,Dodoma,Regions,30
+thailand,thailand,Thailand,ประเทศไทย,Bangkok,Provinces,78
+tibet,tibet,Tibet,བོད།,Lhasa,Prefectures,7
+togo,togo,Togo,Togo,Lomé,Regions,5
+tokelau,tokelau,Tokelau,,,,1
+tonga,tonga,Tonga,Tonga,Nukuʻalofa,Divisions,5
+trinidadAndTobago,trinidadAndTobago,Trinidad and Tobago,Trinidad and Tobago,Port of Spain,Regions,15
+tunisia,tunisia,Tunisia,تونس,Tunis,Governorates,24
+turkey,turkey,Turkey,Türkiye,Ankara,Provinces,81
+turkmenistan,turkmenistan,Turkmenistan,Türkmenistan,Ashgabat,Regions,5
+turksAndCaicosIslands,turksAndCaicosIslands,Turks and Caicos Islands,Turks and Caicos Islands,Cockburn Town,Districts,6
+tuvalu,tuvalu,Tuvalu,,,,1
+uganda,uganda,Uganda,Uganda,Kampala,Districts,112
+ukraine,ukraine,Ukraine,Україна,Kyiv,Oblasts,27
+unitedArabEmirates,unitedArabEmirates,United Arab Emirates,الإمارات العربية المتحدة,Abu Dhabi,Emirates,10
+unitedKingdom,unitedKingdom,United Kingdom,United Kingdom,London,Countries,16
+uruguay,uruguay,Uruguay,Uruguay,Montevideo,Departments,19
+usa,usa,United States,United States,"Washington, D.C.",States,51
+usVirginIslands,usVirginIslands,U.S. Virgin Islands,U.S. Virgin Islands,Charlotte Amalie,Districts,3
+uzbekistan,uzbekistan,Uzbekistan,Oʻzbekiston,Tashkent,Regions,16
+vanuatu,vanuatu,Vanuatu,Vanuatu,Port Vila,Provinces,6
+venezuela,venezuela,Venezuela,Venezuela,Caracas,States,28
+vietnam,vietnam,Vietnam,Việt Nam,Hanoi,Provinces,64
+wallisAndFutuna,wallisAndFutuna,Wallis and Futuna,Wallis-et-Futuna,Mata-Utu,Districts,3
+yemen,yemen,Yemen,اليمن,Sanaa,Governorates,21
+zambia,zambia,Zambia,Zambia,Lusaka,Provinces,10
+zimbabwe,zimbabwe,Zimbabwe,Zimbabwe,Harare,Provinces,10

@@ -33,7 +33,7 @@ const badgeClass = badgeColors[badge] ?? 'bg-primary text-white';
       {badge}
     </span>
     <MarketingTitle level={3} className="mb-3">{title}</MarketingTitle>
-    <p class="text-base leading-relaxed text-gray-500" set:html={description} />
+    <p class="text-base leading-relaxed text-balance text-gray-500" set:html={description} />
     <p class="mt-4">
       <MarketingButton type="link" href={`${import.meta.env.CLIENT_URL}/projects/new`}>
         {badge === 'Observer (free)' ? 'Try it free →' : `Try it with the "${badge}" badge →`}

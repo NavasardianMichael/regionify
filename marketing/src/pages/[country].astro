@@ -4,8 +4,8 @@ import Footer from '@/components/Footer.astro';
 import HeroSection from '@/components/HeroSection.astro';
 import Nav from '@/components/Nav.astro';
 import ShowcaseSection from '@/components/ShowcaseSection.astro';
-import { getCountries, getDivisionsForCountry } from '@/data/parseCountries';
-import { resolveOgImagePublicPath } from '@/helpers/resolveShowcasePublicUrl';
+import { getCountries } from '@/data/parseCountries';
+import { extractSvgDivisionNames } from '@/helpers/extractSvgDivisionNames';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 
 export async function getStaticPaths() {
@@ -17,64 +17,45 @@ export async function getStaticPaths() {
 }
 
 const { country } = Astro.props;
-const divisions = getDivisionsForCountry(country.region_id);
-const ogImagePublicPath = resolveOgImagePublicPath(
-  country.slug,
-  country.asset_static,
-  country.map_file,
-);
 
-const datasetJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Dataset',
-  name: `${country.dataset_label} — ${country.name_en}`,
-  description: `Regional ${country.dataset_label.toLowerCase()} data for ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()}. Data year: ${country.dataset_year}.`,
-  creator: {
-    '@type': 'Organization',
-    name: country.dataset_source,
-    url: country.dataset_source_url,
-  },
-  datePublished: country.dataset_year,
-  spatialCoverage: {
-    '@type': 'Place',
-    name: country.name_en,
-  },
-  variableMeasured: {
-    '@type': 'PropertyValue',
-    name: country.dataset_label,
-    unitText: country.dataset_unit,
-  },
-  url: country.dataset_source_url,
-};
+const divisionNames = extractSvgDivisionNames(country.region_id);
 
-const divisionsJsonLd =
-  divisions.length > 0
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'Table',
-        about: {
-          '@type': 'Place',
-          name: country.name_en,
-        },
-        name: `${country.name_en} ${country.division_type} — ${country.dataset_label}`,
-        description: `Table of ${country.division_count} ${country.division_type.toLowerCase()} of ${country.name_en} with ${country.dataset_label.toLowerCase()} values (${country.dataset_year}).`,
-      }
-    : undefined;
+const seoTitle = `${country.name_en} Choropleth Map — Visualize Regional Data | Regionify`;
+const seoDescription = `Create and explore interactive choropleth maps of ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()}. Color regions by any dataset — population, GDP, elections — and export as PNG, SVG, GIF, PDF, MP4 or embeddable iframe.`;
+const localKeyword = country.name_local !== country.name_en ? `, ${country.name_local}` : '';
+const seoKeywords = `${country.name_en} choropleth map, ${country.name_en} regions map, ${country.name_en} ${country.division_type.toLowerCase()} visualization, regional heatmap ${country.name_en}, choropleth map maker, Regionify ${country.name_en}${localKeyword}`;
+
+const ogImagePublicPath = `/assets/${country.slug}/${country.slug}-static.png`;
 ---
 
 <MarketingLayout
-  seoTitle={country.seo_title}
-  seoDescription={country.seo_description}
-  seoKeywords={country.seo_keywords}
+  seoTitle={seoTitle}
+  seoDescription={seoDescription}
+  seoKeywords={seoKeywords}
   slug={country.slug}
   ogImagePublicPath={ogImagePublicPath}
-  datasetJsonLd={datasetJsonLd}
-  divisionsJsonLd={divisionsJsonLd}
+  divisionNames={divisionNames}
+  nameLocal={country.name_local !== country.name_en ? country.name_local : undefined}
+  nameEn={country.name_en}
 >
   <Nav />
   <main class="w-full min-w-0">
     <HeroSection country={country} />
     <ShowcaseSection country={country} />
+    {divisionNames.length > 0 && (
+      <section class="bg-gray-50 py-12 md:py-16">
+        <div class="mx-auto max-w-6xl px-4 md:px-6">
+          <h2 class="mb-6 text-xl font-semibold text-primary text-center">
+            {country.division_type} of {country.name_en}
+          </h2>
+          <ul class="columns-2 gap-4 text-sm text-gray-600 sm:columns-3 md:columns-4">
+            {divisionNames.map((name) => (
+              <li class="mb-1">{name}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
     <CtaSection countryName={country.name_en} divisionType={country.division_type} />
   </main>
   <Footer />

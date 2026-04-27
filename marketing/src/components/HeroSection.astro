@@ -1,8 +1,6 @@
 ---
-import { join } from 'node:path';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
-import { formatNumber, formatArea } from '@/data/parseCountries';
 import type { CountryRow } from '@/data/parseCountries';
 import { readSvgHeroWatermarkFromFile } from '@/helpers/prepareSvgHeroWatermark';
 
@@ -12,9 +10,7 @@ interface Props {
 
 const { country } = Astro.props;
 
-const heroSvg = readSvgHeroWatermarkFromFile(
-  join(process.cwd(), 'public/svgs', country.map_file),
-);
+const heroSvg = readSvgHeroWatermarkFromFile(country.region_id);
 const heroMapDataUrl = heroSvg
   ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(heroSvg)}`
   : null;
@@ -35,33 +31,25 @@ const heroMapDataUrl = heroSvg
   }
   <div class="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
     <div class="mx-auto w-full max-w-3xl text-center">
-      <MarketingTitle level={1} colorScheme="dark" className="mb-4">
-        {country.name_en}
-        {country.name_local !== country.name_en && (
-            <>({country.name_local})</>
-        )}
+      <MarketingTitle level={1} colorScheme="dark" className="mb-1">
+        {country.name_en} Choropleth Map
       </MarketingTitle>
+      {country.name_local !== country.name_en && (
+        <p class="mb-4 text-sm text-white/50 tracking-wide">{country.name_local}</p>
+      )}
+      {country.name_local === country.name_en && <div class="mb-4" />}
 
-      <p class="mb-8 text-white/80 leading-relaxed">
+      <p class="mb-8 text-white/80 leading-relaxed text-balance">
         Regionify is a choropleth map tool that turns regional data into clear, publish-ready
         visualizations. Color administrative divisions by any numeric metric — GDP per capita,
         population density, election results, or your own dataset — then export as PNG, SVG,
         animated GIF, or an embeddable iframe. No GIS expertise required.
       </p>
 
-
-      <div class="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div class="mb-10 grid grid-cols-2 gap-4">
         <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
           <p class="text-xs font-medium uppercase tracking-wide text-white/60">Capital</p>
           <p class="mt-1 text-base font-semibold">{country.capital}</p>
-        </div>
-        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
-          <p class="text-xs font-medium uppercase tracking-wide text-white/60">Population</p>
-          <p class="mt-1 text-base font-semibold">{formatNumber(country.population)}</p>
-        </div>
-        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
-          <p class="text-xs font-medium uppercase tracking-wide text-white/60">Area</p>
-          <p class="mt-1 text-base font-semibold">{formatArea(country.area_km2)}</p>
         </div>
         <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
           <p class="text-xs font-medium uppercase tracking-wide text-white/60">

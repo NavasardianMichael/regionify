@@ -1,15 +1,27 @@
 import { readFileSync } from 'node:fs';
-import type { PathLike } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-/**
- * Loads a marketing `public/svgs/*.svg` map and normalizes it for use as a low-contrast
- * hero background (white shapes, full-bleed, object-cover friendly) — same idea as the app
- * homepage world map watermark.
- */
-export function readSvgHeroWatermarkFromFile(mapPath: PathLike): string | null {
+const MAPS_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  '..',
+  '..',
+  'client',
+  'src',
+  'assets',
+  'images',
+  'maps',
+);
+
+export function getMapsDir(): string {
+  return MAPS_DIR;
+}
+
+export function readSvgHeroWatermarkFromFile(regionId: string): string | null {
   try {
-    let raw = readFileSync(mapPath, 'utf-8');
-    raw = raw.replace(/^\uFEFF/, '').replace(/^<\?xml[^>]*\?>\s*/i, '');
+    let raw = readFileSync(join(MAPS_DIR, `${regionId}.svg`), 'utf-8');
+    raw = raw.replace(/^﻿/, '').replace(/^<\?xml[^>]*\?>\s*/i, '');
     raw = raw.replace(/\s+width="[^"]*"/gi, '').replace(/\s+height="[^"]*"/gi, '');
     if (!/\bviewBox\s*=/i.test(raw)) {
       raw = raw.replace(

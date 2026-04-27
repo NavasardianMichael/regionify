@@ -7,6 +7,8 @@ type MarketingTitleProps = {
   children: ReactNode;
 };
 
+const commonClasses = 'text-balance';
+
 const levelClasses: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
   1: 'text-3xl font-bold md:text-4xl',
   2: 'text-2xl font-bold md:text-3xl',
@@ -28,7 +30,7 @@ export function MarketingTitle({
   children,
 }: MarketingTitleProps): React.JSX.Element {
   const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-  const classes = [levelClasses[level], colorSchemeClasses[colorScheme], className]
+  const classes = [commonClasses, levelClasses[level], colorSchemeClasses[colorScheme], className]
     .filter(Boolean)
     .join(' ');
   return <Tag className={classes}>{children}</Tag>;

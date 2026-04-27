@@ -21,6 +21,9 @@ type Country = { slug: string; name: string };
 const COUNTRIES: Country[] = [
   { slug: 'armenia', name: 'Armenia' },
   { slug: 'russia', name: 'Russian Federation' },
+  { slug: 'germany', name: 'Germany' },
+  { slug: 'brazil', name: 'Brazil' },
+  { slug: 'india', name: 'India' },
 ];
 
 // ---------------------------------------------------------------------------

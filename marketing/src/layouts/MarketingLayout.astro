@@ -6,10 +6,11 @@ interface Props {
   seoDescription: string;
   seoKeywords: string;
   slug: string;
-  /** Path beginning with `/` (e.g. `/assets/...` or `/svgs/...`). */
+  nameEn?: string;
+  nameLocal?: string;
+  divisionNames?: string[];
+  /** Path beginning with `/` (e.g. `/assets/...`). */
   ogImagePublicPath?: string;
-  datasetJsonLd?: object;
-  divisionsJsonLd?: object;
 }
 
 const {
@@ -17,9 +18,10 @@ const {
   seoDescription,
   seoKeywords,
   slug,
+  nameEn,
+  nameLocal,
+  divisionNames,
   ogImagePublicPath,
-  datasetJsonLd,
-  divisionsJsonLd,
 } = Astro.props;
 
 const CLIENT_URL = import.meta.env.CLIENT_URL;
@@ -42,6 +44,17 @@ const softwareAppJsonLd = {
     { '@type': 'Offer', name: 'Chronographer', price: '149', priceCurrency: 'USD' },
   ],
 };
+
+const spatialCoverageJsonLd =
+  divisionNames && divisionNames.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Place',
+        name: nameEn,
+        ...(nameLocal ? { alternateName: nameLocal } : {}),
+        containsPlace: divisionNames.map((name) => ({ '@type': 'Place', name })),
+      }
+    : null;
 ---
 
 <!doctype html>
@@ -61,6 +74,7 @@ const softwareAppJsonLd = {
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Regionify" />
+    <meta property="og:locale" content="en_US" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={seoTitle} />
@@ -70,22 +84,16 @@ const softwareAppJsonLd = {
     <link rel="icon" href="/favicon.ico" />
 
     {
-      datasetJsonLd && (
+      spatialCoverageJsonLd && (
         <script
+          is:inline
           type="application/ld+json"
-          set:html={JSON.stringify(datasetJsonLd)}
-        />
-      )
-    }
-    {
-      divisionsJsonLd && (
-        <script
-          type="application/ld+json"
-          set:html={JSON.stringify(divisionsJsonLd)}
+          set:html={JSON.stringify(spatialCoverageJsonLd)}
         />
       )
     }
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify(softwareAppJsonLd)}
     />
