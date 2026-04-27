@@ -14,11 +14,12 @@ const CLIENT_URL = import.meta.env.CLIENT_URL;
 <section class="bg-primary py-16 md:py-24">
   <div class="mx-auto w-full max-w-6xl px-4 text-center md:px-6">
     <MarketingTitle level={2} colorScheme="dark" className="mx-auto mb-4 w-full max-w-4xl">
-      Create your own choropleth map of <br /> {countryName} <br /> with Regionify
+      Build your own {countryName} choropleth map — free
     </MarketingTitle>
     <p class="mx-auto mb-8 w-full max-w-144 text-pretty text-lg text-white/80">
-      Import your data, color {divisionType.toLowerCase()} by any metric, and export in seconds.
-      Free to start — no credit card required.
+      Upload any dataset, color {countryName}'s {divisionType.toLowerCase()} by any numeric metric,
+      and export as PNG, SVG, GIF, or MP4. No design skills required — start in seconds, publish
+      anywhere.
     </p>
     <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
       <MarketingButton type="dashed" colorScheme="dark" href={`${CLIENT_URL}/projects/new`}>

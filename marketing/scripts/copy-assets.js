@@ -36,3 +36,18 @@ if (existsSync(showcaseSrc)) {
   cpSync(showcaseSrc, showcaseDest, { recursive: true });
   console.log('✓ Showcase assets copied to public/assets/');
 }
+
+// Playwright-generated assets (marketing/assets/) — new source, replaces showcase-assets in future
+const playwrightAssetsSrc = join(__dirname, '../assets');
+if (existsSync(playwrightAssetsSrc)) {
+  mkdirSync(showcaseDest, { recursive: true });
+  cpSync(playwrightAssetsSrc, showcaseDest, {
+    recursive: true,
+    filter: (src) => {
+      const name = src.split(/[\\/]/).pop() ?? '';
+      // Skip auth state, debug screenshots, and text metadata files
+      return !name.startsWith('.') && !name.startsWith('_') && !name.endsWith('.json') && !name.endsWith('.txt');
+    },
+  });
+  console.log('✓ Playwright assets copied to public/assets/');
+}

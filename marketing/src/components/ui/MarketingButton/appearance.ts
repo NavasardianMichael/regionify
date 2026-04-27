@@ -2,7 +2,7 @@
 export type MarketingButtonType = 'primary' | 'secondary' | 'dashed' | 'default' | 'card' | 'link';
 
 const focusOutline =
-  'transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+  'transition-opacity focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary';
 
 const buttonBase = `inline-flex items-center gap-1 rounded-sm hover:transition-all ${focusOutline}`;
 
@@ -14,7 +14,7 @@ const buttonSizeCard =
   'h-auto min-h-0 w-full justify-start px-4 py-3 text-sm font-normal shadow-sm';
 
 const focusRing =
-  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+  'focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary';
 
 function linkTypeClasses(colorScheme: 'light' | 'dark', muted: boolean): string {
   if (colorScheme === 'dark') {

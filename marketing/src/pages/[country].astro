@@ -1,9 +1,7 @@
 ---
 import CtaSection from '@/components/CtaSection.astro';
-import DivisionsSection from '@/components/DivisionsSection.astro';
 import Footer from '@/components/Footer.astro';
 import HeroSection from '@/components/HeroSection.astro';
-import MapPreview from '@/components/MapPreview.astro';
 import Nav from '@/components/Nav.astro';
 import ShowcaseSection from '@/components/ShowcaseSection.astro';
 import { getCountries, getDivisionsForCountry } from '@/data/parseCountries';
@@ -77,7 +75,6 @@ const divisionsJsonLd =
   <main class="w-full min-w-0">
     <HeroSection country={country} />
     <ShowcaseSection country={country} />
-    {divisions.length > 0 && <DivisionsSection country={country} divisions={divisions} />}
     <CtaSection countryName={country.name_en} divisionType={country.division_type} />
   </main>
   <Footer />

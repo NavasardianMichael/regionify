@@ -16,7 +16,7 @@ type ShowcaseItemDef = {
   description: string;
   badge: string;
   asset: string;
-  assetType: 'image' | 'video' | 'gif';
+  assetType: 'image' | 'video' | 'gif' | 'iframe';
 };
 
 const allItems: ShowcaseItemDef[] = [
@@ -50,7 +50,7 @@ const allItems: ShowcaseItemDef[] = [
   },
   {
     title: 'Public share page',
-    description: `Share your ${country.name_en} choropleth map with a public link. Anyone with the URL can view the full interactive map — no account or login required.`,
+    description: `Share your ${country.name_en} choropleth map with a <a href="${country.asset_embed_url}" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-4 hover:text-primary-400">public link</a>. Anyone with the URL can view the full interactive map — no account or login required.`,
     badge: 'Explorer',
     asset: country.asset_embed_page,
     assetType: 'image',
@@ -59,8 +59,8 @@ const allItems: ShowcaseItemDef[] = [
     title: 'Embeddable iframe',
     description: `Embed your ${country.name_en} choropleth map directly on any website, article, or dashboard with a single iframe snippet. Fully responsive and always up to date.`,
     badge: 'Explorer',
-    asset: country.asset_iframe,
-    assetType: 'image',
+    asset: country.asset_embed_url,
+    assetType: 'iframe',
   },
 ];
 
@@ -68,12 +68,16 @@ const items = allItems
   .filter((item) => item.asset && item.asset.trim() !== '')
   .map((item) => ({
     ...item,
-    assetPath: resolveShowcasePublicUrl(
-      country.slug,
-      item.asset,
-      country.map_file,
-      item.assetType,
-    ),
+    // iframe items carry a full URL directly; all others go through file resolution
+    assetPath:
+      item.assetType === 'iframe'
+        ? item.asset
+        : resolveShowcasePublicUrl(
+            country.slug,
+            item.asset,
+            country.map_file,
+            item.assetType as 'image' | 'video' | 'gif',
+          ),
   }))
   .filter((item): item is typeof item & { assetPath: string } => item.assetPath !== null);
 ---

@@ -28,13 +28,12 @@ export type CountryRow = {
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
-  intro_text: string;
   asset_static: string;
   asset_svg: string;
   asset_gif: string;
   asset_mp4: string;
   asset_embed_page: string;
-  asset_iframe: string;
+  asset_embed_url: string;
 };
 
 export type DivisionRow = {
