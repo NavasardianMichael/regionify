@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { chromium, type BrowserContext, type Page } from 'playwright';
 import { config as loadEnv } from 'dotenv';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -15,8 +15,18 @@ const PASSWORD = process.env.REGIONIFY_PASSWORD ?? '';
 const ASSETS_ROOT = join(__dirname, '..', 'assets');
 // Persisted auth cookies — reused across runs to avoid hitting the login rate limiter.
 const AUTH_STATE_FILE = join(ASSETS_ROOT, '.auth-state.json');
+const SHOWCASE_EMBED_URLS_JSON = join(__dirname, '..', 'data', 'showcase-embed-urls.json');
 
 type Country = { slug: string; name: string };
+
+function recordShowcaseEmbedUrl(slug: string, url: string): void {
+  let map: Record<string, string> = {};
+  if (existsSync(SHOWCASE_EMBED_URLS_JSON)) {
+    map = JSON.parse(readFileSync(SHOWCASE_EMBED_URLS_JSON, 'utf-8')) as Record<string, string>;
+  }
+  map[slug] = url;
+  writeFileSync(SHOWCASE_EMBED_URLS_JSON, `${JSON.stringify(map, null, 2)}\n`);
+}
 
 // Add or remove countries here. All other code stays the same.
 const COUNTRIES: Country[] = [
@@ -418,8 +428,9 @@ async function generateAssetsForCountry(
 
   // Embed: enable, configure, screenshot public page, capture iframe code
   const embedUrl = await setupEmbed(page, country);
-  // Save embed URL so the marketing site can render a live iframe
+  // Save embed URL so the marketing site can render a live iframe (txt: local; json: tracked for builds)
   writeFileSync(join(assetsDir, `${country.slug}-embed-url.txt`), embedUrl);
+  recordShowcaseEmbedUrl(country.slug, embedUrl);
   await screenshotEmbedPage(context, embedUrl, assetsDir, country.slug);
 
   // Turn showHeader OFF after screenshotting the embed page (iframe embed shows clean map only)

@@ -1,12 +1,10 @@
 ---
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { BASE } from '@/helpers/commons';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton';
 import ShowcaseItem from './ShowcaseItem.astro';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 import type { CountryRow } from '@/data/parseCountries';
+import showcaseEmbedUrls from '../../data/showcase-embed-urls.json';
 
 interface Props {
   country: CountryRow;
@@ -23,8 +21,8 @@ type ShowcaseItemDef = {
   assetType: 'image' | 'video' | 'gif' | 'iframe';
 };
 
-const embedUrlFile = join(dirname(fileURLToPath(import.meta.url)), '../../../assets', slug, `${slug}-embed-url.txt`);
-const embedUrl = existsSync(embedUrlFile) ? readFileSync(embedUrlFile, 'utf-8').trim() : null;
+/** Tracked map of live demo embed URLs (updated by playwright; required for production builds). */
+const embedUrl: string | undefined = showcaseEmbedUrls[slug as keyof typeof showcaseEmbedUrls];
 
 const allItems: ShowcaseItemDef[] = [
   {
