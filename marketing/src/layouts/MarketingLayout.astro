@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { BASE } from '@/helpers/commons';
 
 interface Props {
   seoTitle: string;
@@ -25,7 +26,7 @@ const {
 } = Astro.props;
 
 const CLIENT_URL = import.meta.env.CLIENT_URL;
-const canonicalUrl = `${CLIENT_URL}${import.meta.env.BASE_URL}${slug}/`;
+const canonicalUrl = `${CLIENT_URL}${BASE}/${slug}/`;
 const ogImageUrl = ogImagePublicPath
   ? `${CLIENT_URL}${ogImagePublicPath}`
   : `${CLIENT_URL}/og-image.jpg`;
@@ -81,7 +82,7 @@ const spatialCoverageJsonLd =
     <meta name="twitter:description" content={seoDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
 
-    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+    <link rel="icon" href={`${BASE}/favicon.ico`} />
 
     {
       spatialCoverageJsonLd && (

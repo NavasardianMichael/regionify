@@ -1,5 +1,6 @@
 ---
 import Nav from '@/components/Nav.astro';
+import { BASE } from '@/helpers/commons';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 import { getCountries } from '@/data/parseCountries';
@@ -17,8 +18,8 @@ const countries = getCountries();
       name="description"
       content="Browse choropleth maps for countries worldwide. Explore administrative divisions, regional data, and geographic visualizations — all created with Regionify."
     />
-    <link rel="canonical" href={`${import.meta.env.CLIENT_URL}${import.meta.env.BASE_URL}`} />
-    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
+    <link rel="canonical" href={`${import.meta.env.CLIENT_URL}${BASE}/`} />
+    <link rel="icon" href={`${BASE}/favicon.ico`} />
     <style>
       @import '../styles/global.css';
     </style>
@@ -39,7 +40,7 @@ const countries = getCountries();
         {
           countries.map((c) => (
             <li>
-              <MarketingButton type="card" href={`${import.meta.env.BASE_URL}${c.slug}/`}>
+              <MarketingButton type="card" href={`${BASE}/${c.slug}/`}>
                 <span class="flex w-full items-center gap-3 text-left">
                   <span class="min-w-0">
                     <span class="block text-sm font-semibold text-gray-800">{c.name_en}</span>

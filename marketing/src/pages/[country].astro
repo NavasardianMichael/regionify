@@ -5,6 +5,7 @@ import HeroSection from '@/components/HeroSection.astro';
 import Nav from '@/components/Nav.astro';
 import ShowcaseSection from '@/components/ShowcaseSection.astro';
 import { getCountries } from '@/data/parseCountries';
+import { BASE } from '@/helpers/commons';
 import { extractSvgDivisionNames } from '@/helpers/extractSvgDivisionNames';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
 
@@ -25,7 +26,7 @@ const seoDescription = `Create and explore interactive choropleth maps of ${coun
 const localKeyword = country.name_local !== country.name_en ? `, ${country.name_local}` : '';
 const seoKeywords = `${country.name_en} choropleth map, ${country.name_en} regions map, ${country.name_en} ${country.division_type.toLowerCase()} visualization, regional heatmap ${country.name_en}, choropleth map maker, Regionify ${country.name_en}${localKeyword}`;
 
-const ogImagePublicPath = `${import.meta.env.BASE_URL}assets/${country.slug}/${country.slug}-static.png`;
+const ogImagePublicPath = `${BASE}/assets/${country.slug}/${country.slug}-static.png`;
 ---
 
 <MarketingLayout
