@@ -1,4 +1,5 @@
 ---
+import AiSection from '@/components/AiSection.astro';
 import CtaSection from '@/components/CtaSection.astro';
 import Footer from '@/components/Footer.astro';
 import HeroSection from '@/components/HeroSection.astro';
@@ -22,9 +23,9 @@ const { country } = Astro.props;
 const divisionNames = extractSvgDivisionNames(country.region_id);
 
 const seoTitle = `${country.name_en} Choropleth Map — Visualize Regional Data | Regionify`;
-const seoDescription = `Create and explore interactive choropleth maps of ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()}. Color regions by any dataset — population, GDP, elections — and export as PNG, SVG, GIF, PDF, MP4 or embeddable iframe.`;
+const seoDescription = `Create interactive choropleth maps of ${country.name_en}'s ${country.division_count} ${country.division_type.toLowerCase()}. Import data with AI — generate a dataset from a prompt or paste raw text and let the AI parser clean it. Export as PNG, SVG, GIF, PDF, MP4 or embeddable iframe.`;
 const localKeyword = country.name_local !== country.name_en ? `, ${country.name_local}` : '';
-const seoKeywords = `${country.name_en} choropleth map, ${country.name_en} regions map, ${country.name_en} ${country.division_type.toLowerCase()} visualization, regional heatmap ${country.name_en}, choropleth map maker, Regionify ${country.name_en}${localKeyword}`;
+const seoKeywords = `${country.name_en} choropleth map, ${country.name_en} regions map, ${country.name_en} ${country.division_type.toLowerCase()} visualization, regional heatmap ${country.name_en}, AI map generator ${country.name_en}, choropleth map maker, Regionify ${country.name_en}${localKeyword}`;
 
 const ogImagePublicPath = `${BASE}/assets/${country.slug}/${country.slug}-static.png`;
 ---
@@ -43,8 +44,9 @@ const ogImagePublicPath = `${BASE}/assets/${country.slug}/${country.slug}-static
   <main class="w-full min-w-0">
     <HeroSection country={country} />
     <ShowcaseSection country={country} />
+    <AiSection country={country} />
     {divisionNames.length > 0 && (
-      <section class="bg-gray-50 py-12 md:py-16">
+      <section class="py-12 md:py-16">
         <div class="mx-auto max-w-6xl px-4 md:px-6">
           <h2 class="mb-6 text-xl font-semibold text-primary text-center">
             {country.division_type} of {country.name_en}

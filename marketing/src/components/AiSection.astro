@@ -1,0 +1,96 @@
+---
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import type { CountryRow } from '@/data/parseCountries';
+
+interface Props {
+  country: CountryRow;
+}
+
+const { country } = Astro.props;
+const { name_en, division_count, division_type } = country;
+
+const CLIENT_URL = import.meta.env.CLIENT_URL;
+const divisionLabel = division_type.toLowerCase();
+---
+
+<section class="bg-gray-50 py-12">
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <MarketingTitle level={2} className="mb-2 text-center">
+      AI-powered data import for {name_en} maps
+    </MarketingTitle>
+    <p class="mb-12 text-center text-base text-balance text-gray-500">
+      No spreadsheet? No problem. Regionify's AI Agent turns a plain-text description or raw
+      pasted data into a ready-to-visualize {name_en} dataset in seconds.
+    </p>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      <!-- AI Generator -->
+      <div class="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white text-lg">
+            ⚗
+          </span>
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-400">AI Generator</p>
+            <MarketingTitle level={3} className="leading-tight">
+              Generate {name_en} data from a prompt
+            </MarketingTitle>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-gray-500">
+          Describe the dataset you need in plain English — for example <em>"GDP per capita of
+          {name_en}'s {division_count} {divisionLabel} in 2023"</em> or <em>"election results by
+          {divisionLabel}"</em> — and the AI generates a plausible, structured dataset that maps
+          directly onto {name_en}'s administrative boundaries. Edit any values in the table view
+          before saving.
+        </p>
+        <ul class="flex flex-col gap-1 text-sm text-gray-500">
+          <li>✓ Works for population, GDP, health, election, and custom metrics</li>
+          <li>✓ Supports time-series prompts for animated maps</li>
+          <li>✓ Output pre-matched to {name_en}'s {division_count} {divisionLabel}</li>
+        </ul>
+        <p class="mt-auto pt-2">
+          <MarketingButton type="link" href={`${CLIENT_URL}/projects/new`}>
+            Try AI Generator →
+          </MarketingButton>
+        </p>
+      </div>
+
+      <!-- AI Parser -->
+      <div class="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="flex items-center gap-3">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white text-lg">
+            ⚡
+          </span>
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-400">AI Parser</p>
+            <MarketingTitle level={3} className="leading-tight">
+              Clean and import messy {name_en} data
+            </MarketingTitle>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-gray-500">
+          Paste raw text, a copied Wikipedia table, or an unstructured CSV with regional figures
+          for {name_en}. The AI parser normalises region names, strips noise, resolves mismatched
+          spelling across {name_en}'s {divisionLabel}, and outputs a clean id–label–value table
+          ready to visualise.
+        </p>
+        <ul class="flex flex-col gap-1 text-sm text-gray-500">
+          <li>✓ Handles inconsistent or misspelled {divisionLabel} names</li>
+          <li>✓ Auto-detects time columns for historical data</li>
+          <li>✓ Streams results in real time as AI processes</li>
+        </ul>
+        <p class="mt-auto pt-2">
+          <MarketingButton type="link" href={`${CLIENT_URL}/projects/new`}>
+            Try AI Parser →
+          </MarketingButton>
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-8 text-center text-xs text-gray-400">
+      AI Agent is available on the Chronographer plan.
+    </p>
+  </div>
+</section>
