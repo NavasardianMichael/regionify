@@ -31,13 +31,9 @@ const heroMapDataUrl = heroSvg
   }
   <div class="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
     <div class="mx-auto w-full max-w-3xl text-center">
-      <MarketingTitle level={1} colorScheme="dark" className="mb-1">
-        {country.name_en} Choropleth Map
+      <MarketingTitle level={1} colorScheme="dark" className="mb-8">
+        Choropleth Map of {country.name_en}{country.name_local !== country.name_en && ` (${country.name_local})`}
       </MarketingTitle>
-      {country.name_local !== country.name_en && (
-        <p class="mb-4 text-sm text-white/50 tracking-wide">{country.name_local}</p>
-      )}
-      {country.name_local === country.name_en && <div class="mb-4" />}
 
       <p class="mb-8 text-white/80 leading-relaxed text-balance">
         Regionify is a choropleth map tool that turns regional data into clear, publish-ready
@@ -45,19 +41,6 @@ const heroMapDataUrl = heroSvg
         population density, election results, or your own dataset — then export as PNG, SVG,
         animated GIF, or an embeddable iframe. No GIS expertise required.
       </p>
-
-      <div class="mb-10 grid grid-cols-2 gap-4">
-        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
-          <p class="text-xs font-medium uppercase tracking-wide text-white/60">Capital</p>
-          <p class="mt-1 text-base font-semibold">{country.capital}</p>
-        </div>
-        <div class="rounded-lg bg-white/10 px-4 py-3 text-white">
-          <p class="text-xs font-medium uppercase tracking-wide text-white/60">
-            {country.division_type}
-          </p>
-          <p class="mt-1 text-base font-semibold">{country.division_count}</p>
-        </div>
-      </div>
 
       <MarketingButton
         type="dashed"

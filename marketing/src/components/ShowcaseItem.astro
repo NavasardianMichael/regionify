@@ -14,12 +14,7 @@ interface Props {
 
 const { title, description, badge, assetPath, assetType, reverse = false, index } = Astro.props;
 
-const badgeColors: Record<string, string> = {
-  'Observer (free)': 'bg-primary text-white',
-  'Explorer': 'bg-cyan-500 text-white',
-  'Chronographer': 'bg-amber-500 text-white',
-};
-const badgeClass = badgeColors[badge] ?? 'bg-primary text-white';
+const badgeClass = 'bg-primary text-white';
 ---
 
 <div
