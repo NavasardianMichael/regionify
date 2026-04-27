@@ -1,6 +1,7 @@
 ---
 import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { BASE } from '@/helpers/commons';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton';
 import ShowcaseItem from './ShowcaseItem.astro';
@@ -22,7 +23,7 @@ type ShowcaseItemDef = {
   assetType: 'image' | 'video' | 'gif' | 'iframe';
 };
 
-const embedUrlFile = join(process.cwd(), 'assets', slug, `${slug}-embed-url.txt`);
+const embedUrlFile = join(dirname(fileURLToPath(import.meta.url)), '../../../assets', slug, `${slug}-embed-url.txt`);
 const embedUrl = existsSync(embedUrlFile) ? readFileSync(embedUrlFile, 'utf-8').trim() : null;
 
 const allItems: ShowcaseItemDef[] = [
