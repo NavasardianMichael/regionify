@@ -7,3 +7,5 @@ public/favicon.ico
 assets/.auth-state.json
 assets/_error.png
 assets/**/_debug-*.png
+public/assets/.auth-state.json
+public/assets/_error.png
