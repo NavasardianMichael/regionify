@@ -65,7 +65,7 @@ import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { ErrorFallback } from '@/components/ui/ErrorFallback';
 import { CardLayout } from '@/components/visualizer/CardLayout';
 import GeneralStylesPack from '@/components/visualizer/GeneralStylesPack';
-import ImportDataPanel from '@/components/visualizer/ImportDataPanel';
+import ImportDataPanel from '@/components/visualizer/ImportDataPanel/ImportDataPanel';
 import LegendConfigPanel from '@/components/visualizer/LegendConfigPanel';
 import LegendStylesPanel from '@/components/visualizer/LegendStylesPanel';
 import MapStylesPanel from '@/components/visualizer/MapStylesPanel';
@@ -320,7 +320,7 @@ const VisualizerPage: FC = () => {
 
   const sidePanelLoading = (
     <CardLayout component="aside" vertical className="h-full">
-      <Flex align="center" justify="center" className="min-h-[12rem] flex-1">
+      <Flex align="center" justify="center" className="min-h-48 flex-1">
         <Spin size="large" />
       </Flex>
     </CardLayout>

@@ -4,6 +4,6 @@ node_modules/
 public/svgs/
 public/logo.png
 public/favicon.ico
-/assets/
-public/assets/.auth-state.json
-public/assets/_error.png
+assets/.auth-state.json
+assets/_error.png
+assets/**/_debug-*.png

@@ -167,6 +167,25 @@ async function createProject(page: Page, country: Country): Promise<void> {
 // Export animated: GIF or MP4 (dynamic mode)
 // ---------------------------------------------------------------------------
 
+/** Quality used for animated exports — 2× scale keeps files manageable and renders fast. */
+const ANIMATED_EXPORT_QUALITY = 50;
+
+/**
+ * Set the Ant Design InputNumber identified by its adjacent label's data-i18n-key.
+ * Clears the current value then types the new one, finishing with Tab to fire onBlur.
+ */
+async function setInputNumberByLabel(page: Page, i18nKey: string, value: number): Promise<void> {
+  const modal = page.locator('.ant-modal:visible');
+  const input = modal
+    .locator(`[data-i18n-key="${i18nKey}"]`)
+    .locator('..')
+    .locator('..')
+    .locator('.ant-input-number-input');
+  await input.click({ clickCount: 3 });
+  await input.fill(String(value));
+  await input.press('Tab');
+}
+
 async function exportAnimated(
   page: Page,
   assetsDir: string,
@@ -187,6 +206,11 @@ async function exportAnimated(
 
   await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', optionLabel);
 
+  // Lower quality before rendering: qualityToScale(50) = 2× vs 4× at quality 100.
+  // Cuts per-frame pixel count by 4× so large-region countries (Brazil, Russia) finish well
+  // within the download timeout without visible quality loss in marketing showcase assets.
+  await setInputNumberByLabel(page, 'visualizer.exportModal.qualityLabel', ANIMATED_EXPORT_QUALITY);
+
   // GIF/MP4 require a crop step before the actual download
   await page.getByRole('button', { name: 'Next: Crop & Download' }).click();
   await page
@@ -197,8 +221,9 @@ async function exportAnimated(
   const downloadBtn = page.getByRole('button', { name: downloadLabel });
   await downloadBtn.waitFor({ timeout: 30_000 });
 
-  // Register download listener BEFORE clicking to avoid race condition
-  const downloadPromise = page.waitForEvent('download', { timeout: 180_000 });
+  // Register download listener BEFORE clicking to avoid race condition.
+  // 300 s covers quality-50 rendering even for large countries like India.
+  const downloadPromise = page.waitForEvent('download', { timeout: 300_000 });
   await downloadBtn.click();
   const download = await downloadPromise;
   await download.saveAs(join(assetsDir, fileName));
@@ -238,6 +263,25 @@ async function closeRightPanel(page: Page): Promise<void> {
     await collapseBtn.click();
     await page.waitForTimeout(500);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Normalize legend ranges to fit current sample data
+// ---------------------------------------------------------------------------
+
+async function normalizeRanges(page: Page): Promise<void> {
+  // The normalize button lives inside the "Ranges" collapse, which is closed by default.
+  const btn = page.getByRole('button', {
+    name: 'Distribute ranges evenly between current data min and max',
+  });
+
+  if (!(await btn.isVisible().catch(() => false))) {
+    await page.locator('[data-i18n-key="visualizer.legendConfig.collapseRanges"]').click();
+    await btn.waitFor({ timeout: 5_000 });
+  }
+
+  await btn.click();
+  console.log(`  ✓ Legend ranges normalized`);
 }
 
 // ---------------------------------------------------------------------------
@@ -418,11 +462,17 @@ async function generateAssetsForCountry(
   // Collapse right panel → wider map area → better aspect ratio for all exported assets
   await closeRightPanel(page);
 
+  // Align legend ranges with the dynamic sample data before exporting
+  await normalizeRanges(page);
+
   // Dynamic mode (default after country select) → GIF and MP4
   await exportAnimated(page, assetsDir, country.slug, 'GIF');
   await exportAnimated(page, assetsDir, country.slug, 'MP4');
 
   await switchToStaticMode(page);
+
+  // Align legend ranges with the static sample data before exporting
+  await normalizeRanges(page);
 
   await exportStaticAssets(page, assetsDir, country.slug);
 

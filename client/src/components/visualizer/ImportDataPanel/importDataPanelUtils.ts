@@ -35,3 +35,14 @@ export function showMessageWithClose(
   const duration = type === 'success' ? SUCCESS_MESSAGE_DURATION : FEEDBACK_MESSAGE_DURATION;
   messageApi[type]({ content, duration });
 }
+
+/** Generate sample value within legend ranges (0-100, 101-500, 501-1000) for region at index. */
+export const generateSampleValue = (regionIndex: number): number => {
+  const ranges = [
+    { min: 10, max: 100 },
+    { min: 101, max: 500 },
+    { min: 501, max: 1000 },
+  ];
+  const range = ranges[regionIndex % ranges.length];
+  return Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+};
