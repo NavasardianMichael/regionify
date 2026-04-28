@@ -425,22 +425,6 @@ async function screenshotEmbedPage(
 }
 
 // ---------------------------------------------------------------------------
-// Read iframe snippet from embed modal and save code + section screenshot
-// ---------------------------------------------------------------------------
-
-async function captureIframeCode(page: Page, assetsDir: string, slug: string): Promise<void> {
-  const modal = page.locator('.ant-modal:visible').filter({ hasText: 'Public map embed' });
-
-  // EmbedIframeCode renders the snippet inside <pre class="... font-mono ...">
-  const iframePre = modal.locator('pre').filter({ hasText: '<iframe' });
-  await iframePre.waitFor({ timeout: 10_000 });
-
-  const iframeCode = (await iframePre.textContent()) ?? '';
-  writeFileSync(join(assetsDir, `${slug}-iframe-code.html`), iframeCode.trim());
-  console.log(`  ✓ Iframe code saved → ${slug}-iframe-code.html`);
-}
-
-// ---------------------------------------------------------------------------
 // Per-country orchestrator
 // ---------------------------------------------------------------------------
 
@@ -476,7 +460,7 @@ async function generateAssetsForCountry(
 
   await exportStaticAssets(page, assetsDir, country.slug);
 
-  // Embed: enable, configure, screenshot public page, capture iframe code
+  // Embed: enable, configure, screenshot public page
   const embedUrl = await setupEmbed(page, country);
   // Save embed URL so the marketing site can render a live iframe (txt: local; json: tracked for builds)
   writeFileSync(join(assetsDir, `${country.slug}-embed-url.txt`), embedUrl);
@@ -494,8 +478,6 @@ async function generateAssetsForCountry(
       .locator('.ant-message-notice', { hasText: 'Embed settings saved' })
       .waitFor({ timeout: 10_000 });
   }
-
-  await captureIframeCode(page, assetsDir, country.slug);
 
   await closeModal(page);
   console.log(`✓  Done: ${country.name}`);
