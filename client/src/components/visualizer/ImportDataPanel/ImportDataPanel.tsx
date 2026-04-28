@@ -86,6 +86,15 @@ const AiParserModal = lazy(() =>
   import('../AiParserModal/Modal').then((m) => ({ default: m.AiParserModal })),
 );
 
+/** Sample timeline labels for generated demo data: last N calendar years ending at the current year (ascending). */
+const SAMPLE_TIMELINE_YEAR_COUNT = 5;
+
+function sampleTimelineYearPeriods(): string[] {
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - SAMPLE_TIMELINE_YEAR_COUNT + 1;
+  return Array.from({ length: SAMPLE_TIMELINE_YEAR_COUNT }, (_, i) => String(startYear + i));
+}
+
 export const ImportDataPanel: FC = () => {
   const { t } = useTypedTranslation();
   const { modal, message: messageApi } = useAppFeedback();
@@ -263,7 +272,7 @@ export const ImportDataPanel: FC = () => {
       let rows: Array<{ id: string; label: string; value: number; year?: string }>;
 
       if (useHistoricalFormat) {
-        const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+        const samplePeriods = sampleTimelineYearPeriods();
         rows = [];
         for (const period of samplePeriods) {
           for (let i = 0; i < svgTitles.length; i++) {
@@ -447,7 +456,7 @@ export const ImportDataPanel: FC = () => {
   /** Apply dynamic mode: set timeline to sample (or empty if no region). */
   const applySwitchToDynamic = useCallback(() => {
     if (svgTitles.length > 0) {
-      const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+      const samplePeriods = sampleTimelineYearPeriods();
       const timeline: Record<string, DataSet> = {};
       for (const period of samplePeriods) {
         const periodData = svgTitles.map((title, i) => ({
@@ -530,7 +539,7 @@ export const ImportDataPanel: FC = () => {
           // Generate sample: panel/dynamic if plan supports it, else static
           if (titles.length > 0) {
             if (limits.historicalDataImport) {
-              const samplePeriods = ['2020', '2021', '2022', '2023', '2024'];
+              const samplePeriods = sampleTimelineYearPeriods();
               const timeline: Record<string, DataSet> = {};
               for (let p = 0; p < samplePeriods.length; p++) {
                 const periodMultiplier = 1 + p * 0.1;

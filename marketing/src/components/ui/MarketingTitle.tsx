@@ -7,15 +7,15 @@ type MarketingTitleProps = {
   children: ReactNode;
 };
 
-const commonClasses = 'text-balance';
+const commonClasses = 'text-balance font-semibold';
 
 const levelClasses: Record<1 | 2 | 3 | 4 | 5 | 6, string> = {
-  1: 'text-3xl font-bold md:text-4xl',
-  2: 'text-2xl font-bold md:text-3xl',
-  3: 'text-xl font-semibold',
-  4: 'text-lg font-semibold',
-  5: 'text-base font-semibold',
-  6: 'text-sm font-semibold',
+  1: 'text-3xl md:text-4xl',
+  2: 'text-2xl md:text-3xl',
+  3: 'text-xl',
+  4: 'text-lg',
+  5: 'text-base',
+  6: 'text-sm',
 };
 
 const colorSchemeClasses: Record<'light' | 'dark', string> = {

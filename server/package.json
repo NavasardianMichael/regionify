@@ -16,7 +16,7 @@
     "db:migrate:prod": "prisma migrate deploy",
     "db:migrate:prod:local": "dotenv -e .env.production -- prisma migrate deploy",
     "db:push": "dotenv -e .env.development.local -- prisma db push",
-    "db:studio": "prisma studio",
+    "db:studio": "dotenv -e .env.development.local -- prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "postinstall": "node scripts/postinstall-setup.js",
     "envtobase64": "node scripts/env-to-base64.cjs"
