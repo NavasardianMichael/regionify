@@ -156,6 +156,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const isSvgFormat = exportType === EXPORT_TYPES.svg;
   const isAnimationFormat = exportType === EXPORT_TYPES.gif || exportType === EXPORT_TYPES.mp4;
   const isPdfFormat = exportType === EXPORT_TYPES.pdf;
+  const skipCropStep = isSvgFormat || isPdfFormat || exportType === EXPORT_TYPES.mp4;
 
   const resolvedQuality = useMemo(() => {
     const q = quality;
@@ -533,6 +534,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     isSvgFormat,
     isAnimationFormat,
     isPdfFormat,
+    skipCropStep,
     hasTimelineData,
     selectedCountryId,
     allowedFormats,

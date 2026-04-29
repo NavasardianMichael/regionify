@@ -41,6 +41,7 @@ export const Form: FC<FormProps> = (props) => {
     isSvgFormat,
     isAnimationFormat,
     isPdfFormat,
+    skipCropStep,
     hasTimelineData,
     selectedCountryId,
     allowedFormats,
@@ -310,13 +311,13 @@ export const Form: FC<FormProps> = (props) => {
         </Typography.Text>
       )}
 
-      {isSvgFormat || isPdfFormat ? (
+      {skipCropStep ? (
         <Button
           type="primary"
           icon={<DownloadOutlined />}
           onClick={handleDownload}
           loading={isExporting}
-          disabled={isExporting || !selectedCountryId}
+          disabled={isExporting || !selectedCountryId || (isAnimationFormat && !hasTimelineData)}
         >
           {downloadButtonLabel}
         </Button>
