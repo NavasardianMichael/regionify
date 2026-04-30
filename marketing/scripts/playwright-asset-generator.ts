@@ -4,6 +4,7 @@ import { config as loadEnv } from 'dotenv';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { MARKETING_COUNTRIES, type MarketingCountry } from 'scripts/countries';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -16,8 +17,7 @@ const ASSETS_ROOT = join(__dirname, '..', 'assets');
 // Persisted auth cookies — reused across runs to avoid hitting the login rate limiter.
 const AUTH_STATE_FILE = join(ASSETS_ROOT, '.auth-state.json');
 const SHOWCASE_EMBED_URLS_JSON = join(__dirname, '..', 'data', 'showcase-embed-urls.json');
-
-type Country = { slug: string; name: string };
+// Add or remove countries here. All other code stays the same.
 
 function recordShowcaseEmbedUrl(slug: string, url: string): void {
   let map: Record<string, string> = {};
@@ -27,15 +27,6 @@ function recordShowcaseEmbedUrl(slug: string, url: string): void {
   map[slug] = url;
   writeFileSync(SHOWCASE_EMBED_URLS_JSON, `${JSON.stringify(map, null, 2)}\n`);
 }
-
-// Add or remove countries here. All other code stays the same.
-const COUNTRIES: Country[] = [
-  // { slug: 'armenia', name: 'Armenia' },
-  // { slug: 'russia', name: 'Russian Federation' },
-  // { slug: 'germany', name: 'Germany' },
-  // { slug: 'brazil', name: 'Brazil' },
-  { slug: 'india', name: 'India' },
-];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -128,7 +119,7 @@ async function login(page: Page, context: BrowserContext): Promise<void> {
 // Create project
 // ---------------------------------------------------------------------------
 
-async function createProject(page: Page, country: Country): Promise<void> {
+async function createProject(page: Page, country: MarketingCountry): Promise<void> {
   await page.goto(`${BASE_URL}/projects/new`);
   // Wait for the region select to be available — reliable page-ready signal
   await page.locator('input[aria-label="Select a country"]').waitFor({ timeout: 15_000 });
@@ -368,7 +359,7 @@ async function exportStaticAssets(page: Page, assetsDir: string, slug: string): 
 // Enable public embed and return the full embed page URL
 // ---------------------------------------------------------------------------
 
-async function setupEmbed(page: Page, country: Country): Promise<string> {
+async function setupEmbed(page: Page, country: MarketingCountry): Promise<string> {
   await page.getByRole('button', { name: 'Embed' }).click();
   const modal = page.locator('.ant-modal:visible').filter({ hasText: 'Public map embed' });
   await modal.waitFor({ timeout: 10_000 });
@@ -434,7 +425,7 @@ async function screenshotEmbedPage(
 async function generateAssetsForCountry(
   page: Page,
   context: BrowserContext,
-  country: Country,
+  country: MarketingCountry,
 ): Promise<void> {
   const assetsDir = join(ASSETS_ROOT, country.slug);
   mkdirSync(assetsDir, { recursive: true });
@@ -477,9 +468,18 @@ async function generateAssetsForCountry(
   if ((await showHeaderSwitch.getAttribute('aria-checked')) === 'true') {
     await showHeaderSwitch.click();
     await embedModal.locator('[data-i18n-key="visualizer.save"]').click();
-    await page
-      .locator('.ant-message-notice', { hasText: 'Embed settings saved' })
-      .waitFor({ timeout: 10_000 });
+    // Toast text can vary by locale or be missed under load; don't hard-fail on it.
+    const saveToast = page
+      .locator('.ant-message-notice')
+      .filter({ hasText: /embed settings saved/i });
+    const toastVisible = await saveToast
+      .waitFor({ timeout: 6_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!toastVisible) {
+      console.warn('  → Save toast not detected; continuing after short settle wait.');
+      await page.waitForTimeout(1_000);
+    }
   }
 
   await closeModal(page);
@@ -496,7 +496,7 @@ async function generateAssetsForCountry(
 
 async function runWorker(
   workerId: number,
-  countries: Country[],
+  marketingCountries: MarketingCountry[],
   browser: Awaited<ReturnType<typeof chromium.launch>>,
 ): Promise<void> {
   const tag = `[worker ${workerId}]`;
@@ -508,7 +508,7 @@ async function runWorker(
   const page = await context.newPage();
 
   try {
-    for (const country of countries) {
+    for (const country of marketingCountries) {
       console.log(`${tag} starting ${country.name}`);
       await generateAssetsForCountry(page, context, country);
       console.log(`${tag} finished ${country.name}`);
@@ -533,10 +533,10 @@ async function main(): Promise<void> {
   const freeRamMb = os.freemem() / 1024 / 1024;
   const byRam = Math.max(1, Math.floor(freeRamMb / 300));
   const byCpu = os.cpus().length;
-  const defaultWorkers = Math.min(byRam, byCpu, COUNTRIES.length);
+  const defaultWorkers = Math.min(byRam, byCpu, MARKETING_COUNTRIES.length);
   const CONCURRENCY = Math.min(
     Math.max(1, Number(process.env.PLAYWRIGHT_WORKERS ?? defaultWorkers)),
-    COUNTRIES.length,
+    MARKETING_COUNTRIES.length,
   );
   console.log(`By RAM: ${byRam}`);
   console.log(`By CPU: ${byCpu}`);
@@ -573,11 +573,13 @@ async function main(): Promise<void> {
   }
 
   // Phase 2: distribute countries across workers, all sharing the saved auth state
-  console.log(`\n⚡ Running ${CONCURRENCY} parallel worker(s) for ${COUNTRIES.length} countries\n`);
+  console.log(
+    `\n⚡ Running ${CONCURRENCY} parallel worker(s) for ${MARKETING_COUNTRIES.length} countries\n`,
+  );
 
   // Round-robin distribution: worker 0 gets indices 0, N, 2N… worker 1 gets 1, N+1…
-  const slices: Country[][] = Array.from({ length: CONCURRENCY }, () => []);
-  COUNTRIES.forEach((c, i) => slices[i % CONCURRENCY].push(c));
+  const slices: MarketingCountry[][] = Array.from({ length: CONCURRENCY }, () => []);
+  MARKETING_COUNTRIES.forEach((c, i) => slices[i % CONCURRENCY].push(c));
 
   try {
     await Promise.all(slices.map((slice, id) => runWorker(id, slice, browser)));
@@ -590,4 +592,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch(() => process.exit(1));
+main().catch((error: unknown) => {
+  console.error('\n✗  Unhandled script error:', error);
+  process.exit(1);
+});
