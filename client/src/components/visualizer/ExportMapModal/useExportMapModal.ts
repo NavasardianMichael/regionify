@@ -2,6 +2,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { BADGE_DETAILS, BADGES, EXPORT_TYPES, type ExportType } from '@regionify/shared';
 import type { RadioChangeEvent } from 'antd';
 import { useShallow } from 'zustand/react/shallow';
+import {
+  selectSecondsPerPeriod,
+  selectSetSecondsPerPeriod,
+  selectSetTransitionType,
+  selectTransitionType,
+} from '@/store/animation/selectors';
+import { useAnimationStore } from '@/store/animation/store';
 import { selectItemsList } from '@/store/legendData/selectors';
 import { useLegendDataStore } from '@/store/legendData/store';
 import {
@@ -95,6 +102,10 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const hasTimelineData = useVisualizerStore(selectHasTimelineData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
   const timelineData = useVisualizerStore(selectTimelineData);
+  const previewSecondsPerPeriod = useAnimationStore(selectSecondsPerPeriod);
+  const setPreviewSecondsPerPeriod = useAnimationStore(selectSetSecondsPerPeriod);
+  const previewTransitionType = useAnimationStore(selectTransitionType);
+  const setPreviewTransitionType = useAnimationStore(selectSetTransitionType);
 
   const user = useProfileStore(selectUser);
   const badge = user?.badge ?? BADGES.observer;
@@ -143,10 +154,8 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
   const [exportType, setExportType] = useState<ExportType>(defaultExportType);
   /** `null` while the user clears the field to type a new value; export uses `resolvedQuality`. */
   const [quality, setQuality] = useState<number | null>(initialQuality);
-  const [secondsPerPeriod, setSecondsPerPeriod] = useState<number | null>(
-    DEFAULT_SECONDS_PER_PERIOD,
-  );
-  const [smoothTransitions, setSmoothTransitions] = useState(true);
+  const [secondsPerPeriod, setSecondsPerPeriod] = useState<number | null>(previewSecondsPerPeriod);
+  const [smoothTransitions, setSmoothTransitions] = useState(previewTransitionType === 'smooth');
   const [pdfPageFormat, setPdfPageFormat] = useState<PdfPageFormat>('a4');
   const [pdfOrientation, setPdfOrientation] = useState<PdfOrientation>('portrait');
   const [isExporting, setIsExporting] = useState(false);
@@ -175,13 +184,28 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       if (visible) {
         setExportType(defaultExportType);
         setQuality(defaultQualityForBadge(maxQuality, limits.pictureQualityLimit));
-        setSecondsPerPeriod(DEFAULT_SECONDS_PER_PERIOD);
+        setSecondsPerPeriod(previewSecondsPerPeriod);
+        setSmoothTransitions(previewTransitionType === 'smooth');
         setPdfPageFormat('a4');
         setPdfOrientation('portrait');
         setStep(1);
       }
     },
-    [defaultExportType, maxQuality, limits.pictureQualityLimit],
+    [
+      defaultExportType,
+      maxQuality,
+      limits.pictureQualityLimit,
+      previewSecondsPerPeriod,
+      previewTransitionType,
+    ],
+  );
+
+  const handleSmoothTransitionsChange = useCallback(
+    (checked: boolean) => {
+      setSmoothTransitions(checked);
+      setPreviewTransitionType(checked ? 'smooth' : 'instant');
+    },
+    [setPreviewTransitionType],
   );
 
   const handleExportTypeChange = useCallback((value: ExportType) => {
@@ -216,16 +240,23 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     });
   }, [maxQuality, limits.pictureQualityLimit]);
 
-  const handleSecondsInputChange = useCallback((value: number | null) => {
-    setSecondsPerPeriod(value);
-  }, []);
+  const handleSecondsInputChange = useCallback(
+    (value: number | null) => {
+      setSecondsPerPeriod(value);
+      if (value !== null) {
+        setPreviewSecondsPerPeriod(Math.max(0.5, Math.min(value, 10)));
+      }
+    },
+    [setPreviewSecondsPerPeriod],
+  );
 
   const handleSecondsBlur = useCallback(() => {
     setSecondsPerPeriod((s) => {
-      if (s === null) return DEFAULT_SECONDS_PER_PERIOD;
-      return Math.max(0.5, Math.min(s, 10));
+      const next = s === null ? previewSecondsPerPeriod : Math.max(0.5, Math.min(s, 10));
+      setPreviewSecondsPerPeriod(next);
+      return next;
     });
-  }, []);
+  }, [previewSecondsPerPeriod, setPreviewSecondsPerPeriod]);
 
   const watermarkActive = badge === BADGES.observer || picture.showWatermark;
 
@@ -508,8 +539,9 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       getAnimationTotalFrames(timePeriods.length, {
         secondsPerPeriod: resolvedSecondsPerPeriod,
         fps: EXPORT_FPS,
+        smooth: smoothTransitions,
       }),
-    [timePeriods.length, resolvedSecondsPerPeriod],
+    [timePeriods.length, resolvedSecondsPerPeriod, smoothTransitions],
   );
 
   return {
@@ -523,7 +555,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     secondsPerPeriod,
     resolvedSecondsPerPeriod,
     smoothTransitions,
-    setSmoothTransitions,
+    setSmoothTransitions: handleSmoothTransitionsChange,
     pdfPageFormat,
     pdfOrientation,
     pdfPageFormatOptions: PDF_PAGE_FORMAT_OPTIONS,

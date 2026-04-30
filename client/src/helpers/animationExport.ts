@@ -74,12 +74,14 @@ export const getAnimationTotalFrames = (
   options: {
     secondsPerPeriod?: number;
     fps?: number;
+    smooth?: boolean;
   } = {},
 ): number => {
+  if (timePeriodCount <= 0) return 0;
+  if (options.smooth === false) return timePeriodCount;
   const fps = options.fps ?? PREVIEW_FPS;
   const secondsPerPeriod = options.secondsPerPeriod ?? DEFAULT_SECONDS_PER_PERIOD;
   const holdFrames = Math.max(1, Math.round(secondsPerPeriod * fps));
-  if (timePeriodCount <= 0) return 0;
   return timePeriodCount * holdFrames;
 };
 
@@ -105,10 +107,14 @@ const buildFrameList = (
     secondsPerPeriod: number;
     fps: number;
     smooth: boolean;
+    loopBackToStart?: boolean;
   },
 ): FrameSpec[] => {
   const list: FrameSpec[] = [];
   if (timePeriods.length === 0) return list;
+  if (!opts.smooth) {
+    return timePeriods.map((label, periodIndex) => ({ type: 'hold', periodIndex, label }));
+  }
 
   const n = timePeriods.length;
   const baseHoldFrames = Math.max(1, Math.round(opts.secondsPerPeriod * opts.fps));
@@ -121,7 +127,8 @@ const buildFrameList = (
     return list;
   }
 
-  const numGaps = opts.smooth ? n : n - 1;
+  const loopBackToStart = opts.loopBackToStart ?? true;
+  const numGaps = opts.smooth ? (loopBackToStart ? n : n - 1) : n - 1;
   let transitionFrames = 0;
   if (opts.smooth) {
     const maxTransitionByBudget = Math.floor((targetTotalFrames - n) / numGaps);
@@ -140,6 +147,9 @@ const buildFrameList = (
     // `transitionFrames` is only non-zero when `opts.smooth`; then blend after every period,
     // including last → first, so looping exports stay continuous.
     if (transitionFrames > 0) {
+      if (!loopBackToStart && i === n - 1) {
+        continue;
+      }
       const toIndex = (i + 1) % n;
       const steps = Math.max(2, transitionFrames);
       for (let k = 0; k < steps; k++) {
@@ -679,6 +689,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     secondsPerPeriod,
     fps,
     smooth,
+    loopBackToStart: true,
   });
   const totalFrames = frameList.length;
 
@@ -688,17 +699,24 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
     (a, i, arr) => arr.indexOf(a) === i,
   );
 
+  const holdFrameCache = new Map<string, HTMLCanvasElement>();
+  const renderFinalizedFrame = async (index: number): Promise<HTMLCanvasElement> => {
+    const spec = frameList[index];
+    const cacheKey = spec.type === 'hold' ? `hold:${spec.periodIndex}` : null;
+    if (cacheKey && holdFrameCache.has(cacheKey)) {
+      return holdFrameCache.get(cacheKey)!;
+    }
+    const raw = await renderFrameForSpec(rawSvg, timelineData, timePeriods, spec, scale, options);
+    const finalized = await finalizeAnimationFrame(raw, cropRect, watermark);
+    if (cacheKey) {
+      holdFrameCache.set(cacheKey, finalized);
+    }
+    return finalized;
+  };
+
   const sampleCanvases: HTMLCanvasElement[] = [];
   for (let i = 0; i < sampleIndices.length; i++) {
-    const raw = await renderFrameForSpec(
-      rawSvg,
-      timelineData,
-      timePeriods,
-      frameList[sampleIndices[i]],
-      scale,
-      options,
-    );
-    sampleCanvases.push(await finalizeAnimationFrame(raw, cropRect, watermark));
+    sampleCanvases.push(await renderFinalizedFrame(sampleIndices[i]));
   }
   const { width, height } = sampleCanvases[0];
 
@@ -722,11 +740,7 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
   for (let i = 0; i < totalFrames; i++) {
     const rawCanvas = sampleIndexSet.has(i)
       ? sampleCanvases[sampleIndices.indexOf(i)]
-      : await finalizeAnimationFrame(
-          await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
-          cropRect,
-          watermark,
-        );
+      : await renderFinalizedFrame(i);
     const ctx = rawCanvas.getContext('2d');
     if (!ctx) throw new Error('Failed to get canvas context');
     const imageData = ctx.getImageData(0, 0, width, height);
@@ -778,7 +792,7 @@ const encodeMp4WithMediabunny = async (
   frames: HTMLCanvasElement[],
   width: number,
   height: number,
-  fps: number,
+  frameDurationsSec: number[],
   needsOpaqueBackground: boolean,
 ): Promise<Blob> => {
   const target = new BufferTarget();
@@ -800,14 +814,17 @@ const encodeMp4WithMediabunny = async (
     hardwareAcceleration: 'no-preference',
   });
   output.addVideoTrack(videoSource, {
-    frameRate: fps,
-    maximumPacketCount: frames.length + fps,
+    maximumPacketCount: frames.length + 60,
   });
 
   await output.start();
+  let timestampSec = 0;
   for (let i = 0; i < frames.length; i++) {
     paintFrame(frameCtx, frames[i], width, height, needsOpaqueBackground);
-    await videoSource.add(i / fps, 1 / fps, { keyFrame: i % fps === 0 });
+    const durationSec =
+      frameDurationsSec[i] ?? frameDurationsSec[frameDurationsSec.length - 1] ?? 1;
+    await videoSource.add(timestampSec, durationSec, { keyFrame: i % 30 === 0 });
+    timestampSec += durationSec;
   }
   videoSource.close();
   await output.finalize();
@@ -837,28 +854,38 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
     secondsPerPeriod,
     fps,
     smooth,
+    loopBackToStart: false,
   });
   const totalFrames = frameList.length;
   const frameDurationMs = 1000 / fps;
+  const perFrameDurationMs = smooth ? frameDurationMs : secondsPerPeriod * 1000;
+  const frameDurationsSec = frameList.map(() => (smooth ? 1 / fps : secondsPerPeriod));
 
   if (totalFrames === 0) return;
 
-  const firstCanvas = await finalizeAnimationFrame(
-    await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[0], scale, options),
-    cropRect,
-    watermark,
-  );
+  const holdFrameCache = new Map<string, HTMLCanvasElement>();
+  const renderFinalizedFrame = async (index: number): Promise<HTMLCanvasElement> => {
+    const spec = frameList[index];
+    const cacheKey = spec.type === 'hold' ? `hold:${spec.periodIndex}` : null;
+    if (cacheKey && holdFrameCache.has(cacheKey)) {
+      return holdFrameCache.get(cacheKey)!;
+    }
+    const raw = await renderFrameForSpec(rawSvg, timelineData, timePeriods, spec, scale, options);
+    const finalized = await finalizeAnimationFrame(raw, cropRect, watermark);
+    if (cacheKey) {
+      holdFrameCache.set(cacheKey, finalized);
+    }
+    return finalized;
+  };
+
+  const firstCanvas = await renderFinalizedFrame(0);
   const { width, height } = firstCanvas;
 
   // Pre-render frames first to keep runtime export deterministic.
   const renderedFrames: HTMLCanvasElement[] = [firstCanvas];
   onProgress?.(1 / totalFrames);
   for (let i = 1; i < totalFrames; i++) {
-    const canvas = await finalizeAnimationFrame(
-      await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
-      cropRect,
-      watermark,
-    );
+    const canvas = await renderFinalizedFrame(i);
     renderedFrames.push(canvas);
     onProgress?.((i + 1) / totalFrames);
   }
@@ -868,7 +895,7 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
       renderedFrames,
       width,
       height,
-      fps,
+      frameDurationsSec,
       isTransparent,
     );
     triggerDownload(mp4Blob, 'regionify-animation.mp4');
@@ -915,7 +942,7 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
         if (videoTrack && 'requestFrame' in videoTrack) {
           (videoTrack as unknown as { requestFrame: () => void }).requestFrame();
         }
-        const targetElapsed = (i + 1) * frameDurationMs;
+        const targetElapsed = (i + 1) * perFrameDurationMs;
         const actualElapsed = performance.now() - recordingStart;
         const remainingMs = targetElapsed - actualElapsed;
         if (remainingMs > 0) await sleep(remainingMs);

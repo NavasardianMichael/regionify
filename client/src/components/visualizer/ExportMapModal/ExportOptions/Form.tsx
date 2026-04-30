@@ -173,7 +173,7 @@ export const Form: FC<FormProps> = (props) => {
       )}
 
       {showQualityControl && (
-        <Flex vertical gap="small" className="min-w-0">
+        <Flex vertical className="min-w-0 gap-0!">
           <Flex align="center" justify="space-between" gap="small" className="min-w-0">
             <Flex align="center" gap="small" className="min-w-0 flex-1">
               <Typography.Text
@@ -212,7 +212,7 @@ export const Form: FC<FormProps> = (props) => {
             />
           </Flex>
           {/* Inset so slider handles at 1 / max do not extend past the modal content (Ant Design handle overhang). */}
-          <div className="min-w-0 px-2.5">
+          <div className="min-w-0 pr-2.5">
             <Slider
               min={1}
               max={maxQuality}
@@ -229,7 +229,7 @@ export const Form: FC<FormProps> = (props) => {
       )}
 
       {isAnimationFormat && hasTimelineData && (
-        <Flex vertical gap="small">
+        <>
           <Flex align="center" justify="space-between">
             <Typography.Text
               className="text-sm text-gray-600"
@@ -271,16 +271,12 @@ export const Form: FC<FormProps> = (props) => {
               frames: getAnimationTotalFrames(timePeriods.length, {
                 secondsPerPeriod: resolvedSecondsPerPeriod,
                 fps: EXPORT_FPS,
+                smooth: smoothTransitions,
               }),
-              seconds: (
-                getAnimationTotalFrames(timePeriods.length, {
-                  secondsPerPeriod: resolvedSecondsPerPeriod,
-                  fps: EXPORT_FPS,
-                }) / EXPORT_FPS
-              ).toFixed(1),
+              seconds: (timePeriods.length * resolvedSecondsPerPeriod).toFixed(1),
             })}
           </Typography.Text>
-        </Flex>
+        </>
       )}
 
       {isExporting && isAnimationFormat && (

@@ -29,6 +29,7 @@ const SECONDS_PER_PERIOD_OPTIONS = [
   { value: 2, label: '2s' },
   { value: 3, label: '3s' },
   { value: 5, label: '5s' },
+  { value: 10, label: '10s' },
 ];
 
 const AnimationControls: FC = () => {

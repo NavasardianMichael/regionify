@@ -109,15 +109,9 @@ export const Form: FC<FormProps> = ({
         {getAnimationTotalFrames(timePeriodsCount, {
           secondsPerPeriod,
           fps: EXPORT_FPS,
+          smooth: smoothTransitions,
         })}{' '}
-        frames · ~
-        {(
-          getAnimationTotalFrames(timePeriodsCount, {
-            secondsPerPeriod,
-            fps: EXPORT_FPS,
-          }) / EXPORT_FPS
-        ).toFixed(1)}
-        s duration
+        frames · ~{(timePeriodsCount * secondsPerPeriod).toFixed(1)}s duration
       </Typography.Text>
     </Flex>
 
