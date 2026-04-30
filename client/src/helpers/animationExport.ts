@@ -1,4 +1,5 @@
 import { applyPalette, GIFEncoder, quantize } from 'gifenc';
+import { BufferTarget, CanvasSource, Mp4OutputFormat, Output } from 'mediabunny';
 import type { LegendItem } from '@/store/legendData/types';
 import type { DataSet } from '@/store/mapData/types';
 import type {
@@ -28,6 +29,7 @@ import { renderStyledSvg } from './svgRenderer';
 const PREVIEW_FPS = 30;
 const DEFAULT_SECONDS_PER_PERIOD = 1;
 const TRANSITION_FRAMES_WHEN_SMOOTH = 30;
+const VIDEO_EXPORT_BITRATE = 12_000_000;
 
 export type LegendPositionExport = 'bottom' | 'floating';
 
@@ -752,6 +754,68 @@ export const exportAnimationAsGif = async (options: AnimationExportOptions): Pro
   triggerDownload(blob, 'regionify-animation.gif');
 };
 
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+const paintFrame = (
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  width: number,
+  height: number,
+  needsOpaqueBackground: boolean,
+): void => {
+  ctx.clearRect(0, 0, width, height);
+  if (needsOpaqueBackground) {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, width, height);
+  }
+  ctx.drawImage(canvas, 0, 0);
+};
+
+const encodeMp4WithMediabunny = async (
+  frames: HTMLCanvasElement[],
+  width: number,
+  height: number,
+  fps: number,
+  needsOpaqueBackground: boolean,
+): Promise<Blob> => {
+  const target = new BufferTarget();
+  const output = new Output({
+    format: new Mp4OutputFormat({ fastStart: 'in-memory' }),
+    target,
+  });
+
+  const frameCanvas = document.createElement('canvas');
+  frameCanvas.width = width;
+  frameCanvas.height = height;
+  const frameCtx = frameCanvas.getContext('2d');
+  if (!frameCtx) throw new Error('Failed to get MP4 frame canvas context');
+
+  const videoSource = new CanvasSource(frameCanvas, {
+    codec: 'avc',
+    bitrate: VIDEO_EXPORT_BITRATE,
+    keyFrameInterval: 1,
+    hardwareAcceleration: 'no-preference',
+  });
+  output.addVideoTrack(videoSource, {
+    frameRate: fps,
+    maximumPacketCount: frames.length + fps,
+  });
+
+  await output.start();
+  for (let i = 0; i < frames.length; i++) {
+    paintFrame(frameCtx, frames[i], width, height, needsOpaqueBackground);
+    await videoSource.add(i / fps, 1 / fps, { keyFrame: i % fps === 0 });
+  }
+  videoSource.close();
+  await output.finalize();
+
+  if (!target.buffer) throw new Error('Failed to finalize MP4 buffer');
+  return new Blob([target.buffer], { type: 'video/mp4' });
+};
+
 /** Export animation as MP4 video from canvas with smooth color transitions (falls back to WebM on unsupported browsers). */
 export const exportAnimationAsVideo = async (options: AnimationExportOptions): Promise<void> => {
   const {
@@ -786,29 +850,53 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
   );
   const { width, height } = firstCanvas;
 
-  const recordCanvas = document.createElement('canvas');
-  recordCanvas.width = width;
-  recordCanvas.height = height;
-  const recordCtx = recordCanvas.getContext('2d');
-  if (!recordCtx) throw new Error('Failed to get recording canvas context');
+  // Pre-render frames first to keep runtime export deterministic.
+  const renderedFrames: HTMLCanvasElement[] = [firstCanvas];
+  onProgress?.(1 / totalFrames);
+  for (let i = 1; i < totalFrames; i++) {
+    const canvas = await finalizeAnimationFrame(
+      await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
+      cropRect,
+      watermark,
+    );
+    renderedFrames.push(canvas);
+    onProgress?.((i + 1) / totalFrames);
+  }
+
+  try {
+    const mp4Blob = await encodeMp4WithMediabunny(
+      renderedFrames,
+      width,
+      height,
+      fps,
+      isTransparent,
+    );
+    triggerDownload(mp4Blob, 'regionify-animation.mp4');
+    return;
+  } catch (error) {
+    console.warn('Mediabunny MP4 export failed, falling back to MediaRecorder export.', error);
+  }
 
   const mimeType = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1')
     ? 'video/mp4;codecs=avc1'
     : MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
       ? 'video/webm;codecs=vp9'
       : 'video/webm';
-
-  const isMP4 = mimeType.startsWith('video/mp4');
-  const extension = isMP4 ? 'mp4' : 'webm';
+  const extension = mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
   const baseMime = mimeType.split(';')[0];
+
+  const recordCanvas = document.createElement('canvas');
+  recordCanvas.width = width;
+  recordCanvas.height = height;
+  const recordCtx = recordCanvas.getContext('2d');
+  if (!recordCtx) throw new Error('Failed to get recording canvas context');
 
   const stream = recordCanvas.captureStream(fps);
   const recorder = new MediaRecorder(stream, {
     mimeType,
-    videoBitsPerSecond: 12_000_000,
+    videoBitsPerSecond: VIDEO_EXPORT_BITRATE,
   });
   const chunks: Blob[] = [];
-
   recorder.ondataavailable = (e: BlobEvent) => {
     if (e.data.size > 0) chunks.push(e.data);
   };
@@ -817,52 +905,26 @@ export const exportAnimationAsVideo = async (options: AnimationExportOptions): P
     recorder.onerror = () => reject(new Error('Recording failed'));
     recorder.onstop = () => resolve(new Blob(chunks, { type: baseMime }));
 
-    recorder.start();
-
-    const drawAndCapture = (canvas: HTMLCanvasElement): Promise<void> => {
-      recordCtx.clearRect(0, 0, width, height);
-      if (isTransparent) {
-        recordCtx.fillStyle = '#FFFFFF';
-        recordCtx.fillRect(0, 0, width, height);
-      }
-      recordCtx.drawImage(canvas, 0, 0);
-
+    const recordFrames = async (): Promise<void> => {
       const videoTrack = stream.getVideoTracks()[0];
-      if (videoTrack && 'requestFrame' in videoTrack) {
-        (videoTrack as unknown as { requestFrame: () => void }).requestFrame();
-      }
+      recorder.start();
+      const recordingStart = performance.now();
 
-      return new Promise<void>((r) => setTimeout(r, frameDurationMs));
-    };
-
-    const renderFrames = async (): Promise<void> => {
-      recordCtx.clearRect(0, 0, width, height);
-      if (isTransparent) {
-        recordCtx.fillStyle = '#FFFFFF';
-        recordCtx.fillRect(0, 0, width, height);
-      }
-      recordCtx.drawImage(firstCanvas, 0, 0);
-      const videoTrack = stream.getVideoTracks()[0];
-      if (videoTrack && 'requestFrame' in videoTrack) {
-        (videoTrack as unknown as { requestFrame: () => void }).requestFrame();
-      }
-      await new Promise<void>((r) => setTimeout(r, frameDurationMs));
-      onProgress?.(1 / totalFrames);
-
-      for (let i = 1; i < totalFrames; i++) {
-        const canvas = await finalizeAnimationFrame(
-          await renderFrameForSpec(rawSvg, timelineData, timePeriods, frameList[i], scale, options),
-          cropRect,
-          watermark,
-        );
-        await drawAndCapture(canvas);
-        onProgress?.((i + 1) / totalFrames);
+      for (let i = 0; i < renderedFrames.length; i++) {
+        paintFrame(recordCtx, renderedFrames[i], width, height, isTransparent);
+        if (videoTrack && 'requestFrame' in videoTrack) {
+          (videoTrack as unknown as { requestFrame: () => void }).requestFrame();
+        }
+        const targetElapsed = (i + 1) * frameDurationMs;
+        const actualElapsed = performance.now() - recordingStart;
+        const remainingMs = targetElapsed - actualElapsed;
+        if (remainingMs > 0) await sleep(remainingMs);
       }
 
       recorder.stop();
     };
 
-    renderFrames().catch(reject);
+    recordFrames().catch(reject);
   });
 
   triggerDownload(videoBlob, `regionify-animation.${extension}`);

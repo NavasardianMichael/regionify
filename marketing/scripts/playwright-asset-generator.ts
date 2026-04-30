@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 loadEnv({ path: join(__dirname, '..', '.env') });
 
-const BASE_URL = (process.env.CLIENT_URL ?? 'https://regionify.pro').replace(/\/$/, '');
+const BASE_URL = (process.env.CLIENT_URL ?? '').replace(/\/$/, '');
 const EMAIL = process.env.REGIONIFY_EMAIL ?? '';
 const PASSWORD = process.env.REGIONIFY_PASSWORD ?? '';
 const ASSETS_ROOT = join(__dirname, '..', 'assets');
@@ -30,10 +30,10 @@ function recordShowcaseEmbedUrl(slug: string, url: string): void {
 
 // Add or remove countries here. All other code stays the same.
 const COUNTRIES: Country[] = [
-  { slug: 'armenia', name: 'Armenia' },
-  { slug: 'russia', name: 'Russian Federation' },
-  { slug: 'germany', name: 'Germany' },
-  { slug: 'brazil', name: 'Brazil' },
+  // { slug: 'armenia', name: 'Armenia' },
+  // { slug: 'russia', name: 'Russian Federation' },
+  // { slug: 'germany', name: 'Germany' },
+  // { slug: 'brazil', name: 'Brazil' },
   { slug: 'india', name: 'India' },
 ];
 
@@ -193,10 +193,11 @@ async function exportAnimated(
   format: 'GIF' | 'MP4',
 ): Promise<void> {
   // Option labels as rendered in the export type dropdown
-  const optionLabel = format === 'GIF' ? 'GIF (Animation)' : 'Video (MP4)';
-  const fileName = format === 'GIF' ? `${slug}-animation.gif` : `${slug}-video.mp4`;
+  const isGif = format === 'GIF';
+  const optionLabel = isGif ? 'GIF (Animation)' : 'Video (MP4)';
+  const fileName = isGif ? `${slug}-animation.gif` : `${slug}-video.mp4`;
   // Download button label: "Download GIF" for GIF, "Download Video" for MP4
-  const downloadLabel = format === 'GIF' ? 'Download GIF' : 'Download Video';
+  const downloadLabel = isGif ? 'Download GIF' : 'Download Video';
 
   await page.getByRole('button', { name: 'Export' }).click();
   await page
@@ -212,11 +213,13 @@ async function exportAnimated(
   await setInputNumberByLabel(page, 'visualizer.exportModal.qualityLabel', ANIMATED_EXPORT_QUALITY);
 
   // GIF/MP4 require a crop step before the actual download
-  await page.getByRole('button', { name: 'Next: Crop & Download' }).click();
-  await page
-    .locator('.ant-modal')
-    .filter({ hasText: 'Crop & Download' })
-    .waitFor({ timeout: 15_000 });
+  if (isGif) {
+    await page.getByRole('button', { name: 'Next: Crop & Download' }).click();
+    await page
+      .locator('.ant-modal')
+      .filter({ hasText: 'Crop & Download' })
+      .waitFor({ timeout: 15_000 });
+  }
 
   const downloadBtn = page.getByRole('button', { name: downloadLabel });
   await downloadBtn.waitFor({ timeout: 30_000 });
@@ -535,6 +538,11 @@ async function main(): Promise<void> {
     Math.max(1, Number(process.env.PLAYWRIGHT_WORKERS ?? defaultWorkers)),
     COUNTRIES.length,
   );
+  console.log(`By RAM: ${byRam}`);
+  console.log(`By CPU: ${byCpu}`);
+  console.log(`Free RAM: ${freeRamMb} MB`);
+  console.log(`Default workers: ${defaultWorkers}`);
+  console.log(`Concurrency: ${CONCURRENCY}`);
 
   const browser = await chromium.launch({ headless: false, slowMo: 80 });
 

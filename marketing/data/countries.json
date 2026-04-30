@@ -90,13 +90,6 @@
     "division_type": "States",
     "division_count": 9
   },
-  "azerbaijan": {
-    "name_en": "Azerbaijan",
-    "name_local": "Azərbaycan",
-    "capital": "Baku",
-    "division_type": "Districts",
-    "division_count": 77
-  },
   "bahamas": {
     "name_en": "Bahamas",
     "name_local": "Bahamas",
@@ -1517,13 +1510,6 @@
     "capital": "Tunis",
     "division_type": "Governorates",
     "division_count": 24
-  },
-  "turkey": {
-    "name_en": "Turkey",
-    "name_local": "Türkiye",
-    "capital": "Ankara",
-    "division_type": "Provinces",
-    "division_count": 81
   },
   "turkmenistan": {
     "name_en": "Turkmenistan",
