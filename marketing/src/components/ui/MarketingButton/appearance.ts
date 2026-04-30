@@ -4,7 +4,7 @@ export type MarketingButtonType = 'primary' | 'secondary' | 'dashed' | 'default'
 const focusOutline =
   'transition-opacity focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary';
 
-const buttonBase = `inline-flex items-center gap-1 rounded-sm hover:transition-all ${focusOutline}`;
+const buttonBase = `inline-flex items-center gap-1 rounded-sm hover:transition-all no-underline ${focusOutline}`;
 
 /** Single marketing control size (compact / sm). */
 const buttonSizeDefault = 'px-4 py-1.5 text-sm justify-center';
@@ -18,12 +18,12 @@ const focusRing =
 
 function linkTypeClasses(colorScheme: 'light' | 'dark', muted: boolean): string {
   if (colorScheme === 'dark') {
-    return `inline text-sm font-medium text-white underline-offset-4 hover:underline ${focusRing}`;
+    return ` inline text-sm font-medium text-white underline-offset-4 hover:underline ${focusRing}`;
   }
   if (muted) {
-    return `inline text-sm text-gray-500 underline-offset-4 transition-colors hover:text-primary hover:underline ${focusRing}`;
+    return ` inline text-sm text-gray-500 underline-offset-4 transition-colors hover:text-primary hover:underline ${focusRing}`;
   }
-  return `inline text-sm font-medium text-primary underline-offset-4 hover:underline ${focusRing}`;
+  return ` inline text-sm font-medium text-primary underline-offset-4 hover:underline ${focusRing}`;
 }
 
 export function buttonTypeClasses(

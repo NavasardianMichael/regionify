@@ -9,13 +9,14 @@ const CLIENT_URL = import.meta.env.CLIENT_URL;
   <div
     class="flex items-center justify-between gap-2 px-3 py-3 md:px-6"
   >
-    <a
+    <MarketingButton
       href={CLIENT_URL}
-      class="flex shrink-0 items-center outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_img]:max-h-10 [&_img]:w-auto [&_img]:max-w-[min(160px,42vw)] [&_img]:object-contain [&_img]:object-left md:[&_img]:max-h-11"
+      target='_blank'
+      className="flex shrink-0 items-center outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_img]:max-h-10 [&_img]:w-auto [&_img]:max-w-[min(160px,42vw)] [&_img]:object-contain [&_img]:object-left md:[&_img]:max-h-11"
     >
       <img src={`${BASE}/logo.png`} alt="Regionify" loading="eager" fetchpriority="high" />
-    </a>
-    <MarketingButton type="primary" href={`${CLIENT_URL}/projects/new`}>
+    </MarketingButton>
+    <MarketingButton type="primary" href={`${CLIENT_URL}/projects/new`} target='_blank'>
       Generate your map
     </MarketingButton>
   </div>

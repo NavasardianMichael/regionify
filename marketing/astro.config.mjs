@@ -20,5 +20,8 @@ export default defineConfig({
     envPrefix: ['PUBLIC_', 'CLIENT_'],
     plugins: [tailwindcss()],
   },
+  server: {
+    open: true,
+  },
   outDir: './dist',
 });
