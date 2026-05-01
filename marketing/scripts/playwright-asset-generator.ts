@@ -1,5 +1,5 @@
 import os from 'node:os';
-import { chromium, type BrowserContext, type Page } from 'playwright';
+import { chromium, type BrowserContext, type Locator, type Page } from 'playwright';
 import { config as loadEnv } from 'dotenv';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
@@ -31,6 +31,14 @@ function recordShowcaseEmbedUrl(slug: string, url: string): void {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function logForCountry(countryName: string, message: string): void {
+  console.log(`[${countryName}]: ${message}`);
+}
+
+function warnForCountry(countryName: string, message: string): void {
+  console.warn(`[${countryName}]: ${message}`);
+}
 
 /** Click an Ant Design Select whose label carries a data-i18n-key, then pick option. */
 async function selectAntOption(page: Page, i18nKey: string, optionLabel: string): Promise<void> {
@@ -69,6 +77,28 @@ async function closeModal(page: Page): Promise<void> {
     .locator('.ant-modal:visible')
     .waitFor({ state: 'hidden', timeout: 8_000 })
     .catch(() => {});
+}
+
+/** Export modal step 1 — title uses stable `data-i18n-key` (works in any UI locale). */
+function exportConfigureModal(page: Page): Locator {
+  return page
+    .locator('.ant-modal:visible')
+    .filter({ has: page.locator('[data-i18n-key="visualizer.exportModal.title"]') });
+}
+
+/** Export modal crop step — distinct title key from configure step. */
+function exportCropModal(page: Page): Locator {
+  return page
+    .locator('.ant-modal:visible')
+    .filter({ has: page.locator('[data-i18n-key="visualizer.exportModal.cropAndDownload"]') });
+}
+
+/** Primary download control (skips "Next" which uses a different icon). */
+function exportPrimaryDownloadButton(modal: Locator): Locator {
+  return modal
+    .locator('button.ant-btn-primary')
+    .filter({ has: modal.page().locator('.anticon-download') })
+    .first();
 }
 
 // ---------------------------------------------------------------------------
@@ -119,8 +149,17 @@ async function login(page: Page, context: BrowserContext): Promise<void> {
 // Create project
 // ---------------------------------------------------------------------------
 
+/** Session + profile must be ready or Save runs "Login to Save" and redirects to /login. */
+async function waitForVisualizerLoggedIn(page: Page, timeoutMs: number): Promise<void> {
+  // Embed button mounts only when `isLoggedIn` (see VisualizerPage); locale-independent key.
+  await page
+    .locator('[data-i18n-key="visualizer.embed.openButton"]')
+    .waitFor({ state: 'visible', timeout: timeoutMs });
+}
+
 async function createProject(page: Page, country: MarketingCountry): Promise<void> {
   await page.goto(`${BASE_URL}/projects/new`);
+  await waitForVisualizerLoggedIn(page, 30_000);
   // Wait for the region select to be available — reliable page-ready signal
   await page.locator('input[aria-label="Select a country"]').waitFor({ timeout: 15_000 });
 
@@ -143,7 +182,7 @@ async function createProject(page: Page, country: MarketingCountry): Promise<voi
   // "Switch to static data" appears once dynamic timeline data is ready (Chronographer tier).
   await page.waitForLoadState('networkidle', { timeout: 15_000 });
   await page.getByRole('button', { name: 'Switch to static data' }).waitFor({ timeout: 15_000 });
-  console.log(`  ✓ Country selected — sample data loaded`);
+  logForCountry(country.name, '✓ Country selected — sample data loaded');
 
   // Save project
   await page.getByRole('button', { name: 'Save' }).click();
@@ -151,7 +190,7 @@ async function createProject(page: Page, country: MarketingCountry): Promise<voi
   await page.locator('.ant-modal input[type="text"]').fill(`${country.name} Marketing`);
   await page.getByRole('button', { name: 'Create' }).click();
   await page.waitForURL(`${BASE_URL}/projects/**`, { timeout: 15_000 });
-  console.log(`  ✓ Project saved`);
+  logForCountry(country.name, '✓ Project saved');
 }
 
 // ---------------------------------------------------------------------------
@@ -182,19 +221,16 @@ async function exportAnimated(
   assetsDir: string,
   slug: string,
   format: 'GIF' | 'MP4',
+  countryName: string,
 ): Promise<void> {
   // Option labels as rendered in the export type dropdown
   const isGif = format === 'GIF';
   const optionLabel = isGif ? 'GIF (Animation)' : 'Video (MP4)';
   const fileName = isGif ? `${slug}-animation.gif` : `${slug}-video.mp4`;
-  // Download button label: "Download GIF" for GIF, "Download Video" for MP4
-  const downloadLabel = isGif ? 'Download GIF' : 'Download Video';
 
   await page.getByRole('button', { name: 'Export' }).click();
-  await page
-    .locator('.ant-modal')
-    .filter({ hasText: 'Configure Exporting Asset' })
-    .waitFor({ timeout: 10_000 });
+  const configureModal = exportConfigureModal(page);
+  await configureModal.waitFor({ timeout: 10_000 });
 
   await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', optionLabel);
 
@@ -203,16 +239,16 @@ async function exportAnimated(
   // within the download timeout without visible quality loss in marketing showcase assets.
   await setInputNumberByLabel(page, 'visualizer.exportModal.qualityLabel', ANIMATED_EXPORT_QUALITY);
 
-  // GIF/MP4 require a crop step before the actual download
+  // GIF: crop step then download. MP4: direct download on configure step (skip crop).
   if (isGif) {
-    await page.getByRole('button', { name: 'Next: Crop & Download' }).click();
-    await page
-      .locator('.ant-modal')
-      .filter({ hasText: 'Crop & Download' })
-      .waitFor({ timeout: 15_000 });
+    await configureModal
+      .locator('[data-i18n-key="visualizer.exportModal.nextCropAndDownload"]')
+      .click();
+    await exportCropModal(page).waitFor({ timeout: 15_000 });
   }
 
-  const downloadBtn = page.getByRole('button', { name: downloadLabel });
+  const downloadRoot = isGif ? exportCropModal(page) : configureModal;
+  const downloadBtn = exportPrimaryDownloadButton(downloadRoot);
   await downloadBtn.waitFor({ timeout: 30_000 });
 
   // Register download listener BEFORE clicking to avoid race condition.
@@ -221,7 +257,7 @@ async function exportAnimated(
   await downloadBtn.click();
   const download = await downloadPromise;
   await download.saveAs(join(assetsDir, fileName));
-  console.log(`  ✓ ${format} → ${fileName}`);
+  logForCountry(countryName, `✓ ${format} → ${fileName}`);
 
   await closeModal(page);
 }
@@ -230,7 +266,7 @@ async function exportAnimated(
 // Set map background to transparent (must be done before any export)
 // ---------------------------------------------------------------------------
 
-async function setTransparentBackground(page: Page): Promise<void> {
+async function setTransparentBackground(page: Page, countryName: string): Promise<void> {
   // The Transparent switch lives in the Background collapse of the right styles panel.
   const transparentSwitch = page.getByRole('switch', { name: 'Transparent' });
 
@@ -241,7 +277,7 @@ async function setTransparentBackground(page: Page): Promise<void> {
   }
 
   await switchOn(transparentSwitch);
-  console.log(`  ✓ Background set to transparent`);
+  logForCountry(countryName, '✓ Background set to transparent');
 }
 
 // ---------------------------------------------------------------------------
@@ -263,7 +299,7 @@ async function closeRightPanel(page: Page): Promise<void> {
 // Normalize legend ranges to fit current sample data
 // ---------------------------------------------------------------------------
 
-async function normalizeRanges(page: Page): Promise<void> {
+async function normalizeRanges(page: Page, countryName: string): Promise<void> {
   // The normalize button lives inside the "Ranges" collapse, which is closed by default.
   const btn = page.getByRole('button', {
     name: 'Distribute ranges evenly between current data min and max',
@@ -275,14 +311,14 @@ async function normalizeRanges(page: Page): Promise<void> {
   }
 
   await btn.click();
-  console.log(`  ✓ Legend ranges normalized`);
+  logForCountry(countryName, '✓ Legend ranges normalized');
 }
 
 // ---------------------------------------------------------------------------
 // Switch visualizer to static data mode
 // ---------------------------------------------------------------------------
 
-async function switchToStaticMode(page: Page): Promise<void> {
+async function switchToStaticMode(page: Page, countryName: string): Promise<void> {
   // The button aria-label is "Switch to static data" (visualizer.importData.switchAriaToStatic)
   const switchBtn = page.getByRole('button', { name: 'Switch to static data' });
   await switchBtn.waitFor({ timeout: 10_000 });
@@ -310,47 +346,49 @@ async function switchToStaticMode(page: Page): Promise<void> {
     .locator('.ant-slider')
     .waitFor({ state: 'hidden', timeout: 10_000 })
     .catch(() => {});
-  console.log(`  ✓ Switched to static mode`);
+  logForCountry(countryName, '✓ Switched to static mode');
 }
 
 // ---------------------------------------------------------------------------
 // Export SVG + PNG in one modal session (avoids React state reset on reopen)
 // ---------------------------------------------------------------------------
 
-async function exportStaticAssets(page: Page, assetsDir: string, slug: string): Promise<void> {
-  // PNG first — first modal open in static mode has no crop step; direct download button available
+async function exportStaticAssets(
+  page: Page,
+  assetsDir: string,
+  slug: string,
+  countryName: string,
+): Promise<void> {
+  // PNG first — configure step → Next → crop step → primary download (locale-independent locators).
   await page.getByRole('button', { name: 'Export' }).click();
-  let modal = page.locator('.ant-modal').filter({ hasText: 'Configure Exporting Asset' });
+  let modal = exportConfigureModal(page);
   await modal.waitFor({ timeout: 10_000 });
 
   await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', 'PNG');
-  // PNG goes through the same crop step as GIF/MP4: Next → Download PNG
-  // After clicking Next, the modal title changes so we scope the download btn to the whole page
-  await modal.getByRole('button', { name: 'Next: Crop & Download' }).click();
-  const pngBtn = page.getByRole('button', { name: 'Download PNG' });
+  await modal.locator('[data-i18n-key="visualizer.exportModal.nextCropAndDownload"]').click();
+  const cropModal = exportCropModal(page);
+  await cropModal.waitFor({ timeout: 30_000 });
+  const pngBtn = exportPrimaryDownloadButton(cropModal);
   await pngBtn.waitFor({ timeout: 30_000 });
   const pngDl = page.waitForEvent('download', { timeout: 60_000 });
   await pngBtn.click();
   await (await pngDl).saveAs(join(assetsDir, `${slug}-static.png`));
-  console.log(`  ✓ PNG → ${slug}-static.png`);
+  logForCountry(countryName, `✓ PNG → ${slug}-static.png`);
   // Modal auto-closes after download; close manually if it didn't
   await closeModal(page).catch(() => {});
 
-  // SVG: reopen export modal and select SVG
+  // SVG: reopen export modal and select SVG (skip crop — primary download on configure step)
   await page.getByRole('button', { name: 'Export' }).click();
-  modal = page.locator('.ant-modal').filter({ hasText: 'Configure Exporting Asset' });
+  modal = exportConfigureModal(page);
   await modal.waitFor({ timeout: 10_000 });
 
   await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', 'SVG');
-  const svgBtn = modal
-    .locator('button')
-    .filter({ hasText: /Download SVG/i })
-    .first();
+  const svgBtn = exportPrimaryDownloadButton(modal);
   await svgBtn.waitFor({ timeout: 30_000 });
   const svgDl = page.waitForEvent('download', { timeout: 60_000 });
   await svgBtn.click();
   await (await svgDl).saveAs(join(assetsDir, `${slug}.svg`));
-  console.log(`  ✓ SVG → ${slug}.svg`);
+  logForCountry(countryName, `✓ SVG → ${slug}.svg`);
 
   await closeModal(page);
 }
@@ -388,14 +426,14 @@ async function setupEmbed(page: Page, country: MarketingCountry): Promise<string
   await page
     .locator('.ant-message-notice', { hasText: 'Embed settings saved' })
     .waitFor({ timeout: 10_000 });
-  console.log(`  ✓ Embed saved`);
+  logForCountry(country.name, '✓ Embed saved');
 
   // After save the embed URL appears as an <a href="..."> (AppNavLink → React Router NavLink)
   const embedLink = modal.locator('a[href*="/embed/"]');
   await embedLink.waitFor({ timeout: 10_000 });
   const href = (await embedLink.getAttribute('href')) ?? '';
   const fullUrl = href.startsWith('http') ? href : `${BASE_URL}${href}`;
-  console.log(`  ✓ Embed URL: ${fullUrl}`);
+  logForCountry(country.name, `✓ Embed URL: ${fullUrl}`);
   return fullUrl;
 }
 
@@ -408,6 +446,7 @@ async function screenshotEmbedPage(
   embedUrl: string,
   assetsDir: string,
   slug: string,
+  countryName: string,
 ): Promise<void> {
   const embedPage = await context.newPage();
   await embedPage.goto(embedUrl, { waitUntil: 'networkidle', timeout: 30_000 });
@@ -415,7 +454,7 @@ async function screenshotEmbedPage(
   await embedPage.waitForTimeout(4_000);
   await embedPage.screenshot({ path: join(assetsDir, `${slug}-embed-page.png`), fullPage: true });
   await embedPage.close();
-  console.log(`  ✓ Embed page screenshot → ${slug}-embed-page.png`);
+  logForCountry(countryName, `✓ Embed page screenshot → ${slug}-embed-page.png`);
 }
 
 // ---------------------------------------------------------------------------
@@ -430,36 +469,37 @@ async function generateAssetsForCountry(
   const assetsDir = join(ASSETS_ROOT, country.slug);
   mkdirSync(assetsDir, { recursive: true });
 
-  console.log(`\n▶  ${country.name}`);
+  console.log('');
+  logForCountry(country.name, '▶ starting');
 
   await createProject(page, country);
 
   // Transparent background must be set while right panel is open (MapStylesPanel lives there)
-  await setTransparentBackground(page);
+  await setTransparentBackground(page, country.name);
 
   // Collapse right panel → wider map area → better aspect ratio for all exported assets
   await closeRightPanel(page);
 
   // Align legend ranges with the dynamic sample data before exporting
-  await normalizeRanges(page);
+  await normalizeRanges(page, country.name);
 
   // Dynamic mode (default after country select) → GIF and MP4
-  await exportAnimated(page, assetsDir, country.slug, 'GIF');
-  await exportAnimated(page, assetsDir, country.slug, 'MP4');
+  await exportAnimated(page, assetsDir, country.slug, 'GIF', country.name);
+  await exportAnimated(page, assetsDir, country.slug, 'MP4', country.name);
 
-  await switchToStaticMode(page);
+  await switchToStaticMode(page, country.name);
 
   // Align legend ranges with the static sample data before exporting
-  await normalizeRanges(page);
+  await normalizeRanges(page, country.name);
 
-  await exportStaticAssets(page, assetsDir, country.slug);
+  await exportStaticAssets(page, assetsDir, country.slug, country.name);
 
   // Embed: enable, configure, screenshot public page
   const embedUrl = await setupEmbed(page, country);
   // Save embed URL so the marketing site can render a live iframe (txt: local; json: tracked for builds)
   writeFileSync(join(assetsDir, `${country.slug}-embed-url.txt`), embedUrl);
   recordShowcaseEmbedUrl(country.slug, embedUrl);
-  await screenshotEmbedPage(context, embedUrl, assetsDir, country.slug);
+  await screenshotEmbedPage(context, embedUrl, assetsDir, country.slug, country.name);
 
   // Turn showHeader OFF after screenshotting the embed page (iframe embed shows clean map only)
   const embedModal = page.locator('.ant-modal:visible').filter({ hasText: 'Public map embed' });
@@ -477,13 +517,16 @@ async function generateAssetsForCountry(
       .then(() => true)
       .catch(() => false);
     if (!toastVisible) {
-      console.warn('  → Save toast not detected; continuing after short settle wait.');
+      warnForCountry(
+        country.name,
+        '→ Save toast not detected; continuing after short settle wait.',
+      );
       await page.waitForTimeout(1_000);
     }
   }
 
   await closeModal(page);
-  console.log(`✓  Done: ${country.name}`);
+  logForCountry(country.name, '✓ Done');
 }
 
 // ---------------------------------------------------------------------------
@@ -509,9 +552,9 @@ async function runWorker(
 
   try {
     for (const country of marketingCountries) {
-      console.log(`${tag} starting ${country.name}`);
+      logForCountry(country.name, `${tag} worker slice started`);
       await generateAssetsForCountry(page, context, country);
-      console.log(`${tag} finished ${country.name}`);
+      logForCountry(country.name, `${tag} worker slice finished`);
     }
   } finally {
     await context.close();
@@ -528,6 +571,9 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  const cliArgs = process.argv.slice(2);
+  const headed = cliArgs.includes('--headed');
+
   // Each Chromium context uses ~250–350 MB. Cap at free RAM / 300 MB, but never
   // more than the country count or the logical CPU count.
   const freeRamMb = os.freemem() / 1024 / 1024;
@@ -543,8 +589,11 @@ async function main(): Promise<void> {
   console.log(`Free RAM: ${freeRamMb} MB`);
   console.log(`Default workers: ${defaultWorkers}`);
   console.log(`Concurrency: ${CONCURRENCY}`);
+  if (headed) {
+    console.log('Browser: headed (--headed) — Chromium UI visible');
+  }
 
-  const browser = await chromium.launch({ headless: true, slowMo: 80 });
+  const browser = await chromium.launch({ headless: !headed, slowMo: 80 });
 
   // Phase 1: ensure a valid auth state file exists (sequential, one context)
   const authContext = await browser.newContext({

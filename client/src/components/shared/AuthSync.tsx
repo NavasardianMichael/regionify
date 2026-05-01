@@ -6,8 +6,9 @@ import { isEmbedPathname } from '@/constants/routes';
 
 /**
  * Keeps the persisted auth state (Zustand + localStorage) in sync with the server session.
- * If we think the user is logged in but /auth/me fails (e.g. expired cookie),
- * we clear the local profile state so UI and API expectations match.
+ * Always tries GET /auth/me on the client app (except embed routes): a valid session cookie can
+ * exist without hydrated profile state (cleared storage, automation, or persist race). Guests
+ * get 401 — ignored. If we had a persisted user but the session is gone, we clear local state.
  */
 export const AuthSync = () => {
   const isLoggedIn = useProfileStore(selectIsLoggedIn);
@@ -15,7 +16,7 @@ export const AuthSync = () => {
   const logout = useProfileStore(selectLogout);
 
   useEffect(() => {
-    if (!isLoggedIn || isEmbedPathname(window.location.pathname)) return;
+    if (isEmbedPathname(window.location.pathname)) return;
 
     let cancelled = false;
 
@@ -26,7 +27,7 @@ export const AuthSync = () => {
           setUser(user);
         }
       } catch {
-        if (!cancelled) {
+        if (!cancelled && useProfileStore.getState().user !== null) {
           logout();
         }
       }
