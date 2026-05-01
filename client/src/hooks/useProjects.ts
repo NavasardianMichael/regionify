@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PROJECTS_BULK_DELETE_MAX_IDS } from '@regionify/shared';
 import {
   deleteProject as deleteProjectApi,
+  deleteProjectsBulk as deleteProjectsBulkApi,
   getProjects,
   updateProject as updateProjectApi,
 } from '@/api/projects';
@@ -12,6 +14,7 @@ import {
   selectProjects,
   selectProjectsStatus,
   selectRemoveProject,
+  selectRemoveProjects,
   selectSetProjects,
   selectSetProjectsStatus,
   selectUpdateProjectInList,
@@ -24,19 +27,44 @@ import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { getLocalizedRegionLabel, getRegionDisplayName } from '@/helpers/regionDisplay';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
+export type ProjectsSortOption =
+  | 'updated_desc'
+  | 'updated_asc'
+  | 'created_desc'
+  | 'created_asc'
+  | 'name_asc'
+  | 'name_desc';
+
 type UseProjectsReturn = {
   projects: Project[];
   filteredProjects: Project[];
+  displayedProjects: Project[];
   projectsStatus: IdleStatus;
   isLoggedIn: boolean;
   search: string;
+  sortOption: ProjectsSortOption;
+  setSortOption: (value: ProjectsSortOption) => void;
   renamingProject: Project | null;
   deletingProject: Project | null;
+  deletingProjectsBulk: Project[] | null;
   isDeleting: boolean;
+  isBulkDeleting: boolean;
+  selectedProjectIds: ReadonlySet<string>;
+  selectedCount: number;
+  isProjectSelected: (id: string) => boolean;
+  isSelectAllChecked: boolean;
+  isSelectAllIndeterminate: boolean;
   setSearch: (value: string) => void;
+  toggleProjectSelected: (id: string) => void;
+  selectAllVisible: (checked: boolean) => void;
+  clearSelection: () => void;
+  isSelectionCapReached: boolean;
   handleDelete: (project: Project) => void;
   handleDeleteConfirm: () => Promise<void>;
   handleDeleteCancel: () => void;
+  handleBulkDelete: () => void;
+  handleBulkDeleteConfirm: () => Promise<void>;
+  handleBulkDeleteCancel: () => void;
   handleRenameStart: (project: Project) => void;
   handleRenameConfirm: (trimmedName: string) => Promise<void>;
   handleRenameCancel: () => void;
@@ -53,13 +81,18 @@ export const useProjects = (): UseProjectsReturn => {
   const setProjects = useProjectsStore(selectSetProjects);
   const setProjectsStatus = useProjectsStore(selectSetProjectsStatus);
   const removeProject = useProjectsStore(selectRemoveProject);
+  const removeProjects = useProjectsStore(selectRemoveProjects);
   const updateProjectInList = useProjectsStore(selectUpdateProjectInList);
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounceValue(search, 300);
+  const [sortOption, setSortOption] = useState<ProjectsSortOption>('updated_desc');
   const [renamingProject, setRenamingProject] = useState<Project | null>(null);
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
+  const [deletingProjectsBulk, setDeletingProjectsBulk] = useState<Project[] | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [selectedProjectIds, setSelectedProjectIds] = useState<Set<string>>(() => new Set());
 
   /** Guests never fetch; keep list empty and use success so the projects UI can render (empty state + new project). */
   useLayoutEffect(() => {
@@ -107,18 +140,136 @@ export const useProjects = (): UseProjectsReturn => {
     });
   }, [projects, debouncedSearch, i18n.language, i18n.resolvedLanguage]);
 
+  const displayedProjects = useMemo(() => {
+    const list = [...filteredProjects];
+    const locale = i18n.resolvedLanguage ?? i18n.language;
+    const compareIso = (a: string, b: string): number =>
+      new Date(a).getTime() - new Date(b).getTime();
+
+    list.sort((pa, pb) => {
+      switch (sortOption) {
+        case 'updated_desc':
+          return compareIso(pb.updatedAt, pa.updatedAt);
+        case 'updated_asc':
+          return compareIso(pa.updatedAt, pb.updatedAt);
+        case 'created_desc':
+          return compareIso(pb.createdAt, pa.createdAt);
+        case 'created_asc':
+          return compareIso(pa.createdAt, pb.createdAt);
+        case 'name_asc':
+          return pa.name.localeCompare(pb.name, locale);
+        case 'name_desc':
+          return pb.name.localeCompare(pa.name, locale);
+        default:
+          return 0;
+      }
+    });
+    return list;
+  }, [filteredProjects, sortOption, i18n.resolvedLanguage, i18n.language]);
+
+  const visibleIdSet = useMemo(
+    () => new Set(displayedProjects.map((p) => p.id)),
+    [displayedProjects],
+  );
+
+  useEffect(() => {
+    setSelectedProjectIds((prev) => {
+      let changed = false;
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (visibleIdSet.has(id)) {
+          next.add(id);
+        } else {
+          changed = true;
+        }
+      }
+      if (!changed && next.size === prev.size) return prev;
+      return next;
+    });
+  }, [visibleIdSet]);
+
+  const selectedCount = selectedProjectIds.size;
+
+  const capSliceIds = useMemo(
+    () => displayedProjects.slice(0, PROJECTS_BULK_DELETE_MAX_IDS).map((p) => p.id),
+    [displayedProjects],
+  );
+
+  const isSelectAllChecked = useMemo(() => {
+    if (capSliceIds.length === 0) return false;
+    return capSliceIds.every((id) => selectedProjectIds.has(id));
+  }, [capSliceIds, selectedProjectIds]);
+
+  const isSelectAllIndeterminate = useMemo(() => {
+    if (selectedCount === 0) return false;
+    return !isSelectAllChecked;
+  }, [selectedCount, isSelectAllChecked]);
+
+  const isSelectionCapReached = selectedCount >= PROJECTS_BULK_DELETE_MAX_IDS;
+
+  const isProjectSelected = useCallback(
+    (id: string) => selectedProjectIds.has(id),
+    [selectedProjectIds],
+  );
+
+  const clearSelection = useCallback(() => {
+    setSelectedProjectIds(new Set());
+  }, []);
+
+  const toggleProjectSelected = useCallback(
+    (id: string) => {
+      setSelectedProjectIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) {
+          next.delete(id);
+          return next;
+        }
+        if (next.size >= PROJECTS_BULK_DELETE_MAX_IDS) {
+          message.info(t('projects.bulkSelectMaxReached', { max: PROJECTS_BULK_DELETE_MAX_IDS }));
+          return prev;
+        }
+        next.add(id);
+        return next;
+      });
+    },
+    [message, t],
+  );
+
+  const selectAllVisible = useCallback(
+    (checked: boolean) => {
+      if (!checked) {
+        clearSelection();
+        return;
+      }
+      const ids = displayedProjects.slice(0, PROJECTS_BULK_DELETE_MAX_IDS).map((p) => p.id);
+      setSelectedProjectIds(new Set(ids));
+      if (displayedProjects.length > PROJECTS_BULK_DELETE_MAX_IDS) {
+        message.info(t('projects.bulkSelectTruncated', { max: PROJECTS_BULK_DELETE_MAX_IDS }), 4);
+      }
+    },
+    [clearSelection, displayedProjects, message, t],
+  );
+
   const handleDelete = useCallback((project: Project) => {
+    setDeletingProjectsBulk(null);
     setDeletingProject(project);
   }, []);
 
   const handleDeleteConfirm = useCallback(async () => {
     if (!deletingProject) return;
+    const deletedId = deletingProject.id;
     setIsDeleting(true);
     try {
-      await deleteProjectApi(deletingProject.id);
-      removeProject(deletingProject.id);
+      await deleteProjectApi(deletedId);
+      removeProject(deletedId);
       message.success(t('messages.projectDeleted'), 5);
       setDeletingProject(null);
+      setSelectedProjectIds((prev) => {
+        if (!prev.has(deletedId)) return prev;
+        const next = new Set(prev);
+        next.delete(deletedId);
+        return next;
+      });
     } catch {
       message.error(t('messages.projectDeleteFailed'));
     } finally {
@@ -128,6 +279,45 @@ export const useProjects = (): UseProjectsReturn => {
 
   const handleDeleteCancel = useCallback(() => {
     setDeletingProject(null);
+  }, []);
+
+  const selectedProjectsForBulk = useMemo(
+    () => displayedProjects.filter((p) => selectedProjectIds.has(p.id)),
+    [displayedProjects, selectedProjectIds],
+  );
+
+  const handleBulkDelete = useCallback(() => {
+    if (selectedProjectsForBulk.length === 0) return;
+    setDeletingProject(null);
+    setDeletingProjectsBulk(selectedProjectsForBulk);
+  }, [selectedProjectsForBulk]);
+
+  const handleBulkDeleteConfirm = useCallback(async () => {
+    if (!deletingProjectsBulk?.length) return;
+    const ids = deletingProjectsBulk.map((p) => p.id);
+    setIsBulkDeleting(true);
+    try {
+      await deleteProjectsBulkApi(ids);
+      removeProjects(ids);
+      message.success(t('messages.projectsBulkDeleted', { count: ids.length }), 5);
+      setDeletingProjectsBulk(null);
+      clearSelection();
+    } catch (error) {
+      const err = error as Error & { code?: string };
+      if (err.code === 'UNAUTHORIZED') {
+        logout();
+        message.error(t('messages.sessionExpired'));
+        navigate(ROUTES.LOGIN);
+      } else {
+        message.error(t('messages.projectsBulkDeleteFailed'));
+      }
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  }, [deletingProjectsBulk, removeProjects, message, t, clearSelection, logout, navigate]);
+
+  const handleBulkDeleteCancel = useCallback(() => {
+    setDeletingProjectsBulk(null);
   }, []);
 
   const handleRenameStart = useCallback((project: Project) => {
@@ -156,16 +346,33 @@ export const useProjects = (): UseProjectsReturn => {
   return {
     projects,
     filteredProjects,
+    displayedProjects,
     projectsStatus,
     isLoggedIn,
     search,
+    sortOption,
+    setSortOption,
     renamingProject,
     deletingProject,
+    deletingProjectsBulk,
     isDeleting,
+    isBulkDeleting,
+    selectedProjectIds,
+    selectedCount,
+    isProjectSelected,
+    isSelectAllChecked,
+    isSelectAllIndeterminate,
     setSearch,
+    toggleProjectSelected,
+    selectAllVisible,
+    clearSelection,
+    isSelectionCapReached,
     handleDelete,
     handleDeleteConfirm,
     handleDeleteCancel,
+    handleBulkDelete,
+    handleBulkDeleteConfirm,
+    handleBulkDeleteCancel,
     handleRenameStart,
     handleRenameConfirm,
     handleRenameCancel,

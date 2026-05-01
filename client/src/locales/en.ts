@@ -642,6 +642,21 @@ const en: CommonNs = {
     limitReachedTitle: 'Project limit reached',
     limitReachedContent:
       'You have reached the Observer free badge limit of {{count}} projects. Delete at least one project to create a new one, or upgrade your badge tier.',
+    selectAll: 'Select all',
+    sortAria: 'Sort projects',
+    sortUpdatedDesc: 'Updated (newest first)',
+    sortUpdatedAsc: 'Updated (oldest first)',
+    sortCreatedDesc: 'Created (newest first)',
+    sortCreatedAsc: 'Created (oldest first)',
+    sortNameAsc: 'Name (A–Z)',
+    sortNameDesc: 'Name (Z–A)',
+    deleteSelected: 'Delete selected',
+    deleteSelectedDisabledTooltip: 'Select one or more projects to delete',
+    bulkSelectMaxReached: 'You can select at most {{max}} projects at once.',
+    bulkSelectTruncated:
+      'Only the first {{max}} projects in this list were selected (maximum per batch).',
+    bulkSelectCapTooltip: 'At most {{max}} projects can be selected for bulk delete.',
+    selectProjectAria: 'Select project {{name}}',
   },
   common: {
     loading: 'Loading...',
@@ -710,7 +725,12 @@ const en: CommonNs = {
     deleteProjectTitle: 'Delete Project',
     deleteProjectContent:
       'Are you sure you want to delete "{{name}}"? This action cannot be undone.',
+    deleteProjectsBulkTitle: 'Delete projects',
+    deleteProjectsBulkContent:
+      'Are you sure you want to delete {{count}} selected projects? This action cannot be undone.',
     deleteProjectOk: 'Delete',
+    projectsBulkDeleted: '{{count}} projects deleted',
+    projectsBulkDeleteFailed: 'Failed to delete selected projects',
     loginFailed: 'Failed to login',
     signUpFailed: 'Failed to create account',
     sessionLimitReached:

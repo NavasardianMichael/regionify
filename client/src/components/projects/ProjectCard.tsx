@@ -6,7 +6,7 @@ import {
   GlobalOutlined,
   InsertRowAboveOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Flex, Spin, Typography } from 'antd';
+import { Avatar, Button, Checkbox, Flex, Spin, Typography } from 'antd';
 import type { Project } from '@/api/projects/types';
 import { useMapThumbnail } from '@/hooks/useMapThumbnail';
 import type { ImportDataType } from '@/types/mapData';
@@ -22,6 +22,10 @@ type ProjectCardProps = {
   onDelete: (project: Project) => void;
   onRename: (project: Project) => void;
   isOpening?: boolean;
+  showSelection?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (project: Project) => void;
+  selectionCheckboxDisabled?: boolean;
 };
 
 type ProjectCardCoverProps = {
@@ -165,7 +169,17 @@ function datasetFormatLabel(t: TypedT, importDataType: ImportDataType | null | u
 }
 
 const ProjectCard = memo<ProjectCardProps>(
-  ({ project, onOpen, onDelete, onRename, isOpening = false }) => {
+  ({
+    project,
+    onOpen,
+    onDelete,
+    onRename,
+    isOpening = false,
+    showSelection = false,
+    isSelected = false,
+    onToggleSelect,
+    selectionCheckboxDisabled = false,
+  }) => {
     const { t, i18n } = useTypedTranslation();
 
     const handleOpenClick = useCallback(() => {
@@ -187,6 +201,23 @@ const ProjectCard = memo<ProjectCardProps>(
         onRename(project);
       },
       [onRename, project],
+    );
+
+    const handleSelectionCheckboxChange = useCallback(() => {
+      onToggleSelect?.(project);
+    }, [onToggleSelect, project]);
+
+    const handleSelectionCheckboxClick = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+    }, []);
+
+    const handleSelectionCheckboxMouseDown = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+    }, []);
+
+    const selectAriaLabel = useMemo(
+      () => t('projects.selectProjectAria', { name: project.name }),
+      [project.name, t],
     );
 
     const dateLocale = i18n.resolvedLanguage ?? i18n.language;
@@ -253,6 +284,22 @@ const ProjectCard = memo<ProjectCardProps>(
     return (
       <div className="relative flex min-h-0 w-full flex-col sm:max-w-80">
         {isOpening && <ProjectCardOpeningOverlay />}
+        {showSelection && onToggleSelect ? (
+          <span
+            className="absolute top-1 right-1 z-20 rounded"
+            onMouseDown={handleSelectionCheckboxMouseDown}
+            role="presentation"
+          >
+            <Checkbox
+              checked={isSelected}
+              disabled={selectionCheckboxDisabled}
+              aria-label={selectAriaLabel}
+              data-i18n-key="projects.selectProjectAria"
+              onChange={handleSelectionCheckboxChange}
+              onClick={handleSelectionCheckboxClick}
+            />
+          </span>
+        ) : null}
         <Card
           hoverable
           className="min-h-0 w-full flex-1"

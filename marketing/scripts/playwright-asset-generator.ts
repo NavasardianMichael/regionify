@@ -544,7 +544,7 @@ async function main(): Promise<void> {
   console.log(`Default workers: ${defaultWorkers}`);
   console.log(`Concurrency: ${CONCURRENCY}`);
 
-  const browser = await chromium.launch({ headless: false, slowMo: 80 });
+  const browser = await chromium.launch({ headless: true, slowMo: 80 });
 
   // Phase 1: ensure a valid auth state file exists (sequential, one context)
   const authContext = await browser.newContext({

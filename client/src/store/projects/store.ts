@@ -32,4 +32,16 @@ export const useProjectsStore = create<ProjectsState>((set) => ({
       currentProjectId: state.currentProjectId === id ? null : state.currentProjectId,
       savedStateSnapshot: state.currentProjectId === id ? null : state.savedStateSnapshot,
     })),
+
+  removeProjects: (ids) => {
+    const idSet = new Set(ids);
+    set((state) => {
+      const hitsCurrent = state.currentProjectId !== null && idSet.has(state.currentProjectId);
+      return {
+        projects: state.projects.filter((p) => !idSet.has(p.id)),
+        currentProjectId: hitsCurrent ? null : state.currentProjectId,
+        savedStateSnapshot: hitsCurrent ? null : state.savedStateSnapshot,
+      };
+    });
+  },
 }));

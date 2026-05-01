@@ -16,4 +16,5 @@ export type ProjectsState = {
   addProject: (project: Project) => void;
   updateProjectInList: (project: Project) => void;
   removeProject: (id: string) => void;
+  removeProjects: (ids: string[]) => void;
 };

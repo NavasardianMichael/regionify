@@ -1,4 +1,4 @@
-import { projectEmbedUpdateSchema } from '@regionify/shared';
+import { projectEmbedUpdateSchema, projectsBulkDeleteSchema } from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
 import { validate } from '@/middleware/validate.js';
@@ -59,6 +59,22 @@ router.post('/', async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: project,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /projects/bulk-delete - Delete multiple projects (single DB round-trip)
+router.post('/bulk-delete', validate(projectsBulkDeleteSchema), async (req, res, next) => {
+  try {
+    const userId = req.session.userId!;
+    const { ids } = req.body;
+    const deletedCount = await projectService.bulkDeleteProjects(userId, ids);
+
+    res.json({
+      success: true,
+      data: { deletedCount },
     });
   } catch (error) {
     next(error);

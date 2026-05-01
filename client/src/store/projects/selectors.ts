@@ -18,3 +18,4 @@ export const selectSetProjectsStatus = (state: ProjectsState) => state.setProjec
 export const selectAddProject = (state: ProjectsState) => state.addProject;
 export const selectUpdateProjectInList = (state: ProjectsState) => state.updateProjectInList;
 export const selectRemoveProject = (state: ProjectsState) => state.removeProject;
+export const selectRemoveProjects = (state: ProjectsState) => state.removeProjects;

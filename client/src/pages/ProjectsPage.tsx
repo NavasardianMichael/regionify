@@ -1,13 +1,34 @@
-import { type FC, lazy, startTransition, Suspense, useCallback, useEffect, useState } from 'react';
+import {
+  type FC,
+  lazy,
+  startTransition,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { PlusOutlined } from '@ant-design/icons';
-import { BADGE_DETAILS } from '@regionify/shared';
-import { Button, Empty, Flex, Input, Modal, Spin, Typography } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { BADGE_DETAILS, PROJECTS_BULK_DELETE_MAX_IDS } from '@regionify/shared';
+import {
+  Button,
+  Checkbox,
+  Empty,
+  Flex,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Spin,
+  Tooltip,
+  Typography,
+} from 'antd';
 import type { Project } from '@/api/projects/types';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { useLoadProject } from '@/hooks/useLoadProject';
-import { useProjects } from '@/hooks/useProjects';
+import { type ProjectsSortOption, useProjects } from '@/hooks/useProjects';
 import { IDLE_STATUSES } from '@/constants/loadingStatus';
 import { getProjectRoute, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
@@ -35,18 +56,33 @@ const ProjectsPage: FC = () => {
   const {
     projects,
     filteredProjects,
+    displayedProjects,
     projectsStatus,
     search,
+    sortOption,
+    setSortOption,
     renamingProject,
     deletingProject,
+    deletingProjectsBulk,
     isDeleting,
+    isBulkDeleting,
+    isSelectAllChecked,
+    isSelectAllIndeterminate,
     setSearch,
+    toggleProjectSelected,
+    selectAllVisible,
+    isProjectSelected,
+    isSelectionCapReached,
     handleDelete,
     handleDeleteConfirm,
     handleDeleteCancel,
+    handleBulkDelete,
+    handleBulkDeleteConfirm,
+    handleBulkDeleteCancel,
     handleRenameStart,
     handleRenameConfirm,
     handleRenameCancel,
+    selectedCount,
   } = useProjects();
 
   useEffect(() => {
@@ -98,40 +134,113 @@ const ProjectsPage: FC = () => {
     navigate(ROUTES.PROJECT_NEW);
   }, [navigate, projects.length, user, t]);
 
+  const handleDeleteModalConfirm = useCallback(async () => {
+    if (deletingProjectsBulk != null && deletingProjectsBulk.length > 0) {
+      await handleBulkDeleteConfirm();
+    } else {
+      await handleDeleteConfirm();
+    }
+  }, [deletingProjectsBulk, handleBulkDeleteConfirm, handleDeleteConfirm]);
+
+  const handleDeleteModalCancel = useCallback(() => {
+    if (deletingProjectsBulk != null && deletingProjectsBulk.length > 0) {
+      handleBulkDeleteCancel();
+    } else {
+      handleDeleteCancel();
+    }
+  }, [deletingProjectsBulk, handleBulkDeleteCancel, handleDeleteCancel]);
+
+  const sortSelectOptions = useMemo(
+    () =>
+      (
+        [
+          ['updated_desc', 'projects.sortUpdatedDesc'],
+          ['updated_asc', 'projects.sortUpdatedAsc'],
+          ['created_desc', 'projects.sortCreatedDesc'],
+          ['created_asc', 'projects.sortCreatedAsc'],
+          ['name_asc', 'projects.sortNameAsc'],
+          ['name_desc', 'projects.sortNameDesc'],
+        ] as const
+      ).map(([value, labelKey]) => ({
+        value: value as ProjectsSortOption,
+        label: t(labelKey),
+      })),
+    [t],
+  );
+
   return (
     <>
       <Flex vertical className="mx-auto h-full w-full" gap="middle">
         {projectsStatus !== IDLE_STATUSES.idle ? (
           <>
-            <Flex align="center" justify="space-between" wrap="wrap" gap="middle">
-              <Typography.Title
-                level={2}
-                className="text-primary mb-0! text-xl font-bold"
-                data-i18n-key="projects.title"
-              >
-                {t('projects.title')}
-              </Typography.Title>
-              {projects.length > 0 && (
-                <Flex gap="middle">
-                  <Input.Search
-                    placeholder={t('projects.searchPlaceholder')}
-                    className="w-64"
-                    value={search}
-                    onChange={handleSearchChange}
-                    allowClear
-                    data-i18n-key="projects.searchPlaceholder"
-                  />
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={handleNewProject}
-                    data-i18n-key="projects.newProject"
+            <Typography.Title
+              level={2}
+              className="text-primary mb-0! text-xl font-bold"
+              data-i18n-key="projects.title"
+            >
+              {t('projects.title')}
+            </Typography.Title>
+            {projects.length > 0 && displayedProjects.length ? (
+              <Flex align="center" justify="space-between" wrap="wrap" gap="middle">
+                <Flex align="center" wrap="wrap" gap="small">
+                  <Checkbox
+                    checked={isSelectAllChecked}
+                    indeterminate={isSelectAllIndeterminate}
+                    disabled={displayedProjects.length === 0}
+                    onChange={(e) => {
+                      selectAllVisible(e.target.checked);
+                    }}
+                    data-i18n-key="projects.selectAll"
                   >
-                    {t('projects.newProject')}
-                  </Button>
+                    {t('projects.selectAll')}
+                  </Checkbox>
+                  <Select<ProjectsSortOption>
+                    value={sortOption}
+                    onChange={setSortOption}
+                    className="min-w-44"
+                    options={sortSelectOptions}
+                    aria-label={t('projects.sortAria')}
+                    data-i18n-key="projects.sortAria"
+                  />
+                  {selectedCount > 0 && (
+                    <Tooltip
+                      title={
+                        selectedCount === 0 ? t('projects.deleteSelectedDisabledTooltip') : null
+                      }
+                    >
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={handleBulkDelete}
+                        data-i18n-key="projects.deleteSelected"
+                      >
+                        {t('projects.deleteSelected')}
+                      </Button>
+                    </Tooltip>
+                  )}
                 </Flex>
-              )}
-            </Flex>
+                <Flex align="center" className="min-w-0 flex-1 justify-end" wrap="wrap">
+                  <Space.Compact className="flex w-full max-w-2xl min-w-0 sm:min-w-72">
+                    <Input.Search
+                      placeholder={t('projects.searchPlaceholder')}
+                      className="min-w-0 flex-1 basis-0"
+                      value={search}
+                      onChange={handleSearchChange}
+                      allowClear
+                      data-i18n-key="projects.searchPlaceholder"
+                    />
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={handleNewProject}
+                      data-i18n-key="projects.newProject"
+                    >
+                      {t('projects.newProject')}
+                    </Button>
+                  </Space.Compact>
+                </Flex>
+              </Flex>
+            ) : null}
 
             {projectsStatus === IDLE_STATUSES.pending ? (
               <Flex align="center" justify="center" className="flex-1">
@@ -164,16 +273,37 @@ const ProjectsPage: FC = () => {
                 align="stretch"
                 className="pb-md content-start sm:justify-start!"
               >
-                {filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onOpen={handleOpen}
-                    onDelete={handleDelete}
-                    onRename={handleRenameStart}
-                    isOpening={openingProjectId === project.id}
-                  />
-                ))}
+                {displayedProjects.map((project) => {
+                  const selected = isProjectSelected(project.id);
+                  const checkboxDisabled = !selected && isSelectionCapReached;
+                  const card = (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onOpen={handleOpen}
+                      onDelete={handleDelete}
+                      onRename={handleRenameStart}
+                      isOpening={openingProjectId === project.id}
+                      showSelection
+                      isSelected={selected}
+                      onToggleSelect={(p) => {
+                        toggleProjectSelected(p.id);
+                      }}
+                      selectionCheckboxDisabled={checkboxDisabled}
+                    />
+                  );
+                  if (!checkboxDisabled) return card;
+                  return (
+                    <Tooltip
+                      key={project.id}
+                      title={t('projects.bulkSelectCapTooltip', {
+                        max: PROJECTS_BULK_DELETE_MAX_IDS,
+                      })}
+                    >
+                      {card}
+                    </Tooltip>
+                  );
+                })}
               </Flex>
             )}
           </>
@@ -183,9 +313,10 @@ const ProjectsPage: FC = () => {
       <Suspense>
         <DeleteProjectModal
           project={deletingProject}
-          onConfirm={handleDeleteConfirm}
-          onCancel={handleDeleteCancel}
-          confirmLoading={isDeleting}
+          projectsBulk={deletingProjectsBulk}
+          onConfirm={handleDeleteModalConfirm}
+          onCancel={handleDeleteModalCancel}
+          confirmLoading={isDeleting || isBulkDeleting}
         />
       </Suspense>
 

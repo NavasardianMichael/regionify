@@ -653,6 +653,22 @@ const pt: CommonNs = {
     limitReachedTitle: 'Limite de projetos atingido',
     limitReachedContent:
       'Atingiu o limite do badge gratuito Observer ({{count}} projetos). Elimine pelo menos um projeto para criar um novo ou faça upgrade para um badge superior.',
+    selectAll: 'Selecionar tudo',
+    sortAria: 'Ordenar projetos',
+    sortUpdatedDesc: 'Atualizado (mais recente primeiro)',
+    sortUpdatedAsc: 'Atualizado (mais antigo primeiro)',
+    sortCreatedDesc: 'Criado (mais recente primeiro)',
+    sortCreatedAsc: 'Criado (mais antigo primeiro)',
+    sortNameAsc: 'Nome (A–Z)',
+    sortNameDesc: 'Nome (Z–A)',
+    deleteSelected: 'Eliminar selecionados',
+    deleteSelectedDisabledTooltip: 'Selecione um ou mais projetos para eliminar',
+    bulkSelectMaxReached: 'Pode selecionar no máximo {{max}} projetos de cada vez.',
+    bulkSelectTruncated:
+      'Apenas os primeiros {{max}} projetos desta lista foram selecionados (máximo por lote).',
+    bulkSelectCapTooltip:
+      'No máximo {{max}} projetos podem ser selecionados para eliminação em lote.',
+    selectProjectAria: 'Selecionar projeto {{name}}',
   },
   common: {
     loading: 'A carregar...',
@@ -712,7 +728,12 @@ const pt: CommonNs = {
     deleteProjectTitle: 'Eliminar projeto',
     deleteProjectContent:
       'Tem a certeza que deseja eliminar "{{name}}"? Esta ação não pode ser revertida.',
+    deleteProjectsBulkTitle: 'Eliminar projetos',
+    deleteProjectsBulkContent:
+      'Tem a certeza de que deseja eliminar {{count}} projetos selecionados? Esta ação não pode ser revertida.',
     deleteProjectOk: 'Eliminar',
+    projectsBulkDeleted: '{{count}} projetos eliminados',
+    projectsBulkDeleteFailed: 'Falha ao eliminar os projetos selecionados',
     loginFailed: 'Falha ao iniciar sessão',
     signUpFailed: 'Falha ao criar a conta',
     sessionLimitReached:

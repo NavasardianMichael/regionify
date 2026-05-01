@@ -154,4 +154,8 @@ export const projectService = {
       );
     }
   },
+
+  async bulkDeleteProjects(userId: string, ids: string[]): Promise<number> {
+    return projectRepository.deleteManyForUser(userId, ids);
+  },
 };

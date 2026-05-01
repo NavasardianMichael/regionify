@@ -661,6 +661,22 @@ const fr: CommonNs = {
     limitReachedTitle: 'Limite de projets atteinte',
     limitReachedContent:
       'Vous avez atteint la limite du badge gratuit Observer ({{count}} projets). Supprimez au moins un projet pour en créer un nouveau, ou passez à un badge supérieur.',
+    selectAll: 'Tout sélectionner',
+    sortAria: 'Trier les projets',
+    sortUpdatedDesc: 'Mis à jour (plus récent en premier)',
+    sortUpdatedAsc: 'Mis à jour (plus ancien en premier)',
+    sortCreatedDesc: 'Créé (plus récent en premier)',
+    sortCreatedAsc: 'Créé (plus ancien en premier)',
+    sortNameAsc: 'Nom (A–Z)',
+    sortNameDesc: 'Nom (Z–A)',
+    deleteSelected: 'Supprimer la sélection',
+    deleteSelectedDisabledTooltip: 'Sélectionnez un ou plusieurs projets à supprimer',
+    bulkSelectMaxReached: 'Vous pouvez sélectionner au plus {{max}} projets à la fois.',
+    bulkSelectTruncated:
+      'Seuls les {{max}} premiers projets de cette liste ont été sélectionnés (maximum par lot).',
+    bulkSelectCapTooltip:
+      'Au plus {{max}} projets peuvent être sélectionnés pour une suppression groupée.',
+    selectProjectAria: 'Sélectionner le projet {{name}}',
   },
   common: {
     loading: 'Chargement...',
@@ -721,7 +737,12 @@ const fr: CommonNs = {
     deleteProjectTitle: 'Supprimer le projet',
     deleteProjectContent:
       'Êtes-vous sûr de vouloir supprimer « {{name}} » ? Cette action est irréversible.',
+    deleteProjectsBulkTitle: 'Supprimer des projets',
+    deleteProjectsBulkContent:
+      'Voulez-vous vraiment supprimer {{count}} projets sélectionnés ? Cette action est irréversible.',
     deleteProjectOk: 'Supprimer',
+    projectsBulkDeleted: '{{count}} projets supprimés',
+    projectsBulkDeleteFailed: 'Échec de la suppression des projets sélectionnés',
     loginFailed: 'Échec de la connexion',
     signUpFailed: 'Échec de la création du compte',
     sessionLimitReached:

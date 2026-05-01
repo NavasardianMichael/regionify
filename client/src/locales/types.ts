@@ -573,6 +573,20 @@ export type CommonNs = {
     cardRegionThumbnailAlt: string;
     limitReachedTitle: string;
     limitReachedContent: string;
+    selectAll: string;
+    sortAria: string;
+    sortUpdatedDesc: string;
+    sortUpdatedAsc: string;
+    sortCreatedDesc: string;
+    sortCreatedAsc: string;
+    sortNameAsc: string;
+    sortNameDesc: string;
+    deleteSelected: string;
+    deleteSelectedDisabledTooltip: string;
+    bulkSelectMaxReached: string;
+    bulkSelectTruncated: string;
+    bulkSelectCapTooltip: string;
+    selectProjectAria: string;
   };
   common: {
     loading: string;
@@ -634,7 +648,11 @@ export type CommonNs = {
     close: string;
     deleteProjectTitle: string;
     deleteProjectContent: string;
+    deleteProjectsBulkTitle: string;
+    deleteProjectsBulkContent: string;
     deleteProjectOk: string;
+    projectsBulkDeleted: string;
+    projectsBulkDeleteFailed: string;
     loginFailed: string;
     signUpFailed: string;
     sessionLimitReached: string;

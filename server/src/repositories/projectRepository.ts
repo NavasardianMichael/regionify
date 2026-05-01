@@ -98,4 +98,12 @@ export const projectRepository = {
       return false;
     }
   },
+
+  async deleteManyForUser(userId: string, ids: string[]): Promise<number> {
+    if (ids.length === 0) return 0;
+    const result = await prisma.project.deleteMany({
+      where: { userId, id: { in: ids } },
+    });
+    return result.count;
+  },
 };

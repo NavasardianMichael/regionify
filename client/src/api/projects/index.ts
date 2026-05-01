@@ -138,3 +138,28 @@ export const deleteProject = async (id: string): Promise<void> => {
     throw new Error(getErrorMessage(data, 'Failed to delete project'));
   }
 };
+
+export const deleteProjectsBulk = async (ids: string[]): Promise<{ deletedCount: number }> => {
+  const response = await fetch(PROJECT_ENDPOINTS.bulkDelete, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ ids }),
+  });
+
+  const data = (await response.json()) as ApiResponse<{ deletedCount: number }> | ApiErrorResponse;
+
+  if (response.status === 401) {
+    const error = new Error(getErrorMessage(data, 'Unauthorized')) as Error & {
+      code?: string;
+    };
+    error.code = 'UNAUTHORIZED';
+    throw error;
+  }
+
+  if (!response.ok) {
+    throw new Error(getErrorMessage(data, 'Failed to delete projects'));
+  }
+
+  return (data as ApiResponse<{ deletedCount: number }>).data;
+};

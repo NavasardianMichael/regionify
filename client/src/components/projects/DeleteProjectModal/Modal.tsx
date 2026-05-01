@@ -6,25 +6,41 @@ import { Body } from './Body';
 
 type Props = {
   project: Project | null;
-  onConfirm: () => void;
+  /** When non-empty, modal shows bulk-delete copy; use `project: null` in this mode. */
+  projectsBulk?: Project[] | null;
+  onConfirm: () => void | Promise<void>;
   onCancel: () => void;
   confirmLoading?: boolean;
 };
 
 export const DeleteProjectModal: FC<Props> = ({
   project,
+  projectsBulk = null,
   onConfirm,
   onCancel,
   confirmLoading = false,
 }) => {
   const { t } = useTypedTranslation();
 
+  const isBulk = projectsBulk != null && projectsBulk.length > 0;
+  const open = project !== null || isBulk;
+
+  const title = isBulk ? t('messages.deleteProjectsBulkTitle') : t('messages.deleteProjectTitle');
+
+  const bodyContent = isBulk
+    ? t('messages.deleteProjectsBulkContent', { count: projectsBulk!.length })
+    : t('messages.deleteProjectContent', { name: project?.name ?? '' });
+
+  const bodyI18nKey = isBulk
+    ? 'messages.deleteProjectsBulkContent'
+    : 'messages.deleteProjectContent';
+
   return (
     <AntModal
       className="scrollbar-modal-host"
-      title={t('messages.deleteProjectTitle')}
+      title={title}
       destroyOnHidden
-      open={project !== null}
+      open={open}
       onOk={onConfirm}
       onCancel={onCancel}
       okText={t('messages.deleteProjectOk')}
@@ -34,10 +50,7 @@ export const DeleteProjectModal: FC<Props> = ({
       centered
       maskClosable={false}
     >
-      <Body
-        content={t('messages.deleteProjectContent', { name: project?.name ?? '' })}
-        data-i18n-key="messages.deleteProjectContent"
-      />
+      <Body content={bodyContent} data-i18n-key={bodyI18nKey} />
     </AntModal>
   );
 };

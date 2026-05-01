@@ -661,6 +661,22 @@ const de: CommonNs = {
     limitReachedTitle: 'Projektlimit erreicht',
     limitReachedContent:
       'Sie haben das Limit der kostenlosen Observer-Badge-Stufe von {{count}} Projekten erreicht. Löschen Sie mindestens ein Projekt, um ein neues zu erstellen, oder upgraden Sie auf eine höhere Badge-Stufe.',
+    selectAll: 'Alle auswählen',
+    sortAria: 'Projekte sortieren',
+    sortUpdatedDesc: 'Aktualisiert (neueste zuerst)',
+    sortUpdatedAsc: 'Aktualisiert (älteste zuerst)',
+    sortCreatedDesc: 'Erstellt (neueste zuerst)',
+    sortCreatedAsc: 'Erstellt (älteste zuerst)',
+    sortNameAsc: 'Name (A–Z)',
+    sortNameDesc: 'Name (Z–A)',
+    deleteSelected: 'Ausgewählte löschen',
+    deleteSelectedDisabledTooltip: 'Wählen Sie mindestens ein Projekt zum Löschen aus',
+    bulkSelectMaxReached: 'Sie können höchstens {{max}} Projekte gleichzeitig auswählen.',
+    bulkSelectTruncated:
+      'Es wurden nur die ersten {{max}} Projekte in dieser Liste ausgewählt (Maximum pro Stapel).',
+    bulkSelectCapTooltip:
+      'Für die Massenlöschung können höchstens {{max}} Projekte ausgewählt werden.',
+    selectProjectAria: 'Projekt {{name}} auswählen',
   },
   common: {
     loading: 'Laden...',
@@ -722,7 +738,12 @@ const de: CommonNs = {
     deleteProjectTitle: 'Projekt löschen',
     deleteProjectContent:
       'Möchten Sie "{{name}}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+    deleteProjectsBulkTitle: 'Projekte löschen',
+    deleteProjectsBulkContent:
+      'Möchten Sie wirklich {{count}} ausgewählte Projekte löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
     deleteProjectOk: 'Löschen',
+    projectsBulkDeleted: '{{count}} Projekte gelöscht',
+    projectsBulkDeleteFailed: 'Ausgewählte Projekte konnten nicht gelöscht werden',
     loginFailed: 'Anmeldung fehlgeschlagen',
     signUpFailed: 'Konto konnte nicht erstellt werden',
     sessionLimitReached:

@@ -649,6 +649,20 @@ const ru: CommonNs = {
     limitReachedTitle: 'Достигнут лимит проектов',
     limitReachedContent:
       'Вы достигли лимита бесплатного бейджа Observer в {{count}} проектов. Удалите хотя бы один проект, чтобы создать новый, или перейдите на более высокий бейдж.',
+    selectAll: 'Выбрать все',
+    sortAria: 'Сортировка проектов',
+    sortUpdatedDesc: 'Обновлено (сначала новые)',
+    sortUpdatedAsc: 'Обновлено (сначала старые)',
+    sortCreatedDesc: 'Создано (сначала новые)',
+    sortCreatedAsc: 'Создано (сначала старые)',
+    sortNameAsc: 'Имя (А–Я)',
+    sortNameDesc: 'Имя (Я–А)',
+    deleteSelected: 'Удалить выбранные',
+    deleteSelectedDisabledTooltip: 'Выберите один или несколько проектов для удаления',
+    bulkSelectMaxReached: 'За раз можно выбрать не более {{max}} проектов.',
+    bulkSelectTruncated: 'Выбраны только первые {{max}} проектов в этом списке (максимум за раз).',
+    bulkSelectCapTooltip: 'Для массового удаления можно выбрать не более {{max}} проектов.',
+    selectProjectAria: 'Выбрать проект {{name}}',
   },
   common: {
     loading: 'Загрузка...',
@@ -708,7 +722,12 @@ const ru: CommonNs = {
     deleteProjectTitle: 'Удалить проект',
     deleteProjectContent:
       'Вы уверены, что хотите удалить «{{name}}»? Это действие нельзя отменить.',
+    deleteProjectsBulkTitle: 'Удалить проекты',
+    deleteProjectsBulkContent:
+      'Удалить {{count}} выбранных проектов? Это действие нельзя отменить.',
     deleteProjectOk: 'Удалить',
+    projectsBulkDeleted: 'Удалено проектов: {{count}}',
+    projectsBulkDeleteFailed: 'Не удалось удалить выбранные проекты',
     loginFailed: 'Не удалось войти',
     signUpFailed: 'Не удалось создать аккаунт',
     sessionLimitReached:
