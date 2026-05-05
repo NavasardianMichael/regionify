@@ -176,7 +176,7 @@ async function createProject(page: Page, country: MarketingCountry): Promise<voi
       hasText: country.name,
     })
     .first()
-    .click();
+    .click({ timeout: 60_000 });
 
   // Wait for SVG fetch + client-side sample data generation.
   // "Switch to static data" appears once dynamic timeline data is ready (Chronographer tier).
