@@ -157,8 +157,19 @@ async function waitForVisualizerLoggedIn(page: Page, timeoutMs: number): Promise
     .waitFor({ state: 'visible', timeout: timeoutMs });
 }
 
-async function createProject(page: Page, country: MarketingCountry): Promise<void> {
+async function createProject(
+  page: Page,
+  context: BrowserContext,
+  country: MarketingCountry,
+): Promise<void> {
   await page.goto(`${BASE_URL}/projects/new`);
+  // If the worker's stored session expired between Phase 1 and now, the SPA
+  // will redirect to /login.  Re-login and navigate back before continuing.
+  if (page.url().includes('/login')) {
+    console.log(`  → Worker session expired mid-run — re-logging in…`);
+    await login(page, context);
+    await page.goto(`${BASE_URL}/projects/new`);
+  }
   await waitForVisualizerLoggedIn(page, 30_000);
   // Wait for the region select to be available — reliable page-ready signal
   await page.locator('input[aria-label="Select a country"]').waitFor({ timeout: 15_000 });
@@ -180,8 +191,8 @@ async function createProject(page: Page, country: MarketingCountry): Promise<voi
 
   // Wait for SVG fetch + client-side sample data generation.
   // "Switch to static data" appears once dynamic timeline data is ready (Chronographer tier).
-  await page.waitForLoadState('networkidle', { timeout: 15_000 });
-  await page.getByRole('button', { name: 'Switch to static data' }).waitFor({ timeout: 15_000 });
+  await page.waitForLoadState('networkidle', { timeout: 20_000 });
+  await page.getByRole('button', { name: 'Switch to static data' }).waitFor({ timeout: 30_000 });
   logForCountry(country.name, '✓ Country selected — sample data loaded');
 
   // Save project
@@ -472,7 +483,7 @@ async function generateAssetsForCountry(
   console.log('');
   logForCountry(country.name, '▶ starting');
 
-  await createProject(page, country);
+  await createProject(page, context, country);
 
   // Transparent background must be set while right panel is open (MapStylesPanel lives there)
   await setTransparentBackground(page, country.name);
@@ -608,7 +619,13 @@ async function main(): Promise<void> {
       await authPage.goto(`${BASE_URL}/projects`);
       // cspell:ignore networkidle
       await authPage.waitForLoadState('networkidle', { timeout: 15_000 });
-      if (!authPage.url().includes('/login')) {
+      // Give the SPA up to 3 s to finish its async auth check and fire a
+      // client-side redirect to /login if the session is expired.
+      const sessionExpired = await authPage
+        .waitForURL((url) => url.pathname.startsWith('/login'), { timeout: 3_000 })
+        .then(() => true)
+        .catch(() => false);
+      if (!sessionExpired) {
         console.log('✓ Resumed saved session (login skipped)');
       } else {
         console.log('  → Saved session expired — logging in fresh…');
