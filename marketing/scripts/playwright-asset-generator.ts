@@ -183,51 +183,81 @@ async function waitForVisualizerLoggedIn(page: Page, timeoutMs: number): Promise
     .waitFor({ state: 'visible', timeout: timeoutMs });
 }
 
-async function createProject(
+async function openOrCreateProject(
   page: Page,
   context: BrowserContext,
   country: MarketingCountry,
 ): Promise<void> {
-  await page.goto(`${BASE_URL}/projects/new`);
-  // If the worker's stored session expired between Phase 1 and now, the SPA
-  // will redirect to /login.  Re-login and navigate back before continuing.
+  // Search the projects listing for an existing project before creating a new one.
+  await page.goto(`${BASE_URL}/projects`);
   if (page.url().includes('/login')) {
     console.log(`  → Worker session expired mid-run — re-logging in…`);
     await login(page, context);
-    await page.goto(`${BASE_URL}/projects/new`);
+    await page.goto(`${BASE_URL}/projects`);
   }
-  await waitForVisualizerLoggedIn(page, 30_000);
-  // Wait for the region select to be available — reliable page-ready signal
-  await page.locator('input[aria-label="Select a country"]').waitFor({ timeout: 15_000 });
+  await page.waitForLoadState('networkidle', { timeout: 15_000 });
 
-  // Ant Design Select: aria-label is on the <input> inside the Select component.
-  // Use keyboard.type (not fill) so the search filterOption fires properly.
-  const regionInput = page.locator('input[aria-label="Select a country"]');
-  await regionInput.click();
-  await page.keyboard.type(country.name, { delay: 50 });
-  // Wait for the dropdown portal to render filtered results
-  await page.locator('.ant-select-dropdown:visible').waitFor({ timeout: 5_000 });
-  // Click via Ant Design's option content class — reliable across portal renders
-  await page
-    .locator('.ant-select-dropdown:visible .ant-select-item-option-content', {
-      hasText: country.name,
-    })
-    .first()
-    .click({ timeout: 60_000 });
+  // Ant Design Input.Search may forward data-* props to the <input> itself or to a wrapper span.
+  // The CSS comma selector matches either DOM structure without a second round-trip.
+  const searchInput = page
+    .locator(
+      'input[data-i18n-key="projects.searchPlaceholder"], [data-i18n-key="projects.searchPlaceholder"] input',
+    )
+    .first();
+  await searchInput.waitFor({ timeout: 10_000 });
+  await searchInput.fill(country.name);
+  // Allow the 300 ms client-side debounce to fire and cards to re-render.
+  await page.waitForTimeout(600);
 
-  // Wait for SVG fetch + client-side sample data generation.
-  // "Switch to static data" appears once dynamic timeline data is ready (Chronographer tier).
-  await page.waitForLoadState('networkidle', { timeout: 20_000 });
-  await page.getByRole('button', { name: 'Switch to static data' }).waitFor({ timeout: 30_000 });
-  logForCountry(country.name, '✓ Country selected — sample data loaded');
+  // Default sort is "recently updated first" — the first result is the most recent project.
+  const matchingCard = page.locator('.ant-card').filter({ hasText: country.name }).first();
+  const found = await matchingCard.isVisible({ timeout: 2_000 }).catch(() => false);
 
-  // Save project
-  await page.getByRole('button', { name: 'Save' }).click();
-  await page.locator('.ant-modal').filter({ hasText: 'Save Project' }).waitFor({ timeout: 10_000 });
-  await page.locator('.ant-modal input[type="text"]').fill(`${country.name} Marketing`);
-  await page.getByRole('button', { name: 'Create' }).click();
+  if (found) {
+    logForCountry(country.name, '→ Found existing project — opening it');
+    await matchingCard.click({ timeout: 10_000 });
+  } else {
+    logForCountry(country.name, '→ No existing project — creating new one');
+    await page.goto(`${BASE_URL}/projects/new`);
+    if (page.url().includes('/login')) {
+      await login(page, context);
+      await page.goto(`${BASE_URL}/projects/new`);
+    }
+    await waitForVisualizerLoggedIn(page, 30_000);
+    await page.locator('input[aria-label="Select a country"]').waitFor({ timeout: 15_000 });
+
+    const regionInput = page.locator('input[aria-label="Select a country"]');
+    await regionInput.click();
+    await page.keyboard.type(country.name, { delay: 50 });
+    await page.locator('.ant-select-dropdown:visible').waitFor({ timeout: 5_000 });
+    await page
+      .locator('.ant-select-dropdown:visible .ant-select-item-option-content', {
+        hasText: country.name,
+      })
+      .first()
+      .click({ timeout: 60_000 });
+
+    await page.waitForLoadState('networkidle', { timeout: 20_000 });
+    await page.getByRole('button', { name: 'Switch to static data' }).waitFor({ timeout: 30_000 });
+    logForCountry(country.name, '✓ Country selected — sample data loaded');
+
+    // The Save modal pre-fills the input with the localized region label (country name).
+    // Click Save to open the modal, then Create to save with the app's default name.
+    await page.getByRole('button', { name: 'Save' }).click();
+    await page
+      .locator('.ant-modal')
+      .filter({ hasText: 'Save Project' })
+      .waitFor({ timeout: 10_000 });
+    await page.getByRole('button', { name: 'Create' }).click();
+  }
+
+  // Wait for the project URL and for the Zustand store to hydrate (isAwaitingProjectFromUrl → false).
+  // The Embed button being enabled is the reliable signal that currentProjectId !== null.
   await page.waitForURL(`${BASE_URL}/projects/**`, { timeout: 15_000 });
-  logForCountry(country.name, '✓ Project saved');
+  await page
+    .locator('[data-i18n-key="visualizer.embed.openButton"]:not([disabled])')
+    .waitFor({ timeout: 30_000 });
+  logForCountry(country.name, '✓ Project ready');
 }
 
 // ---------------------------------------------------------------------------
@@ -386,6 +416,35 @@ async function switchToStaticMode(page: Page, countryName: string): Promise<void
   logForCountry(countryName, '✓ Switched to static mode');
 }
 
+async function switchToDynamicMode(page: Page, countryName: string): Promise<void> {
+  // The button aria-label is "Switch to dynamic data" (visualizer.importData.switchAriaToDynamic)
+  const switchBtn = page.getByRole('button', { name: 'Switch to dynamic data' });
+  await switchBtn.waitFor({ timeout: 10_000 });
+  await switchBtn.click();
+
+  const appeared = await page
+    .locator('.ant-modal:visible')
+    .filter({ hasText: 'Switch to dynamic data?' })
+    .waitFor({ timeout: 3_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (appeared) {
+    await page
+      .locator('.ant-modal:visible')
+      .filter({ hasText: 'Switch to dynamic data?' })
+      .getByRole('button', { name: 'Switch', exact: true })
+      .click();
+  }
+
+  // In dynamic mode the timeline slider becomes visible again
+  await page
+    .locator('.ant-slider')
+    .waitFor({ state: 'visible', timeout: 15_000 })
+    .catch(() => {});
+  logForCountry(countryName, '✓ Switched to dynamic mode');
+}
+
 // ---------------------------------------------------------------------------
 // Export SVG + PNG in one modal session (avoids React state reset on reopen)
 // ---------------------------------------------------------------------------
@@ -395,39 +454,45 @@ async function exportStaticAssets(
   assetsDir: string,
   slug: string,
   countryName: string,
+  skipPng: boolean,
+  skipSvg: boolean,
 ): Promise<void> {
-  // PNG first — configure step → Next → crop step → primary download (locale-independent locators).
-  await page.getByRole('button', { name: 'Export' }).click();
-  let modal = exportConfigureModal(page);
-  await modal.waitFor({ timeout: 10_000 });
+  if (!skipPng) {
+    await page.getByRole('button', { name: 'Export' }).click();
+    const configModal = exportConfigureModal(page);
+    await configModal.waitFor({ timeout: 10_000 });
+    await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', 'PNG');
+    await configModal
+      .locator('[data-i18n-key="visualizer.exportModal.nextCropAndDownload"]')
+      .click();
+    const cropModal = exportCropModal(page);
+    await cropModal.waitFor({ timeout: 30_000 });
+    const pngBtn = exportPrimaryDownloadButton(cropModal);
+    await pngBtn.waitFor({ timeout: 30_000 });
+    const pngDl = page.waitForEvent('download', { timeout: 60_000 });
+    await pngBtn.click();
+    await (await pngDl).saveAs(join(assetsDir, `${slug}-static.png`));
+    logForCountry(countryName, `✓ PNG → ${slug}-static.png`);
+    await closeModal(page).catch(() => {});
+  } else {
+    logForCountry(countryName, `⏭ PNG already exists — skipping`);
+  }
 
-  await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', 'PNG');
-  await modal.locator('[data-i18n-key="visualizer.exportModal.nextCropAndDownload"]').click();
-  const cropModal = exportCropModal(page);
-  await cropModal.waitFor({ timeout: 30_000 });
-  const pngBtn = exportPrimaryDownloadButton(cropModal);
-  await pngBtn.waitFor({ timeout: 30_000 });
-  const pngDl = page.waitForEvent('download', { timeout: 60_000 });
-  await pngBtn.click();
-  await (await pngDl).saveAs(join(assetsDir, `${slug}-static.png`));
-  logForCountry(countryName, `✓ PNG → ${slug}-static.png`);
-  // Modal auto-closes after download; close manually if it didn't
-  await closeModal(page).catch(() => {});
-
-  // SVG: reopen export modal and select SVG (skip crop — primary download on configure step)
-  await page.getByRole('button', { name: 'Export' }).click();
-  modal = exportConfigureModal(page);
-  await modal.waitFor({ timeout: 10_000 });
-
-  await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', 'SVG');
-  const svgBtn = exportPrimaryDownloadButton(modal);
-  await svgBtn.waitFor({ timeout: 30_000 });
-  const svgDl = page.waitForEvent('download', { timeout: 60_000 });
-  await svgBtn.click();
-  await (await svgDl).saveAs(join(assetsDir, `${slug}.svg`));
-  logForCountry(countryName, `✓ SVG → ${slug}.svg`);
-
-  await closeModal(page);
+  if (!skipSvg) {
+    await page.getByRole('button', { name: 'Export' }).click();
+    const configModal = exportConfigureModal(page);
+    await configModal.waitFor({ timeout: 10_000 });
+    await selectAntOption(page, 'visualizer.exportModal.exportTypeLabel', 'SVG');
+    const svgBtn = exportPrimaryDownloadButton(configModal);
+    await svgBtn.waitFor({ timeout: 30_000 });
+    const svgDl = page.waitForEvent('download', { timeout: 60_000 });
+    await svgBtn.click();
+    await (await svgDl).saveAs(join(assetsDir, `${slug}.svg`));
+    logForCountry(countryName, `✓ SVG → ${slug}.svg`);
+    await closeModal(page);
+  } else {
+    logForCountry(countryName, `⏭ SVG already exists — skipping`);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -505,64 +570,110 @@ async function generateAssetsForCountry(
 ): Promise<void> {
   const assetsDir = join(ASSETS_ROOT, country.slug);
   mkdirSync(assetsDir, { recursive: true });
+  const { slug } = country;
+
+  const skipGif = existsSync(join(assetsDir, `${slug}-animation.gif`));
+  const skipMp4 = existsSync(join(assetsDir, `${slug}-video.mp4`));
+  const skipPng = existsSync(join(assetsDir, `${slug}-static.png`));
+  const skipSvg = existsSync(join(assetsDir, `${slug}.svg`));
+  const embedUrlPath = join(assetsDir, `${slug}-embed-url.txt`);
+  const skipEmbed = existsSync(embedUrlPath);
+  const skipEmbedScreenshot = existsSync(join(assetsDir, `${slug}-embed-page.png`));
+
+  if (skipGif && skipMp4 && skipPng && skipSvg && skipEmbed && skipEmbedScreenshot) {
+    console.log('');
+    logForCountry(country.name, '⏭ All assets already exist — skipping');
+    return;
+  }
 
   console.log('');
   logForCountry(country.name, '▶ starting');
 
-  await createProject(page, context, country);
+  await openOrCreateProject(page, context, country);
 
-  // Transparent background must be set while right panel is open (MapStylesPanel lives there)
   await setTransparentBackground(page, country.name);
-
-  // Collapse right panel → wider map area → better aspect ratio for all exported assets
   await closeRightPanel(page);
 
-  // Align legend ranges with the dynamic sample data before exporting
-  await normalizeRanges(page, country.name);
+  const needsDynamic = !skipGif || !skipMp4;
+  const needsStatic = !skipPng || !skipSvg;
 
-  // Dynamic mode (default after country select) → GIF and MP4
-  await exportAnimated(page, assetsDir, country.slug, 'GIF', country.name);
-  await exportAnimated(page, assetsDir, country.slug, 'MP4', country.name);
-
-  await switchToStaticMode(page, country.name);
-
-  // Align legend ranges with the static sample data before exporting
-  await normalizeRanges(page, country.name);
-
-  await exportStaticAssets(page, assetsDir, country.slug, country.name);
-
-  // Embed: enable, configure, screenshot public page
-  const embedUrl = await setupEmbed(page, country);
-  // Save embed URL so the marketing site can render a live iframe (txt: local; json: tracked for builds)
-  writeFileSync(join(assetsDir, `${country.slug}-embed-url.txt`), embedUrl);
-  recordShowcaseEmbedUrl(country.slug, embedUrl);
-  await screenshotEmbedPage(context, embedUrl, assetsDir, country.slug, country.name);
-
-  // Turn showHeader OFF after screenshotting the embed page (iframe embed shows clean map only)
-  const embedModal = page.locator('.ant-modal:visible').filter({ hasText: 'Public map embed' });
-  const showHeaderSwitch = embedModal.locator('button#showHeader[role="switch"]');
-  await showHeaderSwitch.waitFor({ timeout: 5_000 });
-  if ((await showHeaderSwitch.getAttribute('aria-checked')) === 'true') {
-    await showHeaderSwitch.click();
-    await embedModal.locator('[data-i18n-key="visualizer.save"]').click();
-    // Toast text can vary by locale or be missed under load; don't hard-fail on it.
-    const saveToast = page
-      .locator('.ant-message-notice')
-      .filter({ hasText: /embed settings saved/i });
-    const toastVisible = await saveToast
-      .waitFor({ timeout: 6_000 })
-      .then(() => true)
+  if (needsDynamic) {
+    const inDynamic = await page
+      .getByRole('button', { name: 'Switch to static data' })
+      .isVisible({ timeout: 2_000 })
       .catch(() => false);
-    if (!toastVisible) {
-      warnForCountry(
-        country.name,
-        '→ Save toast not detected; continuing after short settle wait.',
-      );
-      await page.waitForTimeout(1_000);
+    if (!inDynamic) {
+      await switchToDynamicMode(page, country.name);
+    }
+    await normalizeRanges(page, country.name);
+    if (!skipGif) {
+      await exportAnimated(page, assetsDir, slug, 'GIF', country.name);
+    } else {
+      logForCountry(country.name, `⏭ GIF already exists — skipping`);
+    }
+    if (!skipMp4) {
+      await exportAnimated(page, assetsDir, slug, 'MP4', country.name);
+    } else {
+      logForCountry(country.name, `⏭ MP4 already exists — skipping`);
     }
   }
 
-  await closeModal(page);
+  if (needsStatic) {
+    const inStatic = await page
+      .getByRole('button', { name: 'Switch to dynamic data' })
+      .isVisible({ timeout: 2_000 })
+      .catch(() => false);
+    if (!inStatic) {
+      await switchToStaticMode(page, country.name);
+    } else {
+      logForCountry(country.name, '✓ Already in static mode');
+    }
+    await normalizeRanges(page, country.name);
+    await exportStaticAssets(page, assetsDir, slug, country.name, skipPng, skipSvg);
+  }
+
+  let embedUrl: string;
+  if (!skipEmbed) {
+    embedUrl = await setupEmbed(page, country);
+    writeFileSync(embedUrlPath, embedUrl);
+    recordShowcaseEmbedUrl(slug, embedUrl);
+  } else {
+    embedUrl = readFileSync(embedUrlPath, 'utf-8').trim();
+    logForCountry(country.name, `⏭ Embed already configured — skipping`);
+  }
+
+  if (!skipEmbedScreenshot) {
+    await screenshotEmbedPage(context, embedUrl, assetsDir, slug, country.name);
+  } else {
+    logForCountry(country.name, `⏭ Embed screenshot already exists — skipping`);
+  }
+
+  // showHeader toggle — the embed modal is still open from setupEmbed above
+  if (!skipEmbed) {
+    const embedModal = page.locator('.ant-modal:visible').filter({ hasText: 'Public map embed' });
+    const showHeaderSwitch = embedModal.locator('button#showHeader[role="switch"]');
+    await showHeaderSwitch.waitFor({ timeout: 5_000 });
+    if ((await showHeaderSwitch.getAttribute('aria-checked')) === 'true') {
+      await showHeaderSwitch.click();
+      await embedModal.locator('[data-i18n-key="visualizer.save"]').click();
+      const saveToast = page
+        .locator('.ant-message-notice')
+        .filter({ hasText: /embed settings saved/i });
+      const toastVisible = await saveToast
+        .waitFor({ timeout: 6_000 })
+        .then(() => true)
+        .catch(() => false);
+      if (!toastVisible) {
+        warnForCountry(
+          country.name,
+          '→ Save toast not detected; continuing after short settle wait.',
+        );
+        await page.waitForTimeout(1_000);
+      }
+    }
+    await closeModal(page);
+  }
+
   logForCountry(country.name, '✓ Done');
 }
 
