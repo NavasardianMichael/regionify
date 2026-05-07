@@ -1,3 +1,4 @@
+import os from 'node:os';
 import { chromium, type BrowserContext, type Locator, type Page } from 'playwright';
 import { config as loadEnv } from 'dotenv';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
@@ -540,6 +541,34 @@ async function generateAssetsForCountry(
 }
 
 // ---------------------------------------------------------------------------
+// Worker: owns one browser context and processes its slice of countries
+// ---------------------------------------------------------------------------
+
+async function runWorker(
+  workerId: number,
+  marketingCountries: MarketingCountry[],
+  browser: Awaited<ReturnType<typeof chromium.launch>>,
+): Promise<void> {
+  const tag = `[worker ${workerId}]`;
+  const context = await browser.newContext({
+    acceptDownloads: true,
+    viewport: { width: 1440, height: 900 },
+    storageState: AUTH_STATE_FILE,
+  });
+  const page = await context.newPage();
+
+  try {
+    for (const country of marketingCountries) {
+      logForCountry(country.name, `${tag} worker slice started`);
+      await generateAssetsForCountry(page, context, country);
+      logForCountry(country.name, `${tag} worker slice finished`);
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -552,13 +581,28 @@ async function main(): Promise<void> {
   const cliArgs = process.argv.slice(2);
   const headed = cliArgs.includes('--headed');
 
+  // Each Chromium context uses ~250–350 MB. Cap at free RAM / 300 MB, but never
+  // more than the country count or the logical CPU count.
+  const freeRamMb = os.freemem() / 1024 / 1024;
+  const byRam = Math.max(1, Math.floor(freeRamMb / 300));
+  const byCpu = os.cpus().length;
+  const defaultWorkers = Math.min(byRam, byCpu, MARKETING_COUNTRIES.length);
+  const CONCURRENCY = Math.min(
+    Math.max(1, Number(process.env.PLAYWRIGHT_WORKERS ?? defaultWorkers)),
+    MARKETING_COUNTRIES.length,
+  );
+  console.log(`By RAM: ${byRam}`);
+  console.log(`By CPU: ${byCpu}`);
+  console.log(`Free RAM: ${freeRamMb} MB`);
+  console.log(`Default workers: ${defaultWorkers}`);
+  console.log(`Concurrency: ${CONCURRENCY}`);
   if (headed) {
     console.log('Browser: headed (--headed) — Chromium UI visible');
   }
 
   const browser = await chromium.launch({ headless: !headed, slowMo: 80 });
 
-  // Phase 1: ensure a valid auth state file exists
+  // Phase 1: ensure a valid auth state file exists (sequential, one context)
   const authContext = await browser.newContext({
     acceptDownloads: true,
     viewport: { width: 1440, height: 900 },
@@ -590,30 +634,22 @@ async function main(): Promise<void> {
     await authContext.close();
   }
 
-  // Phase 2: process all countries sequentially in a single context
-  console.log(`\n▶ Processing ${MARKETING_COUNTRIES.length} countries sequentially\n`);
+  // Phase 2: distribute countries across workers, all sharing the saved auth state
+  console.log(
+    `\n⚡ Running ${CONCURRENCY} parallel worker(s) for ${MARKETING_COUNTRIES.length} countries\n`,
+  );
 
-  const context = await browser.newContext({
-    acceptDownloads: true,
-    viewport: { width: 1440, height: 900 },
-    storageState: AUTH_STATE_FILE,
-  });
-  const page = await context.newPage();
+  // Round-robin distribution: worker 0 gets indices 0, N, 2N… worker 1 gets 1, N+1…
+  const slices: MarketingCountry[][] = Array.from({ length: CONCURRENCY }, () => []);
+  MARKETING_COUNTRIES.forEach((c, i) => slices[i % CONCURRENCY].push(c));
 
   try {
-    for (let i = 0; i < MARKETING_COUNTRIES.length; i++) {
-      if (i > 0) {
-        console.log('\n⏳ Waiting 10 s before next country…');
-        await page.waitForTimeout(10_000);
-      }
-      await generateAssetsForCountry(page, context, MARKETING_COUNTRIES[i]!);
-    }
+    await Promise.all(slices.map((slice, id) => runWorker(id, slice, browser)));
     console.log('\n✅  All done — assets saved to marketing/assets/');
   } catch (err) {
     console.error('\n✗  Script failed:', err);
     throw err;
   } finally {
-    await context.close();
     await browser.close();
   }
 }
