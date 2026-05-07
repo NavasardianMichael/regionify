@@ -3,6 +3,7 @@ import Nav from '@/components/Nav.astro';
 import { BASE } from '@/helpers/commons';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import Footer from '@/components/Footer.astro';
 import { getCountries } from '@/data/parseCountries';
 import MainPageHeroSection from '@/components/MainPageHeroSection.astro';
 
@@ -25,43 +26,40 @@ const countries = getCountries();
       @import '../styles/global.css';
     </style>
   </head>
-  <body class="bg-white">
-    <Nav />
-    <MainPageHeroSection />
+  <body class="bg-white text-gray-900">
+    <div class="flex h-svh min-h-svh flex-col overflow-hidden">
+      <Nav />
+      <main class="min-h-0 flex-1 overflow-y-auto">
+        <MainPageHeroSection />
+        <div class="mx-auto max-w-6xl px-4 py-12 md:px-6">
+          <MarketingTitle level={2} className="mb-2">
+            Browse countries
+          </MarketingTitle>
+          <p class="mb-10 text-base text-gray-500">
+            Open any country page to see map formats, exports, and examples.
+          </p>
 
-    <main class="mx-auto max-w-6xl px-4 py-12 md:px-6">
-      <MarketingTitle level={2} className="mb-2">
-        Browse countries
-      </MarketingTitle>
-      <p class="mb-10 text-base text-gray-500">
-        Open any country page to see map formats, exports, and examples.
-      </p>
-
-      <ul class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {
-          countries.map((c) => (
-            <li>
-              <MarketingButton type="card" href={`${BASE}/${c.slug}/`}>
-                <span class="flex w-full items-center gap-3 text-left">
-                  <span class="min-w-0">
-                    <span class="block text-sm font-semibold text-gray-800">{c.name_en}</span>
-                    <span class="block text-xs text-gray-400">
-                      {c.division_count} {c.division_type.toLowerCase()}
+          <ul class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {
+              countries.map((c) => (
+                <li>
+                  <MarketingButton type="card" href={`${BASE}/${c.slug}/`}>
+                    <span class="flex w-full items-center gap-3 text-left">
+                      <span class="min-w-0">
+                        <span class="block text-sm font-semibold text-gray-800">{c.name_en}</span>
+                        <span class="block text-xs text-gray-400">
+                          {c.division_count} {c.division_type.toLowerCase()}
+                        </span>
+                      </span>
                     </span>
-                  </span>
-                </span>
-              </MarketingButton>
-            </li>
-          ))
-        }
-      </ul>
-    </main>
-
-    <footer class="border-t border-gray-200 py-8 text-center text-sm text-gray-500">
-      <MarketingButton type="link" muted href={import.meta.env.CLIENT_URL}>
-        Regionify
-      </MarketingButton>
-      — Create choropleth maps for any country or region.
-    </footer>
+                  </MarketingButton>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
