@@ -69,14 +69,40 @@ async function switchOn(switchEl: ReturnType<Page['locator']>): Promise<void> {
 async function closeModal(page: Page): Promise<void> {
   const closeBtn = page.locator('.ant-modal-close:visible').first();
   if (await closeBtn.isVisible({ timeout: 1_000 }).catch(() => false)) {
-    await closeBtn.click();
+    await closeBtn.click({ timeout: 5_000 }).catch(() => page.keyboard.press('Escape'));
   } else {
     await page.keyboard.press('Escape');
   }
-  await page
+  const closed = await page
     .locator('.ant-modal:visible')
-    .waitFor({ state: 'hidden', timeout: 8_000 })
-    .catch(() => {});
+    .waitFor({ state: 'hidden', timeout: 5_000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!closed) {
+    await page.keyboard.press('Escape');
+    await page
+      .locator('.ant-modal:visible')
+      .waitFor({ state: 'hidden', timeout: 5_000 })
+      .catch(() => {});
+  }
+}
+
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts: number, label: string): Promise<T> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (attempt < maxAttempts) {
+        console.warn(
+          `[retry ${attempt}/${maxAttempts - 1}] ${label}: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        await new Promise((r) => setTimeout(r, 2_000));
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error('unreachable');
 }
 
 /** Export modal step 1 — title uses stable `data-i18n-key` (works in any UI locale). */
@@ -548,7 +574,7 @@ async function runWorker(
   workerId: number,
   marketingCountries: MarketingCountry[],
   browser: Awaited<ReturnType<typeof chromium.launch>>,
-): Promise<void> {
+): Promise<string[]> {
   const tag = `[worker ${workerId}]`;
   const context = await browser.newContext({
     acceptDownloads: true,
@@ -556,16 +582,26 @@ async function runWorker(
     storageState: AUTH_STATE_FILE,
   });
   const page = await context.newPage();
+  const failed: string[] = [];
 
   try {
     for (const country of marketingCountries) {
       logForCountry(country.name, `${tag} worker slice started`);
-      await generateAssetsForCountry(page, context, country);
-      logForCountry(country.name, `${tag} worker slice finished`);
+      try {
+        await withRetry(() => generateAssetsForCountry(page, context, country), 2, country.name);
+        logForCountry(country.name, `${tag} worker slice finished`);
+      } catch (err) {
+        console.error(`\n[${country.name}]: ✗ Failed after retries — skipping.\n`, err);
+        failed.push(country.slug);
+        await page.keyboard.press('Escape').catch(() => {});
+        await page.waitForTimeout(1_000).catch(() => {});
+      }
     }
   } finally {
     await context.close();
   }
+
+  return failed;
 }
 
 // ---------------------------------------------------------------------------
@@ -644,11 +680,19 @@ async function main(): Promise<void> {
   MARKETING_COUNTRIES.forEach((c, i) => slices[i % CONCURRENCY].push(c));
 
   try {
-    await Promise.all(slices.map((slice, id) => runWorker(id, slice, browser)));
-    console.log('\n✅  All done — assets saved to marketing/assets/');
+    const results = await Promise.all(slices.map((slice, id) => runWorker(id, slice, browser)));
+    const failed = results.flat();
+    if (failed.length > 0) {
+      console.warn(
+        `\n⚠️  ${failed.length} country(ies) failed after retries: ${failed.join(', ')}`,
+      );
+      process.exitCode = 1;
+    } else {
+      console.log('\n✅  All done — assets saved to marketing/assets/');
+    }
   } catch (err) {
     console.error('\n✗  Script failed:', err);
-    throw err;
+    process.exitCode = 1;
   } finally {
     await browser.close();
   }
