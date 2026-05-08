@@ -158,11 +158,12 @@ async function login(page: Page, context: BrowserContext): Promise<void> {
     await evictBtn.click();
   }
 
-  // Wait until we leave the login page
-  await page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 20_000 });
+  // Wait until we leave the login page — use a generous timeout because under high
+  // CPU load (multiple parallel Chromium workers) this navigation can be slow.
+  await page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 40_000 });
   // Let the app finish fetching the session and hydrating the auth store
   // before any further navigation — prevents the "Login to Save" race condition.
-  await page.waitForLoadState('networkidle', { timeout: 15_000 });
+  await page.waitForLoadState('networkidle', { timeout: 25_000 });
   await page.waitForTimeout(1_000);
 
   // Persist cookies so subsequent runs skip the login form entirely
@@ -197,6 +198,7 @@ async function openOrCreateProject(
   }
   await page.waitForLoadState('networkidle', { timeout: 15_000 });
 
+  // The search input is only rendered when at least one project exists.
   // Ant Design Input.Search may forward data-* props to the <input> itself or to a wrapper span.
   // The CSS comma selector matches either DOM structure without a second round-trip.
   const searchInput = page
@@ -204,22 +206,41 @@ async function openOrCreateProject(
       'input[data-i18n-key="projects.searchPlaceholder"], [data-i18n-key="projects.searchPlaceholder"] input',
     )
     .first();
-  await searchInput.waitFor({ timeout: 10_000 });
-  await searchInput.fill(country.name);
-  // Allow the 300 ms client-side debounce to fire and cards to re-render.
-  await page.waitForTimeout(600);
+  const searchVisible = await searchInput
+    .waitFor({ timeout: 10_000 })
+    .then(() => true)
+    .catch(() => false);
 
-  // Default sort is "recently updated first" — the first result is the most recent project.
-  const matchingCard = page.locator('.ant-card').filter({ hasText: country.name }).first();
-  const found = await matchingCard.isVisible({ timeout: 2_000 }).catch(() => false);
+  let found = false;
+  if (searchVisible) {
+    await searchInput.fill(country.name);
+    // Allow the 300 ms client-side debounce to fire and cards to re-render.
+    await page.waitForTimeout(600);
 
-  if (found) {
-    logForCountry(country.name, '→ Found existing project — opening it');
-    await matchingCard.click({ timeout: 10_000 });
-  } else {
+    // Default sort is "recently updated first" — the first result is the most recent project.
+    const matchingCard = page.locator('.ant-card').filter({ hasText: country.name }).first();
+    found = await matchingCard.isVisible({ timeout: 2_000 }).catch(() => false);
+
+    if (found) {
+      logForCountry(country.name, '→ Found existing project — opening it');
+      await matchingCard.click({ timeout: 10_000 });
+    }
+  }
+
+  if (!found) {
     logForCountry(country.name, '→ No existing project — creating new one');
     await page.goto(`${BASE_URL}/projects/new`);
-    if (page.url().includes('/login')) {
+    // /projects/new is a guest-accessible route — an expired session won't redirect to /login.
+    // Wait for networkidle so session hydration has settled, then race the embed button to
+    // detect whether we're actually logged in before committing to the full 30 s wait.
+    await page.waitForLoadState('networkidle', { timeout: 15_000 });
+    const loggedInAfterNav = await page
+      .locator('[data-i18n-key="visualizer.embed.openButton"]')
+      .waitFor({ state: 'visible', timeout: 8_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!loggedInAfterNav) {
+      console.log(`  → Worker session expired mid-run — re-logging in…`);
       await login(page, context);
       await page.goto(`${BASE_URL}/projects/new`);
     }
@@ -732,7 +753,9 @@ async function main(): Promise<void> {
   // more than the country count or the logical CPU count.
   const freeRamMb = os.freemem() / 1024 / 1024;
   const byRam = Math.max(1, Math.floor(freeRamMb / 300));
-  const byCpu = os.cpus().length;
+  // Each Chromium worker is CPU-intensive; cap at half the logical cores so the
+  // OS, Node process, and the app server aren't starved, reducing timeout failures.
+  const byCpu = Math.max(1, Math.floor(os.cpus().length / 2));
   const defaultWorkers = Math.min(byRam, byCpu, MARKETING_COUNTRIES.length);
   const CONCURRENCY = Math.min(
     Math.max(1, Number(process.env.PLAYWRIGHT_WORKERS ?? defaultWorkers)),
