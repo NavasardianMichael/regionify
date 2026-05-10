@@ -265,7 +265,7 @@ jobs:
             --exclude='node_modules' \
             --exclude='client/src' \
             --exclude='.git' \
-            server shared client monitoring docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json
+            server shared client monitoring docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json marketing/package.json
 
       - name: Upload server artifact
         uses: actions/upload-artifact@v6
