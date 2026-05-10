@@ -1,6 +1,7 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { type Badge } from '@regionify/shared';
-import { Flex, Typography } from 'antd';
+import { Button, Flex, Typography } from 'antd';
 import { useBillingBadges } from '@/hooks/useBillingBadges';
 import { usePricingPreview } from '@/hooks/usePricingPreview';
 import { ROUTES } from '@/constants/routes';
@@ -50,10 +51,15 @@ const BadgesSection: FC<BadgesSectionProps> = ({
   variant,
 }) => {
   const { t } = useTypedTranslation();
+  const navigate = useNavigate();
   const billingBadges = useBillingBadges();
   const { prices } = usePricingPreview();
 
   const variantConfig = useMemo(() => SECTION_VARIANTS[variant], [variant]);
+
+  const handleGoToPricing = useCallback(() => {
+    void navigate(ROUTES.BILLING);
+  }, [navigate]);
 
   return (
     <Flex vertical gap={variantConfig.listGap}>
@@ -103,13 +109,9 @@ const BadgesSection: FC<BadgesSectionProps> = ({
       <Flex vertical gap="small">
         {variantConfig.showUpgradeLink ? (
           <Flex justify="center">
-            <AppNavLink
-              to={ROUTES.BILLING}
-              className="bg-primary my-0 rounded-lg font-semibold text-white underline!"
-              data-i18n-key="badges.goToBadges"
-            >
-              {t('badges.goToBadges')}
-            </AppNavLink>
+            <Button type="link" href={ROUTES.BILLING} data-i18n-key="badges.goToBadges">
+              {t('badges.goToBadges')} →
+            </Button>
           </Flex>
         ) : null}
 
