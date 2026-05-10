@@ -9,7 +9,7 @@ FROM node:22-alpine AS builder
 
 # glibc compat for musl (libc6-compat removed from Alpine 3.19+; gcompat is the replacement)
 RUN apk add --no-cache gcompat && \
-    corepack enable && corepack prepare pnpm@latest --activate
+    corepack enable && corepack prepare pnpm@10.12.4 --activate
 
 WORKDIR /app
 
@@ -18,6 +18,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
+COPY marketing/package.json ./marketing/
 COPY server/prisma ./server/prisma
 COPY server/scripts ./server/scripts
 
@@ -45,7 +46,7 @@ ENV NODE_ENV=production
 ENV CLIENT_STATIC_DIR=/app/client/dist/client
 
 RUN apk add --no-cache gcompat && \
-    corepack enable && corepack prepare pnpm@latest --activate
+    corepack enable && corepack prepare pnpm@10.12.4 --activate
 
 WORKDIR /app
 
@@ -54,6 +55,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY client/package.json ./client/
 COPY shared/package.json ./shared/
 COPY server/package.json ./server/
+COPY marketing/package.json ./marketing/
 COPY --from=builder /app/server/prisma ./server/prisma
 
 # Install production dependencies (ignore scripts to skip husky)

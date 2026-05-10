@@ -42,7 +42,7 @@ permissions:
 
 env:
   NODE_VERSION: '24'
-  PNPM_VERSION: '10'
+  PNPM_VERSION: '10.12.4'
   KEEP_RELEASES: 1
 
 jobs:
