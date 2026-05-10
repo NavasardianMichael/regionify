@@ -22,6 +22,7 @@ export function useLabelDrag({
     element: SVGTextElement;
     svgElement: SVGSVGElement;
     regionId: string;
+    pointerOffset: { x: number; y: number };
   } | null>(null);
 
   const labelDragMoveImplRef = useRef<(e: PointerEvent) => void>(() => {});
@@ -37,12 +38,26 @@ export function useLabelDrag({
 
   const screenToSvgCoords = useCallback(
     (svgEl: SVGSVGElement, clientX: number, clientY: number) => {
-      const ctm = svgEl.getScreenCTM();
-      if (!ctm) return null;
-      const pt = svgEl.createSVGPoint();
-      pt.x = clientX;
-      pt.y = clientY;
-      return pt.matrixTransform(ctm.inverse());
+      const rect = svgEl.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return null;
+
+      const viewBox = svgEl.viewBox.baseVal;
+      const hasViewBox = viewBox && viewBox.width > 0 && viewBox.height > 0;
+
+      const localX = clientX - rect.left;
+      const localY = clientY - rect.top;
+
+      if (hasViewBox) {
+        return {
+          x: viewBox.x + (localX / rect.width) * viewBox.width,
+          y: viewBox.y + (localY / rect.height) * viewBox.height,
+        };
+      }
+
+      return {
+        x: (localX / rect.width) * svgEl.clientWidth,
+        y: (localY / rect.height) * svgEl.clientHeight,
+      };
     },
     [],
   );
@@ -55,8 +70,8 @@ export function useLabelDrag({
       const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
       if (!svgCoords) return;
 
-      dragging.element.setAttribute('x', String(svgCoords.x));
-      dragging.element.setAttribute('y', String(svgCoords.y));
+      dragging.element.setAttribute('x', String(svgCoords.x - dragging.pointerOffset.x));
+      dragging.element.setAttribute('y', String(svgCoords.y - dragging.pointerOffset.y));
     };
   }, [screenToSvgCoords]);
 
@@ -64,9 +79,19 @@ export function useLabelDrag({
     labelDragEndImplRef.current = (e: PointerEvent) => {
       const dragging = draggingLabelRef.current;
       if (dragging) {
+        try {
+          if (dragging.element.hasPointerCapture(e.pointerId)) {
+            dragging.element.releasePointerCapture(e.pointerId);
+          }
+        } catch {
+          // No-op: pointer capture wasn't active or isn't supported for this target.
+        }
         const svgCoords = screenToSvgCoords(dragging.svgElement, e.clientX, e.clientY);
         if (svgCoords) {
-          labelPositionsRef.current[dragging.regionId] = { x: svgCoords.x, y: svgCoords.y };
+          labelPositionsRef.current[dragging.regionId] = {
+            x: svgCoords.x - dragging.pointerOffset.x,
+            y: svgCoords.y - dragging.pointerOffset.y,
+          };
           setLabelPositionsByRegionId({ ...labelPositionsRef.current });
         }
       }
@@ -88,24 +113,45 @@ export function useLabelDrag({
   useEffect(() => {
     const container = containerRef.current;
     if (!enabled || !container || !svgContent || !regionLabels.show) return;
-
-    const textElements = container.querySelectorAll<SVGTextElement>('text[data-region-id]');
+    const pointerDownListenerOptions: AddEventListenerOptions = { capture: true };
 
     const handleLabelPointerDown = (e: PointerEvent) => {
+      const rawTarget = e.target;
+      if (!(rawTarget instanceof Element)) return;
+
+      const labelTarget = rawTarget.closest('text[data-region-id]');
+      if (!(labelTarget instanceof SVGTextElement)) return;
+
       e.stopPropagation();
       e.preventDefault();
 
-      const target = e.currentTarget as SVGTextElement;
-      const regionId = target.getAttribute('data-region-id');
+      const regionId = labelTarget.getAttribute('data-region-id');
       if (!regionId) return;
 
-      const svgRoot = target.ownerSVGElement;
+      const svgRoot = labelTarget.ownerSVGElement;
       if (!svgRoot) return;
+      const pointerSvgCoords = screenToSvgCoords(svgRoot, e.clientX, e.clientY);
+      if (!pointerSvgCoords) return;
+
+      try {
+        labelTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // Some SVG implementations can reject pointer capture; drag still works via window listeners.
+      }
+
+      const currentX = Number.parseFloat(labelTarget.getAttribute('x') ?? '');
+      const currentY = Number.parseFloat(labelTarget.getAttribute('y') ?? '');
+      const labelX = Number.isFinite(currentX) ? currentX : pointerSvgCoords.x;
+      const labelY = Number.isFinite(currentY) ? currentY : pointerSvgCoords.y;
 
       draggingLabelRef.current = {
-        element: target,
+        element: labelTarget,
         svgElement: svgRoot,
         regionId,
+        pointerOffset: {
+          x: pointerSvgCoords.x - labelX,
+          y: pointerSvgCoords.y - labelY,
+        },
       };
 
       document.body.style.cursor = 'grabbing';
@@ -114,14 +160,14 @@ export function useLabelDrag({
       window.addEventListener('pointercancel', stableWindowPointerUpOrCancel);
     };
 
-    textElements.forEach((el) => {
-      el.addEventListener('pointerdown', handleLabelPointerDown);
-    });
+    container.addEventListener('pointerdown', handleLabelPointerDown, pointerDownListenerOptions);
 
     return () => {
-      textElements.forEach((el) => {
-        el.removeEventListener('pointerdown', handleLabelPointerDown);
-      });
+      container.removeEventListener(
+        'pointerdown',
+        handleLabelPointerDown,
+        pointerDownListenerOptions,
+      );
       window.removeEventListener('pointermove', stableWindowPointerMove);
       window.removeEventListener('pointerup', stableWindowPointerUpOrCancel);
       window.removeEventListener('pointercancel', stableWindowPointerUpOrCancel);
@@ -133,6 +179,7 @@ export function useLabelDrag({
     containerRef,
     svgContent,
     regionLabels.show,
+    screenToSvgCoords,
     stableWindowPointerMove,
     stableWindowPointerUpOrCancel,
   ]);

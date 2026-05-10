@@ -233,9 +233,9 @@ export const MARKETING_COUNTRIES: MarketingCountry[] = [
   // { slug: 'venezuela', name: 'Venezuela' },
   // { slug: 'vietnam', name: 'Vietnam' },
   // { slug: 'wallisAndFutuna', name: 'Wallis and Futuna' },
-  { slug: 'yemen', name: 'Yemen' },
-  { slug: 'zambia', name: 'Zambia' },
-  { slug: 'zimbabwe', name: 'Zimbabwe' },
+  // { slug: 'yemen', name: 'Yemen' },
+  // { slug: 'zambia', name: 'Zambia' },
+  // { slug: 'zimbabwe', name: 'Zimbabwe' },
 ];
 
 // Countries marketing assets are already generated for:

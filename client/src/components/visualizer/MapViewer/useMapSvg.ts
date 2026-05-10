@@ -109,7 +109,7 @@ export function useMapSvg(): UseMapSvgReturn {
     return DOMPurify.sanitize(styledSvg, {
       USE_PROFILES: { svg: true, svgFilters: true },
       ADD_TAGS: ['use'],
-      ADD_ATTR: ['data-region-id', 'cursor'],
+      ADD_ATTR: ['data-region-id', 'cursor', 'pointer-events'],
     });
   }, [rawSvgContent, applyStylesToSvg]);
 

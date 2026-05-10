@@ -324,6 +324,7 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
       text.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
       text.setAttribute('data-region-id', pathTitle);
       text.setAttribute('cursor', 'move');
+      text.setAttribute('pointer-events', 'all');
       text.textContent = regionData.label;
 
       labelsGroup.appendChild(text);

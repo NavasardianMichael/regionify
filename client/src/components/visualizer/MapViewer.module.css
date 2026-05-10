@@ -27,6 +27,7 @@
  * Labels are always draggable when visible — no mode toggle needed.
  */
 .labelDragHoverTarget :global(svg text[data-region-id]) {
+  pointer-events: all;
   cursor: grab;
   transform-box: fill-box;
   transform-origin: center;
