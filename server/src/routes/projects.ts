@@ -1,6 +1,13 @@
-import { projectEmbedUpdateSchema, projectsBulkDeleteSchema } from '@regionify/shared';
+import {
+  ErrorCode,
+  HttpStatus,
+  isValidProjectCountryId,
+  projectEmbedUpdateSchema,
+  projectsBulkDeleteSchema,
+} from '@regionify/shared';
 import { type Router as ExpressRouter, Router } from 'express';
 
+import { AppError } from '@/middleware/errorHandler.js';
 import { validate } from '@/middleware/validate.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { projectEmbedService } from '@/services/projectEmbedService.js';
@@ -46,6 +53,14 @@ router.post('/', async (req, res, next) => {
   try {
     const userId = req.session.userId!;
     const { name, countryId, dataset, mapStyles, legendStyles, legendData } = req.body;
+
+    if (!isValidProjectCountryId(countryId)) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.VALIDATION_ERROR,
+        'Invalid or unsupported countryId',
+      );
+    }
 
     const project = await projectService.createProject(userId, {
       name,
@@ -106,6 +121,14 @@ router.put('/:id', async (req, res, next) => {
 
     const trimmedName =
       typeof name === 'string' && name.trim().length > 0 ? name.trim() : undefined;
+
+    if (countryId !== undefined && !isValidProjectCountryId(countryId)) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.VALIDATION_ERROR,
+        'Invalid or unsupported countryId',
+      );
+    }
 
     const project = await projectService.updateProject(userId, req.params.id, {
       ...(trimmedName !== undefined && { name: trimmedName }),
