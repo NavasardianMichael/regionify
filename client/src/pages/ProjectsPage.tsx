@@ -220,7 +220,7 @@ const ProjectsPage: FC = () => {
                   )}
                 </Flex>
                 <Flex align="center" className="min-w-0 flex-1 justify-end" wrap="wrap">
-                  <Space.Compact className="flex w-full max-w-2xl min-w-0 sm:min-w-72">
+                  <Space.Compact className="flex w-full max-w-100 min-w-0 sm:min-w-72">
                     <Input.Search
                       placeholder={t('projects.searchPlaceholder')}
                       className="min-w-0 flex-1 basis-0"
