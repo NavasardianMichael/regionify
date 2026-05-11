@@ -1,6 +1,8 @@
 import { type RefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { selectSelectedCountryId } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
+import type { MapViewport } from '@/store/mapStyles/types';
+import { DEFAULT_MAP_VIEWPORT } from '@/constants/mapStyles';
 
 const PAN_STEP = 50;
 
@@ -8,6 +10,8 @@ type UseMapPanParams = {
   containerRef: RefObject<HTMLButtonElement | null>;
   mapTransformRef: RefObject<HTMLDivElement | null>;
   onResetLabelPositions: () => void;
+  initialViewport: MapViewport;
+  onViewportChange: (viewport: MapViewport) => void;
 };
 
 type UseMapPanReturn = {
@@ -30,19 +34,22 @@ export function useMapPan({
   containerRef,
   mapTransformRef,
   onResetLabelPositions,
+  initialViewport,
+  onViewportChange,
 }: UseMapPanParams): UseMapPanReturn {
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
 
   const [prevCountryId, setPrevCountryId] = useState(selectedCountryId);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [prevViewport, setPrevViewport] = useState(initialViewport);
+  const [zoom, setZoom] = useState(initialViewport.zoom);
+  const [pan, setPan] = useState(initialViewport.pan);
   const [isDragging, setIsDragging] = useState(false);
 
   // Reset viewport when country changes (React-recommended "adjust during render" pattern)
   if (prevCountryId !== selectedCountryId) {
     setPrevCountryId(selectedCountryId);
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setZoom(DEFAULT_MAP_VIEWPORT.zoom);
+    setPan(DEFAULT_MAP_VIEWPORT.pan);
   }
 
   const panRef = useRef(pan);
@@ -51,6 +58,16 @@ export function useMapPan({
   const mapPanPendingRef = useRef({ x: 0, y: 0 });
   const mapPanRafRef = useRef<number | null>(null);
   const endMapPanDragRef = useRef<(() => void) | null>(null);
+
+  if (
+    prevViewport.zoom !== initialViewport.zoom ||
+    prevViewport.pan.x !== initialViewport.pan.x ||
+    prevViewport.pan.y !== initialViewport.pan.y
+  ) {
+    setPrevViewport(initialViewport);
+    setZoom(initialViewport.zoom);
+    setPan(initialViewport.pan);
+  }
 
   const flushMapPanRaf = useCallback(() => {
     if (mapPanRafRef.current !== null) {
@@ -62,6 +79,10 @@ export function useMapPan({
   useEffect(() => {
     panRef.current = pan;
   }, [pan]);
+
+  useEffect(() => {
+    onViewportChange({ zoom, pan });
+  }, [onViewportChange, pan, zoom]);
 
   const handleZoomIn = useCallback(() => {
     setZoom((prev) => Math.min(prev * 1.2, 5));
@@ -88,8 +109,8 @@ export function useMapPan({
   }, []);
 
   const handleResetView = useCallback(() => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setZoom(DEFAULT_MAP_VIEWPORT.zoom);
+    setPan(DEFAULT_MAP_VIEWPORT.pan);
     onResetLabelPositions();
   }, [onResetLabelPositions]);
 

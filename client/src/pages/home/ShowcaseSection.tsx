@@ -1,6 +1,5 @@
-import { type FC, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Flex, Typography } from 'antd';
+import { type FC, useMemo } from 'react';
+import { Flex, Typography } from 'antd';
 import embedIframePng from '@/assets/images/showcases/embed-iframe.png';
 import embedPagePng from '@/assets/images/showcases/embed-page.png';
 import regionifyAnimationGif from '@/assets/images/showcases/regionify-animation.gif';
@@ -8,6 +7,7 @@ import regionifyEuropeSvg from '@/assets/images/showcases/regionify-europe.svg';
 import regionifyVideoMp4 from '@/assets/images/showcases/regionify-video.mp4';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { AppButtonStyleLink } from '@/components/ui/AppButtonStyleLink';
 
 type ShowcaseItem = {
   title: string;
@@ -72,7 +72,6 @@ const DEFAULT_SHOWCASE_PLACEHOLDER = (assetId: string) => (
 
 export const ShowcaseSection: FC = () => {
   const { t } = useTypedTranslation();
-  const navigate = useNavigate();
 
   const items = useMemo<ShowcaseItem[]>(
     () => [
@@ -110,10 +109,6 @@ export const ShowcaseSection: FC = () => {
     [t],
   );
 
-  const handleBadgeClick = useCallback(() => {
-    void navigate(ROUTES.BILLING);
-  }, [navigate]);
-
   return (
     <section className="bg-white px-6 py-16 md:py-20">
       <div className="mx-auto w-full max-w-5xl">
@@ -145,13 +140,13 @@ export const ShowcaseSection: FC = () => {
                   {description}
                 </Typography.Paragraph>
                 <div>
-                  <Button
+                  <AppButtonStyleLink
+                    href={ROUTES.BILLING}
                     type="primary"
-                    onClick={handleBadgeClick}
                     data-i18n-key="badges.items.explorer.name"
                   >
                     {badgeName} →
-                  </Button>
+                  </AppButtonStyleLink>
                 </div>
               </Flex>
               <Flex

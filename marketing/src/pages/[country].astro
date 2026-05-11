@@ -1,14 +1,13 @@
 ---
 import AiSection from '@/components/AiSection.astro';
 import CtaSection from '@/components/CtaSection.astro';
-import Footer from '@/components/Footer.astro';
 import HeroSection from '@/components/HeroSection.astro';
-import Nav from '@/components/Nav.astro';
 import ShowcaseSection from '@/components/ShowcaseSection.astro';
 import { getCountries } from '@/data/parseCountries';
 import { BASE } from '@/helpers/commons';
 import { extractSvgDivisionNames } from '@/helpers/extractSvgDivisionNames';
 import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import MarketingPage from '@/layouts/MarketingPage.astro';
 
 export async function getStaticPaths() {
   const countries = getCountries();
@@ -40,28 +39,24 @@ const ogImagePublicPath = `${BASE}/assets/${country.slug}/${country.slug}-static
   nameLocal={country.name_local !== country.name_en ? country.name_local : undefined}
   nameEn={country.name_en}
 >
-  <div class="flex h-svh min-h-svh flex-col overflow-hidden">
-    <Nav />
-    <main class="w-full min-w-0 flex-1 overflow-y-auto">
-      <HeroSection country={country} />
-      <ShowcaseSection country={country} />
-      <AiSection country={country} />
-      {divisionNames.length > 0 && (
-        <section class="py-12 md:py-16">
-          <div class="mx-auto max-w-6xl px-4 md:px-6">
-            <h2 class="mb-6 text-xl font-semibold text-primary text-center">
-              {country.division_type} of {country.name_en}
-            </h2>
-            <ul class="columns-2 gap-4 text-sm text-gray-600 sm:columns-3 md:columns-4">
-              {divisionNames.map((name) => (
-                <li class="mb-1">{name}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-      <CtaSection countryName={country.name_en} divisionType={country.division_type} />
-    </main>
-    <Footer />
-  </div>
+  <MarketingPage>
+    <HeroSection country={country} />
+    <ShowcaseSection country={country} />
+    <AiSection country={country} />
+    {divisionNames.length > 0 && (
+      <section class="py-12 md:py-16">
+        <div class="mx-auto max-w-6xl px-4 md:px-6">
+          <h2 class="mb-6 text-xl font-semibold text-primary text-center">
+            {country.division_type} of {country.name_en}
+          </h2>
+          <ul class="columns-2 gap-4 text-sm text-gray-600 sm:columns-3 md:columns-4">
+            {divisionNames.map((name) => (
+              <li class="mb-1">{name}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+    <CtaSection countryName={country.name_en} divisionType={country.division_type} />
+  </MarketingPage>
 </MarketingLayout>

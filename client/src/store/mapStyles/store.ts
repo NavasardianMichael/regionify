@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DEFAULT_MAP_PICTURE } from '@/constants/mapStyles';
+import { DEFAULT_MAP_PICTURE, DEFAULT_MAP_VIEWPORT } from '@/constants/mapStyles';
 import type { MapStylesState } from './types';
 
 export const useMapStylesStore = create<MapStylesState>((set) => ({
@@ -19,6 +19,7 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
     show: true,
     position: { x: 20, y: 20 },
   },
+  viewport: { ...DEFAULT_MAP_VIEWPORT },
   picture: { ...DEFAULT_MAP_PICTURE },
   regionLabels: {
     show: false,
@@ -33,6 +34,7 @@ export const useMapStylesStore = create<MapStylesState>((set) => ({
   setShadow: (data) => set((state) => ({ ...state, shadow: { ...state.shadow, ...data } })),
   setZoomControls: (data) =>
     set((state) => ({ ...state, zoomControls: { ...state.zoomControls, ...data } })),
+  setViewport: (viewport) => set((state) => ({ ...state, viewport })),
   setPicture: (data) => set((state) => ({ ...state, picture: { ...state.picture, ...data } })),
   setRegionLabels: (data) =>
     set((state) => ({ ...state, regionLabels: { ...state.regionLabels, ...data } })),

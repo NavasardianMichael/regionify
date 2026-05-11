@@ -17,6 +17,11 @@ export type ZoomControlsConfig = {
   position: { x: number; y: number };
 };
 
+export type MapViewport = {
+  zoom: number;
+  pan: { x: number; y: number };
+};
+
 export type PictureConfig = {
   transparentBackground: boolean;
   backgroundColor: string;
@@ -43,6 +48,7 @@ export type MapStylesState = {
   border: BorderConfig;
   shadow: ShadowConfig;
   zoomControls: ZoomControlsConfig;
+  viewport: MapViewport;
   picture: PictureConfig;
   regionLabels: RegionLabelsConfig;
   timePeriodLabelOffset: TimePeriodLabelOffset;
@@ -52,6 +58,7 @@ export type MapStylesState = {
   setBorder: (data: Partial<BorderConfig>) => void;
   setShadow: (data: Partial<ShadowConfig>) => void;
   setZoomControls: (data: Partial<ZoomControlsConfig>) => void;
+  setViewport: (viewport: MapViewport) => void;
   setPicture: (data: Partial<PictureConfig>) => void;
   setRegionLabels: (data: Partial<RegionLabelsConfig>) => void;
   setLabelPositionsByRegionId: (positions: RegionLabelPositions) => void;

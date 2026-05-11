@@ -1,16 +1,11 @@
-import { type FC, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Flex, Typography } from 'antd';
+import { type FC } from 'react';
+import { Flex, Typography } from 'antd';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { AppButtonStyleLink } from '@/components/ui/AppButtonStyleLink';
 
 export const CtaSection: FC = () => {
   const { t } = useTypedTranslation();
-  const navigate = useNavigate();
-
-  const handleStart = useCallback(() => {
-    void navigate(ROUTES.PROJECT_NEW);
-  }, [navigate]);
 
   return (
     <section className="bg-primary px-6 py-16 md:py-24">
@@ -32,14 +27,14 @@ export const CtaSection: FC = () => {
               {t('home.ctaBottomSubtitle')}
             </Typography.Paragraph>
           </Flex>
-          <Button
-            onClick={handleStart}
+          <AppButtonStyleLink
+            href={ROUTES.PROJECT_NEW}
             type="dashed"
             className="border-white! bg-transparent! font-semibold text-white! hover:bg-white/5!"
             data-i18n-key="home.ctaStart"
           >
             {t('home.ctaStart')}
-          </Button>
+          </AppButtonStyleLink>
         </Flex>
       </div>
     </section>

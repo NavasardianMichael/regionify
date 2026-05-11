@@ -1,10 +1,10 @@
-import { type FC, useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Flex, Typography } from 'antd';
+import { type FC, useEffect, useState } from 'react';
+import { Flex, Typography } from 'antd';
 import { ROUTES } from '@/constants/routes';
 import { SVG_PATH_COORD_REGEX, SVG_PATH_NUMBERS_REGEX } from '@/constants/svgPath';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { AppButtonStyleLink } from '@/components/ui/AppButtonStyleLink';
 
 function computeViewBox(svgEl: SVGSVGElement): string | null {
   const paths = svgEl.querySelectorAll<SVGPathElement>('path');
@@ -46,7 +46,6 @@ function computeViewBox(svgEl: SVGSVGElement): string | null {
 
 export const HeroSection: FC = () => {
   const { t } = useTypedTranslation();
-  const navigate = useNavigate();
   const [mapUrl, setMapUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,14 +76,6 @@ export const HeroSection: FC = () => {
     };
   }, []);
 
-  const handleStart = useCallback(() => {
-    void navigate(ROUTES.PROJECT_NEW);
-  }, [navigate]);
-
-  const handleBadges = useCallback(() => {
-    void navigate(ROUTES.BILLING);
-  }, [navigate]);
-
   return (
     <section className="bg-primary relative overflow-hidden px-6 py-20 md:py-28 lg:py-32">
       {mapUrl && (
@@ -114,22 +105,22 @@ export const HeroSection: FC = () => {
             </Typography.Paragraph>
           </Flex>
           <Flex gap="middle" wrap="wrap" justify="start">
-            <Button
-              onClick={handleStart}
+            <AppButtonStyleLink
+              href={ROUTES.PROJECT_NEW}
               type="dashed"
               className="border-white! bg-transparent! font-semibold text-white! hover:bg-white/5!"
               data-i18n-key="home.ctaStart"
             >
               {t('home.ctaStart')}
-            </Button>
-            <Button
-              onClick={handleBadges}
+            </AppButtonStyleLink>
+            <AppButtonStyleLink
+              href={ROUTES.BILLING}
               type="dashed"
               className="border-white! bg-transparent! font-semibold text-white! hover:bg-white/5!"
               data-i18n-key="home.ctaBadges"
             >
               {t('home.ctaBadges')}
-            </Button>
+            </AppButtonStyleLink>
           </Flex>
         </Flex>
       </div>

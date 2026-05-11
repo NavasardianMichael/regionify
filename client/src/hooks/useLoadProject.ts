@@ -9,7 +9,7 @@ import { useProjectsStore } from '@/store/projects/store';
 import { captureStateSnapshot } from '@/hooks/useProjectState';
 import type { CountryId } from '@/types/mapData';
 import { IMPORT_DATA_TYPES } from '@/constants/data';
-import { DEFAULT_MAP_PICTURE } from '@/constants/mapStyles';
+import { DEFAULT_MAP_PICTURE, DEFAULT_MAP_VIEWPORT } from '@/constants/mapStyles';
 import { readGoogleFromDataset } from '@/helpers/readGoogleFromDataset';
 
 type LegacyRegionRow = RegionData & { hiddenFromChart?: boolean };
@@ -76,6 +76,7 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
         border: project.mapStyles.border,
         shadow: project.mapStyles.shadow,
         zoomControls: project.mapStyles.zoomControls,
+        viewport: project.mapStyles.viewport ?? DEFAULT_MAP_VIEWPORT,
         picture: {
           ...DEFAULT_MAP_PICTURE,
           ...project.mapStyles.picture,

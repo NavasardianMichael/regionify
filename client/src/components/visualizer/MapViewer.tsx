@@ -22,7 +22,9 @@ import {
   selectPicture,
   selectSetLabelPositionsByRegionId,
   selectSetMapStylesState,
+  selectSetViewport,
   selectTimePeriodLabelOffset,
+  selectViewport,
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
@@ -82,7 +84,9 @@ const MapViewer: FC<MapViewerProps> = ({
   const picture = useMapStylesStore(selectPicture);
   const setLabelPositionsByRegionId = useMapStylesStore(selectSetLabelPositionsByRegionId);
   const setMapStylesState = useMapStylesStore(selectSetMapStylesState);
+  const setViewport = useMapStylesStore(selectSetViewport);
   const timePeriodLabelOffset = useMapStylesStore(selectTimePeriodLabelOffset);
+  const viewport = useMapStylesStore(selectViewport);
   const position = useLegendStylesStore(selectPosition);
   const floatingPosition = useLegendStylesStore(selectFloatingPosition);
   const floatingMapFrameSize = useLegendStylesStore(selectFloatingMapFrameSize);
@@ -127,7 +131,13 @@ const MapViewer: FC<MapViewerProps> = ({
     handlePanLeft,
     handlePanRight,
     handleResetView,
-  } = useMapPan({ containerRef, mapTransformRef, onResetLabelPositions });
+  } = useMapPan({
+    containerRef,
+    mapTransformRef,
+    onResetLabelPositions,
+    initialViewport: viewport,
+    onViewportChange: setViewport,
+  });
 
   useLabelDrag({ containerRef, svgContent, labelPositionsRef, enabled: !flatEmbedChrome });
 

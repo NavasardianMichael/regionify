@@ -23,6 +23,8 @@ export type ProjectMapStyles = {
     offsetY: number;
   };
   zoomControls: { show: boolean; position: { x: number; y: number } };
+  /** Saved map camera state (viewport). Omitted in legacy payloads. */
+  viewport?: { zoom: number; pan: { x: number; y: number } };
   picture: { transparentBackground: boolean; backgroundColor: string; showWatermark?: boolean };
   regionLabels: {
     show: boolean;

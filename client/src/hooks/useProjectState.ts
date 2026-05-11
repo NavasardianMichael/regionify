@@ -59,7 +59,7 @@ function buildSnapshotDataset(
  */
 function buildStateSnapshot(): string {
   const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
-  const { border, shadow, zoomControls, picture, regionLabels, timePeriodLabelOffset } =
+  const { border, shadow, zoomControls, viewport, picture, regionLabels, timePeriodLabelOffset } =
     useMapStylesStore.getState();
   const {
     labels,
@@ -79,6 +79,7 @@ function buildStateSnapshot(): string {
     border,
     shadow,
     zoomControls,
+    viewport,
     picture,
     regionLabels,
     timePeriodLabelOffset,
@@ -116,7 +117,7 @@ export function getProjectPayload(): ProjectUpdatePayload;
 export function getProjectPayload(name: string): ProjectCreatePayload;
 export function getProjectPayload(name?: string): ProjectCreatePayload | ProjectUpdatePayload {
   const { selectedCountryId, importDataType, data, google } = useVisualizerStore.getState();
-  const { border, shadow, zoomControls, picture, regionLabels, timePeriodLabelOffset } =
+  const { border, shadow, zoomControls, viewport, picture, regionLabels, timePeriodLabelOffset } =
     useMapStylesStore.getState();
   const {
     labels,
@@ -138,6 +139,7 @@ export function getProjectPayload(name?: string): ProjectCreatePayload | Project
       border,
       shadow,
       zoomControls,
+      viewport,
       picture,
       regionLabels,
       timePeriodLabelOffset,
@@ -185,6 +187,7 @@ export function useHasUnsavedChanges(): boolean {
   const border = useMapStylesStore((s) => s.border);
   const shadow = useMapStylesStore((s) => s.shadow);
   const zoomControls = useMapStylesStore((s) => s.zoomControls);
+  const viewport = useMapStylesStore((s) => s.viewport);
   const picture = useMapStylesStore((s) => s.picture);
   const regionLabels = useMapStylesStore((s) => s.regionLabels);
   const timePeriodLabelOffset = useMapStylesStore((s) => s.timePeriodLabelOffset);
@@ -206,7 +209,15 @@ export function useHasUnsavedChanges(): boolean {
     const currentSnapshot = JSON.stringify({
       countryId: selectedCountryId,
       dataset,
-      mapStyles: { border, shadow, zoomControls, picture, regionLabels, timePeriodLabelOffset },
+      mapStyles: {
+        border,
+        shadow,
+        zoomControls,
+        viewport,
+        picture,
+        regionLabels,
+        timePeriodLabelOffset,
+      },
       legendStyles: {
         labels,
         title,
@@ -230,6 +241,7 @@ export function useHasUnsavedChanges(): boolean {
     border,
     shadow,
     zoomControls,
+    viewport,
     picture,
     regionLabels,
     timePeriodLabelOffset,

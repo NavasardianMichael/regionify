@@ -4,6 +4,7 @@ import type { MapStylesState } from './types';
 export const selectBorder = (state: MapStylesState) => state.border;
 export const selectShadow = (state: MapStylesState) => state.shadow;
 export const selectZoomControls = (state: MapStylesState) => state.zoomControls;
+export const selectViewport = (state: MapStylesState) => state.viewport;
 export const selectPicture = (state: MapStylesState) => state.picture;
 
 // Border sub-selectors
@@ -34,6 +35,7 @@ export const selectSetMapStylesState = (state: MapStylesState) => state.setMapSt
 export const selectSetBorder = (state: MapStylesState) => state.setBorder;
 export const selectSetShadow = (state: MapStylesState) => state.setShadow;
 export const selectSetZoomControls = (state: MapStylesState) => state.setZoomControls;
+export const selectSetViewport = (state: MapStylesState) => state.setViewport;
 export const selectSetPicture = (state: MapStylesState) => state.setPicture;
 export const selectSetRegionLabels = (state: MapStylesState) => state.setRegionLabels;
 export const selectSetLabelPositionsByRegionId = (state: MapStylesState) =>

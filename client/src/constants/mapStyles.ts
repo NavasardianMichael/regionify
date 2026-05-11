@@ -1,10 +1,15 @@
-import type { PictureConfig } from '@/store/mapStyles/types';
+import type { MapViewport, PictureConfig } from '@/store/mapStyles/types';
 
 /** Default map canvas background when not transparent (view/export). */
 export const DEFAULT_MAP_PICTURE: PictureConfig = {
   transparentBackground: false,
   backgroundColor: '#FFFFFF',
   showWatermark: false,
+};
+
+export const DEFAULT_MAP_VIEWPORT: MapViewport = {
+  zoom: 1,
+  pan: { x: 0, y: 0 },
 };
 
 /** Solid fill behind the map when not transparent; defaults to white if missing. */
