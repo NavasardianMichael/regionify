@@ -17,9 +17,8 @@ type MapSvgCanvasProps = {
   periodLabelRef: RefObject<HTMLDivElement | null>;
   svgContent: string;
   isLoading: boolean;
-  isDragging: boolean;
-  zoom: number;
-  pan: { x: number; y: number };
+  /** Disable the CSS transform easing while drag / wheel gestures are active. */
+  suppressMapTransition: boolean;
   ariaLabel: string;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerUp: () => void;
@@ -35,9 +34,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
   periodLabelRef,
   svgContent,
   isLoading,
-  isDragging,
-  zoom,
-  pan,
+  suppressMapTransition,
   ariaLabel,
   onPointerDown,
   onPointerUp,
@@ -63,7 +60,6 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
       className="absolute inset-0 flex cursor-move items-center justify-center border-none bg-transparent p-0"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
       style={{ touchAction: 'none' }}
     >
       {isLoading ? (
@@ -77,8 +73,11 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
             className="relative h-[80%] w-[80%]"
             data-map-export-map-transform
             style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+              transformOrigin: 'center',
+              willChange: 'transform',
+              transition: suppressMapTransition
+                ? 'none'
+                : 'transform 0.14s cubic-bezier(0.22, 1, 0.36, 1)',
             }}
           >
             <div

@@ -119,9 +119,8 @@ const MapViewer: FC<MapViewerProps> = ({
   }, [labelPositionsRef, setLabelPositionsByRegionId, setMapStylesState, timePeriods.length]);
 
   const {
-    zoom,
-    pan,
     isDragging,
+    isStepInteracting,
     handlePointerDown,
     handlePointerUp,
     handleZoomIn,
@@ -137,7 +136,11 @@ const MapViewer: FC<MapViewerProps> = ({
     onResetLabelPositions,
     initialViewport: viewport,
     onViewportChange: setViewport,
+    svgContent,
   });
+
+  /** Bypass CSS easing during any continuous gesture so direct DOM updates aren't smoothed. */
+  const suppressMapTransition = isDragging || isStepInteracting;
 
   useLabelDrag({ containerRef, svgContent, labelPositionsRef, enabled: !flatEmbedChrome });
 
@@ -290,9 +293,7 @@ const MapViewer: FC<MapViewerProps> = ({
         periodLabelRef={periodLabelRef}
         svgContent={svgContent}
         isLoading={isLoading}
-        isDragging={isDragging}
-        zoom={zoom}
-        pan={pan}
+        suppressMapTransition={suppressMapTransition}
         ariaLabel={mapInteractiveAriaLabel}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
