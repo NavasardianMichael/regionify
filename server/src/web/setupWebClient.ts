@@ -12,7 +12,7 @@ import { projectEmbedService } from '@/services/projectEmbedService.js';
 import { HOME_PAGE_DEFAULT, homeRootInnerHtml } from '@/web/homeCopy.js';
 import { readClientEntryAssets } from '@/web/readClientManifest.js';
 import { renderHtmlDocument } from '@/web/renderHtmlDocument.js';
-import { buildRobotsTxt, buildSitemapXml } from '@/web/sitemap.js';
+import { buildAppSitemapXml, buildRobotsTxt, buildSitemapIndexXml } from '@/web/sitemap.js';
 
 /** Visible `<header>` intro; full copy remains in meta tags. */
 const EMBED_VISIBLE_INTRO_MAX_CHARS = 360;
@@ -107,6 +107,7 @@ export function setupWebClient(app: Application): void {
   }
 
   const siteUrl = env.CLIENT_URL;
+  const googleSiteVerification = env.GOOGLE_SITE_VERIFICATION;
 
   app.get('/', (_req: Request, res: Response) => {
     const html = renderHtmlDocument({
@@ -120,6 +121,7 @@ export function setupWebClient(app: Application): void {
       rootInnerHtml: homeRootInnerHtml(),
       entryJs: assets.js,
       entryCss: assets.css,
+      googleSiteVerification,
     });
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
   });
@@ -153,6 +155,7 @@ export function setupWebClient(app: Application): void {
         htmlLang: meta.htmlLang,
         ogLocale: meta.ogLocale,
         includeEmbedJsonLd: true,
+        googleSiteVerification,
         ...(showHeader
           ? {
               embedSemantic: {
@@ -198,9 +201,14 @@ export function setupWebClient(app: Application): void {
     }
   });
 
-  app.get('/sitemap.xml', async (_req: Request, res: Response, next) => {
+  app.get('/sitemap.xml', (_req: Request, res: Response) => {
+    const xml = buildSitemapIndexXml(siteUrl);
+    res.status(200).setHeader('Content-Type', 'application/xml; charset=utf-8').send(xml);
+  });
+
+  app.get('/app-sitemap.xml', async (_req: Request, res: Response, next) => {
     try {
-      const xml = await buildSitemapXml(siteUrl);
+      const xml = await buildAppSitemapXml(siteUrl);
       res.status(200).setHeader('Content-Type', 'application/xml; charset=utf-8').send(xml);
     } catch (e) {
       next(e);
@@ -250,6 +258,7 @@ export function setupWebClient(app: Application): void {
       rootInnerHtml: '',
       entryJs: assets.js,
       entryCss: assets.css,
+      googleSiteVerification,
     });
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
   });

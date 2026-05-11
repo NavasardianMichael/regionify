@@ -118,6 +118,8 @@ export function renderHtmlDocument(opts: {
   embedShellLayout?: boolean;
   /** Value for `<meta name="robots">` (default `index, follow`). */
   robots?: string;
+  /** Google Search Console verification token — renders `<meta name="google-site-verification">` when set. */
+  googleSiteVerification?: string;
 }): string {
   const {
     siteUrl,
@@ -131,6 +133,7 @@ export function renderHtmlDocument(opts: {
     includeEmbedJsonLd = false,
     embedShellLayout = false,
     robots = 'index, follow',
+    googleSiteVerification,
   } = opts;
   const base = siteUrl.replace(/\/$/, '');
   const canonical = `${base}${meta.canonicalPath}`;
@@ -180,12 +183,16 @@ export function renderHtmlDocument(opts: {
   const useEmbedPageShell = Boolean(embedSemantic) || embedShellLayout;
   const embedPageClass = useEmbedPageShell ? ' class="embed-page"' : '';
 
+  const googleVerificationTag = googleSiteVerification
+    ? `    <meta name="google-site-verification" content="${escapeHtml(googleSiteVerification)}" />\n`
+    : '';
+
   return `<!DOCTYPE html>
 <html lang="${escapeHtml(htmlLang)}"${embedPageClass}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="${escapeHtml(baseHref)}" />
+${googleVerificationTag}    <base href="${escapeHtml(baseHref)}" />
     <title>${escapeHtml(meta.documentTitle)}</title>
     <meta name="title" content="${escapeHtml(meta.documentTitle)}" />
     <meta name="description" content="${escapeHtml(meta.description)}" />

@@ -1,22 +1,25 @@
 import { prisma } from '@/db/index.js';
 import { escapeHtml } from '@/lib/htmlEscape.js';
 
+const PUBLIC_STATIC_PATHS = ['/', '/about', '/contact', '/faq'];
+
 function formatLastMod(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
 /**
- * Sitemap 0.9 document: home + every enabled public embed URL.
+ * Sitemap 0.9 document: public static routes + every enabled public embed URL.
  */
-export async function buildSitemapXml(siteUrl: string): Promise<string> {
+export async function buildAppSitemapXml(siteUrl: string): Promise<string> {
   const base = siteUrl.replace(/\/$/, '');
-  const rows: { loc: string; lastmod?: string }[] = [{ loc: `${base}/` }];
+  const rows: { loc: string; lastmod?: string }[] = PUBLIC_STATIC_PATHS.map((path) => ({
+    loc: `${base}${path}`,
+  }));
 
   const embeds = await prisma.project.findMany({
     where: {
       embedEnabled: true,
       embedToken: { not: null },
-      user: { badge: 'chronographer' },
     },
     select: { embedToken: true, updatedAt: true },
   });
@@ -40,6 +43,24 @@ export async function buildSitemapXml(siteUrl: string): Promise<string> {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${body}
 </urlset>
+`;
+}
+
+/**
+ * Sitemap index referencing the app sitemap and the Astro-generated marketing sitemap.
+ */
+export function buildSitemapIndexXml(siteUrl: string): string {
+  const base = siteUrl.replace(/\/$/, '');
+  const sitemaps = [`${base}/app-sitemap.xml`, `${base}/marketing/sitemap-index.xml`];
+
+  const body = sitemaps
+    .map((loc) => `  <sitemap>\n    <loc>${escapeHtml(loc)}</loc>\n  </sitemap>`)
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${body}
+</sitemapindex>
 `;
 }
 

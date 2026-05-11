@@ -68,6 +68,9 @@ const spatialCoverageJsonLd =
     <meta name="keywords" content={seoKeywords} />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="robots" content="index, follow" />
+    {import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION} />
+    )}
 
     <meta property="og:title" content={seoTitle} />
     <meta property="og:description" content={seoDescription} />

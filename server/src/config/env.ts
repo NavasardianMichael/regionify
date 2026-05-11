@@ -66,6 +66,9 @@ const envSchema = z.object({
   PADDLE_PRICE_ID_EXPLORER: z.string().optional(),
   PADDLE_PRICE_ID_CHRONOGRAPHER: z.string().optional(),
   PADDLE_SANDBOX: z.string().optional(), // "true" = sandbox API, omit or any other value = live
+
+  // Google Search Console
+  GOOGLE_SITE_VERIFICATION: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
