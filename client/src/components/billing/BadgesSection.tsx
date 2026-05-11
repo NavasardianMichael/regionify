@@ -1,5 +1,4 @@
-import { type FC, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { type FC, useMemo } from 'react';
 import { type Badge } from '@regionify/shared';
 import { Button, Flex, Typography } from 'antd';
 import { useBillingBadges } from '@/hooks/useBillingBadges';
@@ -51,15 +50,10 @@ const BadgesSection: FC<BadgesSectionProps> = ({
   variant,
 }) => {
   const { t } = useTypedTranslation();
-  const navigate = useNavigate();
   const billingBadges = useBillingBadges();
   const { prices } = usePricingPreview();
 
   const variantConfig = useMemo(() => SECTION_VARIANTS[variant], [variant]);
-
-  const handleGoToPricing = useCallback(() => {
-    void navigate(ROUTES.BILLING);
-  }, [navigate]);
 
   return (
     <Flex vertical gap={variantConfig.listGap}>
