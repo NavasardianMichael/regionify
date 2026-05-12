@@ -2,18 +2,26 @@ import { useEffect, useState } from 'react';
 import { getPricingPreview } from '@/api/payments';
 import type { LocalizedPrices } from '@/api/payments/types';
 
-export function usePricingPreview(): { prices: LocalizedPrices | null; isLoading: boolean } {
+export function usePricingPreview(): {
+  prices: LocalizedPrices | null;
+  isLoading: boolean;
+  hasError: boolean;
+} {
   const [prices, setPrices] = useState<LocalizedPrices | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     getPricingPreview()
       .then((data) => {
-        if (!cancelled) setPrices(data);
+        if (!cancelled) {
+          setPrices(data);
+          setHasError(false);
+        }
       })
       .catch(() => {
-        // silent fallback — hardcoded prices remain visible
+        if (!cancelled) setHasError(true);
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -23,5 +31,5 @@ export function usePricingPreview(): { prices: LocalizedPrices | null; isLoading
     };
   }, []);
 
-  return { prices, isLoading };
+  return { prices, isLoading, hasError };
 }

@@ -1,9 +1,15 @@
 import { type FC, useCallback, useMemo } from 'react';
 import { CheckOutlined, LoadingOutlined } from '@ant-design/icons';
 import { type Badge, BADGES } from '@regionify/shared';
-import { Button, Card, Flex, Typography } from 'antd';
+import { Button, Card, Flex, Spin, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import type { BillingBadge, PayableBadge } from './types';
+
+const BADGE_TIER_RANK: Record<Badge, number> = {
+  [BADGES.observer]: 0,
+  [BADGES.explorer]: 1,
+  [BADGES.chronographer]: 2,
+};
 
 export type BadgeCardProps = {
   tier: BillingBadge;
@@ -11,6 +17,8 @@ export type BadgeCardProps = {
   onUpgrade: (badge: PayableBadge) => void;
   upgradingBadge: PayableBadge | null;
   localizedPrice?: string;
+  isPriceLoading?: boolean;
+  shouldShowFallbackPrice?: boolean;
   hideButton?: boolean;
 };
 
@@ -20,10 +28,14 @@ const BadgeCard: FC<BadgeCardProps> = ({
   onUpgrade,
   upgradingBadge,
   localizedPrice,
+  isPriceLoading = false,
+  shouldShowFallbackPrice = true,
   hideButton = false,
 }) => {
   const { t } = useTypedTranslation();
   const isCurrentBadge = tier.id === currentBadge;
+  const isLowerTierThanCurrent = BADGE_TIER_RANK[tier.id] < BADGE_TIER_RANK[currentBadge];
+  const isActionDisabled = isCurrentBadge || isLowerTierThanCurrent;
   const isUpgrading = upgradingBadge === tier.id;
   const showPopularHighlight = tier.popular && currentBadge !== BADGES.chronographer;
 
@@ -40,8 +52,11 @@ const BadgeCard: FC<BadgeCardProps> = ({
     if (localizedPrice) {
       return t('badges.priceOneTime', { price: localizedPrice });
     }
-    return t('badges.priceOneTime', { price: `$${tier.price}` });
-  }, [tier.price, localizedPrice, t]);
+    if (shouldShowFallbackPrice) {
+      return t('badges.priceOneTime', { price: `$${tier.price}` });
+    }
+    return null;
+  }, [tier.price, localizedPrice, shouldShowFallbackPrice, t]);
 
   const buttonType = useMemo(() => (isCurrentBadge ? 'default' : 'primary'), [isCurrentBadge]);
 
@@ -113,6 +128,8 @@ const BadgeCard: FC<BadgeCardProps> = ({
               >
                 {priceLabel}
               </Typography.Text>
+            ) : isPriceLoading && !localizedPrice ? (
+              <Spin size="small" />
             ) : (
               <Typography.Text
                 className="text-primary text-4xl font-bold"
@@ -161,6 +178,7 @@ const BadgeCard: FC<BadgeCardProps> = ({
               color="primary"
               block
               className="mt-auto shrink-0"
+              disabled={isActionDisabled}
               loading={isUpgrading}
               icon={isUpgrading ? <LoadingOutlined /> : undefined}
               onClick={handleClick}

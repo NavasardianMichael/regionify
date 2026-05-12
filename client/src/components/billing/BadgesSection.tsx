@@ -51,7 +51,7 @@ const BadgesSection: FC<BadgesSectionProps> = ({
 }) => {
   const { t } = useTypedTranslation();
   const billingBadges = useBillingBadges();
-  const { prices } = usePricingPreview();
+  const { prices, isLoading: isPricingLoading, hasError: hasPricingError } = usePricingPreview();
 
   const variantConfig = useMemo(() => SECTION_VARIANTS[variant], [variant]);
 
@@ -94,6 +94,20 @@ const BadgesSection: FC<BadgesSectionProps> = ({
                   : tier.id === 'chronographer'
                     ? (prices?.chronographer ?? undefined)
                     : undefined
+              }
+              isPriceLoading={
+                (tier.id === 'explorer' || tier.id === 'chronographer') &&
+                isPricingLoading &&
+                !hasPricingError
+              }
+              shouldShowFallbackPrice={
+                tier.id !== 'explorer' && tier.id !== 'chronographer'
+                  ? true
+                  : hasPricingError ||
+                    (!isPricingLoading &&
+                      (tier.id === 'explorer'
+                        ? prices?.explorer === null
+                        : prices?.chronographer === null))
               }
             />
           </li>
