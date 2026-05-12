@@ -36,7 +36,9 @@ export const ROUTES = {
   AUTH_CALLBACK: '/auth/callback',
   ACCOUNT_DELETED: '/account-deleted',
 
-  // Payment return/cancel (Paddle redirect)
+  // Paddle hosted-overlay opener (Paddle.js auto-opens checkout when `?_ptxn=` is present)
+  PAYMENTS_CHECKOUT: '/payments/checkout',
+  // Payment return/cancel (after the overlay completes / is closed)
   PAYMENTS_RETURN: '/payments/return',
   PAYMENTS_CANCEL: '/payments/cancel',
 } as const;

@@ -65,7 +65,10 @@ export const paymentService = {
     }
 
     const priceId = getPriceIdByBadge(badge);
-    const returnUrl = `${env.CLIENT_URL}/payments/return`;
+    // Paddle Billing requires `checkout.url` to point at a page on an approved domain that loads
+    // Paddle.js. Paddle returns this URL with `?_ptxn=…` appended; Paddle.js then auto-opens the
+    // overlay. See PaymentCheckoutPage on the client.
+    const checkoutPageUrl = `${env.CLIENT_URL}/payments/checkout`;
 
     const res = await fetch(`${PADDLE_API_BASE}/transactions`, {
       method: 'POST',
@@ -76,7 +79,7 @@ export const paymentService = {
       body: JSON.stringify({
         items: [{ price_id: priceId, quantity: 1 }],
         custom_data: { user_id: userId },
-        checkout: { url: returnUrl },
+        checkout: { url: checkoutPageUrl },
       }),
     });
 

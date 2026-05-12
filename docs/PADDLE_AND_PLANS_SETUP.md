@@ -45,14 +45,34 @@ Existing users get `badge = observer` (free) by default.
 
 ---
 
-## 4. Paddle: API key
+## 4. Paddle: API key (server) and Client-side token (browser)
 
-1. Go to **Developer Tools → Authentication → API keys**.
-2. Create an API key (or use existing). Copy it — this is your `PADDLE_API_KEY`.
+Paddle Billing requires **two** different credentials:
+
+1. **API key** (server-only).
+   **Developer Tools → Authentication → API keys → New API key.** Copy it — this is `PADDLE_API_KEY`. Keep it secret; never ship it to the browser.
+2. **Client-side token** (browser-safe).
+   **Developer Tools → Authentication → Client-side tokens → New token.** Copy it — this is `VITE_PADDLE_CLIENT_TOKEN`. This token is required by Paddle.js on `/payments/checkout` to open the overlay; it is designed to be public.
 
 ---
 
-## 5. Server environment variables
+## 5. Paddle: Approve your checkout domain and set the default payment link
+
+Paddle only allows transaction `checkout.url`s on approved domains.
+
+1. **Checkout → Website approval** (or "Approved domains") in the Paddle dashboard.
+2. Add the host of your `CLIENT_URL`:
+   - Local dev: the ngrok hostname for the **client** (e.g. `xxxx.ngrok-free.app`) — see Step 8.
+   - Production: `regionify.mnavasardian.com` (or whatever your client origin is).
+     In sandbox these are auto-approved; in production they require verification (1–3 days).
+3. **Checkout → Checkout settings → Default payment link**.
+   Set it to `{CLIENT_URL}/payments/checkout`. This is the page the project hosts that loads Paddle.js and auto-opens the overlay when `?_ptxn=…` is in the URL.
+
+> **Why this matters:** Paddle Billing does **not** use Paddle-hosted checkout pages. The "checkout URL" returned by the API is a payment-link URL on **your** approved domain. The page at that URL must load Paddle.js. Regionify already ships this page as `PaymentCheckoutPage` at `/payments/checkout`.
+
+---
+
+## 6. Server environment variables
 
 Add to `server/.env.development.local` (dev) or your production env:
 
@@ -67,7 +87,7 @@ PADDLE_SANDBOX=true   # omit or set to "false" in production
 
 | Variable                        | Description                                                                                |
 | ------------------------------- | ------------------------------------------------------------------------------------------ |
-| `PADDLE_API_KEY`                | Paddle API secret key (from Developer Tools → Authentication)                              |
+| `PADDLE_API_KEY`                | Paddle API secret key (from Developer Tools → Authentication → API keys)                   |
 | `PADDLE_WEBHOOK_SECRET`         | Signing secret from your webhook endpoint configuration                                    |
 | `PADDLE_PRICE_ID_EXPLORER`      | Price ID for the Explorer badge (`pri_...`)                                                |
 | `PADDLE_PRICE_ID_CHRONOGRAPHER` | Price ID for the Chronographer badge (`pri_...`)                                           |
@@ -77,38 +97,58 @@ All payment vars are required for payments to work. If `PADDLE_API_KEY` is missi
 
 ---
 
-## 6. Client URL for redirects
+## 7. Client environment variables
 
-After payment Paddle redirects the user to your app. The server builds the return URL from `CLIENT_URL`:
+Add to `client/.env.development.local` (dev) or your production env:
 
-- **Return URL**: `{CLIENT_URL}/payments/return`
+```env
+VITE_PADDLE_CLIENT_TOKEN=test_xxxxxxxxxxxx   # client-side token from Step 4
+VITE_PADDLE_ENV=sandbox                       # "sandbox" in dev, "production" in prod
+```
 
-Ensure `CLIENT_URL` is the real origin of the client with no trailing slash.
+| Variable                   | Description                                                                                               |
+| -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `VITE_PADDLE_CLIENT_TOKEN` | Browser-safe client-side token used by Paddle.js to open the overlay. Required to render the checkout.    |
+| `VITE_PADDLE_ENV`          | `"sandbox"` to use Paddle sandbox checkout, `"production"` for live. Must match the server's environment. |
+
+Without `VITE_PADDLE_CLIENT_TOKEN` the overlay cannot open and `/payments/checkout` shows the error state.
 
 ---
 
-## 7. Flow summary
+## 8. Client URL and approved domain
+
+`CLIENT_URL` is the real browser origin of the client with **no trailing slash**. The server builds two URLs from it:
+
+- **Checkout opener** (passed to Paddle as `checkout.url`): `{CLIENT_URL}/payments/checkout`
+- **Return page** (where the overlay sends the user after success): `{CLIENT_URL}/payments/return`
+
+Both must be on a domain that is **approved in Paddle** (Step 5). Plain `http://localhost:7002` is usually **not** accepted by Paddle's domain approval; for local testing tunnel the **client** (Vite, port 7002) with ngrok and set `CLIENT_URL` to that public HTTPS host. Keep a **separate** tunnel for the API/webhook (see existing Step 9 below).
+
+---
+
+## 9. Flow summary
 
 1. **Create checkout (server)**
    User clicks "Upgrade" on Billing.
    Client calls `POST {API_URL}/payments/create-checkout` with `{ badge: 'explorer' | 'chronographer' }`.
-   Server creates a Paddle transaction (items with price ID, `custom_data.user_id`), returns `{ checkoutUrl }` from `data.checkout.url`.
+   Server creates a Paddle transaction (items with price ID, `custom_data.user_id`, `checkout.url = {CLIENT_URL}/payments/checkout`), returns `{ checkoutUrl }` from `data.checkout.url`. Paddle's URL is `{CLIENT_URL}/payments/checkout?_ptxn=txn_…`.
 
-2. **Redirect to Paddle**
-   Client does `window.location.href = checkoutUrl`. User pays on Paddle's hosted checkout page.
+2. **Open the overlay (client)**
+   Client does `window.location.href = checkoutUrl`. `PaymentCheckoutPage` mounts, initializes Paddle.js with `VITE_PADDLE_CLIENT_TOKEN`, and Paddle.js auto-detects `?_ptxn=…` and opens the **overlay checkout** on top of the page. The user pays inside the overlay.
 
 3. **Webhook: transaction.completed**
    Paddle sends `POST {API_URL}/payments/webhook` with a `Paddle-Signature` header.
    Server verifies the signature, then for `transaction.completed` reads `data.custom_data.user_id` and `data.items[0].price.id`, maps the price ID to a badge, and updates `User.badge` in the DB. Idempotent — safe to run multiple times.
 
-4. **Return to your app**
-   Paddle redirects to `{CLIENT_URL}/payments/return`. The return page polls `GET {API_URL}/auth/me` until the user's badge is updated (by the webhook), then shows success.
+4. **Return / Cancel (client)**
+   - On `checkout.completed` Paddle.js fires an event; the page navigates to `/payments/return`. That page polls `GET {API_URL}/auth/me` until the user's badge is updated by the webhook, then shows success.
+   - On `checkout.closed` (user dismisses the overlay without paying) the page navigates to `/payments/cancel`.
 
-All Paddle API calls and secrets stay on the server; the client only receives the checkout URL.
+All Paddle API calls and secrets stay on the server; the client only uses the public client-side token to open the overlay.
 
 ---
 
-## 8. Badge features
+## 10. Badge features
 
 | Badge         | Export formats          | Quality | Historical data import | Animation (GIF/MP4) |
 | ------------- | ----------------------- | ------- | ---------------------- | ------------------- |
@@ -120,20 +160,21 @@ Paddle integration is **one-time payment** only. No subscriptions.
 
 ---
 
-## 9. Testing (sandbox mode)
+## 11. Testing (sandbox mode)
 
-1. Set `PADDLE_SANDBOX=true` in `server/.env.development.local`.
-2. Use your sandbox Price IDs in `PADDLE_PRICE_ID_EXPLORER` and `PADDLE_PRICE_ID_CHRONOGRAPHER`.
-3. Complete a test purchase using Paddle sandbox test card:
+1. Set `PADDLE_SANDBOX=true` in `server/.env.development.local` and `VITE_PADDLE_ENV=sandbox` in `client/.env.development.local`.
+2. Use your sandbox Price IDs in `PADDLE_PRICE_ID_EXPLORER` and `PADDLE_PRICE_ID_CHRONOGRAPHER`, and the sandbox client-side token in `VITE_PADDLE_CLIENT_TOKEN`.
+3. Make sure the **client** origin (the `CLIENT_URL` host, e.g. an ngrok hostname for port 7002) is added under **Checkout → Website approval** in the sandbox dashboard.
+4. Complete a test purchase using Paddle sandbox test card:
    - **Card number**: `4242 4242 4242 4242`
    - **Expiry**: any future date
-   - **CVC**: any 3 digits
-4. After payment, check **Developer Tools → Simulations** in the Paddle sandbox dashboard. Create a **New simulation → transaction.completed**, paste your ngrok webhook URL, and fire it. Confirm your server returned 200 in the simulation response.
-5. To test idempotency, run the simulation a second time — your server should return 200 again without making a duplicate DB write.
+   - **CVC**: any 3 digits (Paddle docs commonly use `100`)
+5. After payment, check **Developer Tools → Simulations** in the Paddle sandbox dashboard. Create a **New simulation → transaction.completed**, paste your webhook URL, and fire it. Confirm your server returned 200 in the simulation response.
+6. To test idempotency, run the simulation a second time — your server should return 200 again without making a duplicate DB write.
 
 ---
 
-## 10. What you must do outside the repo to make payments work
+## 12. What you must do outside the repo to make payments work
 
 Everything below is a one-time external setup that is not automated by code. Do the sandbox steps first, verify end-to-end, then repeat with live credentials for production.
 
@@ -155,65 +196,73 @@ Everything below is a one-time external setup that is not automated by code. Do 
    - Price 2: type = **One-time**, amount = **$149.00 USD**, internal description = `Chronographer`.
 4. Copy both **Price IDs** (shown as `pri_01...` next to each price). You need these for env vars.
 
-#### Step 3 — Get a sandbox API key
+#### Step 3 — Get a sandbox API key and client-side token
 
-1. **Developer Tools → Authentication → API keys → New API key.**
-2. Give it a name (e.g. `regionify-dev`), select any reasonable expiry or no expiry.
-3. Copy the key immediately — it is only shown once.
-4. This is your `PADDLE_API_KEY` for the dev env.
+1. **Developer Tools → Authentication → API keys → New API key.** Name it (e.g. `regionify-dev`), copy immediately — this is `PADDLE_API_KEY` (server-only secret).
+2. **Developer Tools → Authentication → Client-side tokens → New token.** Copy it — this is `VITE_PADDLE_CLIENT_TOKEN` (browser-safe).
 
-#### Step 4 — Set up a local webhook tunnel
+#### Step 4 — Set up tunnels (client and server)
 
-Paddle cannot reach `localhost` directly. Use a tunnel to expose your local server.
-
-Option A — **ngrok** (recommended):
+Paddle cannot reach `localhost`, and it requires the browser-facing URL it redirects to (`checkout.url`) to be on an **approved domain**. Use two tunnels:
 
 ```bash
+# Tunnel the Vite dev server (browser). This host becomes CLIENT_URL.
+ngrok http 7002
+
+# Separate terminal: tunnel the API server (webhook destination).
 ngrok http 9002
 ```
 
-Copy the `https://xxxx.ngrok-free.app` forwarding URL.
+Note both `https://xxxx.ngrok-free.app` URLs. The first is the **client** tunnel (used as `CLIENT_URL` and approved in Paddle); the second is the **API** tunnel (used as the webhook URL).
 
-Option B — **Cloudflare Tunnel** (free, no account for quick tunnels):
+#### Step 5 — Approve the client domain and set the default payment link
 
-```bash
-cloudflared tunnel --url http://localhost:9002
-```
+1. **Checkout → Website approval → Add domain.** Paste the **client** tunnel host (no scheme), e.g. `xxxx.ngrok-free.app`. Sandbox approves immediately.
+2. **Checkout → Checkout settings → Default payment link.** Set to `https://<client-tunnel-host>/payments/checkout`.
 
-Your tunnel webhook URL will be: `https://<tunnel-host>/payments/webhook`
-
-#### Step 5 — Register the sandbox webhook endpoint
+#### Step 6 — Register the sandbox webhook endpoint
 
 1. **Developer Tools → Notifications → New destination.**
-2. URL: your tunnel URL from Step 4 (e.g. `https://xxxx.ngrok-free.app/payments/webhook`).
+2. URL: `https://<api-tunnel-host>/payments/webhook`.
 3. Events: select **`transaction.completed`** only. Deselect everything else.
 4. Save. Click the destination to open it and copy the **Signing secret** (`pdl_ntfset_...`).
 5. This is your `PADDLE_WEBHOOK_SECRET` for the dev env.
 
-> **Note:** The sandbox dashboard has no "recent deliveries" view for webhooks. To send test events to your endpoint, use **Developer Tools → Simulations** (see Step 7).
+> **Note:** The sandbox dashboard has no "recent deliveries" view for webhooks. To send test events to your endpoint, use **Developer Tools → Simulations** (see Step 8).
 
-#### Step 6 — Fill in `server/.env.development.local`
+#### Step 7 — Fill in env files
+
+`server/.env.development.local`:
 
 ```env
+CLIENT_URL=https://<client-tunnel-host>     # no trailing slash
 PADDLE_API_KEY=<sandbox API key from Step 3>
-PADDLE_WEBHOOK_SECRET=<signing secret from Step 5>
+PADDLE_WEBHOOK_SECRET=<signing secret from Step 6>
 PADDLE_PRICE_ID_EXPLORER=<Explorer price ID from Step 2>
 PADDLE_PRICE_ID_CHRONOGRAPHER=<Chronographer price ID from Step 2>
 PADDLE_SANDBOX=true
 ```
 
-#### Step 7 — Run the full end-to-end test
+`client/.env.development.local`:
 
-1. Start the tunnel (keep the terminal open).
+```env
+VITE_API_BASE_URL=https://<api-tunnel-host>
+VITE_PADDLE_CLIENT_TOKEN=<client-side token from Step 3>
+VITE_PADDLE_ENV=sandbox
+```
+
+#### Step 8 — Run the full end-to-end test
+
+1. Keep both ngrok tunnels running.
 2. `pnpm dev` — start client + server.
-3. Log in as a test user (observer badge).
+3. Open the **client tunnel URL** in the browser (not `localhost:7002`, so cookies and `checkout.url` line up with the approved domain) and log in as a test user (observer badge).
 4. Go to `/billing`, click **Upgrade to Explorer**.
-5. You should be redirected to a Paddle sandbox checkout page.
-6. Pay with test card `4242 4242 4242 4242`, any future expiry, any CVC.
-7. After payment you land on `/payments/return` — watch it poll and flip to the success screen.
-8. In the Paddle sandbox dashboard → **Developer Tools → Webhooks → recent deliveries** — confirm the webhook was delivered and received a **200** response from your server.
+5. The browser redirects to `…/payments/checkout?_ptxn=txn_…` and Paddle.js opens the overlay on top of the page.
+6. Pay with test card `4242 4242 4242 4242`, any future expiry, CVC `100`.
+7. The overlay fires `checkout.completed`; the page navigates to `/payments/return`, which polls and flips to the success screen once the webhook has updated the badge.
+8. In the Paddle sandbox dashboard, run **Developer Tools → Simulations → New simulation → transaction.completed** against your API tunnel URL to also test the webhook in isolation. Confirm the response is **200**.
 9. In Prisma Studio (`npx prisma studio` in `server/`) or psql, confirm the user's `badge` column changed to `explorer`.
-10. Resend the webhook from the Paddle dashboard — the server must return 200 again and the badge must not change (idempotency check).
+10. Resend the simulation — the server must return 200 again and the badge must not change (idempotency check).
 
 ---
 
@@ -230,40 +279,54 @@ PADDLE_SANDBOX=true
 - Repeat sandbox Step 2 exactly, but in the **production** dashboard.
 - The production price IDs (`pri_01...`) will be **different** from sandbox — copy them separately.
 
-#### Step 3 — Get a production API key
+#### Step 3 — Get a production API key and client-side token
 
-- **Developer Tools → Authentication → API keys → New API key.**
-- Copy immediately. This is your production `PADDLE_API_KEY`.
+1. **Developer Tools → Authentication → API keys → New API key.** Copy — this is the production `PADDLE_API_KEY`.
+2. **Developer Tools → Authentication → Client-side tokens → New token.** Copy — this is the production `VITE_PADDLE_CLIENT_TOKEN`.
 
-#### Step 4 — Register the production webhook endpoint
+#### Step 4 — Approve the production domain and set the default payment link
 
-1. **Developer Tools → Webhooks → New endpoint.**
+1. **Checkout → Website approval → Add domain.** Paste your production client host (e.g. `regionify.mnavasardian.com`). Production approval requires verification (1–3 days).
+2. **Checkout → Checkout settings → Default payment link.** Set to `https://regionify.mnavasardian.com/payments/checkout` (or your real client origin).
+
+#### Step 5 — Register the production webhook endpoint
+
+1. **Developer Tools → Notifications → New destination.**
 2. URL: `https://api.regionify.mnavasardian.com/payments/webhook`
    _(This must be the live, TLS-secured API URL — no tunnel needed in production.)_
 3. Events: **`transaction.completed`** only.
 4. Save and copy the **Signing secret**. This is your production `PADDLE_WEBHOOK_SECRET`.
 
-#### Step 5 — Fill in `server/.env.production.local`
+#### Step 6 — Fill in production env files
+
+`server/.env.production.local` (server):
 
 ```env
 PADDLE_API_KEY=<production API key from Step 3>
-PADDLE_WEBHOOK_SECRET=<signing secret from Step 4>
+PADDLE_WEBHOOK_SECRET=<signing secret from Step 5>
 PADDLE_PRICE_ID_EXPLORER=<Explorer price ID from Step 2>
 PADDLE_PRICE_ID_CHRONOGRAPHER=<Chronographer price ID from Step 2>
 # PADDLE_SANDBOX — omit entirely, or set to anything other than "true"
 ```
 
-#### Step 6 — Deploy
+Client production env (wherever Vite builds the client):
+
+```env
+VITE_PADDLE_CLIENT_TOKEN=<production client-side token from Step 3>
+VITE_PADDLE_ENV=production
+```
+
+#### Step 7 — Deploy
 
 Standard deploy. The new env vars take effect on next server start — no code changes needed, no DB migration needed.
 
-#### Step 7 — Run a live smoke test
+#### Step 8 — Run a live smoke test
 
 - Paddle allows test transactions on production before full activation. Use a real card with a small amount, then issue a refund from the Paddle dashboard.
-- Alternatively, run one real $49 Explorer purchase on a personal account and verify the full flow: checkout → webhook → badge updated → success screen.
-- Check **Developer Tools → Webhooks → recent deliveries** in the production dashboard to confirm the webhook was delivered with a **200** response.
+- Alternatively, run one real $49 Explorer purchase on a personal account and verify the full flow: checkout → overlay → webhook → badge updated → success screen.
+- Check **Developer Tools → Notifications → recent deliveries** in the production dashboard to confirm the webhook was delivered with a **200** response.
 
-#### Step 8 — Go live
+#### Step 9 — Go live
 
 Once you have verified a successful real transaction, Paddle will remove any remaining restrictions on your account (if they exist). Payments from real customers will work from this point.
 

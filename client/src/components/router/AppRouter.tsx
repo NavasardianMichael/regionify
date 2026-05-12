@@ -21,6 +21,7 @@ const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmailPage'));
 const AuthCallbackPage = lazy(() => import('@/pages/AuthCallbackPage'));
 const BillingPage = lazy(() => import('@/pages/BillingPage'));
+const PaymentCheckoutPage = lazy(() => import('@/pages/PaymentCheckoutPage'));
 const PaymentReturnPage = lazy(() => import('@/pages/PaymentReturnPage'));
 const PaymentCancelPage = lazy(() => import('@/pages/PaymentCancelPage'));
 const AccountDeletedPage = lazy(() => import('@/pages/AccountDeletedPage'));
@@ -100,6 +101,7 @@ const router = createBrowserRouter([
       { path: ROUTES.PROFILE, element: <AccountPage /> },
       { path: ROUTES.ACCOUNT_DELETED, element: <AccountDeletedPage /> },
       { path: ROUTES.BILLING, element: <BillingPage /> },
+      { path: ROUTES.PAYMENTS_CHECKOUT, element: <PaymentCheckoutPage /> },
       { path: ROUTES.PAYMENTS_RETURN, element: <PaymentReturnPage /> },
       { path: ROUTES.PAYMENTS_CANCEL, element: <PaymentCancelPage /> },
     ],
