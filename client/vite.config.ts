@@ -24,6 +24,7 @@ export default defineConfig({
   server: {
     port: 7002,
     open: true,
+    allowedHosts: true,
   },
   build: {
     outDir: 'dist/client',

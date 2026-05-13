@@ -21,6 +21,9 @@ dist-ssr
 # Claude Code
 .claude/settings.local.json
 
+# ngrok
+ngrok.yml
+
 # Playwright MCP (Cursor) — generated snapshots / artifacts
 .playwright-mcp/
 
