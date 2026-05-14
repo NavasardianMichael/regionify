@@ -2,6 +2,8 @@
  * Excel read/write via dynamic import so `xlsx` is not in the Visualizer initial chunk.
  * TIME_COLUMN_PATTERN must stay aligned with importDataParsers.ts.
  */
+import type { MissingColumnsError } from '@/helpers/importDataParsers';
+
 const TIME_COLUMN_PATTERN = /^(year|time|period|date|month|quarter|season|epoch|era)$/i;
 
 function importXlsxPackage() {
@@ -21,11 +23,24 @@ function loadXlsx(): Promise<XlsxModule> {
 
 export type ExcelParsedRow = { id: string; label: string; value: number; timePeriod?: string };
 
-export async function parseExcelBuffer(buffer: ArrayBuffer): Promise<ExcelParsedRow[]> {
+export async function parseExcelBuffer(
+  buffer: ArrayBuffer,
+): Promise<ExcelParsedRow[] | MissingColumnsError> {
   const XLSX = await loadXlsx();
   const workbook = XLSX.read(buffer, { type: 'array' });
   const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
   const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(firstSheet);
+
+  if (jsonData.length > 0) {
+    const keys = Object.keys(jsonData[0]);
+    const missing: string[] = [];
+    if (!keys.some((k) => k.toLowerCase() === 'id')) missing.push('id');
+    if (!keys.some((k) => /^(label|region|name|area|province|state|country)/i.test(k)))
+      missing.push('label');
+    if (!keys.some((k) => /^(value|count|amount|number|data|total|population)/i.test(k)))
+      missing.push('value');
+    if (missing.length > 0) return { error: 'missing_columns', missing };
+  }
 
   const data: ExcelParsedRow[] = [];
 

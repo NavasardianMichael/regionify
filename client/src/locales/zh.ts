@@ -680,6 +680,7 @@ const zh: CommonNs = {
     failedParseFile: '解析文件失败。下载示例以获取正确格式并匹配标签。',
     noValidDataExcel: 'Excel 文件中未找到有效数据',
     noValidDataFile: '文件中未找到有效数据',
+    missingColumns: '某些列未被识别。请确保数据集的第一行包含：id、label、value',
     downloadSampleFailed: '下载示例失败，请重试。',
     downloadSample: '下载示例',
     close: '关闭',

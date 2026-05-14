@@ -19,12 +19,11 @@ export const MapLegendContent: FC<MapLegendContentProps> = ({
   <>
     {title.show && (
       <Flex align="center" gap={4} className="mb-xs">
-        <Typography.Text className="text-xs text-green-500">●</Typography.Text>
         <Typography.Text
           className="text-xs font-medium"
           style={{
-            color: labels.color,
-            fontSize: `${labels.fontSize}px`,
+            color: title.color,
+            fontSize: `${title.fontSize}px`,
           }}
         >
           {title.text}

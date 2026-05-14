@@ -38,7 +38,7 @@ export type ProjectMapStyles = {
 
 export type ProjectLegendStyles = {
   labels: { color: string; fontSize: number };
-  title: { show: boolean; text: string };
+  title: { show: boolean; text: string; color?: string; fontSize?: number };
   position: string;
   floatingPosition: { x: number; y: number };
   floatingSize: { width: number; height: number | 'auto' };

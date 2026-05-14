@@ -10,6 +10,8 @@ export const useLegendStylesStore = create<LegendStylesState>((set) => ({
   title: {
     show: true,
     text: 'INTENSITY RATIO',
+    color: '#18294D',
+    fontSize: 12,
   },
   position: LEGEND_POSITIONS.floating,
   floatingPosition: { x: 20, y: 20 },

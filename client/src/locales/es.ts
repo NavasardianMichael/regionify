@@ -726,6 +726,8 @@ const es: CommonNs = {
     failedParseFile: 'Error al leer el archivo. Descarga la plantilla para el formato correcto.',
     noValidDataExcel: 'No se encontraron datos válidos en el archivo Excel',
     noValidDataFile: 'No se encontraron datos válidos en el archivo',
+    missingColumns:
+      'Algunas columnas no están identificadas. Asegúrese de que la primera fila de su conjunto de datos incluya: id, label, value',
     downloadSampleFailed: 'Error al descargar la plantilla. Inténtalo de nuevo.',
     downloadSample: 'Descargar plantilla',
     close: 'Cerrar',

@@ -8,7 +8,6 @@ import { AppExpandableModal } from '@/components/shared/AppExpandableModal';
 import { Body } from './Body';
 import { Footer } from './Footer';
 import { SelectColumnHeader } from './SelectColumnHeader';
-import { createSortableTbodyWrapper, SortableBodyRow, useTableDnd } from './tableDnD';
 import { tableTheme } from './tableTheme';
 import { useModalState } from './useModalState';
 import { useTableColumns } from './useTableColumns';
@@ -49,7 +48,6 @@ export const ManualDataEntryModal: FC<Props> = ({
     handleAddMissingRow,
     handleApplyData,
     handleCancel,
-    onRowReorder,
     canAddMissing,
     selectedRowKeys,
     setSelectedRowKeys,
@@ -60,23 +58,6 @@ export const ManualDataEntryModal: FC<Props> = ({
   } = state;
 
   const tableColumns = useTableColumns(state);
-
-  const { sensors, onDragEnd, rowSortableItems } = useTableDnd({
-    rowKeysInOrder: tableData.map((r) => r.key),
-    onRowReorder,
-  });
-
-  const BodyWrapper = useMemo(
-    () => createSortableTbodyWrapper(rowSortableItems),
-    [rowSortableItems],
-  );
-
-  const tableComponents = useMemo(
-    () => ({
-      body: { wrapper: BodyWrapper, row: SortableBodyRow },
-    }),
-    [BodyWrapper],
-  );
 
   const rowSelection = useMemo<TableProps<DataRow>['rowSelection'] | undefined>(
     () =>
@@ -157,7 +138,6 @@ export const ManualDataEntryModal: FC<Props> = ({
         sortDirections={['ascend', 'descend']}
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={onTableChange}
-        components={isGoogleSheetsReadOnly ? undefined : tableComponents}
         className="[&_.ant-table-cell]:min-w-0 [&_.ant-table-cell]:align-middle [&_.ant-table-tbody_.ant-typography]:text-xs"
         locale={{
           filterReset: t('visualizer.manualEntry.filterReset'),
@@ -165,15 +145,7 @@ export const ManualDataEntryModal: FC<Props> = ({
         data-i18n-key="visualizer.manualEntry.filterReset"
       />
     ),
-    [
-      tableColumns,
-      tableData,
-      rowSelection,
-      onTableChange,
-      isGoogleSheetsReadOnly,
-      tableComponents,
-      t,
-    ],
+    [tableColumns, tableData, rowSelection, onTableChange, t],
   );
 
   const handleFooterSave = useCallback(() => {
@@ -206,8 +178,6 @@ export const ManualDataEntryModal: FC<Props> = ({
         <Body
           isGoogleSheetsReadOnly={isGoogleSheetsReadOnly}
           dataTable={dataTable}
-          sensors={sensors}
-          onDragEnd={onDragEnd}
           canAddMissing={canAddMissing}
           onAddMissingRow={handleAddMissingRow}
         />

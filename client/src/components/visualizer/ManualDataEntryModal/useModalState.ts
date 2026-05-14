@@ -29,7 +29,6 @@ import {
   isTimelineManualEntryMode,
   manualEntryRowKeyStatic,
   manualEntryRowKeyTimeline,
-  mergeVisibleRowReorder,
 } from '@/helpers/manualDataEntryHelpers';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { sortTableData } from './sort';
@@ -267,19 +266,6 @@ export function useModalState({
     onClose();
   }, [onClose]);
 
-  const onRowReorder = useCallback(
-    (keysInNewOrder: string[]) => {
-      const nextVisible = keysInNewOrder
-        .map((k) => tableData.find((r) => r.key === k)!)
-        .filter(Boolean);
-      if (nextVisible.length !== tableData.length) return;
-      startTransition(() => {
-        setRows((prev) => mergeVisibleRowReorder(prev, nextVisible));
-      });
-    },
-    [tableData],
-  );
-
   const bulkRemoveSelected = useCallback(() => {
     if (selectedRowKeys.length === 0) return;
     const sel = new Set(selectedRowKeys.map(String));
@@ -395,7 +381,6 @@ export function useModalState({
     handleValueChange,
     handleApplyData,
     handleCancel,
-    onRowReorder,
     bulkMenuItems,
     onBulkMenuClick,
     onActionsClick,

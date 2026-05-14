@@ -97,7 +97,11 @@ export function useLoadProject(): (project: Project, options?: LoadProjectOption
     if (project.legendStyles) {
       setLegendStylesState({
         labels: project.legendStyles.labels,
-        title: project.legendStyles.title,
+        title: {
+          color: '#18294D',
+          fontSize: 12,
+          ...project.legendStyles.title,
+        },
         position: project.legendStyles.position as ReturnType<
           typeof useLegendStylesStore.getState
         >['position'],

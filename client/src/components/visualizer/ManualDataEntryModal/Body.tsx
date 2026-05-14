@@ -1,15 +1,11 @@
 import { type FC, type ReactElement } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import type { DragEndEvent } from '@dnd-kit/core';
-import { DndContext, type useSensors } from '@dnd-kit/core';
 import { Alert, Button, Flex, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type BodyProps = {
   isGoogleSheetsReadOnly: boolean;
   dataTable: ReactElement;
-  sensors: ReturnType<typeof useSensors>;
-  onDragEnd: (event: DragEndEvent) => void;
   canAddMissing: boolean;
   onAddMissingRow: () => void;
 };
@@ -17,8 +13,6 @@ type BodyProps = {
 export const Body: FC<BodyProps> = ({
   isGoogleSheetsReadOnly,
   dataTable,
-  sensors,
-  onDragEnd,
   canAddMissing,
   onAddMissingRow,
 }) => {
@@ -42,15 +36,7 @@ export const Body: FC<BodyProps> = ({
         />
       ) : null}
 
-      <div className="min-h-0 min-w-0 flex-1 basis-0 overflow-auto">
-        {isGoogleSheetsReadOnly ? (
-          dataTable
-        ) : (
-          <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-            {dataTable}
-          </DndContext>
-        )}
-      </div>
+      <div className="min-h-0 min-w-0 flex-1 basis-0 overflow-auto">{dataTable}</div>
 
       {canAddMissing && !isGoogleSheetsReadOnly ? (
         <Button

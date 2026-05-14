@@ -8,6 +8,8 @@ export type LegendLabelsConfig = {
 export type LegendTitleConfig = {
   show: boolean;
   text: string;
+  color: string;
+  fontSize: number;
 };
 
 export type LegendFrameSize = { width: number; height: number };

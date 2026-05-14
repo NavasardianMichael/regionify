@@ -722,6 +722,8 @@ const pt: CommonNs = {
     failedParseFile: 'Falha ao ler o ficheiro. Transfira o exemplo para o formato correto.',
     noValidDataExcel: 'Nenhum dado válido encontrado no ficheiro Excel',
     noValidDataFile: 'Nenhum dado válido encontrado no ficheiro',
+    missingColumns:
+      'Algumas colunas não foram identificadas. Certifique-se de que a primeira linha do seu conjunto de dados inclui: id, label, value',
     downloadSampleFailed: 'Falha ao transferir o exemplo. Tente novamente.',
     downloadSample: 'Transferir exemplo',
     close: 'Fechar',

@@ -732,6 +732,8 @@ const de: CommonNs = {
       'Datei konnte nicht gelesen werden. Laden Sie die Vorlage für das richtige Format herunter.',
     noValidDataExcel: 'Keine gültigen Daten in der Excel-Datei gefunden',
     noValidDataFile: 'Keine gültigen Daten in der Datei gefunden',
+    missingColumns:
+      'Einige Spalten wurden nicht erkannt. Stellen Sie sicher, dass die erste Zeile Ihres Datensatzes enthält: id, label, value',
     downloadSampleFailed: 'Vorlage konnte nicht heruntergeladen werden. Bitte erneut versuchen.',
     downloadSample: 'Vorlage herunterladen',
     close: 'Schließen',

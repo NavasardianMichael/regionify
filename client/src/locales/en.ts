@@ -717,8 +717,10 @@ const en: CommonNs = {
       'Failed to parse Excel file. Download sample to get the correct format and match your labels.',
     failedParseFile:
       'Failed to parse file. Download sample to get the correct format and match your labels.',
-    noValidDataExcel: 'No valid data found in Excel file',
-    noValidDataFile: 'No valid data found in file',
+    noValidDataExcel: 'Invalid value(s) found in the Excel file',
+    noValidDataFile: 'Invalid value(s) found in the file',
+    missingColumns:
+      'Some columns are not identified. Please make sure the first row of your dataset includes: id, label, value',
     downloadSampleFailed: 'Failed to download sample. Please try again.',
     downloadSample: 'Download sample',
     close: 'Close',

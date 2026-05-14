@@ -716,6 +716,8 @@ const ru: CommonNs = {
     failedParseFile: 'Не удалось прочитать файл. Скачайте образец для правильного формата.',
     noValidDataExcel: 'В файле Excel нет допустимых данных',
     noValidDataFile: 'В файле нет допустимых данных',
+    missingColumns:
+      'Некоторые столбцы не распознаны. Убедитесь, что первая строка набора данных содержит: id, label, value',
     downloadSampleFailed: 'Не удалось скачать образец. Попробуйте снова.',
     downloadSample: 'Скачать образец',
     close: 'Закрыть',

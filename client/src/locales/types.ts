@@ -643,6 +643,7 @@ export type CommonNs = {
     failedParseFile: string;
     noValidDataExcel: string;
     noValidDataFile: string;
+    missingColumns: string;
     downloadSampleFailed: string;
     downloadSample: string;
     close: string;

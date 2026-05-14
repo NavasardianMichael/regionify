@@ -16,6 +16,10 @@ export const selectNoDataColor = (state: LegendStylesState) => state.noDataColor
 export const selectLabelsColor = (state: LegendStylesState) => state.labels.color;
 export const selectLabelsFontSize = (state: LegendStylesState) => state.labels.fontSize;
 
+// Title sub-selectors
+export const selectTitleColor = (state: LegendStylesState) => state.title.color;
+export const selectTitleFontSize = (state: LegendStylesState) => state.title.fontSize;
+
 // Action selectors
 export const selectSetLegendStylesState = (state: LegendStylesState) => state.setLegendStylesState;
 export const selectSetLabels = (state: LegendStylesState) => state.setLabels;

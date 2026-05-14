@@ -655,11 +655,11 @@ export const ImportDataPanel: FC = () => {
   const afterSheetCsvParsed = useCallback(
     (csv: string) => {
       const result = parseCSV(csv);
-      if (typeof result === 'object' && 'error' in result) {
+      if ('error' in result) {
         showMessageWithSampleDownload(
           messageApi,
           'error',
-          t('messages.datasetMustIncludeId'),
+          t('messages.missingColumns'),
           handleDownloadSampleOnly,
           { downloadLabel: t('messages.downloadSample') },
         );
@@ -728,6 +728,18 @@ export const ImportDataPanel: FC = () => {
             const buffer = e.target?.result as ArrayBuffer;
             const parsed = await parseExcel(buffer);
 
+            if ('error' in parsed) {
+              showMessageWithSampleDownload(
+                messageApi,
+                'error',
+                t('messages.missingColumns'),
+                handleDownloadSampleOnly,
+                { downloadLabel: t('messages.downloadSample') },
+              );
+              onError?.(new Error('Missing required columns'));
+              return;
+            }
+
             if (parsed.length === 0) {
               showMessageWithClose(messageApi, 'warning', t('messages.noValidDataExcel'));
               onError?.(new Error('No valid data found'));
@@ -760,15 +772,15 @@ export const ImportDataPanel: FC = () => {
 
           if (importDataType === 'csv') {
             const result = parseCSV(content);
-            if (typeof result === 'object' && 'error' in result) {
+            if ('error' in result) {
               showMessageWithSampleDownload(
                 messageApi,
                 'error',
-                t('messages.datasetMustIncludeId'),
+                t('messages.missingColumns'),
                 handleDownloadSampleOnly,
                 { downloadLabel: t('messages.downloadSample') },
               );
-              onError?.(new Error('Missing id column'));
+              onError?.(new Error('Missing required columns'));
               return;
             }
             parsed = result;

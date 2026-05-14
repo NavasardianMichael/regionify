@@ -37,7 +37,19 @@ export const hasIdColumn = (header: string): boolean => {
   return parts.some((p) => p === 'id');
 };
 
-export type ParseCSVResult = ParsedRow[] | { error: 'missing_id' };
+export const hasLabelColumn = (header: string): boolean => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim());
+  return parts.some((p) => /^(label|region|name|area|province|state|country)/i.test(p));
+};
+
+export const hasValueColumn = (header: string): boolean => {
+  const parts = header.split(/[,;\t]/).map((s) => s.trim());
+  return parts.some((p) => /^(value|count|amount|number|data|total|population)/i.test(p));
+};
+
+export type MissingColumnsError = { error: 'missing_columns'; missing: string[] };
+
+export type ParseCSVResult = ParsedRow[] | MissingColumnsError;
 
 /** Strip UTF-8 BOM so headers like `id` parse after re-importing exported CSVs (export adds BOM for Excel). */
 const stripUtf8Bom = (s: string): string => s.replace(/^\uFEFF/, '');
@@ -53,8 +65,14 @@ export const parseCSV = (content: string): ParseCSVResult => {
   const isHeader = /^(id|label|region|name)/i.test(headerLine) || hasTime;
   const startIndex = isHeader ? 1 : 0;
 
-  if (isHeader && !hasId && lines.length > 1) {
-    return { error: 'missing_id' };
+  if (isHeader && lines.length > 1) {
+    const missing: string[] = [];
+    if (!hasId) missing.push('id');
+    if (!hasLabelColumn(headerLine)) missing.push('label');
+    if (!hasValueColumn(headerLine)) missing.push('value');
+    if (missing.length > 0) {
+      return { error: 'missing_columns', missing };
+    }
   }
 
   for (let i = startIndex; i < lines.length; i++) {

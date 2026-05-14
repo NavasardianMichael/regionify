@@ -731,6 +731,8 @@ const fr: CommonNs = {
     failedParseFile: "Échec de la lecture du fichier. Téléchargez l'exemple pour le bon format.",
     noValidDataExcel: 'Aucune donnée valide dans le fichier Excel',
     noValidDataFile: 'Aucune donnée valide dans le fichier',
+    missingColumns:
+      'Certaines colonnes ne sont pas identifiées. Assurez-vous que la première ligne de votre jeu de données contient : id, label, value',
     downloadSampleFailed: "Échec du téléchargement de l'exemple. Veuillez réessayer.",
     downloadSample: "Télécharger l'exemple",
     close: 'Fermer',

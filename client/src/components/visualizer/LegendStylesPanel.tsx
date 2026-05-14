@@ -44,10 +44,15 @@ const LegendStylesPanel: FC = () => {
 
   // Local state for debounced inputs
   const [localTitleText, setLocalTitleText] = useState(title.text);
+  const [localTitleFontSize, setLocalTitleFontSize] = useState(title.fontSize);
   const [localFontSize, setLocalFontSize] = useState(labels.fontSize);
 
   // Debounced store updates
   const debouncedSetTitleText = useDebouncedCallback((text: string) => setTitle({ text }));
+  const debouncedSetTitleFontSize = useDebouncedCallback(
+    (fontSize: number) => setTitle({ fontSize }),
+    100,
+  );
   const debouncedSetFontSize = useDebouncedCallback(
     (fontSize: number) => setLabels({ fontSize }),
     100,
@@ -66,6 +71,20 @@ const LegendStylesPanel: FC = () => {
       debouncedSetTitleText(text);
     },
     [debouncedSetTitleText],
+  );
+
+  // Title color/size handlers
+  const handleTitleColorChange = useCallback<NonNullable<ColorPickerProps['onChangeComplete']>>(
+    (color) => setTitle({ color: color.toHexString() }),
+    [setTitle],
+  );
+
+  const handleTitleFontSizeChange = useCallback(
+    (value: number) => {
+      setLocalTitleFontSize(value);
+      debouncedSetTitleFontSize(value);
+    },
+    [debouncedSetTitleFontSize],
   );
 
   // Labels handlers
@@ -102,9 +121,21 @@ const LegendStylesPanel: FC = () => {
 
   const positionOptions = useMemo(
     () => [
-      { value: LEGEND_POSITIONS.floating, label: t('visualizer.legendStyles.positionFloating') },
-      { value: LEGEND_POSITIONS.bottom, label: t('visualizer.legendStyles.positionBottom') },
-      { value: LEGEND_POSITIONS.hidden, label: t('visualizer.legendStyles.positionHidden') },
+      {
+        value: LEGEND_POSITIONS.floating,
+        className: 'p-1',
+        label: t('visualizer.legendStyles.positionFloating'),
+      },
+      {
+        value: LEGEND_POSITIONS.bottom,
+        className: 'p-1',
+        label: t('visualizer.legendStyles.positionBottom'),
+      },
+      {
+        value: LEGEND_POSITIONS.hidden,
+        className: 'p-1',
+        label: t('visualizer.legendStyles.positionHidden'),
+      },
     ],
     [t],
   );
@@ -207,6 +238,43 @@ const LegendStylesPanel: FC = () => {
                 data-i18n-key="visualizer.legendStyles.titlePlaceholder"
               />
             </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                data-i18n-key="visualizer.legendStyles.textColor"
+              >
+                {t('visualizer.legendStyles.textColor')}
+              </Typography.Text>
+              <ColorPicker
+                value={title.color}
+                onChangeComplete={handleTitleColorChange}
+                size="small"
+                disabled={!title.show}
+              />
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Typography.Text
+                className="text-sm text-gray-600"
+                id="legend-title-font-size-label"
+                data-i18n-key="visualizer.legendStyles.fontSize"
+              >
+                {t('visualizer.legendStyles.fontSize')}
+              </Typography.Text>
+              <Flex align="center" gap="small" className="w-1/2">
+                <Slider
+                  min={8}
+                  max={24}
+                  value={localTitleFontSize}
+                  onChange={handleTitleFontSizeChange}
+                  className="flex-1"
+                  disabled={!title.show}
+                  aria-labelledby="legend-title-font-size-label"
+                />
+                <Typography.Text className="w-8 text-right text-sm text-gray-500">
+                  {localTitleFontSize}pt
+                </Typography.Text>
+              </Flex>
+            </Flex>
           </Flex>
         ),
       },
@@ -301,13 +369,17 @@ const LegendStylesPanel: FC = () => {
       labels.color,
       localFontSize,
       title.show,
+      title.color,
       localTitleText,
+      localTitleFontSize,
       position,
       transparentBackground,
       legendBackgroundColor,
       positionOptions,
       handleTitleShowChange,
       handleTitleTextChange,
+      handleTitleColorChange,
+      handleTitleFontSizeChange,
       handleLabelsColorChange,
       handleLabelsFontSizeChange,
       handleLegendTransparentChange,
