@@ -531,6 +531,7 @@ export const generateMapCanvas = async (
   quality: number,
   format: 'png' | 'jpeg',
   opts?: StillExportOpts,
+  targetHeight?: number,
 ): Promise<HTMLCanvasElement | null> => {
   const root = document.querySelector<HTMLElement>(MAP_EXPORT_ROOT);
   if (!root) return null;
@@ -542,10 +543,10 @@ export const generateMapCanvas = async (
   const svgEl = root.querySelector<SVGSVGElement>(MAP_SVG_SELECTOR);
   if (!svgEl) return null;
 
-  const qs = qualityToScale(quality);
   const rootRect = root.getBoundingClientRect();
+  const qs = targetHeight != null ? targetHeight / rootRect.height : qualityToScale(quality);
   const w = Math.max(1, Math.round(rootRect.width * qs));
-  const h = Math.max(1, Math.round(rootRect.height * qs));
+  const h = Math.max(1, targetHeight ?? Math.round(rootRect.height * qs));
 
   const canvas = document.createElement('canvas');
   canvas.width = w;
@@ -599,10 +600,17 @@ export const generateMapCanvasFallback = async (
   quality: number,
   format: 'png' | 'jpeg',
   opts?: StillExportOpts,
+  targetHeight?: number,
 ): Promise<HTMLCanvasElement> => {
-  const clone = prepareSvgForExport(getMapSvgElement());
+  const svgEl = getMapSvgElement();
+  const clone = prepareSvgForExport(svgEl);
   const svgString = new XMLSerializer().serializeToString(clone);
-  const canvas = await svgToCanvas(svgString, qualityToScale(quality));
+  const svgRect = svgEl.getBoundingClientRect();
+  const scale =
+    targetHeight != null && svgRect.height > 0
+      ? targetHeight / svgRect.height
+      : qualityToScale(quality);
+  const canvas = await svgToCanvas(svgString, scale);
   const ctx = canvas.getContext('2d');
 
   if (format === 'jpeg') {

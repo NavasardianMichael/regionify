@@ -29,6 +29,8 @@ export type BadgeDetails = {
     allowedAnimationFormats: readonly ExportType[];
     /** Chronographer: public embed URL / iframe for a project map. */
     publicEmbed: boolean;
+    /** High-resolution export tiers (2K, 4K) enabled (Explorer+). */
+    highResolutionExport: boolean;
   };
 };
 
@@ -46,6 +48,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       historicalDataImport: false,
       animationExport: false,
       publicEmbed: false,
+      highResolutionExport: false,
     },
   },
   [BADGES.explorer]: {
@@ -66,6 +69,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       historicalDataImport: false,
       animationExport: false,
       publicEmbed: true,
+      highResolutionExport: true,
     },
   },
   [BADGES.chronographer]: {
@@ -88,6 +92,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       historicalDataImport: true,
       animationExport: true,
       publicEmbed: true,
+      highResolutionExport: true,
     },
   },
 };

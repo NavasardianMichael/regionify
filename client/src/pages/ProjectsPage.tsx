@@ -180,7 +180,7 @@ const ProjectsPage: FC = () => {
             >
               {t('projects.title')}
             </Typography.Title>
-            {projects.length > 0 && displayedProjects.length ? (
+            {projects.length > 0 ? (
               <Flex align="center" justify="space-between" wrap="wrap" gap="middle">
                 <Flex align="center" wrap="wrap" gap="small">
                   <Checkbox
@@ -199,6 +199,7 @@ const ProjectsPage: FC = () => {
                     onChange={setSortOption}
                     className="min-w-44"
                     options={sortSelectOptions}
+                    disabled={displayedProjects.length === 0}
                     aria-label={t('projects.sortAria')}
                     data-i18n-key="projects.sortAria"
                   />

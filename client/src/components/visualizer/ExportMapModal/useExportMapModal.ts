@@ -37,6 +37,7 @@ import {
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
+import { RESOLUTION_TIERS } from '@/constants/exportTiers';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
 import { PDF_PAGE_FORMAT_OPTIONS } from '@/constants/pdfExport';
@@ -372,7 +373,10 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     animationBaseOptions,
   ]);
 
-  const crop = useExportCrop({ generatePreviewCanvas });
+  const crop = useExportCrop({
+    generatePreviewCanvas,
+    highResolutionExport: limits.highResolutionExport,
+  });
 
   const handleNext = useCallback(async () => {
     setStep(2);
@@ -420,6 +424,7 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
             fileName,
             frameOptions: pdfFrameOptions,
             watermark: watermarkActive ? { text: 'Regionify' } : undefined,
+            backgroundColor: resolvedStillOpts.backgroundColor,
             onProgress: setProgress,
             pageFormat: pdfPageFormat,
             orientation: pdfOrientation,
@@ -468,12 +473,20 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         // so the watermark is always correctly positioned in the final export.
         const { watermark, ...cleanOpts } = resolvedStillOpts;
         const format = exportType === EXPORT_TYPES.jpeg ? 'jpeg' : 'png';
-        let cleanCanvas = await generateMapCanvas(resolvedQuality, format, cleanOpts);
+        const activeTier = RESOLUTION_TIERS.find((t) => t.value === crop.selectedTier);
+        const targetHeight = activeTier?.height;
+        let cleanCanvas = await generateMapCanvas(resolvedQuality, format, cleanOpts, targetHeight);
         if (!cleanCanvas)
-          cleanCanvas = await generateMapCanvasFallback(resolvedQuality, format, cleanOpts);
+          cleanCanvas = await generateMapCanvasFallback(
+            resolvedQuality,
+            format,
+            cleanOpts,
+            targetHeight,
+          );
         if (!cleanCanvas) throw new Error('Failed to generate export canvas');
 
-        const cropRect = crop.getCropRect();
+        // When a tier is active it is always a full-frame export — skip crop.
+        const cropRect = activeTier ? null : crop.getCropRect();
         const finalCanvas = cropRect ? cropCanvas(cleanCanvas, cropRect) : cleanCanvas;
 
         if (watermark) {

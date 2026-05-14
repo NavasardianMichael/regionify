@@ -123,17 +123,17 @@ const LegendStylesPanel: FC = () => {
     () => [
       {
         value: LEGEND_POSITIONS.floating,
-        className: 'p-1',
+        className: 'p-0.5',
         label: t('visualizer.legendStyles.positionFloating'),
       },
       {
         value: LEGEND_POSITIONS.bottom,
-        className: 'p-1',
+        className: 'p-0.5',
         label: t('visualizer.legendStyles.positionBottom'),
       },
       {
         value: LEGEND_POSITIONS.hidden,
-        className: 'p-1',
+        className: 'p-0.5',
         label: t('visualizer.legendStyles.positionHidden'),
       },
     ],

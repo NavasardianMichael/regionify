@@ -1,6 +1,10 @@
 import { type FC, useMemo } from 'react';
 import { Cropper, ImageRestriction, Priority } from 'react-advanced-cropper';
-import { Flex, InputNumber, Segmented, Spin, Typography } from 'antd';
+import { NavLink } from 'react-router-dom';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Flex, InputNumber, Segmented, Spin, Tooltip, Typography } from 'antd';
+import { RESOLUTION_TIERS, type ResolutionTier } from '@/constants/exportTiers';
+import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import {
   ASPECT_RATIO_OPTIONS,
@@ -24,10 +28,14 @@ export const Step: FC<Props> = ({ crop }) => {
     cropWidth,
     cropHeight,
     imageSize,
+    selectedTier,
+    highResolutionExport,
+    HIGH_RES_TIER_MIN_HEIGHT,
     handleCropChange,
     handleAspectRatioChange,
     handleWidthChange,
     handleHeightChange,
+    setSelectedTier,
   } = crop;
   const isDisabled = isGeneratingPreview;
 
@@ -39,6 +47,18 @@ export const Step: FC<Props> = ({ crop }) => {
           : option,
       ),
     [t],
+  );
+
+  const tierOptions = useMemo(
+    () => [
+      { value: null, label: t('visualizer.exportModal.tierOriginal') },
+      ...RESOLUTION_TIERS.map(({ value, label, height }) => ({
+        value,
+        label,
+        disabled: !highResolutionExport && height >= HIGH_RES_TIER_MIN_HEIGHT,
+      })),
+    ],
+    [t, highResolutionExport, HIGH_RES_TIER_MIN_HEIGHT],
   );
 
   return (
@@ -70,6 +90,41 @@ export const Step: FC<Props> = ({ crop }) => {
           />
         </div>
       ) : null}
+
+      <Flex vertical gap="small">
+        <Flex align="center" gap="small">
+          <Typography.Text
+            className="text-sm text-gray-600"
+            data-i18n-key="visualizer.exportModal.resolutionTierLabel"
+          >
+            {t('visualizer.exportModal.resolutionTierLabel')}
+          </Typography.Text>
+          {!highResolutionExport && (
+            <Tooltip
+              title={
+                <span>
+                  {t('visualizer.exportModal.tierHighResLocked')}{' '}
+                  <NavLink
+                    to={ROUTES.BILLING}
+                    className="text-white! underline! underline-offset-2! hover:text-white!"
+                  >
+                    {t('visualizer.embed.upgradeBadgesLink')}
+                  </NavLink>
+                </span>
+              }
+            >
+              <InfoCircleOutlined className="shrink-0 cursor-help text-gray-400" />
+            </Tooltip>
+          )}
+        </Flex>
+        <Segmented
+          className="w-fit"
+          value={selectedTier}
+          onChange={(v) => setSelectedTier(v as ResolutionTier | null)}
+          options={tierOptions}
+          disabled={isDisabled}
+        />
+      </Flex>
 
       <Flex vertical gap="small">
         <Typography.Text
@@ -107,7 +162,7 @@ export const Step: FC<Props> = ({ crop }) => {
               max={imageSize?.width}
               value={cropWidth}
               onChange={handleWidthChange}
-              disabled={isDisabled}
+              disabled={isDisabled || selectedTier !== null}
             />
           </Flex>
           <Typography.Text className="text-xs text-gray-400">×</Typography.Text>
@@ -123,7 +178,7 @@ export const Step: FC<Props> = ({ crop }) => {
               max={imageSize?.height}
               value={cropHeight}
               onChange={handleHeightChange}
-              disabled={isDisabled}
+              disabled={isDisabled || selectedTier !== null}
             />
           </Flex>
         </Flex>

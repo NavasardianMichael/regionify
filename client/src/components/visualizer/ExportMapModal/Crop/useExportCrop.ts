@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type CropperRef } from 'react-advanced-cropper';
+import {
+  HIGH_RES_TIER_MIN_HEIGHT,
+  RESOLUTION_TIERS,
+  type ResolutionTier,
+} from '@/constants/exportTiers';
 import { type CropRect } from '@/helpers/mapExport';
 
 export type AspectRatioPreset = 'free' | '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
@@ -22,11 +27,17 @@ export const ASPECT_RATIO_OPTIONS: { value: AspectRatioPreset; label: string }[]
   { value: '9:16', label: '9:16' },
 ];
 
+const DEFAULT_TIER: ResolutionTier = '1080p';
+
 type UseExportCropParams = {
   generatePreviewCanvas: () => Promise<HTMLCanvasElement | null>;
+  highResolutionExport: boolean;
 };
 
-export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
+export function useExportCrop({
+  generatePreviewCanvas,
+  highResolutionExport,
+}: UseExportCropParams) {
   const cropperRef = useRef<CropperRef>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
@@ -35,8 +46,40 @@ export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
   const [cropHeight, setCropHeight] = useState<number | null>(null);
   /** Full image dimensions for computing max crop bounds. */
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+  const [selectedTier, setSelectedTierState] = useState<ResolutionTier | null>(DEFAULT_TIER);
 
   const aspectRatio = useMemo(() => ASPECT_RATIO_VALUES[aspectRatioPreset], [aspectRatioPreset]);
+
+  const tierDimensions = useMemo(() => {
+    if (!imageSize) return null;
+    const ar = imageSize.width / imageSize.height;
+    return Object.fromEntries(
+      RESOLUTION_TIERS.map(({ value, height }) => [
+        value,
+        { width: Math.round(height * ar), height },
+      ]),
+    ) as Record<ResolutionTier, { width: number; height: number }>;
+  }, [imageSize]);
+
+  const applyTier = useCallback(
+    (tier: ResolutionTier | null) => {
+      setSelectedTierState(tier);
+      if (!tier || !tierDimensions) return;
+      const { width, height } = tierDimensions[tier];
+      setCropWidth(width);
+      setCropHeight(height);
+      const cropper = cropperRef.current;
+      if (cropper && imageSize) {
+        cropper.setCoordinates({
+          left: 0,
+          top: 0,
+          width: imageSize.width,
+          height: imageSize.height,
+        });
+      }
+    },
+    [tierDimensions, imageSize],
+  );
 
   const generatePreview = useCallback(async () => {
     setIsGeneratingPreview(true);
@@ -44,10 +87,21 @@ export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
       const canvas = await generatePreviewCanvas();
       if (!canvas) return;
 
-      setImageSize({ width: canvas.width, height: canvas.height });
-      setCropWidth(canvas.width);
-      setCropHeight(canvas.height);
+      const size = { width: canvas.width, height: canvas.height };
+      setImageSize(size);
       setAspectRatioPreset('free');
+
+      // Apply default tier if it fits, otherwise fall back to full frame
+      const ar = size.width / size.height;
+      const defaultTierDef = RESOLUTION_TIERS.find((t) => t.value === DEFAULT_TIER);
+      if (defaultTierDef) {
+        setCropWidth(Math.round(defaultTierDef.height * ar));
+        setCropHeight(defaultTierDef.height);
+      } else {
+        setCropWidth(canvas.width);
+        setCropHeight(canvas.height);
+      }
+      setSelectedTierState(DEFAULT_TIER);
 
       const blob = await new Promise<Blob | null>((resolve) => {
         canvas.toBlob(resolve, 'image/png');
@@ -73,21 +127,34 @@ export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
     };
   }, []);
 
-  const handleCropChange = useCallback((_cropper: CropperRef) => {
-    const coords = _cropper.getCoordinates();
-    if (!coords) return;
-    setCropWidth(Math.round(coords.width));
-    setCropHeight(Math.round(coords.height));
-  }, []);
+  const handleCropChange = useCallback(
+    (_cropper: CropperRef) => {
+      const coords = _cropper.getCoordinates();
+      if (!coords) return;
+      const newW = Math.round(coords.width);
+      const newH = Math.round(coords.height);
+      setCropWidth(newW);
+      setCropHeight(newH);
+
+      // Deselect tier if the user dragged to different dimensions
+      if (selectedTier && tierDimensions) {
+        const expected = tierDimensions[selectedTier];
+        if (Math.abs(newW - expected.width) > 2 || Math.abs(newH - expected.height) > 2) {
+          setSelectedTierState(null);
+        }
+      }
+    },
+    [selectedTier, tierDimensions],
+  );
 
   const handleAspectRatioChange = useCallback((preset: AspectRatioPreset) => {
     setAspectRatioPreset(preset);
-    // The cropper will automatically adjust when the stencilProps.aspectRatio changes
-    // via the React render cycle. We also reset crop size so width/height inputs stay fresh.
+    setSelectedTierState(null);
   }, []);
 
   const handleWidthChange = useCallback(
     (value: number | null) => {
+      setSelectedTierState(null);
       if (value === null || !imageSize) {
         setCropWidth(value);
         return;
@@ -119,6 +186,7 @@ export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
 
   const handleHeightChange = useCallback(
     (value: number | null) => {
+      setSelectedTierState(null);
       if (value === null || !imageSize) {
         setCropHeight(value);
         return;
@@ -186,6 +254,7 @@ export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
     setCropWidth(null);
     setCropHeight(null);
     setImageSize(null);
+    setSelectedTierState(DEFAULT_TIER);
   }, []);
 
   return {
@@ -197,11 +266,16 @@ export function useExportCrop({ generatePreviewCanvas }: UseExportCropParams) {
     cropWidth,
     cropHeight,
     imageSize,
+    selectedTier,
+    tierDimensions,
+    highResolutionExport,
+    HIGH_RES_TIER_MIN_HEIGHT,
     generatePreview,
     handleCropChange,
     handleAspectRatioChange,
     handleWidthChange,
     handleHeightChange,
+    setSelectedTier: applyTier,
     getCroppedCanvas,
     getCropRect,
     reset,

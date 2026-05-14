@@ -14,42 +14,53 @@ export type PdfOrientation = 'portrait' | 'landscape';
 const makePdf = (format: PdfPageFormat, orientation: PdfOrientation): jsPDF =>
   new jsPDF({ orientation, unit: 'mm', format });
 
-/** Scales image to fill one page dimension, centers on the other — no distortion. */
-const fitImageToPage = (
-  imgWidthPx: number,
-  imgHeightPx: number,
+/**
+ * Renders the map canvas, background fill, and watermark onto a single full-page canvas.
+ * The map is centered (letterboxed), the watermark is anchored to the page bottom — not
+ * the map image bottom — so it stays consistent regardless of aspect-ratio margins.
+ */
+const compositePageCanvas = async (
+  mapCanvas: HTMLCanvasElement,
   pdf: jsPDF,
-): { x: number; y: number; width: number; height: number } => {
+  opts: {
+    backgroundColor?: string;
+    watermark?: StillExportOpts['watermark'];
+  },
+): Promise<HTMLCanvasElement> => {
+  const MM_TO_PX = 144 / 25.4; // 144 DPI
   const pageW = pdf.internal.pageSize.getWidth();
   const pageH = pdf.internal.pageSize.getHeight();
-  const imgAspect = imgWidthPx / imgHeightPx;
-  const pageAspect = pageW / pageH;
-  let width: number, height: number;
-  if (imgAspect > pageAspect) {
-    width = pageW;
-    height = pageW / imgAspect;
-  } else {
-    height = pageH;
-    width = pageH * imgAspect;
-  }
-  return { x: (pageW - width) / 2, y: (pageH - height) / 2, width, height };
-};
+  const pxW = Math.round(pageW * MM_TO_PX);
+  const pxH = Math.round(pageH * MM_TO_PX);
 
-/**
- * Composites the source canvas onto a white background before PNG encoding.
- * Removes the alpha channel so jsPDF embeds a simpler RGB PNG (no viewer-dependent
- * alpha handling) and anti-aliased region edges blend consistently against white paper.
- */
-const toPdfPngDataUrl = (source: HTMLCanvasElement): string => {
   const out = document.createElement('canvas');
-  out.width = source.width;
-  out.height = source.height;
+  out.width = pxW;
+  out.height = pxH;
   const ctx = out.getContext('2d');
-  if (!ctx) return source.toDataURL('image/png');
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, out.width, out.height);
-  ctx.drawImage(source, 0, 0);
-  return out.toDataURL('image/png');
+  if (!ctx) return mapCanvas;
+
+  ctx.fillStyle = opts.backgroundColor ?? '#ffffff';
+  ctx.fillRect(0, 0, pxW, pxH);
+
+  const imgAspect = mapCanvas.width / mapCanvas.height;
+  const pageAspect = pxW / pxH;
+  let drawW: number, drawH: number;
+  if (imgAspect > pageAspect) {
+    drawW = pxW;
+    drawH = pxW / imgAspect;
+  } else {
+    drawH = pxH;
+    drawW = pxH * imgAspect;
+  }
+  const drawX = Math.round((pxW - drawW) / 2);
+  const drawY = Math.round((pxH - drawH) / 2);
+  ctx.drawImage(mapCanvas, drawX, drawY, drawW, drawH);
+
+  if (opts.watermark) {
+    await drawWatermark(ctx, pxW, pxH, opts.watermark);
+  }
+
+  return out;
 };
 
 export type SinglePagePdfOptions = {
@@ -73,14 +84,15 @@ export const exportMapAsSinglePagePdf = async ({
   if (!canvas) canvas = await generateMapCanvasFallback(quality, 'png', cleanOpts);
   if (!canvas) throw new Error('Failed to generate canvas for PDF export');
 
-  if (watermark) {
-    const ctx = canvas.getContext('2d');
-    if (ctx) await drawWatermark(ctx, canvas.width, canvas.height, watermark);
-  }
-
   const pdf = makePdf(pageFormat, orientation);
-  const { x, y, width, height } = fitImageToPage(canvas.width, canvas.height, pdf);
-  pdf.addImage(toPdfPngDataUrl(canvas), 'PNG', x, y, width, height);
+  const pageCanvas = await compositePageCanvas(canvas, pdf, {
+    backgroundColor: cleanOpts?.backgroundColor,
+    watermark,
+  });
+
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+  pdf.addImage(pageCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageW, pageH);
   pdf.save(`${fileName}.pdf`);
 };
 
@@ -92,6 +104,7 @@ export type MultiPagePdfOptions = {
   fileName?: string;
   frameOptions: FrameOptions;
   watermark?: StillExportOpts['watermark'];
+  backgroundColor?: string;
   onProgress?: (progress: number) => void;
   pageFormat?: PdfPageFormat;
   orientation?: PdfOrientation;
@@ -105,6 +118,7 @@ export const exportMapAsMultiPagePdf = async ({
   fileName = 'regionify-map',
   frameOptions,
   watermark,
+  backgroundColor,
   onProgress,
   pageFormat = 'a4',
   orientation = 'portrait',
@@ -121,19 +135,16 @@ export const exportMapAsMultiPagePdf = async ({
 
     const frameCanvas = await renderFrame(rawSvg, data, period, scale, frameOptions);
 
-    if (watermark) {
-      const ctx = frameCanvas.getContext('2d');
-      if (ctx) await drawWatermark(ctx, frameCanvas.width, frameCanvas.height, watermark);
-    }
-
     if (!pdf) {
       pdf = makePdf(pageFormat, orientation);
     } else {
       pdf.addPage(pageFormat as string, orientation);
     }
 
-    const { x, y, width, height } = fitImageToPage(frameCanvas.width, frameCanvas.height, pdf);
-    pdf.addImage(toPdfPngDataUrl(frameCanvas), 'PNG', x, y, width, height);
+    const pageCanvas = await compositePageCanvas(frameCanvas, pdf, { backgroundColor, watermark });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    pdf.addImage(pageCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageW, pageH);
     onProgress?.((i + 1) / timePeriods.length);
   }
 

@@ -24,6 +24,12 @@
     margin-inline-start: -8px;
   }
 
+  :where(.css-dev-only-do-not-override-tchc97).ant-splitter
+    > .ant-splitter-bar
+    .ant-splitter-bar-collapse-bar:hover:not(.ant-splitter-bar-collapse-bar-customize) {
+    background-color: rgb(230, 230, 230) !important;
+  }
+
   /* Fix placeholder color contrast for accessibility (WCAG 4.5:1 ratio) */
   .ant-select-placeholder {
     color: #767676 !important;
@@ -44,7 +50,7 @@
 }
 
 .export-cropper.advanced-cropper {
-  background: #18294d;
+  background: #263f75 !important;
 }
 
 .export-cropper {

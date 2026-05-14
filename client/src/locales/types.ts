@@ -352,6 +352,9 @@ export type CommonNs = {
       secondsPerPeriod: string;
       smoothTransitions: string;
       animationDuration: string;
+      resolutionTierLabel: string;
+      tierOriginal: string;
+      tierHighResLocked: string;
       aspectRatioLabel: string;
       aspectRatioPresetFree: string;
       resolutionLabel: string;
