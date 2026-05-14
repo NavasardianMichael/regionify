@@ -75,10 +75,10 @@ COPY --from=builder /app/client/dist/client ./client/dist/client
 COPY server/entrypoint.sh ./server/entrypoint.sh
 RUN chmod +x server/entrypoint.sh
 
-# Create non-root user and set ownership
+# Create non-root user (recursive chown on /app is intentionally avoided:
+# it is very slow on low-IO hosts and not required for runtime reads/execution)
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S regionify -u 1001 && \
-    chown -R regionify:nodejs /app
+    adduser -S regionify -u 1001 -G nodejs
 
 USER regionify
 WORKDIR /app/server

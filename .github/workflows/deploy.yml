@@ -44,6 +44,7 @@ env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10.12.4'
   KEEP_RELEASES: 1
+  SSH_OPTS: '-o ServerAliveInterval=30 -o ServerAliveCountMax=120 -o TCPKeepAlive=yes -o ConnectTimeout=30'
 
 jobs:
   changes:
@@ -332,14 +333,14 @@ jobs:
       - name: Copy client bundle to host
         if: needs.changes.outputs.deploy_client == 'true'
         run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+          scp ${{ env.SSH_OPTS }} -P "${{ secrets.SSH_PORT || 22 }}" \
             client-build.tar.gz \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
 
       - name: Deploy client
         if: needs.changes.outputs.deploy_client == 'true'
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+          ssh ${{ env.SSH_OPTS }} -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
             "${{ secrets.APP_DIR }}" \
             "${{ needs.changes.outputs.release_name }}" \
             "${{ env.KEEP_RELEASES }}" << 'EOF'
@@ -364,14 +365,14 @@ jobs:
       - name: Copy marketing bundle to host
         if: needs.changes.outputs.deploy_marketing == 'true'
         run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+          scp ${{ env.SSH_OPTS }} -P "${{ secrets.SSH_PORT || 22 }}" \
             marketing-build.tar.gz \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
 
       - name: Deploy marketing
         if: needs.changes.outputs.deploy_marketing == 'true'
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+          ssh ${{ env.SSH_OPTS }} -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
             "${{ secrets.APP_DIR }}" \
             "${{ needs.changes.outputs.release_name }}" \
             "${{ env.KEEP_RELEASES }}" << 'EOF'
@@ -396,21 +397,21 @@ jobs:
       - name: Copy server bundle to host
         if: needs.changes.outputs.deploy_server == 'true'
         run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+          scp ${{ env.SSH_OPTS }} -P "${{ secrets.SSH_PORT || 22 }}" \
             server-build.tar.gz \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
 
       - name: Copy env to host
         if: needs.changes.outputs.deploy_server == 'true'
         run: |
-          scp -P "${{ secrets.SSH_PORT || 22 }}" \
+          scp ${{ env.SSH_OPTS }} -P "${{ secrets.SSH_PORT || 22 }}" \
             /tmp/env.production \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/env.production"
 
       - name: Deploy server
         if: needs.changes.outputs.deploy_server == 'true'
         run: |
-          ssh -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
+          ssh ${{ env.SSH_OPTS }} -p "${{ secrets.SSH_PORT || 22 }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s -- \
             "${{ secrets.APP_DIR }}" \
             "${{ needs.changes.outputs.release_name }}" \
             "${{ env.KEEP_RELEASES }}" << 'EOF'
