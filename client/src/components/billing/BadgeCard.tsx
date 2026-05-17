@@ -37,7 +37,7 @@ const BadgeCard: FC<BadgeCardProps> = ({
   const isLowerTierThanCurrent = BADGE_TIER_RANK[tier.id] < BADGE_TIER_RANK[currentBadge];
   const isActionDisabled = isCurrentBadge || isLowerTierThanCurrent;
   const isUpgrading = upgradingBadge === tier.id;
-  const showPopularHighlight = tier.popular && currentBadge !== BADGES.chronographer;
+  const showPopularHighlight = tier.popular && currentBadge === BADGES.observer;
 
   const handleClick = useCallback(() => {
     if (tier.id === BADGES.explorer || tier.id === BADGES.chronographer) {

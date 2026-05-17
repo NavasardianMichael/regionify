@@ -112,8 +112,8 @@ export const Navigation: FC = () => {
   const userDisplayName = user?.name?.trim() ?? '';
   const userNameTextProps = {
     ellipsis: { tooltip: userDisplayName || undefined },
-    className: 'mb-0! min-w-0 text-sm font-medium text-gray-700',
-    style: { maxWidth: 200 },
+    className:
+      'mb-0! inline-block max-w-[180px]! truncate align-middle text-sm font-medium text-gray-700',
   };
 
   const userMenuItems: DropdownProps['menu'] = useMemo(
@@ -187,7 +187,10 @@ export const Navigation: FC = () => {
       <div className="h-6 w-px bg-gray-200" aria-hidden />
       {isLoggedIn ? (
         <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
-          <Button type="text" className="flex! max-w-full min-w-0 items-center gap-2 px-2! py-1!">
+          <Button
+            type="text"
+            className="flex! max-w-[220px] min-w-0 items-center gap-2 px-2! py-1!"
+          >
             <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
             <Typography.Text {...userNameTextProps}>{user?.name}</Typography.Text>
             <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
@@ -229,8 +232,7 @@ export const Navigation: FC = () => {
             <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
             <Typography.Text
               ellipsis={{ tooltip: userDisplayName || undefined }}
-              className="mb-0! min-w-0 text-sm font-medium text-gray-800"
-              style={{ maxWidth: 200 }}
+              className="mb-0! inline-block max-w-[200px] truncate align-middle text-sm font-medium text-gray-800"
             >
               {user?.name}
             </Typography.Text>
