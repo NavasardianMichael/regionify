@@ -43,7 +43,7 @@ permissions:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10.12.4'
-  KEEP_RELEASES: 1
+  KEEP_RELEASES: 2
   SSH_OPTS: '-o ServerAliveInterval=30 -o ServerAliveCountMax=120 -o TCPKeepAlive=yes -o ConnectTimeout=30'
 
 jobs:

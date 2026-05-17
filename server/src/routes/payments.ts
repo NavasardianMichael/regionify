@@ -70,15 +70,19 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   }
 
   const payload = req.body as Parameters<typeof paymentService.handleTransactionCompleted>[0];
+  const userId = payload.data?.custom_data?.user_id;
+  const priceId = payload.data?.items?.[0]?.price?.id;
+  const transactionId = payload.data?.id;
+
   logger.info(
-    { userId: payload.data?.custom_data?.user_id, priceId: payload.data?.items?.[0]?.price?.id },
+    { userId, priceId, transactionId, action: 'payment_completed' },
     'paddle webhook: handling transaction.completed',
   );
   paymentService
     .handleTransactionCompleted(payload)
     .then(() => {
       logger.info(
-        { userId: payload.data?.custom_data?.user_id },
+        { userId, priceId, transactionId, action: 'payment_completed' },
         'paddle webhook: badge update complete',
       );
       res.status(200).send();

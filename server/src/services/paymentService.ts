@@ -44,6 +44,7 @@ type PaddlePricingPreviewResponse = {
 
 type TransactionCompletedPayload = {
   data?: {
+    id?: string;
     custom_data?: { user_id?: string };
     items?: Array<{ price?: { id?: string } }>;
   };
