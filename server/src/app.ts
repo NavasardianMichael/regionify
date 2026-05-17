@@ -82,12 +82,18 @@ export function createApp(): express.Application {
   );
 
   // CORS
+  const allowedHeaders = ['Content-Type', 'X-Requested-With'];
+  if (!isProd) {
+    // Dev-only: the client's ngrok shim sends this header to bypass ngrok-free's
+    // "Visit Site" interstitial. Production never sees it.
+    allowedHeaders.push('ngrok-skip-browser-warning');
+  }
   app.use(
     cors({
       origin: env.CORS_ORIGINS,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'X-Requested-With'],
+      allowedHeaders,
     }),
   );
 
@@ -134,8 +140,12 @@ export function createApp(): express.Application {
       rolling: true,
       cookie: {
         httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? 'strict' : 'lax',
+        secure: isProd || new URL(env.CLIENT_URL).hostname !== 'localhost',
+        sameSite: isProd
+          ? 'strict'
+          : new URL(env.CLIENT_URL).hostname !== 'localhost'
+            ? 'none'
+            : 'lax',
         maxAge: env.SESSION_MAX_AGE,
       },
     }),

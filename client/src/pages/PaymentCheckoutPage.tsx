@@ -26,6 +26,7 @@ const PaymentCheckoutPage: FC = () => {
   const hasConfig = Boolean(PADDLE_CLIENT_TOKEN) && Boolean(ptxn);
   const [initFailed, setInitFailed] = useState(false);
   const paddleRef = useRef<Paddle | null>(null);
+  const completedRef = useRef(false);
 
   useEffect(() => {
     if (!ptxn) {
@@ -44,8 +45,9 @@ const PaymentCheckoutPage: FC = () => {
 
     const handleEvent = (event: PaddleEventData): void => {
       if (event.name === 'checkout.completed') {
+        completedRef.current = true;
         navigate(ROUTES.PAYMENTS_RETURN, { replace: true });
-      } else if (event.name === 'checkout.closed') {
+      } else if (event.name === 'checkout.closed' && !completedRef.current) {
         navigate(ROUTES.PAYMENTS_CANCEL, { replace: true });
       }
     };

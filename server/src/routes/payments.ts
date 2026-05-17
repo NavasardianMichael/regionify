@@ -1,6 +1,7 @@
 import { Badge, BADGES } from '@regionify/shared';
 import { type Router as ExpressRouter, Router, type Request } from 'express';
 
+import { logger } from '@/lib/logger.js';
 import { requireAuth } from '@/middleware/requireAuth.js';
 import { paymentService } from '@/services/paymentService.js';
 
@@ -42,7 +43,10 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   const rawBody = req.rawBody;
   const signature = req.get('Paddle-Signature') ?? '';
 
+  logger.debug({ signature: signature.slice(0, 40) }, 'paddle webhook received');
+
   if (!rawBody) {
+    logger.warn('paddle webhook: missing raw body');
     res
       .status(400)
       .json({ success: false, error: { code: 'BAD_REQUEST', message: 'Missing body' } });
@@ -50,6 +54,7 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   }
 
   if (!paymentService.verifyWebhookSignature(rawBody, signature)) {
+    logger.warn({ signature: signature.slice(0, 40) }, 'paddle webhook: invalid signature');
     res
       .status(401)
       .json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid signature' } });
@@ -57,15 +62,27 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   }
 
   const body = req.body as { event_type?: string };
+  logger.debug({ eventType: body.event_type }, 'paddle webhook: event type');
+
   if (body.event_type !== 'transaction.completed') {
     res.status(200).send();
     return;
   }
 
   const payload = req.body as Parameters<typeof paymentService.handleTransactionCompleted>[0];
+  logger.info(
+    { userId: payload.data?.custom_data?.user_id, priceId: payload.data?.items?.[0]?.price?.id },
+    'paddle webhook: handling transaction.completed',
+  );
   paymentService
     .handleTransactionCompleted(payload)
-    .then(() => res.status(200).send())
+    .then(() => {
+      logger.info(
+        { userId: payload.data?.custom_data?.user_id },
+        'paddle webhook: badge update complete',
+      );
+      res.status(200).send();
+    })
     .catch(next);
 });
 
