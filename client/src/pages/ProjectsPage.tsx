@@ -203,25 +203,24 @@ const ProjectsPage: FC = () => {
                     aria-label={t('projects.sortAria')}
                     data-i18n-key="projects.sortAria"
                   />
-                  {selectedCount > 0 && (
-                    <Tooltip
-                      title={
-                        selectedCount === 0 ? t('projects.deleteSelectedDisabledTooltip') : null
-                      }
-                    >
-                      <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={handleBulkDelete}
-                        data-i18n-key="projects.deleteSelected"
-                      >
-                        {t('projects.deleteSelected')}
-                      </Button>
-                    </Tooltip>
-                  )}
+                  <Button
+                    danger
+                    type="primary"
+                    icon={<DeleteOutlined />}
+                    onClick={handleBulkDelete}
+                    className={selectedCount > 0 ? '' : 'pointer-events-none invisible'}
+                    aria-label={t('projects.deleteSelected')}
+                    data-i18n-key="projects.deleteSelected"
+                  >
+                    <span className="hidden sm:inline">{t('projects.deleteSelected')}</span>
+                  </Button>
                 </Flex>
-                <Flex align="center" className="min-w-0 flex-1 justify-end" wrap="wrap">
-                  <Space.Compact className="flex w-full max-w-100 min-w-0 sm:min-w-72">
+                <Flex
+                  align="center"
+                  className="min-w-0 shrink-0 grow basis-60 justify-end"
+                  wrap="wrap"
+                >
+                  <Space.Compact className="flex w-full max-w-100 min-w-0">
                     <Input.Search
                       placeholder={t('projects.searchPlaceholder')}
                       className="min-w-0 flex-1 basis-0"

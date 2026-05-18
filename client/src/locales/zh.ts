@@ -130,7 +130,9 @@ const zh: CommonNs = {
     title: '选择您的徽章',
     subtitle: '选择您的访问级别——一次性付款，无周期性费用。',
     oneTimeTagline: '一次性付款 · 无订阅 · 终身访问',
-    paymentNote: '通过 Paddle 安全支付。我们的服务器不存储卡数据。',
+    secureCheckoutPrefix: '🔒 通过以下方式安全结账',
+    secureCheckoutDetails:
+      '• 我们从不存储您的卡片数据 • 接受主要信用卡、PayPal、Apple Pay 和 Google Pay。',
     paymentIssueNote: '如果您在付款时遇到任何问题，请',
     paymentContactUs: '联系我们',
     checkoutError: '无法开始结账。请重试。',

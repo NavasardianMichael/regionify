@@ -141,8 +141,9 @@ const de: CommonNs = {
     title: 'Wählen Sie Ihr Badge',
     subtitle: 'Wählen Sie Ihren Zugangsumfang — einmal zahlen, keine laufenden Kosten.',
     oneTimeTagline: 'Einmalzahlung · Kein Abonnement · Dauerhafter Zugang',
-    paymentNote:
-      'Zahlungen sind sicher über Paddle. Keine Kartendaten werden auf unseren Servern gespeichert.',
+    secureCheckoutPrefix: '🔒 Sicherer Checkout über',
+    secureCheckoutDetails:
+      '• Wir speichern niemals Ihre Kartendaten • Akzeptieren alle gängigen Kreditkarten, PayPal, Apple Pay und Google Pay.',
     paymentIssueNote: 'Wenn Sie Probleme mit Ihrer Zahlung haben, wenden Sie sich bitte an',
     paymentContactUs: 'uns',
     checkoutError: 'Checkout konnte nicht gestartet werden. Bitte erneut versuchen.',

@@ -8,6 +8,7 @@ import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { AppNavLink } from '@/components/ui/AppNavLink';
 
 const POLL_INTERVAL_MS = 2000;
 const POLL_TIMEOUT_MS = 60000;
@@ -106,13 +107,14 @@ const PaymentReturnPage: FC = () => {
         {t('badges.continueToProjects')}
       </Button>
       {!upgradedBadge && (
-        <Button
+        <AppNavLink
           type="link"
-          onClick={() => navigate(ROUTES.BILLING)}
+          to={ROUTES.BILLING}
           data-i18n-key="badges.goToBadges"
+          className="underline!"
         >
           {t('badges.goToBadges')}
-        </Button>
+        </AppNavLink>
       )}
     </Flex>
   );

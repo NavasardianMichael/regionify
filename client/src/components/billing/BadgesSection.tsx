@@ -3,11 +3,36 @@ import { type Badge } from '@regionify/shared';
 import { Button, Flex, Typography } from 'antd';
 import { useBillingBadges } from '@/hooks/useBillingBadges';
 import { usePricingPreview } from '@/hooks/usePricingPreview';
-import { ROUTES } from '@/constants/routes';
+import { EXTERNAL_URLS, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 import BadgeCard from './BadgeCard';
 import type { PayableBadge } from './types';
+
+type PaymentSecurityNoteProps = {
+  className?: string;
+};
+
+const PaymentSecurityNote: FC<PaymentSecurityNoteProps> = ({ className }) => {
+  const { t } = useTypedTranslation();
+  return (
+    <Typography.Text
+      type="secondary"
+      className={`relative z-10 block w-full px-1 text-center text-sm lg:text-base${className ? ` ${className}` : ''}`}
+    >
+      {t('badges.secureCheckoutPrefix')}{' '}
+      <AppNavLink
+        to={EXTERNAL_URLS.PADDLE}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-semibold underline!"
+      >
+        Paddle
+      </AppNavLink>{' '}
+      {t('badges.secureCheckoutDetails')}
+    </Typography.Text>
+  );
+};
 
 const SECTION_VARIANTS = {
   home: {
@@ -116,10 +141,13 @@ const BadgesSection: FC<BadgesSectionProps> = ({
 
       <Flex vertical gap="small">
         {variantConfig.showUpgradeLink ? (
-          <Flex justify="center">
-            <Button type="link" href={ROUTES.BILLING} data-i18n-key="badges.goToBadges">
-              {t('badges.goToBadges')} →
-            </Button>
+          <Flex vertical gap="small">
+            <PaymentSecurityNote />
+            <Flex justify="center">
+              <Button type="link" href={ROUTES.BILLING} data-i18n-key="badges.goToBadges">
+                {t('badges.goToBadges')} →
+              </Button>
+            </Flex>
           </Flex>
         ) : null}
 
@@ -132,14 +160,8 @@ const BadgesSection: FC<BadgesSectionProps> = ({
       </Flex>
 
       {variantConfig.showPaymentNotes ? (
-        <>
-          <Typography.Text
-            type="secondary"
-            className="relative z-10 mt-10 block w-full px-1 text-center text-sm lg:text-base"
-            data-i18n-key="badges.paymentNote"
-          >
-            {t('badges.paymentNote')}
-          </Typography.Text>
+        <Flex vertical gap="small">
+          <PaymentSecurityNote className="mt-10" />
           <Typography.Text
             type="secondary"
             className="relative z-10 block w-full px-1 text-center text-sm lg:text-base"
@@ -155,7 +177,7 @@ const BadgesSection: FC<BadgesSectionProps> = ({
             </AppNavLink>
             .
           </Typography.Text>
-        </>
+        </Flex>
       ) : null}
     </Flex>
   );

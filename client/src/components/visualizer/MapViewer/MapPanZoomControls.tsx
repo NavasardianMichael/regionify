@@ -169,11 +169,7 @@ export const MapPanZoomControls: FC<MapPanZoomControlsProps> = memo(function Map
             data-i18n-key="visualizer.mapStyles.tooltipZoomOut"
           />
         </Tooltip>
-        <Tooltip
-          title={resetMapTooltip}
-          placement="left"
-          data-i18n-key="visualizer.mapStyles.tooltipResetMapAndLabels"
-        >
+        <Tooltip title={resetMapTooltip} placement="left">
           <Button
             type="default"
             icon={<FullscreenOutlined />}

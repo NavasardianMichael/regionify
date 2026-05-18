@@ -12,12 +12,12 @@ export const BILLING_BADGE_DEFINITIONS = [
     id: BADGES.explorer,
     badgeLocaleKey: 'explorer' as const,
     price: BADGE_DETAILS.explorer.price,
-    popular: true,
+    popular: false,
   },
   {
     id: BADGES.chronographer,
     badgeLocaleKey: 'chronographer' as const,
     price: BADGE_DETAILS.chronographer.price,
-    popular: false,
+    popular: true,
   },
 ] as const;

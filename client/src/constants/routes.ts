@@ -13,6 +13,10 @@ export function isFullBleedPathname(pathname: string): boolean {
   return pathname === '/' || pathname === '/about';
 }
 
+export const EXTERNAL_URLS = {
+  PADDLE: 'https://www.paddle.com',
+} as const;
+
 export const ROUTES = {
   HOME: '/',
   PROJECTS: '/projects',

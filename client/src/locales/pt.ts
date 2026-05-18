@@ -138,8 +138,9 @@ const pt: CommonNs = {
     title: 'Escolha o seu badge',
     subtitle: 'Escolha o seu nível de acesso — pague uma vez, sem encargos recorrentes.',
     oneTimeTagline: 'Pagamento único · Sem subscrição · Acesso vitalício',
-    paymentNote:
-      'Os pagamentos são seguros via Paddle. Não armazenamos dados de cartão nos nossos servidores.',
+    secureCheckoutPrefix: '🔒 Checkout seguro via',
+    secureCheckoutDetails:
+      '• Nunca armazenamos os seus dados de cartão • Aceitamos os principais cartões de crédito, PayPal, Apple Pay e Google Pay.',
     paymentIssueNote: 'Se tiver algum problema com o seu pagamento, por favor',
     paymentContactUs: 'contacte-nos',
     checkoutError: 'Não foi possível iniciar o pagamento. Tente novamente.',

@@ -456,6 +456,19 @@ const LegendConfigPanel: FC = () => {
           data-i18n-key="visualizer.legendConfig.addRangeAria"
         />
       </Tooltip>
+
+      <Flex align="center" justify="space-between" className="mt-2">
+        <Flex align="center" gap={6}>
+          <InfoCircleOutlined className="text-gray-400" />
+          <Typography.Text
+            className="text-xs text-gray-500"
+            data-i18n-key="visualizer.legendStyles.noDataColor"
+          >
+            {t('visualizer.legendStyles.noDataColor')}
+          </Typography.Text>
+        </Flex>
+        <ColorPicker value={noDataColor} onChangeComplete={handleNoDataColorChange} size="small" />
+      </Flex>
     </Flex>
   );
 
@@ -506,18 +519,6 @@ const LegendConfigPanel: FC = () => {
             </Flex>
           </Flex>
         ))}
-      </Flex>
-      <Flex align="center" justify="space-between" className="mt-4">
-        <Flex align="center" gap={6}>
-          <InfoCircleOutlined className="text-gray-400" />
-          <Typography.Text
-            className="text-xs text-gray-500"
-            data-i18n-key="visualizer.legendStyles.noDataColor"
-          >
-            {t('visualizer.legendStyles.noDataColor')}
-          </Typography.Text>
-        </Flex>
-        <ColorPicker value={noDataColor} onChangeComplete={handleNoDataColorChange} size="small" />
       </Flex>
     </Flex>
   );
