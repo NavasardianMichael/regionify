@@ -138,7 +138,7 @@ const ru: CommonNs = {
   badges: {
     title: 'Выберите бейдж',
     subtitle: 'Выберите уровень доступа — платите один раз, никаких регулярных платежей.',
-    oneTimeTagline: 'Разовый платёж · Без подписки · Пожизненный доступ',
+    oneTimeTagline: 'Разовый платёж • Без подписки • Пожизненный доступ',
     secureCheckoutPrefix: '🔒 Безопасная оплата через',
     secureCheckoutDetails:
       '• Мы никогда не храним данные вашей карты • Принимаем основные кредитные карты, PayPal, Apple Pay и Google Pay.',
@@ -423,7 +423,7 @@ const ru: CommonNs = {
       qualityLabel: 'Качество (%):',
       secondsPerPeriod: 'Секунд на период:',
       smoothTransitions: 'Плавные переходы:',
-      animationDuration: '{{frames}} кадров · ~{{seconds}}с длительность',
+      animationDuration: '{{frames}} кадров • ~{{seconds}}с длительность',
       resolutionTierLabel: 'Разрешение',
       tierOriginal: 'Оригинал',
       tierHighResLocked: '2K and 4K exports require an Explorer or Chronographer badge.',

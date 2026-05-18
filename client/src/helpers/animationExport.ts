@@ -181,8 +181,7 @@ const svgToCanvas = (svgString: string, scale: number): Promise<HTMLCanvasElemen
         return;
       }
 
-      ctx.scale(scale, scale);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
       resolve(canvas);
     };

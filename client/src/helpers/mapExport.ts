@@ -371,8 +371,7 @@ const svgToCanvas = (svgString: string, scale: number): Promise<HTMLCanvasElemen
         return;
       }
 
-      ctx.scale(scale, scale);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
       resolve(canvas);
     };
@@ -571,7 +570,7 @@ export const generateMapCanvas = async (
   const clone = prepareSvgForExport(svgEl, sw, sh);
   const svgString = new XMLSerializer().serializeToString(clone);
   const mapCanvas = await svgToCanvas(svgString, 1);
-  ctx.drawImage(mapCanvas, sx, sy);
+  ctx.drawImage(mapCanvas, Math.round(sx), Math.round(sy));
 
   const legendEl =
     root.querySelector<HTMLElement>(MAP_EXPORT_FLOATING_LEGEND) ??
@@ -603,14 +602,16 @@ export const generateMapCanvasFallback = async (
   targetHeight?: number,
 ): Promise<HTMLCanvasElement> => {
   const svgEl = getMapSvgElement();
-  const clone = prepareSvgForExport(svgEl);
-  const svgString = new XMLSerializer().serializeToString(clone);
   const svgRect = svgEl.getBoundingClientRect();
   const scale =
     targetHeight != null && svgRect.height > 0
       ? targetHeight / svgRect.height
       : qualityToScale(quality);
-  const canvas = await svgToCanvas(svgString, scale);
+  const exportWidth = Math.max(1, Math.round(svgRect.width * scale));
+  const exportHeight = Math.max(1, targetHeight ?? Math.round(svgRect.height * scale));
+  const clone = prepareSvgForExport(svgEl, exportWidth, exportHeight);
+  const svgString = new XMLSerializer().serializeToString(clone);
+  const canvas = await svgToCanvas(svgString, 1);
   const ctx = canvas.getContext('2d');
 
   if (format === 'jpeg') {
@@ -690,9 +691,15 @@ export const exportMapAsPng = async (
     return;
   }
 
-  const clone = prepareSvgForExport(getMapSvgElement());
-  const svgString = new XMLSerializer().serializeToString(clone);
-  const canvas = await svgToCanvas(svgString, qualityToScale(quality));
+  const pngSvgEl = getMapSvgElement();
+  const pngSvgRect = pngSvgEl.getBoundingClientRect();
+  const pngScale = qualityToScale(quality);
+  const pngClone = prepareSvgForExport(
+    pngSvgEl,
+    Math.max(1, Math.round(pngSvgRect.width * pngScale)),
+    Math.max(1, Math.round(pngSvgRect.height * pngScale)),
+  );
+  const canvas = await svgToCanvas(new XMLSerializer().serializeToString(pngClone), 1);
   const ctx = canvas.getContext('2d');
   if (ctx && opts?.backgroundColor) {
     ctx.globalCompositeOperation = 'destination-over';
@@ -716,9 +723,15 @@ export const exportMapAsJpeg = async (
     return;
   }
 
-  const clone = prepareSvgForExport(getMapSvgElement());
-  const svgString = new XMLSerializer().serializeToString(clone);
-  const canvas = await svgToCanvas(svgString, qualityToScale(quality));
+  const jpegSvgEl = getMapSvgElement();
+  const jpegSvgRect = jpegSvgEl.getBoundingClientRect();
+  const jpegScale = qualityToScale(quality);
+  const jpegClone = prepareSvgForExport(
+    jpegSvgEl,
+    Math.max(1, Math.round(jpegSvgRect.width * jpegScale)),
+    Math.max(1, Math.round(jpegSvgRect.height * jpegScale)),
+  );
+  const canvas = await svgToCanvas(new XMLSerializer().serializeToString(jpegClone), 1);
 
   const jpegCanvas = document.createElement('canvas');
   jpegCanvas.width = canvas.width;

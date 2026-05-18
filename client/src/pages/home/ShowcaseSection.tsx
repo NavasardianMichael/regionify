@@ -96,13 +96,13 @@ export const ShowcaseSection: FC = () => {
       {
         title: t('home.showcasePublicPageTitle'),
         description: t('home.showcasePublicPageDesc'),
-        badgeName: t('badges.items.explorer.name'),
+        badgeName: t('badges.items.chronographer.name'),
         assetId: 'public-page',
       },
       {
         title: t('home.showcaseEmbedTitle'),
         description: t('home.showcaseEmbedDesc'),
-        badgeName: t('badges.items.explorer.name'),
+        badgeName: t('badges.items.chronographer.name'),
         assetId: 'embed',
       },
     ],

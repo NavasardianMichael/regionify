@@ -1,5 +1,6 @@
 import { type FC, useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
+import { useBlocker, useNavigate } from 'react-router-dom';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { BADGES } from '@regionify/shared';
 import { Button, Flex, Spin, Typography } from 'antd';
@@ -74,12 +75,29 @@ const PaymentReturnPage: FC = () => {
     };
   }, [setUser, t]);
 
-  if (status === 'loading') {
-    return (
-      <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
+  const isVerifying = status === 'loading';
+
+  const blocker = useBlocker(isVerifying);
+  useEffect(() => {
+    if (blocker.state === 'blocked') blocker.reset();
+  }, [blocker]);
+
+  useEffect(() => {
+    if (!isVerifying) return;
+    const prevent = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', prevent);
+    return () => window.removeEventListener('beforeunload', prevent);
+  }, [isVerifying]);
+
+  if (isVerifying) {
+    return createPortal(
+      <div className="fixed inset-0 z-9999 flex flex-col items-center justify-center gap-4 bg-white/50 backdrop-blur-[2px]">
         <Spin size="large" />
         <Typography.Text>{t('badges.paymentVerifying')}</Typography.Text>
-      </Flex>
+      </div>,
+      document.body,
     );
   }
 

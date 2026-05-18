@@ -111,7 +111,7 @@ export const Form: FC<FormProps> = ({
           fps: EXPORT_FPS,
           smooth: smoothTransitions,
         })}{' '}
-        frames · ~{(timePeriodsCount * secondsPerPeriod).toFixed(1)}s duration
+        frames • ~{(timePeriodsCount * secondsPerPeriod).toFixed(1)}s duration
       </Typography.Text>
     </Flex>
 

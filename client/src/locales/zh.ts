@@ -129,7 +129,7 @@ const zh: CommonNs = {
   badges: {
     title: '选择您的徽章',
     subtitle: '选择您的访问级别——一次性付款，无周期性费用。',
-    oneTimeTagline: '一次性付款 · 无订阅 · 终身访问',
+    oneTimeTagline: '一次性付款 • 无订阅 • 终身访问',
     secureCheckoutPrefix: '🔒 通过以下方式安全结账',
     secureCheckoutDetails:
       '• 我们从不存储您的卡片数据 • 接受主要信用卡、PayPal、Apple Pay 和 Google Pay。',
@@ -400,7 +400,7 @@ const zh: CommonNs = {
       qualityLabel: '质量 (%)：',
       secondsPerPeriod: '每个时间段秒数：',
       smoothTransitions: '平滑过渡：',
-      animationDuration: '{{frames}} 帧 · 约{{seconds}}秒时长',
+      animationDuration: '{{frames}} 帧 • 约{{seconds}}秒时长',
       resolutionTierLabel: '分辨率',
       tierOriginal: '原始',
       tierHighResLocked: '2K and 4K exports require an Explorer or Chronographer badge.',

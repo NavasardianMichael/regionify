@@ -17,6 +17,6 @@ targets.forEach((target) => {
     copyFileSync(source, target);
     console.log(`✓ Synced ${targetName}`);
   } else {
-    console.log(`· ${targetName} already up to date`);
+    console.log(`• ${targetName} already up to date`);
   }
 });

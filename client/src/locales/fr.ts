@@ -139,7 +139,7 @@ const fr: CommonNs = {
   badges: {
     title: 'Choisissez votre badge',
     subtitle: 'Choisissez votre niveau d’accès — payez une fois, sans frais récurrents.',
-    oneTimeTagline: 'Paiement unique · Sans abonnement · Accès à vie',
+    oneTimeTagline: 'Paiement unique • Sans abonnement • Accès à vie',
     secureCheckoutPrefix: '🔒 Paiement sécurisé via',
     secureCheckoutDetails:
       '• Nous ne stockons jamais vos données de carte • Acceptant les principales cartes de crédit, PayPal, Apple Pay et Google Pay.',
@@ -429,7 +429,7 @@ const fr: CommonNs = {
       qualityLabel: 'Qualité (%) :',
       secondsPerPeriod: 'Secondes par période :',
       smoothTransitions: 'Transitions fluides :',
-      animationDuration: '{{frames}} images · ~{{seconds}}s durée',
+      animationDuration: '{{frames}} images • ~{{seconds}}s durée',
       resolutionTierLabel: 'Résolution',
       tierOriginal: 'Original',
       tierHighResLocked: '2K and 4K exports require an Explorer or Chronographer badge.',
