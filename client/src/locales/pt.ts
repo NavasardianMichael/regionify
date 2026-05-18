@@ -748,6 +748,12 @@ const pt: CommonNs = {
       'A sua conta já está ativa no número máximo de dispositivos ({{maxSessions}}). Por favor encerre sessão noutro dispositivo primeiro.',
     googleAuthFailed: 'Falha ao iniciar sessão com Google. Por favor tente novamente.',
   },
+  footer: {
+    terms: 'Termos de serviço',
+    privacy: 'Política de privacidade',
+    refund: 'Política de reembolso',
+    contact: 'Contato',
+  },
   errors: {
     mapRenderFailed: 'Lamentamos, falha ao renderizar o mapa.',
     panelFailed: 'Este painel não pôde ser carregado.',

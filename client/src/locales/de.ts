@@ -758,6 +758,12 @@ const de: CommonNs = {
       'Ihr Konto ist bereits auf der maximalen Anzahl von Geräten ({{maxSessions}}) aktiv. Bitte melden Sie sich zuerst von einem anderen Gerät ab.',
     googleAuthFailed: 'Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
   },
+  footer: {
+    terms: 'Nutzungsbedingungen',
+    privacy: 'Datenschutzrichtlinie',
+    refund: 'Rückgaberecht',
+    contact: 'Kontakt',
+  },
   errors: {
     mapRenderFailed: 'Es tut uns leid, die Karte konnte nicht gerendert werden.',
     panelFailed: 'Dieses Panel konnte nicht geladen werden.',

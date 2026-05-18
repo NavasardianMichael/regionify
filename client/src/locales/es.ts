@@ -752,6 +752,12 @@ const es: CommonNs = {
       'Tu cuenta ya está activa en el número máximo de dispositivos ({{maxSessions}}). Por favor cierra sesión en otro dispositivo primero.',
     googleAuthFailed: 'Fallo en el inicio de sesión con Google. Por favor inténtalo de nuevo.',
   },
+  footer: {
+    terms: 'Términos de servicio',
+    privacy: 'Política de privacidad',
+    refund: 'Política de reembolso',
+    contact: 'Contacto',
+  },
   errors: {
     mapRenderFailed: 'Lo sentimos, no se pudo renderizar el mapa.',
     panelFailed: 'Este panel no se pudo cargar.',

@@ -10,7 +10,13 @@ export function isHomePathname(pathname: string): boolean {
 
 /** True for pages that use full-bleed section layout (no app padding, no gray background). */
 export function isFullBleedPathname(pathname: string): boolean {
-  return pathname === '/' || pathname === '/about';
+  return (
+    pathname === '/' ||
+    pathname === '/about' ||
+    pathname === '/terms' ||
+    pathname === '/privacy' ||
+    pathname === '/refund'
+  );
 }
 
 export const EXTERNAL_URLS = {
@@ -39,6 +45,11 @@ export const ROUTES = {
   VERIFY_EMAIL: '/verify-email',
   AUTH_CALLBACK: '/auth/callback',
   ACCOUNT_DELETED: '/account-deleted',
+
+  // Legal pages (required by Paddle for merchant verification)
+  TERMS: '/terms',
+  PRIVACY_POLICY: '/privacy',
+  REFUND_POLICY: '/refund',
 
   // Paddle hosted-overlay opener (Paddle.js auto-opens checkout when `?_ptxn=` is present)
   PAYMENTS_CHECKOUT: '/payments/checkout',

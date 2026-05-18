@@ -606,6 +606,12 @@ export type CommonNs = {
     modalFullscreenEnter: string;
     modalFullscreenExit: string;
   };
+  footer: {
+    terms: string;
+    privacy: string;
+    refund: string;
+    contact: string;
+  };
   errors: {
     mapRenderFailed: string;
     panelFailed: string;

@@ -757,6 +757,12 @@ const fr: CommonNs = {
       "Votre compte est déjà actif sur le nombre maximum d'appareils ({{maxSessions}}). Veuillez vous déconnecter d'un autre appareil en premier.",
     googleAuthFailed: 'La connexion avec Google a échoué. Veuillez réessayer.',
   },
+  footer: {
+    terms: "Conditions d'utilisation",
+    privacy: 'Politique de confidentialité',
+    refund: 'Politique de remboursement',
+    contact: 'Contact',
+  },
   errors: {
     mapRenderFailed: "Nous sommes désolés, l'affichage de la carte a échoué.",
     panelFailed: "Ce panneau n'a pas pu être chargé.",

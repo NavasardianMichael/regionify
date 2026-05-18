@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-
 import { Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import { isEmbedPathname, isFullBleedPathname, ROUTES } from '@/constants/routes';
+import { AppFooter } from '@/components/shared/AppFooter';
 import { GoogleAnalytics } from '@/components/shared/GoogleAnalytics';
 import { Navigation } from '@/components/shared/Navigation';
 import { PageLoader } from '@/components/shared/PageLoader';
@@ -27,6 +28,9 @@ const PaymentCancelPage = lazy(() => import('@/pages/PaymentCancelPage'));
 const AccountDeletedPage = lazy(() => import('@/pages/AccountDeletedPage'));
 const AccountPage = lazy(() => import('@/pages/AccountPage'));
 const EmbedPage = lazy(() => import('@/pages/EmbedPage'));
+const TermsPage = lazy(() => import('@/pages/TermsPage'));
+const PrivacyPolicyPage = lazy(() => import('@/pages/PrivacyPolicyPage'));
+const RefundPolicyPage = lazy(() => import('@/pages/RefundPolicyPage'));
 
 function AppLayout() {
   const location = useLocation();
@@ -48,8 +52,8 @@ function AppLayout() {
       };
     }
     return {
-      mainClassName: `grow overflow-y-auto bg-gray-100 ${APP_LAYOUT_CLASSNAMES.padding}`,
-      innerDivClassName: 'flex h-full flex-col items-stretch',
+      mainClassName: `grow flex flex-col overflow-y-auto bg-gray-100 `,
+      innerDivClassName: `flex grow flex-col items-stretch ${APP_LAYOUT_CLASSNAMES.padding}`,
     };
   }, [isEmbedRoute, isFullBleed]);
 
@@ -72,6 +76,7 @@ function AppLayout() {
               <Outlet />
             </Suspense>
           </div>
+          {!isEmbedRoute && <AppFooter />}
         </MainOrRegion>
       </Flex>
     </>
@@ -104,6 +109,9 @@ const router = createBrowserRouter([
       { path: ROUTES.PAYMENTS_CHECKOUT, element: <PaymentCheckoutPage /> },
       { path: ROUTES.PAYMENTS_RETURN, element: <PaymentReturnPage /> },
       { path: ROUTES.PAYMENTS_CANCEL, element: <PaymentCancelPage /> },
+      { path: ROUTES.TERMS, element: <TermsPage /> },
+      { path: ROUTES.PRIVACY_POLICY, element: <PrivacyPolicyPage /> },
+      { path: ROUTES.REFUND_POLICY, element: <RefundPolicyPage /> },
     ],
   },
 ]);

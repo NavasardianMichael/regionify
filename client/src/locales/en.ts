@@ -676,6 +676,12 @@ const en: CommonNs = {
     modalFullscreenEnter: 'Expand to fullscreen',
     modalFullscreenExit: 'Exit fullscreen',
   },
+  footer: {
+    terms: 'Terms of Service',
+    privacy: 'Privacy Policy',
+    refund: 'Refund Policy',
+    contact: 'Contact',
+  },
   errors: {
     mapRenderFailed: 'We are sorry, map failed to render.',
     panelFailed: 'This panel failed to load.',

@@ -704,6 +704,12 @@ const zh: CommonNs = {
       '您的账户已在最大数量 ({{maxSessions}}) 的设备上登录。请先在其他设备上退出登录。',
     googleAuthFailed: 'Google 登录失败，请重试。',
   },
+  footer: {
+    terms: '服务条款',
+    privacy: '隐私政策',
+    refund: '退款政策',
+    contact: '联系我们',
+  },
   errors: {
     mapRenderFailed: '很抱歉，地图渲染失败。',
     panelFailed: '此面板加载失败。',

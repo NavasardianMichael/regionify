@@ -1,7 +1,7 @@
 import { prisma } from '@/db/index.js';
 import { escapeHtml } from '@/lib/htmlEscape.js';
 
-const PUBLIC_STATIC_PATHS = ['/', '/about', '/contact', '/faq'];
+const PUBLIC_STATIC_PATHS = ['/', '/about', '/contact', '/faq', '/terms', '/privacy', '/refund'];
 
 function formatLastMod(d: Date): string {
   return d.toISOString().slice(0, 10);
