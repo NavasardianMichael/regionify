@@ -111,7 +111,7 @@ const en: CommonNs = {
       {
         question: 'Can I embed a map on my website?',
         answer:
-          'Public embed and **iframe** embedding are available on the **Explorer** badge and above. You can enable a **public page** per project with optional **SEO** title and description so visitors and search engines see meaningful context around the map.',
+          'Public embed and **iframe** embedding are available on the **Chronographer** badge. You can enable a **public page** per project with optional **SEO** title and description so visitors and search engines see meaningful context around the map.',
       },
       {
         question: 'Is this a subscription?',
@@ -147,6 +147,7 @@ const en: CommonNs = {
     bestChoice: 'Best Choice',
     priceFree: 'Free',
     priceOneTime: '{{price}} one-time',
+    priceOneTimeVatIncluded: '{{price}} one-time (VAT included)',
     localCurrencyNote: 'Prices shown in your local currency.',
     paymentPendingNote:
       'Payment received. Your badge may take a moment to update. Refresh the page or open Pricing.',
@@ -165,6 +166,7 @@ const en: CommonNs = {
       advancedStyles: 'Advanced map & legend styling',
       watermark: 'Watermark on image exports',
       noWatermark: 'No watermark on image exports',
+      highResolutionExport: 'High-resolution export (2K, 4K)',
       timeSeries: 'Time-series data & timeline on the map',
       animationExport: 'Animated export (GIF & MP4)',
       embedMapIframe: 'Embed map (iframe)',
@@ -180,7 +182,7 @@ const en: CommonNs = {
       explorer: {
         name: 'Explorer',
         description:
-          'PNG, SVG, and JPEG at full quality, no watermark, unlimited projects, advanced styling, and public embed.',
+          'PNG, SVG, and JPEG at full quality, no watermark, unlimited projects, and advanced styling.',
         buttonText: 'Buy Explorer (Lifetime)',
       },
       chronographer: {

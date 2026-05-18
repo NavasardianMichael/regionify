@@ -113,7 +113,7 @@ const de: CommonNs = {
       {
         question: 'Kann ich eine Karte in meine Website einbetten?',
         answer:
-          'Öffentliche Einbettung und **iframe** sind ab dem **Entdecker**-Badge möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
+          'Öffentliche Einbettung und **iframe** sind mit dem **Chronograph**-Badge möglich. Pro Projekt können Sie eine **öffentliche Seite** mit **SEO**-Titel und -Beschreibung aktivieren.',
       },
       {
         question: 'Ist das ein Abonnement?',
@@ -150,6 +150,7 @@ const de: CommonNs = {
     bestChoice: 'Beste Wahl',
     priceFree: 'Kostenlos',
     priceOneTime: '{{price}} einmalig',
+    priceOneTimeVatIncluded: '{{price}} einmalig (inkl. MwSt.)',
     localCurrencyNote: 'Preise werden in Ihrer lokalen Währung angezeigt.',
     paymentPendingNote:
       'Zahlung eingegangen. Die Aktualisierung Ihres Badges kann einen Moment dauern. Laden Sie die Seite neu oder öffnen Sie die Seite «Preise».',
@@ -169,6 +170,7 @@ const de: CommonNs = {
       advancedStyles: 'Erweiterte Karten- und Legendenstile',
       watermark: 'Wasserzeichen auf Bildexporten',
       noWatermark: 'Kein Wasserzeichen auf Bildexporten',
+      highResolutionExport: 'Hochauflösender Export (2K, 4K)',
       timeSeries: 'Zeitreihen-Daten & Zeitstrahl auf der Karte',
       animationExport: 'Animierter Export (GIF & MP4)',
       embedMapIframe: 'Karte einbetten (iframe)',
@@ -184,7 +186,7 @@ const de: CommonNs = {
       explorer: {
         name: 'Entdecker',
         description:
-          'PNG, SVG und JPEG in voller Qualität, kein Wasserzeichen, unbegrenzte Projekte, erweiterte Stile und öffentliche Einbettung.',
+          'PNG, SVG und JPEG in voller Qualität, kein Wasserzeichen, unbegrenzte Projekte und erweiterte Stile.',
         buttonText: 'Entdecker kaufen (einmalig, dauerhaft)',
       },
       chronographer: {

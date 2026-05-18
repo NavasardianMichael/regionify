@@ -4,17 +4,19 @@ import { type TypedT, useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { BILLING_BADGE_DEFINITIONS } from '@/components/billing/constants';
 import type { BillingBadge } from '@/components/billing/types';
 
-const STILL_IMAGE_EXPORTS: ReadonlySet<ExportType> = new Set([
-  EXPORT_TYPES.png,
-  EXPORT_TYPES.svg,
-  EXPORT_TYPES.jpeg,
-]);
+/** Fixed display order for the billing card export line: JPEG → PNG → PDF → SVG (each only if tier allows it). GIF/MP4 stay on the animation row. */
+const EXPORT_FORMAT_DISPLAY_ORDER: ReadonlyArray<{ type: ExportType; label: string }> = [
+  { type: EXPORT_TYPES.jpeg, label: 'JPEG' },
+  { type: EXPORT_TYPES.png, label: 'PNG' },
+  { type: EXPORT_TYPES.pdf, label: 'PDF' },
+  { type: EXPORT_TYPES.svg, label: 'SVG' },
+];
 
-function formatStillImageFormats(badgeId: Badge): string {
-  const formats = BADGE_DETAILS[badgeId].limits.allowedExportFormats.filter((x) =>
-    STILL_IMAGE_EXPORTS.has(x),
-  );
-  return formats.map((x) => x.toUpperCase()).join(', ');
+function formatListedExportFormats(badgeId: Badge): string {
+  const allowed = new Set(BADGE_DETAILS[badgeId].limits.allowedExportFormats);
+  return EXPORT_FORMAT_DISPLAY_ORDER.filter(({ type }) => allowed.has(type))
+    .map(({ label }) => label)
+    .join(', ');
 }
 
 function buildBadgeFeatures(badgeId: Badge, t: TypedT): BillingBadge['features'] {
@@ -31,20 +33,28 @@ function buildBadgeFeatures(badgeId: Badge, t: TypedT): BillingBadge['features']
       : t('badges.rows.sessionsLimited', { count: l.maxConcurrentSessions });
 
   const imageExportText = t('badges.rows.imageExport', {
-    formats: formatStillImageFormats(badgeId),
+    formats: formatListedExportFormats(badgeId),
     quality: l.maxExportQuality,
   });
-
-  const watermarkText = l.advancedStylesEnabled
-    ? t('badges.rows.noWatermark')
-    : t('badges.rows.watermark');
 
   const rows: BillingBadge['features'] = [
     { text: projectText, included: true },
     ...(sessionsText ? [{ text: sessionsText, included: true as const }] : []),
     { text: imageExportText, included: true },
-    { text: t('badges.rows.advancedStyles'), included: true },
-    { text: watermarkText, included: true },
+    {
+      text: t('badges.rows.advancedStyles'),
+      included: l.advancedStylesEnabled,
+    },
+    // "No watermark" is a paid-tier benefit; observer's watermark limitation is conveyed
+    // via the tier description, not as a checkmarked row.
+    {
+      text: t('badges.rows.noWatermark'),
+      included: l.advancedStylesEnabled,
+    },
+    {
+      text: t('badges.rows.highResolutionExport'),
+      included: l.highResolutionExport,
+    },
     {
       text: t('badges.rows.timeSeries'),
       included: l.historicalDataImport,
@@ -62,7 +72,7 @@ function buildBadgeFeatures(badgeId: Badge, t: TypedT): BillingBadge['features']
       included: l.publicEmbed,
     },
   ];
-  /** Only show capabilities this tier actually includes (no gray “not included” filler rows). */
+  /** Only show capabilities this tier actually includes (no gray "not included" filler rows). */
   return rows.filter((row) => row.included);
 }
 

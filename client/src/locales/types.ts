@@ -94,6 +94,8 @@ export type CommonNs = {
     bestChoice: string;
     priceFree: string;
     priceOneTime: string;
+    /** Paid tiers only: full price line including tax/VAT disclaimer */
+    priceOneTimeVatIncluded: string;
     localCurrencyNote: string;
     paymentPendingNote: string;
     verifyErrorNote: string;
@@ -111,6 +113,7 @@ export type CommonNs = {
       advancedStyles: string;
       watermark: string;
       noWatermark: string;
+      highResolutionExport: string;
       timeSeries: string;
       animationExport: string;
       embedMapIframe: string;

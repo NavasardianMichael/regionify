@@ -111,7 +111,7 @@ const es: CommonNs = {
       {
         question: '¿Puedo incrustar un mapa en mi sitio?',
         answer:
-          'La incrustación pública e **iframe** están disponibles desde el badge **Explorador**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
+          'La incrustación pública e **iframe** están disponibles con el badge **Cronógrafo**. Puedes activar una **página pública** por proyecto con título y meta descripción **SEO**.',
       },
       {
         question: '¿Esto es una suscripción?',
@@ -148,6 +148,7 @@ const es: CommonNs = {
     bestChoice: 'Mejor opción',
     priceFree: 'Gratis',
     priceOneTime: '{{price}} pago único',
+    priceOneTimeVatIncluded: '{{price}} pago único (IVA incluido)',
     localCurrencyNote: 'Precios mostrados en tu moneda local.',
     paymentPendingNote:
       'Pago recibido. Tu badge puede tardar un momento en actualizarse. Actualiza la página o revisa Precios.',
@@ -166,6 +167,7 @@ const es: CommonNs = {
       advancedStyles: 'Estilos avanzados de mapa y leyenda',
       watermark: 'Marca de agua en exportaciones de imagen',
       noWatermark: 'Sin marca de agua en exportaciones de imagen',
+      highResolutionExport: 'Exportación en alta resolución (2K, 4K)',
       timeSeries: 'Datos temporales y línea de tiempo en el mapa',
       animationExport: 'Exportación animada (GIF y MP4)',
       embedMapIframe: 'Mapa incrustado (iframe)',
@@ -181,7 +183,7 @@ const es: CommonNs = {
       explorer: {
         name: 'Explorador',
         description:
-          'PNG, SVG y JPEG a calidad completa, sin marca de agua, proyectos ilimitados, estilos avanzados e inserción pública.',
+          'PNG, SVG y JPEG a calidad completa, sin marca de agua, proyectos ilimitados y estilos avanzados.',
         buttonText: 'Comprar Explorador (pago único)',
       },
       chronographer: {

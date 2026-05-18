@@ -102,7 +102,7 @@ const zh: CommonNs = {
       {
         question: '能把地图嵌入自己的网站吗？',
         answer:
-          '**探索者**徽章及以上级别支持公开嵌入与 **iframe**。每个项目可开启**公开页面**，并设置利于 **SEO** 的标题与描述。',
+          '**纪时者**徽章支持公开嵌入与 **iframe**。每个项目可开启**公开页面**，并设置利于 **SEO** 的标题与描述。',
       },
       {
         question: '这是订阅制吗？',
@@ -138,6 +138,7 @@ const zh: CommonNs = {
     bestChoice: '最佳选择',
     priceFree: '免费',
     priceOneTime: '{{price}} 一次性',
+    priceOneTimeVatIncluded: '{{price}} 一次性（含税）',
     localCurrencyNote: '价格以您当地货币显示。',
     paymentPendingNote: '支付已收到。徽章更新可能需要一点时间。请刷新页面或前往「定价」页面查看。',
     verifyErrorNote: '无法验证您的徽章。请刷新页面或前往「定价」页面查看。',
@@ -155,6 +156,7 @@ const zh: CommonNs = {
       advancedStyles: '高级地图与图例样式',
       watermark: '图片导出带水印',
       noWatermark: '图片导出无水印',
+      highResolutionExport: '高分辨率导出（2K、4K）',
       timeSeries: '时间序列数据与地图时间轴',
       animationExport: '动画导出（GIF 与 MP4）',
       embedMapIframe: '嵌入地图（iframe）',
@@ -168,7 +170,7 @@ const zh: CommonNs = {
       },
       explorer: {
         name: '探索者',
-        description: 'PNG、SVG、JPEG 全质量导出，无水印，不限项目，含高级样式及公开嵌入。',
+        description: 'PNG、SVG、JPEG 全质量导出，无水印，不限项目，含高级样式。',
         buttonText: '购买探索者（一次性）',
       },
       chronographer: {

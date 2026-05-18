@@ -5,7 +5,7 @@ import { EXPORT_TYPES } from './exportTypes.js';
 /**
  * Feature limits per badge (tier). Each tier includes the previous tier’s capabilities.
  * Observer: JPEG only (capped quality), project cap. Explorer+: PNG, SVG, JPEG; full quality; advanced styles.
- * Chronographer: time-series, GIF/MP4 animation export, public embed.
+ * Chronographer: time-series, GIF/MP4 animation export, public embed (iframe + public page).
  */
 export type BadgeDetails = {
   price: number; // Monthly price in USD (0 for free)
@@ -68,7 +68,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       advancedStylesEnabled: true,
       historicalDataImport: false,
       animationExport: false,
-      publicEmbed: true,
+      publicEmbed: false,
       highResolutionExport: true,
     },
   },

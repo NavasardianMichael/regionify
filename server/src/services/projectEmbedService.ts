@@ -130,7 +130,7 @@ export const projectEmbedService = {
       throw new AppError(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORBIDDEN,
-        'Public embed requires Explorer or Chronographer badge',
+        'Public embed requires Chronographer badge',
       );
     }
 

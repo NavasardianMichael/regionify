@@ -125,7 +125,7 @@ Each result produces one `<url>` entry with:
 
 #### Why no badge restriction?
 
-An earlier version restricted sitemap entries to `chronographer`-tier users only. Both `explorer` and `chronographer` users can enable public embeds (enforced in `projectEmbedService.updateEmbedSettings`), so the sitemap now includes all enabled embeds regardless of tier. The controlling signal is `embedEnabled: true` — if a user has enabled a public embed, it is indexable.
+Only `chronographer`-tier users can enable public embeds (enforced in `projectEmbedService.updateEmbedSettings` via `BADGE_DETAILS.limits.publicEmbed`). The sitemap includes all enabled embeds; the controlling signal is `embedEnabled: true` — if a user has enabled a public embed, it is indexable.
 
 ---
 

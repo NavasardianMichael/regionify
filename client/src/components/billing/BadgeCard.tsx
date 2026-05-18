@@ -50,10 +50,10 @@ const BadgeCard: FC<BadgeCardProps> = ({
       return t('badges.priceFree');
     }
     if (localizedPrice) {
-      return t('badges.priceOneTime', { price: localizedPrice });
+      return t('badges.priceOneTimeVatIncluded', { price: localizedPrice });
     }
     if (shouldShowFallbackPrice) {
-      return t('badges.priceOneTime', { price: `$${tier.price}` });
+      return t('badges.priceOneTimeVatIncluded', { price: `$${tier.price}` });
     }
     return null;
   }, [tier.price, localizedPrice, shouldShowFallbackPrice, t]);
@@ -133,7 +133,7 @@ const BadgeCard: FC<BadgeCardProps> = ({
             ) : (
               <Typography.Text
                 className="text-primary text-4xl font-bold"
-                data-i18n-key="badges.priceOneTime"
+                data-i18n-key="badges.priceOneTimeVatIncluded"
               >
                 {priceLabel}
               </Typography.Text>

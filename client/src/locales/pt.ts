@@ -110,7 +110,7 @@ const pt: CommonNs = {
       {
         question: 'Posso incorporar um mapa no meu site?',
         answer:
-          'Incorporação pública e **iframe** estão disponíveis no badge **Explorer** e superior. Pode ativar uma **página pública** por projeto com título e meta descrição **SEO**.',
+          'Incorporação pública e **iframe** estão disponíveis no badge **Cronógrafo**. Pode ativar uma **página pública** por projeto com título e meta descrição **SEO**.',
       },
       {
         question: 'Isto é uma subscrição?',
@@ -147,6 +147,7 @@ const pt: CommonNs = {
     bestChoice: 'Melhor escolha',
     priceFree: 'Grátis',
     priceOneTime: '{{price}} pagamento único',
+    priceOneTimeVatIncluded: '{{price}} pagamento único (IVA incluído)',
     localCurrencyNote: 'Preços apresentados na sua moeda local.',
     paymentPendingNote:
       'Pagamento recebido. O seu badge pode demorar um momento a atualizar. Atualize a página ou veja Preços.',
@@ -165,6 +166,7 @@ const pt: CommonNs = {
       advancedStyles: 'Estilos avançados de mapa e legenda',
       watermark: 'Marca de água nas exportações de imagem',
       noWatermark: 'Sem marca de água nas exportações de imagem',
+      highResolutionExport: 'Exportação em alta resolução (2K, 4K)',
       timeSeries: 'Dados temporais e linha do tempo no mapa',
       animationExport: 'Exportação animada (GIF e MP4)',
       embedMapIframe: 'Mapa incorporado (iframe)',
@@ -180,7 +182,7 @@ const pt: CommonNs = {
       explorer: {
         name: 'Explorador',
         description:
-          'PNG, SVG e JPEG em qualidade total, sem marca de água, projetos ilimitados, estilos avançados e incorporação pública.',
+          'PNG, SVG e JPEG em qualidade total, sem marca de água, projetos ilimitados e estilos avançados.',
         buttonText: 'Comprar Explorador (pagamento único)',
       },
       chronographer: {

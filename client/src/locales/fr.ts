@@ -112,7 +112,7 @@ const fr: CommonNs = {
       {
         question: 'Puis-je intégrer une carte sur mon site ?',
         answer:
-          'L’intégration publique et l’**iframe** sont disponibles avec le badge **Explorateur** et supérieur. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.',
+          'L’intégration publique et l’**iframe** sont disponibles avec le badge **Chronographe**. Vous pouvez activer une **page publique** par projet avec titre et meta description **SEO**.',
       },
       {
         question: 'Est-ce un abonnement ?',
@@ -149,6 +149,7 @@ const fr: CommonNs = {
     bestChoice: 'Meilleur choix',
     priceFree: 'Gratuit',
     priceOneTime: '{{price}} paiement unique',
+    priceOneTimeVatIncluded: '{{price}} paiement unique (TVA incluse)',
     localCurrencyNote: 'Prix affichés dans votre devise locale.',
     paymentPendingNote:
       'Paiement reçu. La mise à jour de votre badge peut prendre un instant. Actualisez la page ou consultez Tarifs.',
@@ -167,6 +168,7 @@ const fr: CommonNs = {
       advancedStyles: 'Styles avancés carte et légende',
       watermark: "Filigrane sur les exports d'images",
       noWatermark: "Pas de filigrane sur les exports d'images",
+      highResolutionExport: 'Export haute résolution (2K, 4K)',
       timeSeries: 'Données temporelles et frise chronologique sur la carte',
       animationExport: 'Export animé (GIF et MP4)',
       embedMapIframe: 'Carte intégrée (iframe)',
@@ -182,7 +184,7 @@ const fr: CommonNs = {
       explorer: {
         name: 'Explorateur',
         description:
-          'PNG, SVG et JPEG en pleine qualité, sans filigrane, projets illimités, styles avancés et intégration publique.',
+          'PNG, SVG et JPEG en pleine qualité, sans filigrane, projets illimités et styles avancés.',
         buttonText: 'Acheter Explorateur (paiement unique)',
       },
       chronographer: {
