@@ -7,7 +7,7 @@ import { AppError } from '@/middleware/errorHandler.js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-export const MAX_AI_PARSE_REQUESTS_PER_DAY = 3;
+export const MAX_AI_PARSE_REQUESTS_PER_DAY = 5;
 export const MAX_AI_PARSE_INPUT_CHARS = 50_000;
 export const AI_PARSE_MAX_TOKENS = 8192;
 
