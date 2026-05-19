@@ -163,6 +163,7 @@ const zh: CommonNs = {
       animationExport: '动画导出（GIF 与 MP4）',
       embedMapIframe: '嵌入地图（iframe）',
       publicMapPage: '带地图的公开页面',
+      aiParser: 'AI 数据解析与生成器',
     },
     items: {
       observer: {

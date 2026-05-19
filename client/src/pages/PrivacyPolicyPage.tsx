@@ -24,9 +24,8 @@ const PrivacyPolicyPage: FC = () => (
         styling choices, and associated metadata you provide (title, description, keywords).
       </Typography.Paragraph>
       <Typography.Paragraph className="mb-0! text-gray-600">
-        <strong>Session data:</strong> We maintain a session cookie named{' '}
-        <code className="rounded bg-gray-100 px-1 font-mono text-sm">regionify.sid</code> to keep
-        you logged in. Sessions are stored in Redis and expire after 7 days of inactivity.
+        <strong>Session data:</strong> We maintain a session cookie to keep you logged in. Sessions
+        are stored in Redis and expire after 7 days of inactivity.
       </Typography.Paragraph>
       <Typography.Paragraph className="mb-0! text-gray-600">
         <strong>Usage analytics:</strong> We use Google Analytics 4 to collect anonymized usage data
@@ -72,9 +71,8 @@ const PrivacyPolicyPage: FC = () => (
       </Typography.Paragraph>
       <ul className="list-disc pl-6 text-gray-600">
         <li>
-          <strong>Strictly necessary:</strong>{' '}
-          <code className="rounded bg-gray-100 px-1 font-mono text-sm">regionify.sid</code> — a
-          session cookie required to keep you logged in. Without it, the Service cannot function.
+          <strong>Strictly necessary:</strong> a session cookie required to keep you logged in.
+          Without it, the Service cannot function.
         </li>
         <li>
           <strong>Analytics:</strong> Google Analytics 4 cookies (prefixed{' '}

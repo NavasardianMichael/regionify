@@ -172,6 +172,7 @@ const pt: CommonNs = {
       animationExport: 'Exportação animada (GIF e MP4)',
       embedMapIframe: 'Mapa incorporado (iframe)',
       publicMapPage: 'Página pública com mapa',
+      aiParser: 'Analisador e gerador de dados com IA',
     },
     items: {
       observer: {

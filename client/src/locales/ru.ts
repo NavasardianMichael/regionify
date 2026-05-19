@@ -174,6 +174,7 @@ const ru: CommonNs = {
       animationExport: 'Анимационный экспорт (GIF и MP4)',
       embedMapIframe: 'Встраивание карты (iframe)',
       publicMapPage: 'Публичная страница с картой',
+      aiParser: 'ИИ-парсер и генератор данных',
     },
     items: {
       observer: {

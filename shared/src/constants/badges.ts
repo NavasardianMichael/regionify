@@ -31,6 +31,8 @@ export type BadgeDetails = {
     publicEmbed: boolean;
     /** High-resolution export tiers (2K, 4K) enabled (Explorer+). */
     highResolutionExport: boolean;
+    /** AI data parser and generator (Chronographer). */
+    aiParser: boolean;
   };
 };
 
@@ -49,6 +51,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       animationExport: false,
       publicEmbed: false,
       highResolutionExport: false,
+      aiParser: false,
     },
   },
   [BADGES.explorer]: {
@@ -70,6 +73,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       animationExport: false,
       publicEmbed: false,
       highResolutionExport: true,
+      aiParser: false,
     },
   },
   [BADGES.chronographer]: {
@@ -93,6 +97,7 @@ export const BADGE_DETAILS: Record<Badge, BadgeDetails> = {
       animationExport: true,
       publicEmbed: true,
       highResolutionExport: true,
+      aiParser: true,
     },
   },
 };

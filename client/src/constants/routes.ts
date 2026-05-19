@@ -3,20 +3,22 @@ export function isEmbedPathname(pathname: string): boolean {
   return /^\/embed\/[^/]+$/.test(pathname);
 }
 
-/** True for the marketing home page (`/`), which uses a full-bleed layout without app padding. */
-export function isHomePathname(pathname: string): boolean {
-  return pathname === '/';
-}
-
 /** True for pages that use full-bleed section layout (no app padding, no gray background). */
 export function isFullBleedPathname(pathname: string): boolean {
-  return (
-    pathname === '/' ||
-    pathname === '/about' ||
-    pathname === '/terms' ||
-    pathname === '/privacy' ||
-    pathname === '/refund'
-  );
+  const fullBleedPaths = [
+    ROUTES.HOME,
+    ROUTES.ABOUT,
+    ROUTES.TERMS,
+    ROUTES.PRIVACY_POLICY,
+    ROUTES.REFUND_POLICY,
+  ] as string[];
+  return fullBleedPaths.includes(pathname);
+}
+
+/** True for the project editor/creator, which occupies the full viewport and has no footer. */
+export function isVisualizerPathname(pathname: string): boolean {
+  const visualizerPaths = [ROUTES.PROJECT_EDITOR, ROUTES.PROJECT_NEW] as string[];
+  return visualizerPaths.includes(pathname) || /^\/projects\/[^/]+$/.test(pathname);
 }
 
 export const EXTERNAL_URLS = {

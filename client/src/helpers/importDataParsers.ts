@@ -147,7 +147,7 @@ export const convertToRegionData = (
 ): { allIds: string[]; byId: Record<string, RegionData> } => {
   const mappedData = mapDataToSvgRegions(parsed, svgTitles);
 
-  const allIds = mappedData.map((item) => item.id);
+  const allIds = [...new Set(mappedData.map((item) => item.id))];
   const byId = Object.fromEntries(
     mappedData.map((item) => [item.id, { id: item.id, label: item.label, value: item.value }]),
   );

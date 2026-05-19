@@ -2,7 +2,12 @@ import { lazy, Suspense, useMemo } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 import { Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
-import { isEmbedPathname, isFullBleedPathname, ROUTES } from '@/constants/routes';
+import {
+  isEmbedPathname,
+  isFullBleedPathname,
+  isVisualizerPathname,
+  ROUTES,
+} from '@/constants/routes';
 import { AppFooter } from '@/components/shared/AppFooter';
 import { GoogleAnalytics } from '@/components/shared/GoogleAnalytics';
 import { Navigation } from '@/components/shared/Navigation';
@@ -36,6 +41,7 @@ function AppLayout() {
   const location = useLocation();
   const isEmbedRoute = isEmbedPathname(location.pathname);
   const isFullBleed = isFullBleedPathname(location.pathname);
+  const isVisualizer = isVisualizerPathname(location.pathname);
   const MainOrRegion = isEmbedRoute ? 'div' : 'main';
 
   const { mainClassName, innerDivClassName } = useMemo(() => {
@@ -76,7 +82,7 @@ function AppLayout() {
               <Outlet />
             </Suspense>
           </div>
-          {!isEmbedRoute && <AppFooter />}
+          {!isEmbedRoute && !isVisualizer && <AppFooter />}
         </MainOrRegion>
       </Flex>
     </>

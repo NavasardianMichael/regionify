@@ -119,6 +119,7 @@ export type CommonNs = {
       animationExport: string;
       embedMapIframe: string;
       publicMapPage: string;
+      aiParser: string;
     };
     items: {
       observer: {

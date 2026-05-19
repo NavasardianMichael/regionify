@@ -173,6 +173,7 @@ const en: CommonNs = {
       animationExport: 'Animated export (GIF & MP4)',
       embedMapIframe: 'Embed map (iframe)',
       publicMapPage: 'Public page with map',
+      aiParser: 'AI data parser and generator',
     },
     items: {
       observer: {

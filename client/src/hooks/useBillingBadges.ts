@@ -71,6 +71,10 @@ function buildBadgeFeatures(badgeId: Badge, t: TypedT): BillingBadge['features']
       text: t('badges.rows.publicMapPage'),
       included: l.publicEmbed,
     },
+    {
+      text: t('badges.rows.aiParser'),
+      included: l.aiParser,
+    },
   ];
   /** Only show capabilities this tier actually includes (no gray "not included" filler rows). */
   return rows.filter((row) => row.included);
