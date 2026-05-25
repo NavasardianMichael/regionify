@@ -40,31 +40,20 @@ const BadgeCard: FC<BadgeCardProps> = ({
   const showPopularHighlight = tier.popular && currentBadge === BADGES.observer;
 
   const handleClick = useCallback(() => {
-    if (tier.id === BADGES.explorer || tier.id === BADGES.chronographer) {
-      onUpgrade(tier.id as PayableBadge);
-    }
+    onUpgrade(tier.id as PayableBadge);
   }, [tier.id, onUpgrade]);
 
   const priceLabel = useMemo(() => {
-    if (tier.price === 0) {
-      return t('badges.priceFree');
-    }
-    if (localizedPrice) {
-      return t('badges.priceOneTimeVatIncluded', { price: localizedPrice });
-    }
-    if (shouldShowFallbackPrice) {
+    if (tier.price === 0) return t('badges.priceFree');
+    if (localizedPrice) return t('badges.priceOneTimeVatIncluded', { price: localizedPrice });
+    if (shouldShowFallbackPrice)
       return t('badges.priceOneTimeVatIncluded', { price: `$${tier.price}` });
-    }
     return null;
   }, [tier.price, localizedPrice, shouldShowFallbackPrice, t]);
 
-  const buttonType = useMemo(() => (isCurrentBadge ? 'default' : 'primary'), [isCurrentBadge]);
+  const buttonType = isCurrentBadge ? 'default' : 'primary';
 
-  const cardClassName = useMemo(
-    () =>
-      `min-h-0 min-w-0 w-full flex-1 shadow-sm ${showPopularHighlight ? 'border-primary border-2' : ''}`,
-    [showPopularHighlight],
-  );
+  const cardClassName = `min-h-0 min-w-0 w-full flex-1 shadow-sm ${showPopularHighlight ? 'border-primary border-2' : ''}`;
 
   const cardStyles = useMemo(
     () => ({
@@ -110,13 +99,13 @@ const BadgeCard: FC<BadgeCardProps> = ({
           <Typography.Title
             level={3}
             className="text-primary mb-0! w-full text-center text-xl font-bold"
-            data-i18n-key="badges.items.observer.name"
+            data-i18n-key={`badges.items.${tier.id}.name`}
           >
             {tier.name}
           </Typography.Title>
           <Typography.Paragraph
             className="mb-0! w-full max-w-full text-center! text-gray-500"
-            data-i18n-key="badges.items.observer.description"
+            data-i18n-key={`badges.items.${tier.id}.description`}
           >
             {tier.description}
           </Typography.Paragraph>

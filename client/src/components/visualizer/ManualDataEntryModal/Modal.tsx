@@ -13,6 +13,10 @@ import { useModalState } from './useModalState';
 import { useTableColumns } from './useTableColumns';
 import styles from './Modal.module.css';
 
+function getRowClassName(record: DataRow): string {
+  return record.hidden === true ? styles.hiddenRow : '';
+}
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -138,6 +142,7 @@ export const ManualDataEntryModal: FC<Props> = ({
         sortDirections={['ascend', 'descend']}
         showSorterTooltip={{ target: 'sorter-icon' }}
         onChange={onTableChange}
+        rowClassName={getRowClassName}
         className="[&_.ant-table-cell]:min-w-0 [&_.ant-table-cell]:align-middle [&_.ant-table-tbody_.ant-typography]:text-xs"
         locale={{
           filterReset: t('visualizer.manualEntry.filterReset'),

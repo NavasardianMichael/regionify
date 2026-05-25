@@ -5,11 +5,13 @@ import { Input, InputNumber, Typography } from 'antd';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import { compareTimePeriodForSort, type DataRow } from '@/helpers/manualDataEntryHelpers';
 import { ActionsCell } from './ActionsCell';
+import { ColumnFilterDropdown } from './ColumnFilterDropdown';
 import { LabelCell } from './LabelCell';
-import { TextFilterBody } from './TextFilterBody';
 import type { MiddleColKey } from './types';
 import type { ModalState } from './useModalState';
 import { ValueCell } from './ValueCell';
+
+const actionCellClass = '!w-0 max-w-min whitespace-nowrap !px-1';
 
 export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
   const {
@@ -29,80 +31,23 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
     filterDropdownProps,
   } = s;
 
-  const idFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
-    function IdFilterDropdown(props: FilterDropdownProps) {
-      return (
-        <TextFilterBody
-          columnKey="id"
-          visible={props.visible}
-          setColumnFilters={setColumnFilters}
-          placeholder={t('visualizer.manualEntry.filterPlaceholder.id')}
-          filtersRef={columnFiltersRef}
-        />
-      );
-    }
-    return IdFilterDropdown;
-  }, [t, setColumnFilters, columnFiltersRef]);
-
-  const labelFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
-    function LabelFilterDropdown(props: FilterDropdownProps) {
-      return (
-        <TextFilterBody
-          columnKey="label"
-          visible={props.visible}
-          setColumnFilters={setColumnFilters}
-          placeholder={t('visualizer.manualEntry.filterPlaceholder.label')}
-          filtersRef={columnFiltersRef}
-        />
-      );
-    }
-    return LabelFilterDropdown;
-  }, [t, setColumnFilters, columnFiltersRef]);
-
-  const valueFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
-    function ValueFilterDropdown(props: FilterDropdownProps) {
-      return (
-        <TextFilterBody
-          columnKey="value"
-          visible={props.visible}
-          setColumnFilters={setColumnFilters}
-          placeholder={t('visualizer.manualEntry.filterPlaceholder.value')}
-          filtersRef={columnFiltersRef}
-        />
-      );
-    }
-    return ValueFilterDropdown;
-  }, [t, setColumnFilters, columnFiltersRef]);
-
-  const timeFilterDropdown = useMemo((): TableColumnType<DataRow>['filterDropdown'] => {
-    function TimeFilterDropdown(props: FilterDropdownProps) {
-      return (
-        <TextFilterBody
-          columnKey="time"
-          visible={props.visible}
-          setColumnFilters={setColumnFilters}
-          placeholder={t('visualizer.manualEntry.filterPlaceholder.time')}
-          filtersRef={columnFiltersRef}
-        />
-      );
-    }
-    return TimeFilterDropdown;
-  }, [t, setColumnFilters, columnFiltersRef]);
-
   return useMemo((): TableColumnType<DataRow>[] => {
     const ro = googleSheetsSyncReadOnly;
 
-    type FilterDropdownFn = NonNullable<TableColumnType<DataRow>['filterDropdown']>;
-    const filterDropdownByKey: Record<MiddleColKey, FilterDropdownFn> = {
-      id: idFilterDropdown as FilterDropdownFn,
-      label: labelFilterDropdown as FilterDropdownFn,
-      value: valueFilterDropdown as FilterDropdownFn,
-      time: timeFilterDropdown as FilterDropdownFn,
-    };
-
-    const filterFor = (key: MiddleColKey) => ({
+    const filterFor = (
+      key: MiddleColKey,
+      placeholder: string,
+    ): Partial<TableColumnType<DataRow>> => ({
       filtered: Boolean(columnFilters[key].trim()),
-      filterDropdown: filterDropdownByKey[key],
+      filterDropdown: (props: FilterDropdownProps) => (
+        <ColumnFilterDropdown
+          {...props}
+          columnKey={key}
+          placeholder={placeholder}
+          setColumnFilters={setColumnFilters}
+          filtersRef={columnFiltersRef}
+        />
+      ),
       filterDropdownProps,
       filterIcon: (filtered: boolean) => (
         <SearchOutlined className={filtered ? 'text-primary' : 'text-gray-400'} />
@@ -123,7 +68,7 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
         sorter: (a: DataRow, b: DataRow) =>
           a.id.trim().localeCompare(b.id.trim(), undefined, { numeric: true }),
         sortOrder: sortedInfo.field === 'id' ? sortedInfo.order : null,
-        ...filterFor('id'),
+        ...filterFor('id', t('visualizer.manualEntry.filterPlaceholder.id')),
         width: 120,
         render: (_, record) => (
           <Input
@@ -148,7 +93,7 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
         sorter: (a: DataRow, b: DataRow) =>
           a.label.trim().localeCompare(b.label.trim(), undefined, { numeric: true }),
         sortOrder: sortedInfo.field === 'label' ? sortedInfo.order : null,
-        ...filterFor('label'),
+        ...filterFor('label', t('visualizer.manualEntry.filterPlaceholder.label')),
         render: (_, record) => (
           <LabelCell
             key={`${record.key}\0${record.label}`}
@@ -172,7 +117,7 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
         ),
         sorter: (a: DataRow, b: DataRow) => a.value - b.value,
         sortOrder: sortedInfo.field === 'value' ? sortedInfo.order : null,
-        ...filterFor('value'),
+        ...filterFor('value', t('visualizer.manualEntry.filterPlaceholder.value')),
         width: 120,
         render: (_, record) => (
           <ValueCell
@@ -195,7 +140,7 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
         ),
         sorter: (a: DataRow, b: DataRow) => compareTimePeriodForSort(a.timePeriod, b.timePeriod),
         sortOrder: sortedInfo.field === 'time' ? sortedInfo.order : null,
-        ...filterFor('time'),
+        ...filterFor('time', t('visualizer.manualEntry.filterPlaceholder.time')),
         width: 100,
         render: (_, record) => {
           const timeValue =
@@ -231,8 +176,8 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
         </div>
       ),
       align: 'center',
-      className: '!w-0 max-w-min whitespace-nowrap !px-1',
-      onHeaderCell: () => ({ className: '!w-0 max-w-min whitespace-nowrap !px-1' }),
+      className: actionCellClass,
+      onHeaderCell: () => ({ className: actionCellClass }),
       render: (_, __, index) => (
         <Typography.Text className="block text-center whitespace-nowrap text-gray-500">
           {index + 1}
@@ -243,8 +188,8 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
     const actionsCol: TableColumnType<DataRow> = {
       key: 'actions',
       align: 'right',
-      className: '!w-0 max-w-min whitespace-nowrap !px-1',
-      onHeaderCell: () => ({ className: '!w-0 max-w-min whitespace-nowrap !px-1 text-right' }),
+      className: actionCellClass,
+      onHeaderCell: () => ({ className: `${actionCellClass} text-right` }),
       title: '',
       render: (_, record) => (
         <ActionsCell
@@ -266,10 +211,8 @@ export function useTableColumns(s: ModalState): TableColumnType<DataRow>[] {
     googleSheetsSyncReadOnly,
     sortedInfo,
     columnFilters,
-    idFilterDropdown,
-    labelFilterDropdown,
-    valueFilterDropdown,
-    timeFilterDropdown,
+    setColumnFilters,
+    columnFiltersRef,
     filterDropdownProps,
     t,
     placeholderRegionId,

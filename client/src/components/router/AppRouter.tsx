@@ -97,7 +97,7 @@ const router = createBrowserRouter([
       { path: ROUTES.HOME, element: <HomePage /> },
       { path: ROUTES.PROJECT_EDITOR, element: <VisualizerPage /> },
       { path: ROUTES.PROJECT_NEW, element: <VisualizerPage /> },
-      { path: '/projects/:projectId', element: <VisualizerPage /> },
+      { path: ROUTES.PROJECT_BY_ID, element: <VisualizerPage /> },
       { path: ROUTES.EMBED_BY_TOKEN, element: <EmbedPage /> },
       { path: ROUTES.PROJECTS, element: <ProjectsPage /> },
       { path: ROUTES.CONTACT, element: <ContactPage /> },

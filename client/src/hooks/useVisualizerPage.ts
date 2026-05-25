@@ -236,7 +236,7 @@ export function useVisualizerPage() {
     return currentProjectId ? t('visualizer.save') : t('visualizer.saveAs');
   }, [isFreePlan, isLoggedIn, currentProjectId, t]);
 
-  const exportButtonText = useMemo(() => t('visualizer.export'), [t]);
+  const exportButtonText = t('visualizer.export');
 
   const embedButtonText = useMemo(
     () => (isLoggedIn ? t('visualizer.embed.openButton') : t('visualizer.loginToExport')),

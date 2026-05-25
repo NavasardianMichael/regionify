@@ -23,7 +23,8 @@
     "hoverable",
     "Lngs",
     "mnavasardian",
-    "regionify"
+    "regionify",
+    "rowkey"
   ],
   "postman.settings.dotenv-detection-notification-visibility": false
 }

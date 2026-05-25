@@ -16,7 +16,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
-import type { Locale } from '@regionify/shared';
+import type { Locale, UserPublic } from '@regionify/shared';
 import {
   Avatar,
   Button,
@@ -63,6 +63,162 @@ const UserNavAvatar: FC<UserNavAvatarProps> = ({ avatarUrl, displayName }) => (
   </Avatar>
 );
 
+function getNavLinkClassName(path: string, currentPathname: string): string {
+  const isActive = currentPathname === path;
+  return `flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium transition-colors lg:gap-2 lg:px-4 ${
+    isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
+  }`;
+}
+
+type DesktopNavProps = {
+  publicNavItems: NavItem[];
+  isLoggedIn: boolean;
+  user: UserPublic | null;
+  userMenuItems: DropdownProps['menu'];
+  currentLocale: Locale;
+  currentPathname: string;
+};
+
+const DesktopNav: FC<DesktopNavProps> = ({
+  publicNavItems,
+  isLoggedIn,
+  user,
+  userMenuItems,
+  currentLocale,
+  currentPathname,
+}) => {
+  const { t } = useTypedTranslation();
+  const userDisplayName = user?.name?.trim() ?? '';
+
+  return (
+    <Flex align="center" gap={12} className="flex-1 justify-end lg:gap-4">
+      <Flex component="ul" align="center" gap={4}>
+        {publicNavItems.map((item) => (
+          <li key={item.path}>
+            <AppNavLink to={item.path} className={getNavLinkClassName(item.path, currentPathname)}>
+              <item.icon />
+              {item.label}
+            </AppNavLink>
+          </li>
+        ))}
+      </Flex>
+      <div className="h-6 w-px bg-gray-200" aria-hidden />
+      <LanguageDropdown currentLocale={currentLocale} placement="bottomRight" />
+      <div className="h-6 w-px bg-gray-200" aria-hidden />
+      {isLoggedIn ? (
+        <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
+          <Button type="text" className="flex! max-w-55 min-w-0 items-center gap-2 px-2! py-1!">
+            <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
+            <Typography.Text
+              ellipsis={{ tooltip: userDisplayName || undefined }}
+              className="mb-0! inline-block max-w-45! truncate align-middle text-sm font-medium text-gray-700"
+            >
+              {user?.name}
+            </Typography.Text>
+            <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
+          </Button>
+        </Dropdown>
+      ) : (
+        <Flex component="ul" gap={4}>
+          <li>
+            <AppNavLink
+              to={ROUTES.LOGIN}
+              className={getNavLinkClassName(ROUTES.LOGIN, currentPathname)}
+              data-i18n-key="nav.login"
+            >
+              <LoginOutlined />
+              {t('nav.login')}
+            </AppNavLink>
+          </li>
+        </Flex>
+      )}
+    </Flex>
+  );
+};
+
+type MobileDrawerContentProps = {
+  publicNavItems: NavItem[];
+  isLoggedIn: boolean;
+  user: UserPublic | null;
+  currentPathname: string;
+  onNavigateProfile: () => void;
+  onLogout: () => void;
+};
+
+const MobileDrawerContent: FC<MobileDrawerContentProps> = ({
+  publicNavItems,
+  isLoggedIn,
+  user,
+  currentPathname,
+  onNavigateProfile,
+  onLogout,
+}) => {
+  const { t } = useTypedTranslation();
+  const userDisplayName = user?.name?.trim() ?? '';
+
+  const drawerNavLinkClassName = (path: string) =>
+    `${getNavLinkClassName(path, currentPathname)} w-full justify-start`;
+
+  return (
+    <Flex vertical gap="small" className="pb-4">
+      <Flex component="ul" vertical gap={4} className="m-0 list-none p-0">
+        {publicNavItems.map((item) => (
+          <li key={item.path} className="w-full">
+            <AppNavLink to={item.path} className={drawerNavLinkClassName(item.path)}>
+              <item.icon />
+              {item.label}
+            </AppNavLink>
+          </li>
+        ))}
+      </Flex>
+      <Divider className="my-2!" />
+      {isLoggedIn ? (
+        <Flex vertical gap="small">
+          <Flex align="center" gap="small" className="min-h-10 min-w-0 px-1">
+            <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
+            <Typography.Text
+              ellipsis={{ tooltip: userDisplayName || undefined }}
+              className="mb-0! inline-block max-w-50 truncate align-middle text-sm font-medium text-gray-800"
+            >
+              {user?.name}
+            </Typography.Text>
+          </Flex>
+          <Button
+            type="text"
+            block
+            icon={<SettingOutlined />}
+            className="justify-start!"
+            onClick={onNavigateProfile}
+            data-i18n-key="nav.account"
+          >
+            {t('nav.account')}
+          </Button>
+          <Button
+            type="text"
+            block
+            danger
+            icon={<LogoutOutlined />}
+            className="justify-start!"
+            onClick={onLogout}
+            data-i18n-key="nav.logout"
+          >
+            {t('nav.logout')}
+          </Button>
+        </Flex>
+      ) : (
+        <AppNavLink
+          to={ROUTES.LOGIN}
+          className={`${drawerNavLinkClassName(ROUTES.LOGIN)}`}
+          data-i18n-key="nav.login"
+        >
+          <LoginOutlined />
+          {t('nav.login')}
+        </AppNavLink>
+      )}
+    </Flex>
+  );
+};
+
 export const Navigation: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -77,11 +233,7 @@ export const Navigation: FC = () => {
   const publicNavItems: NavItem[] = useMemo(
     () => [
       { path: ROUTES.HOME, label: t('nav.home'), icon: HomeOutlined },
-      {
-        path: ROUTES.PROJECTS,
-        label: t('nav.projects'),
-        icon: FolderOutlined,
-      },
+      { path: ROUTES.PROJECTS, label: t('nav.projects'), icon: FolderOutlined },
       { path: ROUTES.CONTACT, label: t('nav.contact'), icon: MailOutlined },
       { path: ROUTES.ABOUT, label: t('nav.about'), icon: InfoCircleOutlined },
       { path: ROUTES.FAQ, label: t('nav.faq'), icon: QuestionCircleOutlined },
@@ -109,12 +261,13 @@ export const Navigation: FC = () => {
     }
   }, [logout, navigate, message, t]);
 
-  const userDisplayName = user?.name?.trim() ?? '';
-  const userNameTextProps = {
-    ellipsis: { tooltip: userDisplayName || undefined },
-    className:
-      'mb-0! inline-block max-w-[180px]! truncate align-middle text-sm font-medium text-gray-700',
-  };
+  const handleNavigateProfile = useCallback(() => {
+    navigate(ROUTES.PROFILE);
+  }, [navigate]);
+
+  const handleLogoutClick = useCallback(() => {
+    void handleLogout();
+  }, [handleLogout]);
 
   const userMenuItems: DropdownProps['menu'] = useMemo(
     () => ({
@@ -123,7 +276,7 @@ export const Navigation: FC = () => {
           key: 'account',
           label: t('nav.account'),
           icon: <SettingOutlined />,
-          onClick: () => navigate(ROUTES.PROFILE),
+          onClick: handleNavigateProfile,
         },
         { type: 'divider' as const },
         {
@@ -134,18 +287,8 @@ export const Navigation: FC = () => {
         },
       ],
     }),
-    [t, navigate, handleLogout],
+    [t, handleNavigateProfile, handleLogout],
   );
-
-  const getNavLinkClassName = (path: string) => {
-    const isActive = location.pathname === path;
-    return `flex items-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium transition-colors lg:gap-2 lg:px-4 ${
-      isActive ? 'bg-primary-50' : 'text-gray-600 hover:bg-gray-100'
-    }`;
-  };
-
-  const getDrawerNavLinkClassName = (path: string) =>
-    `${getNavLinkClassName(path)} w-full justify-start`;
 
   const mobileDrawerTitle = useMemo(
     () => (
@@ -170,110 +313,6 @@ export const Navigation: FC = () => {
     [closeMobileMenu, t],
   );
 
-  const desktopTrailing = (
-    <Flex align="center" gap={12} className="flex-1 justify-end lg:gap-4">
-      <Flex component="ul" align="center" gap={4}>
-        {publicNavItems.map((item) => (
-          <li key={item.path}>
-            <AppNavLink to={item.path} className={getNavLinkClassName(item.path)}>
-              <item.icon />
-              {item.label}
-            </AppNavLink>
-          </li>
-        ))}
-      </Flex>
-      <div className="h-6 w-px bg-gray-200" aria-hidden />
-      <LanguageDropdown currentLocale={i18n.language as Locale} placement="bottomRight" />
-      <div className="h-6 w-px bg-gray-200" aria-hidden />
-      {isLoggedIn ? (
-        <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
-          <Button
-            type="text"
-            className="flex! max-w-[220px] min-w-0 items-center gap-2 px-2! py-1!"
-          >
-            <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
-            <Typography.Text {...userNameTextProps}>{user?.name}</Typography.Text>
-            <DownOutlined className="shrink-0 text-[10px] text-gray-400" aria-hidden />
-          </Button>
-        </Dropdown>
-      ) : (
-        <Flex component="ul" gap={4}>
-          <li>
-            <AppNavLink
-              to={ROUTES.LOGIN}
-              className={getNavLinkClassName(ROUTES.LOGIN)}
-              data-i18n-key="nav.login"
-            >
-              <LoginOutlined />
-              {t('nav.login')}
-            </AppNavLink>
-          </li>
-        </Flex>
-      )}
-    </Flex>
-  );
-
-  const drawerContent = (
-    <Flex vertical gap="small" className="pb-4">
-      <Flex component="ul" vertical gap={4} className="m-0 list-none p-0">
-        {publicNavItems.map((item) => (
-          <li key={item.path} className="w-full">
-            <AppNavLink to={item.path} className={getDrawerNavLinkClassName(item.path)}>
-              <item.icon />
-              {item.label}
-            </AppNavLink>
-          </li>
-        ))}
-      </Flex>
-      <Divider className="my-2!" />
-      {isLoggedIn ? (
-        <Flex vertical gap="small">
-          <Flex align="center" gap="small" className="min-h-10 min-w-0 px-1">
-            <UserNavAvatar avatarUrl={user?.avatarUrl} displayName={userDisplayName} />
-            <Typography.Text
-              ellipsis={{ tooltip: userDisplayName || undefined }}
-              className="mb-0! inline-block max-w-[200px] truncate align-middle text-sm font-medium text-gray-800"
-            >
-              {user?.name}
-            </Typography.Text>
-          </Flex>
-          <Button
-            type="text"
-            block
-            icon={<SettingOutlined />}
-            className="justify-start!"
-            onClick={() => {
-              navigate(ROUTES.PROFILE);
-            }}
-            data-i18n-key="nav.account"
-          >
-            {t('nav.account')}
-          </Button>
-          <Button
-            type="text"
-            block
-            danger
-            icon={<LogoutOutlined />}
-            className="justify-start!"
-            onClick={() => void handleLogout()}
-            data-i18n-key="nav.logout"
-          >
-            {t('nav.logout')}
-          </Button>
-        </Flex>
-      ) : (
-        <AppNavLink
-          to={ROUTES.LOGIN}
-          className={getDrawerNavLinkClassName(ROUTES.LOGIN)}
-          data-i18n-key="nav.login"
-        >
-          <LoginOutlined />
-          {t('nav.login')}
-        </AppNavLink>
-      )}
-    </Flex>
-  );
-
   return (
     <>
       <nav className="shrink-0 border-b border-gray-200 bg-white px-3 py-3 md:px-6">
@@ -285,7 +324,14 @@ export const Navigation: FC = () => {
             <img src={logoImage} alt={t('appName')} fetchPriority="high" data-i18n-key="appName" />
           </Link>
           {isLgUp ? (
-            desktopTrailing
+            <DesktopNav
+              publicNavItems={publicNavItems}
+              isLoggedIn={isLoggedIn}
+              user={user}
+              userMenuItems={userMenuItems}
+              currentLocale={i18n.language as Locale}
+              currentPathname={location.pathname}
+            />
           ) : (
             <Flex align="center" gap={8}>
               <LanguageDropdown currentLocale={i18n.language as Locale} placement="bottomRight" />
@@ -313,7 +359,14 @@ export const Navigation: FC = () => {
         destroyOnHidden={false}
         styles={{ body: { paddingTop: 8 } }}
       >
-        {drawerContent}
+        <MobileDrawerContent
+          publicNavItems={publicNavItems}
+          isLoggedIn={isLoggedIn}
+          user={user}
+          currentPathname={location.pathname}
+          onNavigateProfile={handleNavigateProfile}
+          onLogout={handleLogoutClick}
+        />
       </Drawer>
     </>
   );

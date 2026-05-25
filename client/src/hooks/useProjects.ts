@@ -24,6 +24,7 @@ import { useDebounceValue } from '@/hooks/useDebounce';
 import { IDLE_STATUSES, type IdleStatus } from '@/constants/loadingStatus';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { getErrorCode } from '@/helpers/error';
 import { getLocalizedRegionLabel, getRegionDisplayName } from '@/helpers/regionDisplay';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 
@@ -111,8 +112,7 @@ export const useProjects = (): UseProjectsReturn => {
         setProjects(data);
         setProjectsStatus(IDLE_STATUSES.success);
       } catch (error) {
-        const err = error as Error & { code?: string };
-        if (err.code === 'UNAUTHORIZED') {
+        if (getErrorCode(error) === 'UNAUTHORIZED') {
           logout();
           message.error(t('messages.sessionExpired'));
           navigate(ROUTES.LOGIN);
@@ -303,8 +303,7 @@ export const useProjects = (): UseProjectsReturn => {
       setDeletingProjectsBulk(null);
       clearSelection();
     } catch (error) {
-      const err = error as Error & { code?: string };
-      if (err.code === 'UNAUTHORIZED') {
+      if (getErrorCode(error) === 'UNAUTHORIZED') {
         logout();
         message.error(t('messages.sessionExpired'));
         navigate(ROUTES.LOGIN);

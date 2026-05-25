@@ -3,12 +3,17 @@
 /* No gray fill on disabled editors inside this modal's table */
 .modal :global(.ant-table .ant-input-outlined.ant-input-disabled),
 .modal :global(.ant-table .ant-input-outlined[disabled]),
-.modal :global(.ant-table .ant-input-number-outlined.ant-input-number-disabled) {
+.modal :global(.ant-table .ant-input-number-outlined.ant-input-number-disabled):not(.hiddenRow) {
   background-color: #ffffff !important;
 }
 
 .modal :global(.ant-table .ant-input-number-disabled .ant-input-number-input) {
   background-color: transparent !important;
+}
+
+/* Hidden-from-chart rows: dim all cells except the last (actions column) */
+.modal .hiddenRow > td:not(:last-child) {
+  opacity: 0.87;
 }
 
 /* Selection column: avoid extra width from table-layout: fixed distributing space */
