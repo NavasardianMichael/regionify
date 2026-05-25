@@ -536,9 +536,26 @@ export const ImportDataPanel: FC = () => {
             }
           }
 
-          // Generate sample: panel/dynamic if plan supports it, else static
+          // Generate sample: respect user's current mode; only default to historical
+          // on a fresh state (no data yet) for Chronographer plan users.
           if (titles.length > 0) {
-            if (limits.historicalDataImport) {
+            const useStaticMode =
+              !limits.historicalDataImport ||
+              (viz.data.allIds.length > 0 &&
+                viz.timePeriods.length === 0 &&
+                Object.keys(viz.timelineData).length === 0);
+
+            if (useStaticMode) {
+              const sampleData = titles.map((title, index) => ({
+                id: title,
+                label: title,
+                value: generateSampleValue(index),
+              }));
+              const allIds = sampleData.map((item) => item.id);
+              const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
+              clearTimelineData();
+              setVisualizerState({ data: { allIds, byId } });
+            } else {
               const samplePeriods = sampleTimelineYearPeriods();
               const timeline: Record<string, DataSet> = {};
               for (let p = 0; p < samplePeriods.length; p++) {
@@ -554,16 +571,6 @@ export const ImportDataPanel: FC = () => {
                 };
               }
               setTimelineData(timeline, samplePeriods);
-            } else {
-              const sampleData = titles.map((title, index) => ({
-                id: title,
-                label: title,
-                value: generateSampleValue(index),
-              }));
-              const allIds = sampleData.map((item) => item.id);
-              const byId = Object.fromEntries(sampleData.map((item) => [item.id, item]));
-              clearTimelineData();
-              setVisualizerState({ data: { allIds, byId } });
             }
           }
         }
