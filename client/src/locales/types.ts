@@ -612,6 +612,7 @@ export type CommonNs = {
     privacy: string;
     refund: string;
     contact: string;
+    faq: string;
   };
   errors: {
     mapRenderFailed: string;

@@ -710,6 +710,7 @@ const zh: CommonNs = {
     privacy: '隐私政策',
     refund: '退款政策',
     contact: '联系我们',
+    faq: '常见问题',
   },
   errors: {
     mapRenderFailed: '很抱歉，地图渲染失败。',

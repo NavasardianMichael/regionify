@@ -108,6 +108,7 @@ export const ImportDataPanel: FC = () => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
   const skipSheetsRefetchOnceRef = useRef(false);
+  const wasInStaticModeRef = useRef(false);
 
   const importDataType = useVisualizerStore(selectImportDataType);
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
@@ -359,6 +360,7 @@ export const ImportDataPanel: FC = () => {
   ]);
 
   const hasDataOrTimeline = data.allIds.length > 0 || timePeriods.length > 0;
+  wasInStaticModeRef.current = hasDataOrTimeline && !hasHistoricalFormat;
 
   const importFormatOptions = useMemo(() => {
     const labelByType: Record<ImportDataType, JSX.Element | string> = {
@@ -534,16 +536,10 @@ export const ImportDataPanel: FC = () => {
             if (storeDataMatchesMapTitles(titles, viz.data, viz.timePeriods, viz.timelineData)) {
               return;
             }
-          }
 
-          // Generate sample: respect user's current mode; only default to historical
-          // on a fresh state (no data yet) for Chronographer plan users.
-          if (titles.length > 0) {
-            const useStaticMode =
-              !limits.historicalDataImport ||
-              (viz.data.allIds.length > 0 &&
-                viz.timePeriods.length === 0 &&
-                Object.keys(viz.timelineData).length === 0);
+            // Generate sample: respect user's current mode; only default to historical
+            // on a fresh state (no data yet) for Chronographer plan users.
+            const useStaticMode = !limits.historicalDataImport || wasInStaticModeRef.current;
 
             if (useStaticMode) {
               const sampleData = titles.map((title, index) => ({

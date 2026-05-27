@@ -763,6 +763,7 @@ const fr: CommonNs = {
     privacy: 'Politique de confidentialité',
     refund: 'Politique de remboursement',
     contact: 'Contact',
+    faq: 'FAQ',
   },
   errors: {
     mapRenderFailed: "Nous sommes désolés, l'affichage de la carte a échoué.",

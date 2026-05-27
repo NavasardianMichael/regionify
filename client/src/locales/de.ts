@@ -764,6 +764,7 @@ const de: CommonNs = {
     privacy: 'Datenschutzrichtlinie',
     refund: 'Rückgaberecht',
     contact: 'Kontakt',
+    faq: 'FAQ',
   },
   errors: {
     mapRenderFailed: 'Es tut uns leid, die Karte konnte nicht gerendert werden.',

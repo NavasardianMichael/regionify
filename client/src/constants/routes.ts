@@ -8,11 +8,19 @@ export function isFullBleedPathname(pathname: string): boolean {
   const fullBleedPaths = [
     ROUTES.HOME,
     ROUTES.ABOUT,
+    ROUTES.CONTACT,
     ROUTES.TERMS,
     ROUTES.PRIVACY_POLICY,
     ROUTES.REFUND_POLICY,
   ] as string[];
   return fullBleedPaths.includes(pathname);
+}
+
+/** True for legal pages that are English-only and should not show the language switcher. */
+export function isUntranslatablePathname(pathname: string): boolean {
+  return ([ROUTES.TERMS, ROUTES.PRIVACY_POLICY, ROUTES.REFUND_POLICY] as string[]).includes(
+    pathname,
+  );
 }
 
 /** True for the project editor/creator, which occupies the full viewport and has no footer. */

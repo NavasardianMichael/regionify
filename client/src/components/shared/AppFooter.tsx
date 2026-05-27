@@ -24,6 +24,9 @@ export const AppFooter: FC = () => {
         <AppNavLink to={ROUTES.CONTACT} className={LINK_CLASS}>
           {t('footer.contact')}
         </AppNavLink>
+        <AppNavLink to={ROUTES.FAQ} className={LINK_CLASS}>
+          {t('footer.faq')}
+        </AppNavLink>
       </Flex>
     </footer>
   );

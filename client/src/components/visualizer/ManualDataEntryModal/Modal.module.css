@@ -13,7 +13,7 @@
 
 /* Hidden-from-chart rows: dim all cells except the last (actions column) */
 .modal .hiddenRow > td:not(:last-child) {
-  opacity: 0.87;
+  opacity: 0.4;
 }
 
 /* Selection column: avoid extra width from table-layout: fixed distributing space */

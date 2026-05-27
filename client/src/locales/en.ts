@@ -682,6 +682,7 @@ const en: CommonNs = {
     privacy: 'Privacy Policy',
     refund: 'Refund Policy',
     contact: 'Contact',
+    faq: 'FAQ',
   },
   errors: {
     mapRenderFailed: 'We are sorry, map failed to render.',

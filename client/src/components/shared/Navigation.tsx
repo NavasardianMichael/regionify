@@ -32,7 +32,7 @@ import { logout as logoutApi } from '@/api/auth';
 import { selectIsLoggedIn, selectLogout, selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { useIsLgUp } from '@/hooks/useIsLgUp';
-import { ROUTES } from '@/constants/routes';
+import { isUntranslatablePathname, ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { LanguageDropdown } from '@/components/shared/LanguageDropdown';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
@@ -77,6 +77,7 @@ type DesktopNavProps = {
   userMenuItems: DropdownProps['menu'];
   currentLocale: Locale;
   currentPathname: string;
+  showLanguage: boolean;
 };
 
 const DesktopNav: FC<DesktopNavProps> = ({
@@ -86,6 +87,7 @@ const DesktopNav: FC<DesktopNavProps> = ({
   userMenuItems,
   currentLocale,
   currentPathname,
+  showLanguage,
 }) => {
   const { t } = useTypedTranslation();
   const userDisplayName = user?.name?.trim() ?? '';
@@ -102,8 +104,12 @@ const DesktopNav: FC<DesktopNavProps> = ({
           </li>
         ))}
       </Flex>
-      <div className="h-6 w-px bg-gray-200" aria-hidden />
-      <LanguageDropdown currentLocale={currentLocale} placement="bottomRight" />
+      {showLanguage && (
+        <>
+          <div className="h-6 w-px bg-gray-200" aria-hidden />
+          <LanguageDropdown currentLocale={currentLocale} placement="bottomRight" />
+        </>
+      )}
       <div className="h-6 w-px bg-gray-200" aria-hidden />
       {isLoggedIn ? (
         <Dropdown menu={userMenuItems} trigger={['click']} placement="bottomRight">
@@ -331,10 +337,13 @@ export const Navigation: FC = () => {
               userMenuItems={userMenuItems}
               currentLocale={i18n.language as Locale}
               currentPathname={location.pathname}
+              showLanguage={!isUntranslatablePathname(location.pathname)}
             />
           ) : (
             <Flex align="center" gap={8}>
-              <LanguageDropdown currentLocale={i18n.language as Locale} placement="bottomRight" />
+              {!isUntranslatablePathname(location.pathname) && (
+                <LanguageDropdown currentLocale={i18n.language as Locale} placement="bottomRight" />
+              )}
               <Button
                 type="text"
                 icon={<MenuOutlined />}

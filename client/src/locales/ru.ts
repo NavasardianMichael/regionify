@@ -749,6 +749,7 @@ const ru: CommonNs = {
     privacy: 'Политика конфиденциальности',
     refund: 'Политика возврата',
     contact: 'Контакт',
+    faq: 'FAQ',
   },
   errors: {
     mapRenderFailed: 'Извините, не удалось отобразить карту.',

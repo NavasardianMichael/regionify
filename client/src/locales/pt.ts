@@ -754,6 +754,7 @@ const pt: CommonNs = {
     privacy: 'Política de privacidade',
     refund: 'Política de reembolso',
     contact: 'Contato',
+    faq: 'FAQ',
   },
   errors: {
     mapRenderFailed: 'Lamentamos, falha ao renderizar o mapa.',
