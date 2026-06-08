@@ -147,7 +147,7 @@ const zh: CommonNs = {
     backToBadges: '返回定价',
     goToBadges: '前往定价',
     badgeUpgraded: '您现在使用的是 {{badge}} 徽章。',
-    paymentVerifying: '付款成功。正在更新您的徽章…',
+    paymentVerifying: '付款处理中。正在更新您的徽章…',
     paymentSuccessTitle: '付款成功',
     continueToProjects: '前往我的项目',
     rows: {

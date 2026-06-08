@@ -158,7 +158,7 @@ const ru: CommonNs = {
     backToBadges: 'Назад к тарифам',
     goToBadges: 'К тарифам',
     badgeUpgraded: 'Теперь вы используете значок {{badge}}.',
-    paymentVerifying: 'Оплата прошла успешно. Обновляем ваш бейдж…',
+    paymentVerifying: 'Платёж обрабатывается. Обновляем ваш бейдж…',
     paymentSuccessTitle: 'Оплата прошла успешно',
     continueToProjects: 'Перейти к моим проектам',
     rows: {

@@ -157,7 +157,7 @@ const es: CommonNs = {
     backToBadges: 'Volver a precios',
     goToBadges: 'Ir a precios',
     badgeUpgraded: 'Ahora tienes el badge {{badge}}.',
-    paymentVerifying: 'Pago exitoso. Actualizando tu badge…',
+    paymentVerifying: 'Pago en proceso. Actualizando tu badge…',
     paymentSuccessTitle: 'Pago exitoso',
     continueToProjects: 'Ir a mis proyectos',
     rows: {

@@ -156,7 +156,7 @@ const pt: CommonNs = {
     backToBadges: 'Voltar a preços',
     goToBadges: 'Ir para preços',
     badgeUpgraded: 'Está agora no badge {{badge}}.',
-    paymentVerifying: 'Pagamento efetuado. A atualizar o seu badge…',
+    paymentVerifying: 'Pagamento em processamento. A atualizar o seu badge…',
     paymentSuccessTitle: 'Pagamento efetuado',
     continueToProjects: 'Ir para os meus projetos',
     rows: {
