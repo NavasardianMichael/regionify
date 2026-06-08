@@ -6,6 +6,8 @@
 # - APP_DIR: Deployment root (e.g. /home/user/apps/regionify)
 # - ENV_FILE_BASE64: Base64-encoded server .env.production (POSTGRES_*, app vars)
 # - VITE_API_BASE_URL: Client API base URL (client builds only)
+# - VITE_PADDLE_CLIENT_TOKEN: Paddle.js client-side token (client builds only)
+# - VITE_PADDLE_ENV: "sandbox" or "production" — must match server PADDLE_SANDBOX (client builds only)
 # - CLIENT_URL: Production app URL linked from marketing pages (e.g. https://app.regionify.com)
 #
 # OPTIONAL GITHUB SECRETS (Sentry source-map uploads):
@@ -148,6 +150,8 @@ jobs:
         run: pnpm run build:client
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_PADDLE_CLIENT_TOKEN: ${{ secrets.VITE_PADDLE_CLIENT_TOKEN }}
+          VITE_PADDLE_ENV: ${{ secrets.VITE_PADDLE_ENV }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
