@@ -21,9 +21,9 @@ router.get('/pricing-preview', async (req, res, next) => {
 
 /** POST /api/payments/create-checkout - Create Paddle checkout (auth required). Body: { badge: BADGES.explorer | BADGES.chronographer } */
 router.post('/create-checkout', requireAuth, async (req, res, next) => {
+  const userId = req.session.userId!;
+  const badge = req.body?.badge as Badge;
   try {
-    const userId = req.session.userId!;
-    const badge = req.body?.badge as Badge;
     if (badge !== BADGES.explorer && badge !== BADGES.chronographer) {
       res.status(400).json({
         success: false,
@@ -32,7 +32,27 @@ router.post('/create-checkout', requireAuth, async (req, res, next) => {
       return;
     }
     const result = await paymentService.createCheckout(userId, badge);
+    logger.info({ userId, badge, action: 'checkout_initiated' }, 'checkout created');
     res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    logger.error(
+      { err: error, userId, badge, action: 'payment_failed' },
+      'checkout creation failed',
+    );
+    next(error);
+  }
+});
+
+/** POST /api/payments/client-error - Log client-side payment errors visible in Grafana (auth required). */
+router.post('/client-error', requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.session.userId!;
+    const { error, context } = req.body as { error?: string; context?: Record<string, unknown> };
+    logger.error(
+      { userId, error, context, action: 'payment_failed' },
+      'payment: client-side error',
+    );
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -62,9 +82,9 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   }
 
   const body = req.body as { event_type?: string };
-  logger.debug({ eventType: body.event_type }, 'paddle webhook: event type');
 
   if (body.event_type !== 'transaction.completed') {
+    logger.info({ eventType: body.event_type }, 'paddle webhook: unhandled event type, skipping');
     res.status(200).send();
     return;
   }
@@ -87,7 +107,13 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
       );
       res.status(200).send();
     })
-    .catch(next);
+    .catch((error: unknown) => {
+      logger.error(
+        { err: error, userId, priceId, transactionId, action: 'payment_failed' },
+        'paddle webhook: badge update failed',
+      );
+      next(error);
+    });
 });
 
 export const paymentRoutes: ExpressRouter = router;

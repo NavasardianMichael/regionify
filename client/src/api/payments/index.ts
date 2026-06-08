@@ -32,3 +32,20 @@ export async function getPricingPreview(): Promise<LocalizedPrices> {
   if (!response.ok || !data.success) throw new Error('Failed to fetch pricing');
   return data.data;
 }
+
+/** Fire-and-forget: ships a client-side payment error to the server so it appears in Grafana. Never throws. */
+export async function reportPaymentError(
+  error: string,
+  context?: Record<string, unknown>,
+): Promise<void> {
+  try {
+    await fetch(PAYMENT_ENDPOINTS.clientError, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ error, context }),
+    });
+  } catch {
+    // best-effort — never let error reporting throw
+  }
+}

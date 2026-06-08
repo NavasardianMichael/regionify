@@ -2,6 +2,7 @@ import { type FC, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { initializePaddle, type Paddle, type PaddleEventData } from '@paddle/paddle-js';
 import { Button, Flex, Spin, Typography } from 'antd';
+import { reportPaymentError } from '@/api/payments';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
@@ -35,9 +36,8 @@ const PaymentCheckoutPage: FC = () => {
     }
 
     if (!PADDLE_CLIENT_TOKEN) {
-      if (import.meta.env.DEV) {
-        console.warn('[paddle] VITE_PADDLE_CLIENT_TOKEN is not set; checkout overlay cannot open.');
-      }
+      console.error('[paddle] VITE_PADDLE_CLIENT_TOKEN is not set; checkout overlay cannot open.');
+      void reportPaymentError('missing_client_token', { environment: PADDLE_ENVIRONMENT, ptxn });
       return;
     }
 
@@ -61,7 +61,18 @@ const PaymentCheckoutPage: FC = () => {
         if (cancelled || !instance) return;
         paddleRef.current = instance;
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error('[paddle] initializePaddle failed', {
+          err,
+          environment: PADDLE_ENVIRONMENT,
+          tokenPresent: Boolean(PADDLE_CLIENT_TOKEN),
+        });
+        void reportPaymentError('paddle_init_failed', {
+          message,
+          environment: PADDLE_ENVIRONMENT,
+          ptxn,
+        });
         if (!cancelled) setInitFailed(true);
       });
 

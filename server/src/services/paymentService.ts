@@ -2,6 +2,7 @@ import { HttpStatus, ErrorCode, Badge, BADGES } from '@regionify/shared';
 import crypto from 'node:crypto';
 
 import { env } from '@/config/env.js';
+import { logger } from '@/lib/logger.js';
 import { AppError } from '@/middleware/errorHandler.js';
 import { userRepository } from '@/repositories/userRepository.js';
 import type { User } from '@prisma/client';
@@ -171,7 +172,13 @@ export const paymentService = {
    */
   verifyWebhookSignature(rawBody: Buffer, signature: string): boolean {
     const secret = env.PADDLE_WEBHOOK_SECRET;
-    if (!secret) return false;
+    if (!secret) {
+      logger.error(
+        { action: 'payment_failed' },
+        'paddle webhook: PADDLE_WEBHOOK_SECRET is not configured',
+      );
+      return false;
+    }
 
     const parts = signature.split(';');
     const ts = parts.find((p) => p.startsWith('ts='))?.slice(3);
@@ -196,7 +203,15 @@ export const paymentService = {
   async handleTransactionCompleted(payload: TransactionCompletedPayload): Promise<void> {
     const userId = payload.data?.custom_data?.user_id;
     const priceId = payload.data?.items?.[0]?.price?.id;
-    if (!userId || !priceId) return;
+    const transactionId = payload.data?.id;
+
+    if (!userId || !priceId) {
+      logger.error(
+        { transactionId, userId, priceId, action: 'payment_failed' },
+        'webhook: missing userId or priceId in payload, badge not assigned',
+      );
+      return;
+    }
 
     let badge: User['badge'] | null = null;
     if (priceId === env.PADDLE_PRICE_ID_EXPLORER) {
@@ -204,12 +219,30 @@ export const paymentService = {
     } else if (priceId === env.PADDLE_PRICE_ID_CHRONOGRAPHER) {
       badge = BADGES.chronographer as User['badge'];
     }
-    if (!badge) return;
+    if (!badge) {
+      logger.error(
+        { transactionId, userId, priceId, action: 'payment_failed' },
+        'webhook: priceId does not match any configured badge tier, badge not assigned',
+      );
+      return;
+    }
 
     const user = await userRepository.findById(userId);
-    if (user && user.badge !== badge) {
-      await userRepository.update(userId, { badge });
+    if (!user) {
+      logger.error(
+        { transactionId, userId, badge, action: 'payment_failed' },
+        'webhook: user not found, badge not assigned',
+      );
+      return;
     }
-    // user not found → return silently so Paddle receives 200 and does not retry
+    if (user.badge === badge) {
+      logger.info(
+        { transactionId, userId, badge },
+        'webhook: user already has this badge, skipping update',
+      );
+      return;
+    }
+
+    await userRepository.update(userId, { badge });
   },
 };
