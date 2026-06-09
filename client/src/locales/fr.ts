@@ -159,6 +159,8 @@ const fr: CommonNs = {
     goToBadges: 'Aller aux tarifs',
     badgeUpgraded: 'Vous avez maintenant le badge {{badge}}.',
     paymentVerifying: 'Paiement en cours. Mise à jour de votre badge…',
+    paymentCancelledTitle: 'Paiement annulé',
+    paymentCancelledDesc: "Vous avez annulé le paiement. Aucun montant n'a été prélevé.",
     paymentSuccessTitle: 'Paiement réussi',
     continueToProjects: 'Aller à mes projets',
     rows: {

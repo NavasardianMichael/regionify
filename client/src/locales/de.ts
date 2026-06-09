@@ -161,6 +161,8 @@ const de: CommonNs = {
     goToBadges: 'Zu Preisen',
     badgeUpgraded: 'Sie sind jetzt auf dem {{badge}}-Badge.',
     paymentVerifying: 'Zahlung wird verarbeitet. Badge wird aktualisiert…',
+    paymentCancelledTitle: 'Zahlung abgebrochen',
+    paymentCancelledDesc: 'Sie haben die Zahlung abgebrochen. Es wurden keine Kosten berechnet.',
     paymentSuccessTitle: 'Zahlung erfolgreich',
     continueToProjects: 'Zu meinen Projekten',
     rows: {

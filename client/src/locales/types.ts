@@ -104,6 +104,8 @@ export type CommonNs = {
     goToBadges: string;
     badgeUpgraded: string;
     paymentVerifying: string;
+    paymentCancelledTitle: string;
+    paymentCancelledDesc: string;
     paymentSuccessTitle: string;
     continueToProjects: string;
     rows: {

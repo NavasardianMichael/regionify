@@ -10,10 +10,8 @@ const PaymentCancelPage: FC = () => {
 
   return (
     <Flex vertical align="center" justify="center" className="h-full w-full" gap="middle">
-      <Typography.Title level={3}>Payment cancelled</Typography.Title>
-      <Typography.Text type="secondary">
-        You cancelled the payment. No charges were made.
-      </Typography.Text>
+      <Typography.Title level={3}>{t('badges.paymentCancelledTitle')}</Typography.Title>
+      <Typography.Text type="secondary">{t('badges.paymentCancelledDesc')}</Typography.Text>
       <Button
         type="primary"
         onClick={() => navigate(ROUTES.BILLING)}

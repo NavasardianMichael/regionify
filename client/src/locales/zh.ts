@@ -148,6 +148,8 @@ const zh: CommonNs = {
     goToBadges: '前往定价',
     badgeUpgraded: '您现在使用的是 {{badge}} 徽章。',
     paymentVerifying: '付款处理中。正在更新您的徽章…',
+    paymentCancelledTitle: '付款已取消',
+    paymentCancelledDesc: '您已取消付款。未产生任何费用。',
     paymentSuccessTitle: '付款成功',
     continueToProjects: '前往我的项目',
     rows: {
