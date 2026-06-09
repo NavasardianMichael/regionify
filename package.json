@@ -24,7 +24,7 @@
     "db:studio": "pnpm --filter @regionify/server db:studio",
     "envtobase64": "pnpm --filter @regionify/server envtobase64",
     "dev:marketing": "pnpm --filter @regionify/marketing dev",
-    "build:marketing": "pnpm --filter @regionify/marketing build",
+    "build:marketing": "pnpm --filter @regionify/shared build && pnpm --filter @regionify/marketing build",
     "generate-marketing-assets": "pnpm --filter @regionify/marketing generate-assets"
   },
   "lint-staged": {
