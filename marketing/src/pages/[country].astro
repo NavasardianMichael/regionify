@@ -36,8 +36,10 @@ const ogImagePublicPath = `${BASE}/assets/${country.slug}/${country.slug}-static
   slug={country.slug}
   ogImagePublicPath={ogImagePublicPath}
   divisionNames={divisionNames}
-  nameLocal={country.name_local !== country.name_en ? country.name_local : undefined}
   nameEn={country.name_en}
+  nameLocal={country.name_local !== country.name_en ? country.name_local : undefined}
+  populationApprox={country.population_approx}
+  areaKm2={country.area_km2}
 >
   <MarketingPage>
     <HeroSection country={country} />

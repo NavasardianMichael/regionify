@@ -4,1329 +4,1709 @@
     "name_local": "افغانستان",
     "capital": "Kabul",
     "division_type": "Provinces",
-    "division_count": 34
+    "division_count": 34,
+    "population_approx": 42000000,
+    "area_km2": 652090
   },
   "albania": {
     "name_en": "Albania",
     "name_local": "Shqipëria",
     "capital": "Tirana",
     "division_type": "Counties",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 2800000,
+    "area_km2": 28748
   },
   "algeria": {
     "name_en": "Algeria",
     "name_local": "الجزائر",
     "capital": "Algiers",
     "division_type": "Provinces",
-    "division_count": 48
+    "division_count": 48,
+    "population_approx": 46000000,
+    "area_km2": 2381741
   },
   "andorra": {
     "name_en": "Andorra",
     "name_local": "Andorra",
     "capital": "Andorra la Vella",
     "division_type": "Parishes",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 80000,
+    "area_km2": 468
   },
   "angola": {
     "name_en": "Angola",
     "name_local": "Angola",
     "capital": "Luanda",
     "division_type": "Provinces",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 36000000,
+    "area_km2": 1246700
   },
   "antiguaAndBarbuda": {
     "name_en": "Antigua and Barbuda",
     "name_local": "Antigua and Barbuda",
     "capital": "Saint John's",
     "division_type": "Parishes",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 100000,
+    "area_km2": 443
   },
   "argentina": {
     "name_en": "Argentina",
     "name_local": "Argentina",
     "capital": "Buenos Aires",
     "division_type": "Provinces",
-    "division_count": 24
+    "division_count": 24,
+    "population_approx": 46000000,
+    "area_km2": 2780400
   },
   "armenia": {
     "name_en": "Armenia",
     "name_local": "Հայաստան",
     "capital": "Yerevan",
     "division_type": "Provinces",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 3000000,
+    "area_km2": 29743
   },
   "australia": {
     "name_en": "Australia",
     "name_local": "Australia",
     "capital": "Canberra",
     "division_type": "States",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 26000000,
+    "area_km2": 7692024
   },
   "austria": {
     "name_en": "Austria",
     "name_local": "Österreich",
     "capital": "Vienna",
     "division_type": "States",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 9200000,
+    "area_km2": 83871
   },
   "bahamas": {
     "name_en": "Bahamas",
     "name_local": "Bahamas",
     "capital": "Nassau",
     "division_type": "Districts",
-    "division_count": 32
+    "division_count": 32,
+    "population_approx": 400000,
+    "area_km2": 13943
   },
   "bahrain": {
     "name_en": "Bahrain",
     "name_local": "البحرين",
     "capital": "Manama",
     "division_type": "Governorates",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 1800000,
+    "area_km2": 760
   },
   "bangladesh": {
     "name_en": "Bangladesh",
     "name_local": "বাংলাদেশ",
     "capital": "Dhaka",
     "division_type": "Divisions",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 173000000,
+    "area_km2": 147570
   },
   "barbados": {
     "name_en": "Barbados",
     "name_local": "Barbados",
     "capital": "Bridgetown",
     "division_type": "Parishes",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 280000,
+    "area_km2": 431
   },
   "belarus": {
     "name_en": "Belarus",
     "name_local": "Беларусь",
     "capital": "Minsk",
     "division_type": "Regions",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 9400000,
+    "area_km2": 207600
   },
   "belgium": {
     "name_en": "Belgium",
     "name_local": "België",
     "capital": "Brussels",
     "division_type": "Provinces",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 11600000,
+    "area_km2": 30528
   },
   "belize": {
     "name_en": "Belize",
     "name_local": "Belize",
     "capital": "Belmopan",
     "division_type": "Districts",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 420000,
+    "area_km2": 22966
   },
   "benin": {
     "name_en": "Benin",
     "name_local": "Bénin",
     "capital": "Porto-Novo",
     "division_type": "Departments",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 13500000,
+    "area_km2": 112622
   },
   "bermuda": {
     "name_en": "Bermuda",
     "name_local": "Bermuda",
     "capital": "Hamilton",
     "division_type": "Parishes",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 64000,
+    "area_km2": 54
   },
   "bhutan": {
     "name_en": "Bhutan",
     "name_local": "འབྲུག",
     "capital": "Thimphu",
     "division_type": "Districts",
-    "division_count": 20
+    "division_count": 20,
+    "population_approx": 780000,
+    "area_km2": 38394
   },
   "bolivia": {
     "name_en": "Bolivia",
     "name_local": "Bolivia",
     "capital": "Sucre",
     "division_type": "Departments",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 12300000,
+    "area_km2": 1098581
   },
   "botswana": {
     "name_en": "Botswana",
     "name_local": "Botswana",
     "capital": "Gaborone",
     "division_type": "Districts",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 2700000,
+    "area_km2": 581730
   },
   "brazil": {
     "name_en": "Brazil",
     "name_local": "Brasil",
     "capital": "Brasília",
     "division_type": "States",
-    "division_count": 27
+    "division_count": 27,
+    "population_approx": 215000000,
+    "area_km2": 8515767
   },
   "bruneiDarussalam": {
     "name_en": "Brunei",
     "name_local": "Brunei Darussalam",
     "capital": "Bandar Seri Begawan",
     "division_type": "Districts",
-    "division_count": 4
+    "division_count": 4,
+    "population_approx": 450000,
+    "area_km2": 5765
   },
   "bulgaria": {
     "name_en": "Bulgaria",
     "name_local": "България",
     "capital": "Sofia",
     "division_type": "Provinces",
-    "division_count": 28
+    "division_count": 28,
+    "population_approx": 6500000,
+    "area_km2": 110879
   },
   "burkinaFaso": {
     "name_en": "Burkina Faso",
     "name_local": "Burkina Faso",
     "capital": "Ouagadougou",
     "division_type": "Regions",
-    "division_count": 13
+    "division_count": 13,
+    "population_approx": 23000000,
+    "area_km2": 274222
   },
   "burundi": {
     "name_en": "Burundi",
     "name_local": "Burundi",
     "capital": "Gitega",
     "division_type": "Provinces",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 13000000,
+    "area_km2": 27834
   },
   "cambodia": {
     "name_en": "Cambodia",
     "name_local": "កម្ពុជា",
     "capital": "Phnom Penh",
     "division_type": "Provinces",
-    "division_count": 24
+    "division_count": 24,
+    "population_approx": 17000000,
+    "area_km2": 181035
   },
   "cameroon": {
     "name_en": "Cameroon",
     "name_local": "Cameroun",
     "capital": "Yaoundé",
     "division_type": "Regions",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 29000000,
+    "area_km2": 475442
   },
   "canada": {
     "name_en": "Canada",
     "name_local": "Canada",
     "capital": "Ottawa",
     "division_type": "Provinces",
-    "division_count": 13
+    "division_count": 13,
+    "population_approx": 38000000,
+    "area_km2": 9984670
   },
   "capeVerde": {
     "name_en": "Cape Verde",
     "name_local": "Cabo Verde",
     "capital": "Praia",
     "division_type": "Municipalities",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 580000,
+    "area_km2": 4033
   },
   "centralAfricanRepublic": {
     "name_en": "Central African Republic",
     "name_local": "République centrafricaine",
     "capital": "Bangui",
     "division_type": "Prefectures",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 5700000,
+    "area_km2": 622984
   },
   "chad": {
     "name_en": "Chad",
     "name_local": "تشاد",
     "capital": "N'Djamena",
     "division_type": "Provinces",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 18500000,
+    "area_km2": 1284000
   },
   "chile": {
     "name_en": "Chile",
     "name_local": "Chile",
     "capital": "Santiago",
     "division_type": "Regions",
-    "division_count": 15
+    "division_count": 15,
+    "population_approx": 19500000,
+    "area_km2": 756102
   },
   "china": {
     "name_en": "China",
     "name_local": "中国",
     "capital": "Beijing",
     "division_type": "Provinces",
-    "division_count": 34
+    "division_count": 34,
+    "population_approx": 1400000000,
+    "area_km2": 9596960
   },
   "colombia": {
     "name_en": "Colombia",
     "name_local": "Colombia",
     "capital": "Bogotá",
     "division_type": "Departments",
-    "division_count": 33
+    "division_count": 33,
+    "population_approx": 52000000,
+    "area_km2": 1141748
   },
   "comoros": {
     "name_en": "Comoros",
     "name_local": "Comores",
     "capital": "Moroni",
     "division_type": "Islands",
-    "division_count": 3
+    "division_count": 3,
+    "population_approx": 870000,
+    "area_km2": 2235
   },
   "congo": {
     "name_en": "Republic of the Congo",
     "name_local": "République du Congo",
     "capital": "Brazzaville",
     "division_type": "Departments",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 6000000,
+    "area_km2": 342000
   },
   "congoDR": {
     "name_en": "DR Congo",
     "name_local": "République démocratique du Congo",
     "capital": "Kinshasa",
     "division_type": "Provinces",
-    "division_count": 26
+    "division_count": 26,
+    "population_approx": 102000000,
+    "area_km2": 2344858
   },
   "costaRica": {
     "name_en": "Costa Rica",
     "name_local": "Costa Rica",
     "capital": "San José",
     "division_type": "Provinces",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 5200000,
+    "area_km2": 51100
   },
   "croatia": {
     "name_en": "Croatia",
     "name_local": "Hrvatska",
     "capital": "Zagreb",
     "division_type": "Counties",
-    "division_count": 21
+    "division_count": 21,
+    "population_approx": 3900000,
+    "area_km2": 56594
   },
   "cuba": {
     "name_en": "Cuba",
     "name_local": "Cuba",
     "capital": "Havana",
     "division_type": "Provinces",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 11200000,
+    "area_km2": 109884
   },
   "cyprus": {
     "name_en": "Cyprus",
     "name_local": "Κύπρος",
     "capital": "Nicosia",
     "division_type": "Districts",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 1300000,
+    "area_km2": 9251
   },
   "czechRepublic": {
     "name_en": "Czech Republic",
     "name_local": "Česká republika",
     "capital": "Prague",
     "division_type": "Regions",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 10900000,
+    "area_km2": 78866
   },
   "denmark": {
     "name_en": "Denmark",
     "name_local": "Danmark",
     "capital": "Copenhagen",
     "division_type": "Regions",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 5900000,
+    "area_km2": 43094
   },
   "djibouti": {
     "name_en": "Djibouti",
     "name_local": "Djibouti",
     "capital": "Djibouti",
     "division_type": "Regions",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 1100000,
+    "area_km2": 23200
   },
   "dominica": {
     "name_en": "Dominica",
     "name_local": "Dominica",
     "capital": "Roseau",
     "division_type": "Parishes",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 72000,
+    "area_km2": 751
   },
   "dominicanRepublic": {
     "name_en": "Dominican Republic",
     "name_local": "República Dominicana",
     "capital": "Santo Domingo",
     "division_type": "Provinces",
-    "division_count": 32
+    "division_count": 32,
+    "population_approx": 11000000,
+    "area_km2": 48671
   },
   "eastTimor": {
     "name_en": "East Timor",
     "name_local": "Timor-Leste",
     "capital": "Dili",
     "division_type": "Municipalities",
-    "division_count": 13
+    "division_count": 13,
+    "population_approx": 1350000,
+    "area_km2": 14874
   },
   "ecuador": {
     "name_en": "Ecuador",
     "name_local": "Ecuador",
     "capital": "Quito",
     "division_type": "Provinces",
-    "division_count": 24
+    "division_count": 24,
+    "population_approx": 18000000,
+    "area_km2": 283561
   },
   "egypt": {
     "name_en": "Egypt",
     "name_local": "مصر",
     "capital": "Cairo",
     "division_type": "Governorates",
-    "division_count": 29
+    "division_count": 29,
+    "population_approx": 106000000,
+    "area_km2": 1001449
   },
   "elSalvador": {
     "name_en": "El Salvador",
     "name_local": "El Salvador",
     "capital": "San Salvador",
     "division_type": "Departments",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 6500000,
+    "area_km2": 21041
   },
   "equatorialGuinea": {
     "name_en": "Equatorial Guinea",
     "name_local": "Guinea Ecuatorial",
     "capital": "Malabo",
     "division_type": "Provinces",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 1500000,
+    "area_km2": 28051
   },
   "eritrea": {
     "name_en": "Eritrea",
     "name_local": "ኤርትራ",
     "capital": "Asmara",
     "division_type": "Regions",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 3600000,
+    "area_km2": 117600
   },
   "estonia": {
     "name_en": "Estonia",
     "name_local": "Eesti",
     "capital": "Tallinn",
     "division_type": "Counties",
-    "division_count": 15
+    "division_count": 15,
+    "population_approx": 1350000,
+    "area_km2": 45228
   },
   "eSwatini": {
     "name_en": "Eswatini",
     "name_local": "eSwatini",
     "capital": "Mbabane",
     "division_type": "Regions",
-    "division_count": 4
+    "division_count": 4,
+    "population_approx": 1200000,
+    "area_km2": 17364
   },
   "ethiopia": {
     "name_en": "Ethiopia",
     "name_local": "ኢትዮጵያ",
     "capital": "Addis Ababa",
     "division_type": "Regions",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 127000000,
+    "area_km2": 1104300
   },
   "finland": {
     "name_en": "Finland",
     "name_local": "Suomi",
     "capital": "Helsinki",
     "division_type": "Regions",
-    "division_count": 19
+    "division_count": 19,
+    "population_approx": 5600000,
+    "area_km2": 338145
   },
   "france": {
     "name_en": "France",
     "name_local": "France",
     "capital": "Paris",
     "division_type": "Regions",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 68000000,
+    "area_km2": 551695
   },
   "gabon": {
     "name_en": "Gabon",
     "name_local": "Gabon",
     "capital": "Libreville",
     "division_type": "Provinces",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 2400000,
+    "area_km2": 267668
   },
   "gambia": {
     "name_en": "Gambia",
     "name_local": "Gambia",
     "capital": "Banjul",
     "division_type": "Regions",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 2700000,
+    "area_km2": 11295
   },
   "georgia": {
     "name_en": "Georgia",
     "name_local": "საქართველო",
     "capital": "Tbilisi",
     "division_type": "Regions",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 3700000,
+    "area_km2": 69700
   },
   "germany": {
     "name_en": "Germany",
     "name_local": "Deutschland",
     "capital": "Berlin",
     "division_type": "States",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 84000000,
+    "area_km2": 357114
   },
   "ghana": {
     "name_en": "Ghana",
     "name_local": "Ghana",
     "capital": "Accra",
     "division_type": "Regions",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 33000000,
+    "area_km2": 238533
   },
   "greece": {
     "name_en": "Greece",
     "name_local": "Ελλάδα",
     "capital": "Athens",
     "division_type": "Regions",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 10600000,
+    "area_km2": 131957
   },
   "greenland": {
     "name_en": "Greenland",
     "name_local": "Kalaallit Nunaat",
     "capital": "Nuuk",
     "division_type": "Municipalities",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 56000,
+    "area_km2": 2166086
   },
   "grenada": {
     "name_en": "Grenada",
     "name_local": "Grenada",
     "capital": "Saint George's",
     "division_type": "Parishes",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 120000,
+    "area_km2": 344
   },
   "guatemala": {
     "name_en": "Guatemala",
     "name_local": "Guatemala",
     "capital": "Guatemala City",
     "division_type": "Departments",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 17500000,
+    "area_km2": 108889
   },
   "guinea": {
     "name_en": "Guinea",
     "name_local": "Guinée",
     "capital": "Conakry",
     "division_type": "Regions",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 13500000,
+    "area_km2": 245857
   },
   "guineaBissau": {
     "name_en": "Guinea-Bissau",
     "name_local": "Guiné-Bissau",
     "capital": "Bissau",
     "division_type": "Regions",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 2100000,
+    "area_km2": 36125
   },
   "guyana": {
     "name_en": "Guyana",
     "name_local": "Guyana",
     "capital": "Georgetown",
     "division_type": "Regions",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 790000,
+    "area_km2": 214969
   },
   "haiti": {
     "name_en": "Haiti",
     "name_local": "Haïti",
     "capital": "Port-au-Prince",
     "division_type": "Departments",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 11500000,
+    "area_km2": 27750
   },
   "honduras": {
     "name_en": "Honduras",
     "name_local": "Honduras",
     "capital": "Tegucigalpa",
     "division_type": "Departments",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 10300000,
+    "area_km2": 112492
   },
   "hongKong": {
     "name_en": "Hong Kong",
     "name_local": "香港",
     "capital": "Hong Kong",
     "division_type": "Districts",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 7500000,
+    "area_km2": 1104
   },
   "hungary": {
     "name_en": "Hungary",
     "name_local": "Magyarország",
     "capital": "Budapest",
     "division_type": "Counties",
-    "division_count": 40
+    "division_count": 40,
+    "population_approx": 9700000,
+    "area_km2": 93028
   },
   "iceland": {
     "name_en": "Iceland",
     "name_local": "Ísland",
     "capital": "Reykjavik",
     "division_type": "Regions",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 380000,
+    "area_km2": 103000
   },
   "india": {
     "name_en": "India",
     "name_local": "भारत",
     "capital": "New Delhi",
     "division_type": "States",
-    "division_count": 36
+    "division_count": 36,
+    "population_approx": 1430000000,
+    "area_km2": 3287263
   },
   "indonesia": {
     "name_en": "Indonesia",
     "name_local": "Indonesia",
     "capital": "Jakarta",
     "division_type": "Provinces",
-    "division_count": 38
+    "division_count": 38,
+    "population_approx": 278000000,
+    "area_km2": 1904569
   },
   "iran": {
     "name_en": "Iran",
     "name_local": "ایران",
     "capital": "Tehran",
     "division_type": "Provinces",
-    "division_count": 31
+    "division_count": 31,
+    "population_approx": 89000000,
+    "area_km2": 1648195
   },
   "iraq": {
     "name_en": "Iraq",
     "name_local": "العراق",
     "capital": "Baghdad",
     "division_type": "Governorates",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 43000000,
+    "area_km2": 438317
   },
   "ireland": {
     "name_en": "Ireland",
     "name_local": "Éire",
     "capital": "Dublin",
     "division_type": "Counties",
-    "division_count": 27
+    "division_count": 27,
+    "population_approx": 5100000,
+    "area_km2": 70273
   },
   "israel": {
     "name_en": "Israel",
     "name_local": "ישראל",
     "capital": "Jerusalem",
     "division_type": "Districts",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 9900000,
+    "area_km2": 20770
   },
   "italy": {
     "name_en": "Italy",
     "name_local": "Italia",
     "capital": "Rome",
     "division_type": "Regions",
-    "division_count": 24
+    "division_count": 24,
+    "population_approx": 59000000,
+    "area_km2": 301340
   },
   "ivoryCoast": {
     "name_en": "Ivory Coast",
     "name_local": "Côte d'Ivoire",
     "capital": "Yamoussoukro",
     "division_type": "Districts",
-    "division_count": 19
+    "division_count": 19,
+    "population_approx": 27000000,
+    "area_km2": 322463
   },
   "jamaica": {
     "name_en": "Jamaica",
     "name_local": "Jamaica",
     "capital": "Kingston",
     "division_type": "Parishes",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 2800000,
+    "area_km2": 10991
   },
   "japan": {
     "name_en": "Japan",
     "name_local": "日本",
     "capital": "Tokyo",
     "division_type": "Prefectures",
-    "division_count": 47
+    "division_count": 47,
+    "population_approx": 124000000,
+    "area_km2": 377975
   },
   "jordan": {
     "name_en": "Jordan",
     "name_local": "الأردن",
     "capital": "Amman",
     "division_type": "Governorates",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 10200000,
+    "area_km2": 89342
   },
   "kazakhstan": {
     "name_en": "Kazakhstan",
     "name_local": "Қазақстан",
     "capital": "Astana",
     "division_type": "Regions",
-    "division_count": 15
+    "division_count": 15,
+    "population_approx": 19500000,
+    "area_km2": 2724900
   },
   "kenya": {
     "name_en": "Kenya",
     "name_local": "Kenya",
     "capital": "Nairobi",
     "division_type": "Counties",
-    "division_count": 47
+    "division_count": 47,
+    "population_approx": 56000000,
+    "area_km2": 580367
   },
   "kiribati": {
     "name_en": "Kiribati",
     "name_local": "Kiribati",
     "capital": "South Tarawa",
     "division_type": "Islands",
-    "division_count": 3
+    "division_count": 3,
+    "population_approx": 120000,
+    "area_km2": 811
   },
   "kosovo": {
     "name_en": "Kosovo",
     "name_local": "Kosovë",
     "capital": "Pristina",
     "division_type": "Districts",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 1800000,
+    "area_km2": 10887
   },
   "kuwait": {
     "name_en": "Kuwait",
     "name_local": "الكويت",
     "capital": "Kuwait City",
     "division_type": "Governorates",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 4800000,
+    "area_km2": 17818
   },
   "kyrgyzstan": {
     "name_en": "Kyrgyzstan",
     "name_local": "Кыргызстан",
     "capital": "Bishkek",
     "division_type": "Regions",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 7000000,
+    "area_km2": 199951
   },
   "laos": {
     "name_en": "Laos",
     "name_local": "ລາວ",
     "capital": "Vientiane",
     "division_type": "Provinces",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 7500000,
+    "area_km2": 236800
   },
   "latvia": {
     "name_en": "Latvia",
     "name_local": "Latvija",
     "capital": "Riga",
     "division_type": "Municipalities",
-    "division_count": 119
+    "division_count": 119,
+    "population_approx": 1830000,
+    "area_km2": 64589
   },
   "lebanon": {
     "name_en": "Lebanon",
     "name_local": "لبنان",
     "capital": "Beirut",
     "division_type": "Governorates",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 5500000,
+    "area_km2": 10452
   },
   "lesotho": {
     "name_en": "Lesotho",
     "name_local": "Lesotho",
     "capital": "Maseru",
     "division_type": "Districts",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 2200000,
+    "area_km2": 30355
   },
   "liberia": {
     "name_en": "Liberia",
     "name_local": "Liberia",
     "capital": "Monrovia",
     "division_type": "Counties",
-    "division_count": 15
+    "division_count": 15,
+    "population_approx": 5400000,
+    "area_km2": 111369
   },
   "libya": {
     "name_en": "Libya",
     "name_local": "ليبيا",
     "capital": "Tripoli",
     "division_type": "Districts",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 7200000,
+    "area_km2": 1759540
   },
   "liechtenstein": {
     "name_en": "Liechtenstein",
     "name_local": "Liechtenstein",
     "capital": "Vaduz",
     "division_type": "Municipalities",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 38000,
+    "area_km2": 160
   },
   "lithuania": {
     "name_en": "Lithuania",
     "name_local": "Lietuva",
     "capital": "Vilnius",
     "division_type": "Counties",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 2800000,
+    "area_km2": 65300
   },
   "luxembourg": {
     "name_en": "Luxembourg",
     "name_local": "Lëtzebuerg",
     "capital": "Luxembourg City",
     "division_type": "Cantons",
-    "division_count": 3
+    "division_count": 3,
+    "population_approx": 660000,
+    "area_km2": 2586
   },
   "madagascar": {
     "name_en": "Madagascar",
     "name_local": "Madagasikara",
     "capital": "Antananarivo",
     "division_type": "Regions",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 29000000,
+    "area_km2": 587041
   },
   "malawi": {
     "name_en": "Malawi",
     "name_local": "Malawi",
     "capital": "Lilongwe",
     "division_type": "Districts",
-    "division_count": 28
+    "division_count": 28,
+    "population_approx": 20000000,
+    "area_km2": 118484
   },
   "malaysia": {
     "name_en": "Malaysia",
     "name_local": "Malaysia",
     "capital": "Kuala Lumpur",
     "division_type": "States",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 33000000,
+    "area_km2": 329847
   },
   "mali": {
     "name_en": "Mali",
     "name_local": "Mali",
     "capital": "Bamako",
     "division_type": "Regions",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 23000000,
+    "area_km2": 1240192
   },
   "malta": {
     "name_en": "Malta",
-    "name_local": "",
-    "capital": "",
-    "division_type": "",
-    "division_count": 5
+    "name_local": "Malta",
+    "capital": "Valletta",
+    "division_type": "Regions",
+    "division_count": 5,
+    "population_approx": 540000,
+    "area_km2": 316
   },
   "mauritania": {
     "name_en": "Mauritania",
     "name_local": "موريتانيا",
     "capital": "Nouakchott",
     "division_type": "Regions",
-    "division_count": 13
+    "division_count": 13,
+    "population_approx": 4700000,
+    "area_km2": 1030700
   },
   "mauritius": {
     "name_en": "Mauritius",
     "name_local": "Mauritius",
     "capital": "Port Louis",
     "division_type": "Districts",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 1300000,
+    "area_km2": 2040
   },
   "mexico": {
     "name_en": "Mexico",
     "name_local": "México",
     "capital": "Mexico City",
     "division_type": "States",
-    "division_count": 32
+    "division_count": 32,
+    "population_approx": 128000000,
+    "area_km2": 1964375
   },
   "moldova": {
     "name_en": "Moldova",
     "name_local": "Moldova",
     "capital": "Chișinău",
     "division_type": "Districts",
-    "division_count": 37
+    "division_count": 37,
+    "population_approx": 2600000,
+    "area_km2": 33846
   },
   "mongolia": {
     "name_en": "Mongolia",
     "name_local": "Монгол улс",
     "capital": "Ulaanbaatar",
     "division_type": "Provinces",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 3400000,
+    "area_km2": 1564110
   },
   "montenegro": {
     "name_en": "Montenegro",
     "name_local": "Crna Gora",
     "capital": "Podgorica",
     "division_type": "Municipalities",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 620000,
+    "area_km2": 13812
   },
   "morocco": {
     "name_en": "Morocco",
     "name_local": "المغرب",
     "capital": "Rabat",
     "division_type": "Regions",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 38000000,
+    "area_km2": 446550
   },
   "mozambique": {
     "name_en": "Mozambique",
     "name_local": "Moçambique",
     "capital": "Maputo",
     "division_type": "Provinces",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 33000000,
+    "area_km2": 801590
   },
   "myanmar": {
     "name_en": "Myanmar",
     "name_local": "မြန်မာ",
     "capital": "Naypyidaw",
     "division_type": "States",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 54000000,
+    "area_km2": 676578
   },
   "namibia": {
     "name_en": "Namibia",
     "name_local": "Namibia",
     "capital": "Windhoek",
     "division_type": "Regions",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 2700000,
+    "area_km2": 824292
   },
   "nepal": {
     "name_en": "Nepal",
     "name_local": "नेपाल",
     "capital": "Kathmandu",
     "division_type": "Provinces",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 30000000,
+    "area_km2": 147181
   },
   "netherlands": {
     "name_en": "Netherlands",
     "name_local": "Nederland",
     "capital": "Amsterdam",
     "division_type": "Provinces",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 17900000,
+    "area_km2": 41543
   },
   "newZealand": {
     "name_en": "New Zealand",
     "name_local": "Aotearoa",
     "capital": "Wellington",
     "division_type": "Regions",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 5100000,
+    "area_km2": 270467
   },
   "nicaragua": {
     "name_en": "Nicaragua",
     "name_local": "Nicaragua",
     "capital": "Managua",
     "division_type": "Departments",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 7000000,
+    "area_km2": 130370
   },
   "niger": {
     "name_en": "Niger",
     "name_local": "Niger",
     "capital": "Niamey",
     "division_type": "Regions",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 25000000,
+    "area_km2": 1267000
   },
   "nigeria": {
     "name_en": "Nigeria",
     "name_local": "Nigeria",
     "capital": "Abuja",
     "division_type": "States",
-    "division_count": 37
+    "division_count": 37,
+    "population_approx": 225000000,
+    "area_km2": 923768
   },
   "northKorea": {
     "name_en": "North Korea",
     "name_local": "조선민주주의인민공화국",
     "capital": "Pyongyang",
     "division_type": "Provinces",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 26000000,
+    "area_km2": 120538
   },
   "northMacedonia": {
     "name_en": "North Macedonia",
     "name_local": "Северна Македонија",
     "capital": "Skopje",
     "division_type": "Municipalities",
-    "division_count": 86
+    "division_count": 86,
+    "population_approx": 2100000,
+    "area_km2": 25713
   },
   "norway": {
     "name_en": "Norway",
     "name_local": "Norge",
     "capital": "Oslo",
     "division_type": "Counties",
-    "division_count": 19
+    "division_count": 19,
+    "population_approx": 5500000,
+    "area_km2": 385207
   },
   "oman": {
     "name_en": "Oman",
     "name_local": "عُمان",
     "capital": "Muscat",
     "division_type": "Governorates",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 4900000,
+    "area_km2": 309500
   },
   "pakistan": {
     "name_en": "Pakistan",
     "name_local": "پاکستان",
     "capital": "Islamabad",
     "division_type": "Provinces",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 231000000,
+    "area_km2": 881913
   },
   "palau": {
     "name_en": "Palau",
     "name_local": "Palau",
     "capital": "Ngerulmud",
     "division_type": "States",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 18000,
+    "area_km2": 459
   },
   "palestine": {
     "name_en": "Palestine",
     "name_local": "فلسطين",
     "capital": "Ramallah",
     "division_type": "Governorates",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 5400000,
+    "area_km2": 6020
   },
   "panama": {
     "name_en": "Panama",
     "name_local": "Panamá",
     "capital": "Panama City",
     "division_type": "Provinces",
-    "division_count": 13
+    "division_count": 13,
+    "population_approx": 4400000,
+    "area_km2": 75420
   },
   "papuaNewGuinea": {
     "name_en": "Papua New Guinea",
     "name_local": "Papua New Guinea",
     "capital": "Port Moresby",
     "division_type": "Provinces",
-    "division_count": 20
+    "division_count": 20,
+    "population_approx": 10000000,
+    "area_km2": 462840
   },
   "paraguay": {
     "name_en": "Paraguay",
     "name_local": "Paraguay",
     "capital": "Asunción",
     "division_type": "Departments",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 7400000,
+    "area_km2": 406752
   },
   "peru": {
     "name_en": "Peru",
     "name_local": "Perú",
     "capital": "Lima",
     "division_type": "Regions",
-    "division_count": 27
+    "division_count": 27,
+    "population_approx": 33500000,
+    "area_km2": 1285216
   },
   "philippines": {
     "name_en": "Philippines",
     "name_local": "Pilipinas",
     "capital": "Manila",
     "division_type": "Regions",
-    "division_count": 81
+    "division_count": 81,
+    "population_approx": 114000000,
+    "area_km2": 300000
   },
   "poland": {
     "name_en": "Poland",
     "name_local": "Polska",
     "capital": "Warsaw",
     "division_type": "Voivodeships",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 38000000,
+    "area_km2": 312696
   },
   "portugal": {
     "name_en": "Portugal",
     "name_local": "Portugal",
     "capital": "Lisbon",
     "division_type": "Districts",
-    "division_count": 20
+    "division_count": 20,
+    "population_approx": 10300000,
+    "area_km2": 92212
   },
   "qatar": {
     "name_en": "Qatar",
     "name_local": "قطر",
     "capital": "Doha",
     "division_type": "Municipalities",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 2900000,
+    "area_km2": 11586
   },
   "romania": {
     "name_en": "Romania",
     "name_local": "România",
     "capital": "Bucharest",
     "division_type": "Counties",
-    "division_count": 42
+    "division_count": 42,
+    "population_approx": 19000000,
+    "area_km2": 238397
   },
   "russia": {
     "name_en": "Russia",
     "name_local": "Россия",
     "capital": "Moscow",
     "division_type": "Federal Subjects",
-    "division_count": 83
+    "division_count": 83,
+    "population_approx": 144000000,
+    "area_km2": 17098242
   },
   "rwanda": {
     "name_en": "Rwanda",
     "name_local": "Rwanda",
     "capital": "Kigali",
     "division_type": "Provinces",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 14000000,
+    "area_km2": 26338
   },
   "samoa": {
     "name_en": "Samoa",
     "name_local": "Sāmoa",
     "capital": "Apia",
     "division_type": "Districts",
-    "division_count": 11
+    "division_count": 11,
+    "population_approx": 220000,
+    "area_km2": 2842
   },
   "sanMarino": {
     "name_en": "San Marino",
     "name_local": "San Marino",
     "capital": "San Marino",
     "division_type": "Castles",
-    "division_count": 9
+    "division_count": 9,
+    "population_approx": 34000,
+    "area_km2": 61
   },
   "saudiArabia": {
     "name_en": "Saudi Arabia",
     "name_local": "المملكة العربية السعودية",
     "capital": "Riyadh",
     "division_type": "Regions",
-    "division_count": 13
+    "division_count": 13,
+    "population_approx": 36000000,
+    "area_km2": 2149690
   },
   "senegal": {
     "name_en": "Senegal",
     "name_local": "Sénégal",
     "capital": "Dakar",
     "division_type": "Regions",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 17000000,
+    "area_km2": 196722
   },
   "serbia": {
     "name_en": "Serbia",
     "name_local": "Србија",
     "capital": "Belgrade",
     "division_type": "Districts",
-    "division_count": 30
+    "division_count": 30,
+    "population_approx": 6800000,
+    "area_km2": 77474
   },
   "seychelles": {
     "name_en": "Seychelles",
     "name_local": "Seychelles",
     "capital": "Victoria",
     "division_type": "Districts",
-    "division_count": 26
+    "division_count": 26,
+    "population_approx": 100000,
+    "area_km2": 455
   },
   "sierraLeone": {
     "name_en": "Sierra Leone",
     "name_local": "Sierra Leone",
     "capital": "Freetown",
     "division_type": "Provinces",
-    "division_count": 4
+    "division_count": 4,
+    "population_approx": 8400000,
+    "area_km2": 71740
   },
   "singapore": {
     "name_en": "Singapore",
     "name_local": "新加坡",
     "capital": "Singapore",
     "division_type": "Districts",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 5900000,
+    "area_km2": 728
   },
   "slovakia": {
     "name_en": "Slovakia",
     "name_local": "Slovensko",
     "capital": "Bratislava",
     "division_type": "Regions",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 5500000,
+    "area_km2": 49035
   },
   "slovenia": {
     "name_en": "Slovenia",
     "name_local": "Slovenija",
     "capital": "Ljubljana",
     "division_type": "Municipalities",
-    "division_count": 12
+    "division_count": 12,
+    "population_approx": 2100000,
+    "area_km2": 20273
   },
   "solomonIslands": {
     "name_en": "Solomon Islands",
     "name_local": "Solomon Islands",
     "capital": "Honiara",
     "division_type": "Provinces",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 720000,
+    "area_km2": 28896
   },
   "somalia": {
     "name_en": "Somalia",
     "name_local": "Soomaaliya",
     "capital": "Mogadishu",
     "division_type": "Regions",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 18000000,
+    "area_km2": 637657
   },
   "southAfrica": {
     "name_en": "South Africa",
     "name_local": "South Africa",
     "capital": "Pretoria",
     "division_type": "Provinces",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 60000000,
+    "area_km2": 1221037
   },
   "southKorea": {
     "name_en": "South Korea",
     "name_local": "대한민국",
     "capital": "Seoul",
     "division_type": "Provinces",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 51700000,
+    "area_km2": 100210
   },
   "southSudan": {
     "name_en": "South Sudan",
     "name_local": "South Sudan",
     "capital": "Juba",
     "division_type": "States",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 11000000,
+    "area_km2": 619745
   },
   "spain": {
     "name_en": "Spain",
     "name_local": "España",
     "capital": "Madrid",
     "division_type": "Autonomous Communities",
-    "division_count": 17
+    "division_count": 17,
+    "population_approx": 48000000,
+    "area_km2": 505990
   },
   "sriLanka": {
     "name_en": "Sri Lanka",
     "name_local": "ශ්‍රී ලංකාව",
     "capital": "Colombo",
     "division_type": "Provinces",
-    "division_count": 25
+    "division_count": 25,
+    "population_approx": 22000000,
+    "area_km2": 65610
   },
   "stHelena": {
     "name_en": "Saint Helena",
     "name_local": "Saint Helena",
     "capital": "Jamestown",
     "division_type": "Districts",
-    "division_count": 8
+    "division_count": 8,
+    "population_approx": 6000,
+    "area_km2": 122
   },
   "stKittsAndNevis": {
     "name_en": "Saint Kitts and Nevis",
     "name_local": "Saint Kitts and Nevis",
     "capital": "Basseterre",
     "division_type": "Parishes",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 53000,
+    "area_km2": 261
   },
   "stLucia": {
     "name_en": "Saint Lucia",
     "name_local": "Saint Lucia",
     "capital": "Castries",
     "division_type": "Quarters",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 184000,
+    "area_km2": 616
   },
   "sudan": {
     "name_en": "Sudan",
     "name_local": "السودان",
     "capital": "Khartoum",
     "division_type": "States",
-    "division_count": 18
+    "division_count": 18,
+    "population_approx": 47000000,
+    "area_km2": 1886068
   },
   "suriname": {
     "name_en": "Suriname",
     "name_local": "Suriname",
     "capital": "Paramaribo",
     "division_type": "Districts",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 620000,
+    "area_km2": 163820
   },
   "sweden": {
     "name_en": "Sweden",
     "name_local": "Sverige",
     "capital": "Stockholm",
     "division_type": "Counties",
-    "division_count": 21
+    "division_count": 21,
+    "population_approx": 10500000,
+    "area_km2": 450295
   },
   "switzerland": {
     "name_en": "Switzerland",
     "name_local": "Schweiz",
     "capital": "Bern",
     "division_type": "Cantons",
-    "division_count": 27
+    "division_count": 27,
+    "population_approx": 8700000,
+    "area_km2": 41285
   },
   "syria": {
     "name_en": "Syria",
     "name_local": "سوريا",
     "capital": "Damascus",
     "division_type": "Governorates",
-    "division_count": 14
+    "division_count": 14,
+    "population_approx": 22000000,
+    "area_km2": 185180
   },
   "taiwan": {
     "name_en": "Taiwan",
     "name_local": "台灣",
     "capital": "Taipei",
     "division_type": "Counties",
-    "division_count": 22
+    "division_count": 22,
+    "population_approx": 23600000,
+    "area_km2": 36193
   },
   "tajikistan": {
     "name_en": "Tajikistan",
     "name_local": "Тоҷикистон",
     "capital": "Dushanbe",
     "division_type": "Regions",
-    "division_count": 4
+    "division_count": 4,
+    "population_approx": 10000000,
+    "area_km2": 143100
   },
   "tanzania": {
     "name_en": "Tanzania",
     "name_local": "Tanzania",
     "capital": "Dodoma",
     "division_type": "Regions",
-    "division_count": 30
+    "division_count": 30,
+    "population_approx": 65000000,
+    "area_km2": 945087
   },
   "thailand": {
     "name_en": "Thailand",
     "name_local": "ประเทศไทย",
     "capital": "Bangkok",
     "division_type": "Provinces",
-    "division_count": 78
+    "division_count": 78,
+    "population_approx": 72000000,
+    "area_km2": 513120
   },
   "tibet": {
     "name_en": "Tibet",
     "name_local": "བོད།",
     "capital": "Lhasa",
     "division_type": "Prefectures",
-    "division_count": 7
+    "division_count": 7,
+    "population_approx": 3500000,
+    "area_km2": 1228400
   },
   "togo": {
     "name_en": "Togo",
     "name_local": "Togo",
     "capital": "Lomé",
     "division_type": "Regions",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 8900000,
+    "area_km2": 56785
   },
   "tonga": {
     "name_en": "Tonga",
     "name_local": "Tonga",
     "capital": "Nukuʻalofa",
     "division_type": "Divisions",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 100000,
+    "area_km2": 747
   },
   "trinidadAndTobago": {
     "name_en": "Trinidad and Tobago",
     "name_local": "Trinidad and Tobago",
     "capital": "Port of Spain",
     "division_type": "Regions",
-    "division_count": 15
+    "division_count": 15,
+    "population_approx": 1400000,
+    "area_km2": 5131
   },
   "tunisia": {
     "name_en": "Tunisia",
     "name_local": "تونس",
     "capital": "Tunis",
     "division_type": "Governorates",
-    "division_count": 24
+    "division_count": 24,
+    "population_approx": 12000000,
+    "area_km2": 163610
   },
   "turkmenistan": {
     "name_en": "Turkmenistan",
     "name_local": "Türkmenistan",
     "capital": "Ashgabat",
     "division_type": "Regions",
-    "division_count": 5
+    "division_count": 5,
+    "population_approx": 6100000,
+    "area_km2": 488100
   },
   "turksAndCaicosIslands": {
     "name_en": "Turks and Caicos Islands",
     "name_local": "Turks and Caicos Islands",
     "capital": "Cockburn Town",
     "division_type": "Districts",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 44000,
+    "area_km2": 948
   },
   "uganda": {
     "name_en": "Uganda",
     "name_local": "Uganda",
     "capital": "Kampala",
     "division_type": "Districts",
-    "division_count": 112
+    "division_count": 112,
+    "population_approx": 48000000,
+    "area_km2": 241038
   },
   "ukraine": {
     "name_en": "Ukraine",
     "name_local": "Україна",
     "capital": "Kyiv",
     "division_type": "Oblasts",
-    "division_count": 27
+    "division_count": 27,
+    "population_approx": 37000000,
+    "area_km2": 603550
   },
   "unitedArabEmirates": {
     "name_en": "United Arab Emirates",
     "name_local": "الإمارات العربية المتحدة",
     "capital": "Abu Dhabi",
     "division_type": "Emirates",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 9900000,
+    "area_km2": 83600
   },
   "unitedKingdom": {
     "name_en": "United Kingdom",
     "name_local": "United Kingdom",
     "capital": "London",
     "division_type": "Countries",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 68000000,
+    "area_km2": 242495
   },
   "uruguay": {
     "name_en": "Uruguay",
     "name_local": "Uruguay",
     "capital": "Montevideo",
     "division_type": "Departments",
-    "division_count": 19
+    "division_count": 19,
+    "population_approx": 3500000,
+    "area_km2": 176215
   },
   "usa": {
     "name_en": "United States",
     "name_local": "United States",
     "capital": "Washington, D.C.",
     "division_type": "States",
-    "division_count": 51
+    "division_count": 51,
+    "population_approx": 335000000,
+    "area_km2": 9372610
   },
   "uzbekistan": {
     "name_en": "Uzbekistan",
     "name_local": "Oʻzbekiston",
     "capital": "Tashkent",
     "division_type": "Regions",
-    "division_count": 16
+    "division_count": 16,
+    "population_approx": 36000000,
+    "area_km2": 448978
   },
   "vanuatu": {
     "name_en": "Vanuatu",
     "name_local": "Vanuatu",
     "capital": "Port Vila",
     "division_type": "Provinces",
-    "division_count": 6
+    "division_count": 6,
+    "population_approx": 330000,
+    "area_km2": 12189
   },
   "venezuela": {
     "name_en": "Venezuela",
     "name_local": "Venezuela",
     "capital": "Caracas",
     "division_type": "States",
-    "division_count": 28
+    "division_count": 28,
+    "population_approx": 28000000,
+    "area_km2": 916445
   },
   "vietnam": {
     "name_en": "Vietnam",
     "name_local": "Việt Nam",
     "capital": "Hanoi",
     "division_type": "Provinces",
-    "division_count": 64
+    "division_count": 64,
+    "population_approx": 98000000,
+    "area_km2": 331212
   },
   "yemen": {
     "name_en": "Yemen",
     "name_local": "اليمن",
     "capital": "Sanaa",
     "division_type": "Governorates",
-    "division_count": 21
+    "division_count": 21,
+    "population_approx": 34000000,
+    "area_km2": 527968
   },
   "zambia": {
     "name_en": "Zambia",
     "name_local": "Zambia",
     "capital": "Lusaka",
     "division_type": "Provinces",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 20000000,
+    "area_km2": 752618
   },
   "zimbabwe": {
     "name_en": "Zimbabwe",
     "name_local": "Zimbabwe",
     "capital": "Harare",
     "division_type": "Provinces",
-    "division_count": 10
+    "division_count": 10,
+    "population_approx": 16500000,
+    "area_km2": 390757
   }
 }

@@ -15,6 +15,10 @@
 # - SENTRY_PROJECT: Sentry project slug
 # - SENTRY_AUTH_TOKEN: Sentry org auth token (org:ci scope)
 #
+# OPTIONAL GITHUB SECRETS (SEO):
+# - GOOGLE_SITE_VERIFICATION: Google Search Console verification token.
+#   Passed to the Astro marketing build at CI time AND set inside ENV_FILE_BASE64 (.env.production) for the server.
+#
 # On-host layout after deploy:
 #   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
 #   $APP_DIR/server/.env.production  (persistent; not inside a release)
@@ -196,6 +200,7 @@ jobs:
         run: pnpm run build:marketing
         env:
           CLIENT_URL: ${{ secrets.CLIENT_URL }}
+          GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
 
       - name: Create marketing archive
         run: tar -czf marketing-build.tar.gz -C marketing/dist .

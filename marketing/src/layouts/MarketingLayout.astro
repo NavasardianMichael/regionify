@@ -1,15 +1,21 @@
 ---
 import '../styles/global.css';
+import { BADGE_DETAILS, BADGES } from '@regionify/shared';
 import { BASE } from '@/helpers/commons';
 
 interface Props {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
-  slug: string;
+  /** Country slug — omit for the hub index page, which uses `${BASE}/` as its canonical. */
+  slug?: string;
   nameEn?: string;
   nameLocal?: string;
   divisionNames?: string[];
+  /** Approximate population (head count). */
+  populationApprox?: number;
+  /** Land area in km². */
+  areaKm2?: number;
   /** Path beginning with `/` (e.g. `/assets/...`). */
   ogImagePublicPath?: string;
 }
@@ -22,11 +28,13 @@ const {
   nameEn,
   nameLocal,
   divisionNames,
+  populationApprox,
+  areaKm2,
   ogImagePublicPath,
 } = Astro.props;
 
 const CLIENT_URL = import.meta.env.CLIENT_URL;
-const canonicalUrl = `${CLIENT_URL}${BASE}/${slug}/`;
+const canonicalUrl = slug ? `${CLIENT_URL}${BASE}/${slug}/` : `${CLIENT_URL}${BASE}/`;
 const ogImageUrl = ogImagePublicPath
   ? `${CLIENT_URL}${ogImagePublicPath}`
   : `${CLIENT_URL}/og-image.jpg`;
@@ -39,21 +47,28 @@ const softwareAppJsonLd = {
     'Create choropleth maps for any country or region. Import from CSV, Excel, JSON, Google Sheets (including live sync), pasted tabular data, or AI-assisted parsing of unstructured text; customize styling and legends; export as PNG, SVG, GIF, MP4, or PDF.',
   url: CLIENT_URL,
   applicationCategory: 'DataVisualization',
-  offers: [
-    { '@type': 'Offer', name: 'Observer', price: '0', priceCurrency: 'USD' },
-    { '@type': 'Offer', name: 'Explorer', price: '49', priceCurrency: 'USD' },
-    { '@type': 'Offer', name: 'Chronographer', price: '149', priceCurrency: 'USD' },
-  ],
+  offers: [BADGES.observer, BADGES.explorer, BADGES.chronographer].map((badge) => ({
+    '@type': 'Offer',
+    name: badge.charAt(0).toUpperCase() + badge.slice(1),
+    price: String(BADGE_DETAILS[badge].price),
+    priceCurrency: 'USD',
+  })),
 };
 
-const spatialCoverageJsonLd =
-  divisionNames && divisionNames.length > 0
+const countryJsonLd =
+  nameEn
     ? {
         '@context': 'https://schema.org',
-        '@type': 'Place',
+        '@type': 'Country',
         name: nameEn,
         ...(nameLocal ? { alternateName: nameLocal } : {}),
-        containsPlace: divisionNames.map((name) => ({ '@type': 'Place', name })),
+        ...(populationApprox != null ? { numberOfPeople: populationApprox } : {}),
+        ...(areaKm2 != null
+          ? { area: { '@type': 'QuantitativeValue', value: areaKm2, unitCode: 'KMQ' } }
+          : {}),
+        ...(divisionNames && divisionNames.length > 0
+          ? { containsPlace: divisionNames.map((name) => ({ '@type': 'Place', name })) }
+          : {}),
       }
     : null;
 ---
@@ -68,8 +83,8 @@ const spatialCoverageJsonLd =
     <meta name="keywords" content={seoKeywords} />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="robots" content="index, follow" />
-    {import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION && (
-      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION} />
+    {import.meta.env.GOOGLE_SITE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.GOOGLE_SITE_VERIFICATION} />
     )}
 
     <meta property="og:title" content={seoTitle} />
@@ -88,11 +103,11 @@ const spatialCoverageJsonLd =
     <link rel="icon" href={`${BASE}/favicon.ico`} />
 
     {
-      spatialCoverageJsonLd && (
+      countryJsonLd && (
         <script
           is:inline
           type="application/ld+json"
-          set:html={JSON.stringify(spatialCoverageJsonLd)}
+          set:html={JSON.stringify(countryJsonLd)}
         />
       )
     }

@@ -10,6 +10,7 @@ import { embedPageLimiter } from '@/middleware/embedPageLimiter.js';
 import { logger } from '@/lib/logger.js';
 import { projectEmbedService } from '@/services/projectEmbedService.js';
 import { HOME_PAGE_DEFAULT, homeRootInnerHtml } from '@/web/homeCopy.js';
+import { PAGE_META_MAP } from '@/web/pageMeta.js';
 import { readClientEntryAssets } from '@/web/readClientManifest.js';
 import { renderHtmlDocument } from '@/web/renderHtmlDocument.js';
 import { buildAppSitemapXml, buildRobotsTxt, buildSitemapIndexXml } from '@/web/sitemap.js';
@@ -230,6 +231,26 @@ export function setupWebClient(app: Application): void {
 
   app.use(express.static(staticDir, { index: false, fallthrough: true }));
 
+  const NOINDEX_PREFIXES = [
+    '/login',
+    '/sign-up',
+    '/forgot-password',
+    '/reset-password',
+    '/verify-email',
+    '/auth/callback',
+    '/account-deleted',
+    '/profile',
+    '/billing',
+    '/projects',
+    '/payments/checkout',
+    '/payments/return',
+    '/payments/cancel',
+  ] as const;
+
+  function isNoIndexPath(path: string): boolean {
+    return NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+  }
+
   app.get('/{*path}', (req: Request, res: Response, next) => {
     if (req.method !== 'GET') {
       next();
@@ -247,18 +268,22 @@ export function setupWebClient(app: Application): void {
       return;
     }
 
+    const routeMeta = PAGE_META_MAP[req.path];
+    const noindex = isNoIndexPath(req.path);
+
     const html = renderHtmlDocument({
       siteUrl,
       meta: {
-        documentTitle: HOME_PAGE_DEFAULT.documentTitle,
-        description: HOME_PAGE_DEFAULT.metaDescription,
-        keywords: HOME_PAGE_DEFAULT.metaKeywords,
+        documentTitle: routeMeta?.documentTitle ?? HOME_PAGE_DEFAULT.documentTitle,
+        description: routeMeta?.description ?? HOME_PAGE_DEFAULT.metaDescription,
+        keywords: routeMeta?.keywords ?? HOME_PAGE_DEFAULT.metaKeywords,
         canonicalPath: req.path || '/',
       },
       rootInnerHtml: '',
       entryJs: assets.js,
       entryCss: assets.css,
       googleSiteVerification,
+      ...(noindex ? { robots: 'noindex, nofollow' } : {}),
     });
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
   });

@@ -11,6 +11,10 @@ export type CountryRow = {
   capital: string;
   division_type: string;
   division_count: number;
+  /** Approximate population (head count). */
+  population_approx?: number;
+  /** Land area in km². */
+  area_km2?: number;
 };
 
 type CountriesMap = Record<string, Omit<CountryRow, 'slug' | 'region_id'>>;
