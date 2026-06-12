@@ -24,6 +24,17 @@ curl https://regionify.pro/robots.txt            # must contain: Sitemap: https:
 
 ## 2. Set `GOOGLE_SITE_VERIFICATION` secret
 
+**How to get the token:**
+
+1. Go to [Google Search Console](https://search.google.com/search-console)
+2. Click **Add property** → enter `https://regionify.pro` → continue
+3. Choose the **HTML tag** verification method
+4. Google will display a meta tag like:
+   ```html
+   <meta name="google-site-verification" content="abc123XYZ..." />
+   ```
+5. Copy the value of the `content` attribute — that string is your token
+
 The same token is needed in two places:
 
 **GitHub Actions secret** (used by the marketing build step in `deploy.yml`):
