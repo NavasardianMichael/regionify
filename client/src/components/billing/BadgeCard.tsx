@@ -151,14 +151,15 @@ const BadgeCard: FC<BadgeCardProps> = ({
               variant="outlined"
               color="default"
               block
-              className="mt-auto shrink-0"
+              className="mt-auto shrink-0 overflow-hidden"
               disabled
               loading={isUpgrading}
               icon={isUpgrading ? <LoadingOutlined /> : undefined}
               onClick={handleClick}
+              title={t('badges.currentBadge')}
               data-i18n-key="badges.currentBadge"
             >
-              {t('badges.currentBadge')}
+              <span className="block truncate">{t('badges.currentBadge')}</span>
             </Button>
           ) : (
             <Button
@@ -166,14 +167,15 @@ const BadgeCard: FC<BadgeCardProps> = ({
               variant="solid"
               color="primary"
               block
-              className="mt-auto shrink-0"
+              className="mt-auto shrink-0 overflow-hidden"
               disabled={isActionDisabled}
               loading={isUpgrading}
               icon={isUpgrading ? <LoadingOutlined /> : undefined}
               onClick={handleClick}
+              title={tier.buttonText}
               data-i18n-key="badges.items.explorer.buttonText"
             >
-              {tier.buttonText}
+              <span className="block truncate">{tier.buttonText}</span>
             </Button>
           ))}
       </Flex>

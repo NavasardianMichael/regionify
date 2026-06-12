@@ -4,8 +4,8 @@ import { Flex } from 'antd';
 import { APP_LAYOUT_CLASSNAMES } from '@/constants/layout';
 import {
   isEmbedPathname,
+  isFooterHiddenPath,
   isFullBleedPathname,
-  isVisualizerPathname,
   ROUTES,
 } from '@/constants/routes';
 import { AppFooter } from '@/components/shared/AppFooter';
@@ -41,7 +41,7 @@ function AppLayout() {
   const location = useLocation();
   const isEmbedRoute = isEmbedPathname(location.pathname);
   const isFullBleed = isFullBleedPathname(location.pathname);
-  const isVisualizer = isVisualizerPathname(location.pathname);
+  const isFooterHidden = isFooterHiddenPath(location.pathname);
   const MainOrRegion = isEmbedRoute ? 'div' : 'main';
 
   const { mainClassName, innerDivClassName } = useMemo(() => {
@@ -82,7 +82,7 @@ function AppLayout() {
               <Outlet />
             </Suspense>
           </div>
-          {!isEmbedRoute && !isVisualizer && <AppFooter />}
+          {!isEmbedRoute && !isFooterHidden && <AppFooter />}
         </MainOrRegion>
       </Flex>
     </>

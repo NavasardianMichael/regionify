@@ -23,10 +23,15 @@ export function isUntranslatablePathname(pathname: string): boolean {
   );
 }
 
-/** True for the project editor/creator, which occupies the full viewport and has no footer. */
-export function isVisualizerPathname(pathname: string): boolean {
-  const visualizerPaths = [ROUTES.PROJECT_EDITOR, ROUTES.PROJECT_NEW] as string[];
-  return visualizerPaths.includes(pathname) || /^\/projects\/[^/]+$/.test(pathname);
+/** True for pages that occupy the full viewport and should not show the footer. */
+export function isFooterHiddenPath(pathname: string): boolean {
+  const paths = [
+    ROUTES.PROJECT_EDITOR,
+    ROUTES.PROJECT_NEW,
+    ROUTES.CONTACT,
+    ROUTES.BILLING,
+  ] as string[];
+  return paths.includes(pathname) || /^\/projects\/[^/]+$/.test(pathname);
 }
 
 export const EXTERNAL_URLS = {
