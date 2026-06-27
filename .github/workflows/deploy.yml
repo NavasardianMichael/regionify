@@ -6,6 +6,7 @@
 # - APP_DIR: Deployment root (e.g. /home/user/apps/regionify)
 # - ENV_FILE_BASE64: Base64-encoded server .env.production (POSTGRES_*, app vars)
 # - VITE_API_BASE_URL: Client API base URL (client builds only)
+# - VITE_GA_MEASUREMENT_ID: GA4 Measurement ID (e.g. G-XXXXXXXXXX) (client builds only)
 # - VITE_PADDLE_CLIENT_TOKEN: Paddle.js client-side token (client builds only)
 # - VITE_PADDLE_ENV: "sandbox" or "production" — must match server PADDLE_SANDBOX (client builds only)
 # - CLIENT_URL: Production app URL linked from marketing pages (e.g. https://app.regionify.com)
@@ -154,6 +155,7 @@ jobs:
         run: pnpm run build:client
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
           VITE_PADDLE_CLIENT_TOKEN: ${{ secrets.VITE_PADDLE_CLIENT_TOKEN }}
           VITE_PADDLE_ENV: ${{ secrets.VITE_PADDLE_ENV }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
