@@ -42,6 +42,7 @@ import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
 import { PDF_PAGE_FORMAT_OPTIONS } from '@/constants/pdfExport';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { trackGa4FileDownload } from '@/helpers/analytics';
 import {
   exportAnimationAsGif,
   exportAnimationAsVideo,
@@ -396,6 +397,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
     try {
       if (isSvgFormat) {
         await exportMapAsSvg(fileName, resolvedStillOpts);
+        trackGa4FileDownload({
+          fileExtension: 'svg',
+          assetType: 'map_image',
+          country: selectedCountryId ?? undefined,
+          userPlan: badge,
+        });
         message.success(t('messages.mapExportedAs', { format: 'SVG' }), 5);
         onClose();
         return;
@@ -438,6 +445,15 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
             orientation: pdfOrientation,
           });
         }
+        trackGa4FileDownload({
+          fileExtension: 'pdf',
+          assetType: 'map_pdf',
+          country: selectedCountryId ?? undefined,
+          userPlan: badge,
+          pdfPageFormat: pdfPageFormat,
+          pdfOrientation: pdfOrientation,
+          isMultiPage: hasTimelineData,
+        });
         message.success(t('messages.mapExportedAs', { format: 'PDF' }), 5);
         onClose();
         return;
@@ -468,6 +484,15 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
         } else {
           await exportAnimationAsVideo(exportOptions);
         }
+        trackGa4FileDownload({
+          fileExtension: exportType,
+          assetType: 'map_animation',
+          country: selectedCountryId ?? undefined,
+          userPlan: badge,
+          animationSmooth: smoothTransitions,
+          animationSpeed: resolvedSecondsPerPeriod,
+          periodCount: timePeriods.length,
+        });
       } else {
         // Generate a fresh canvas WITHOUT watermark, crop it, then apply watermark
         // so the watermark is always correctly positioned in the final export.
@@ -502,6 +527,12 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
 
         const blob = await canvasToBlob(finalCanvas, mimeType, blobQuality);
         triggerDownload(blob, `${fileName}.${ext}`);
+        trackGa4FileDownload({
+          fileExtension: ext,
+          assetType: 'map_image',
+          country: selectedCountryId ?? undefined,
+          userPlan: badge,
+        });
       }
       message.success(t('messages.mapExportedAs', { format: exportType.toUpperCase() }), 5);
       onClose();
@@ -512,26 +543,27 @@ export function useExportMapModal(_open: boolean, onClose: () => void) {
       setProgress(0);
     }
   }, [
-    exportType,
-    isSvgFormat,
-    isAnimationFormat,
-    isPdfFormat,
-    hasTimelineData,
     selectedCountryId,
-    timePeriods,
-    timelineData,
-    watermarkActive,
-    crop,
-    animationBaseOptions,
+    isSvgFormat,
+    isPdfFormat,
+    isAnimationFormat,
     message,
-    resolvedQuality,
-    resolvedSecondsPerPeriod,
+    t,
+    exportType,
+    onClose,
     resolvedStillOpts,
-    smoothTransitions,
+    badge,
+    hasTimelineData,
     pdfPageFormat,
     pdfOrientation,
-    onClose,
-    t,
+    animationBaseOptions,
+    timePeriods,
+    timelineData,
+    resolvedQuality,
+    watermarkActive,
+    crop,
+    resolvedSecondsPerPeriod,
+    smoothTransitions,
   ]);
 
   const showQualityControl = useMemo(

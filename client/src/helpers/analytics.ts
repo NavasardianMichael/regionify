@@ -60,3 +60,39 @@ export function trackGa4PageView(pagePath: string): void {
     page_location: `${window.location.origin}${pagePath}`,
   });
 }
+
+type Ga4FileDownloadParams = {
+  fileExtension: string;
+  assetType: 'map_image' | 'map_pdf' | 'map_animation' | 'dataset' | 'sample_dataset';
+  country?: string;
+  userPlan?: string;
+  // pdf
+  pdfPageFormat?: string;
+  pdfOrientation?: string;
+  isMultiPage?: boolean;
+  // animation
+  animationSmooth?: boolean;
+  animationSpeed?: number;
+  periodCount?: number;
+};
+
+export function trackGa4FileDownload(params: Ga4FileDownloadParams): void {
+  const id = getGaMeasurementId();
+  if (!id || typeof window.gtag !== 'function') return;
+
+  const eventParams: Record<string, string | number | boolean> = {
+    file_extension: params.fileExtension,
+    asset_type: params.assetType,
+  };
+
+  if (params.country !== undefined) eventParams.country = params.country;
+  if (params.userPlan !== undefined) eventParams.user_plan = params.userPlan;
+  if (params.pdfPageFormat !== undefined) eventParams.pdf_page_format = params.pdfPageFormat;
+  if (params.pdfOrientation !== undefined) eventParams.pdf_orientation = params.pdfOrientation;
+  if (params.isMultiPage !== undefined) eventParams.is_multi_page = params.isMultiPage;
+  if (params.animationSmooth !== undefined) eventParams.animation_smooth = params.animationSmooth;
+  if (params.animationSpeed !== undefined) eventParams.animation_speed = params.animationSpeed;
+  if (params.periodCount !== undefined) eventParams.period_count = params.periodCount;
+
+  window.gtag('event', 'file_download', eventParams);
+}

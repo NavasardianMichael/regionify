@@ -46,6 +46,7 @@ import type { ImportDataType } from '@/types/mapData';
 import { IMPORT_DATA_TYPES, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@/constants/data';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { trackGa4FileDownload } from '@/helpers/analytics';
 import { writeRowsToXlsxFile } from '@/helpers/excelAsync';
 import {
   convertToRegionData,
@@ -218,6 +219,12 @@ export const ImportDataPanel: FC = () => {
         case 'excel': {
           const filename = `${projectName}${suffix}.xlsx`;
           await writeRowsToXlsxFile(filename, rows);
+          trackGa4FileDownload({
+            fileExtension: 'xlsx',
+            assetType: 'dataset',
+            country: selectedCountryId ?? undefined,
+            userPlan: badge,
+          });
           setIsDownloading(false);
           return;
         }
@@ -246,6 +253,12 @@ export const ImportDataPanel: FC = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      trackGa4FileDownload({
+        fileExtension: importDataType,
+        assetType: 'dataset',
+        country: selectedCountryId ?? undefined,
+        userPlan: badge,
+      });
     } catch (error) {
       console.error('Failed to download data:', error);
       showMessageWithClose(messageApi, 'error', t('messages.downloadDataFailed'));
@@ -253,14 +266,17 @@ export const ImportDataPanel: FC = () => {
       setIsDownloading(false);
     }
   }, [
+    data.allIds,
+    data.byId,
     messageApi,
-    data,
-    importDataType,
+    t,
     hasHistoricalFormat,
     timePeriods,
     timelineData,
-    currentProject,
-    t,
+    currentProject.name,
+    importDataType,
+    selectedCountryId,
+    badge,
   ]);
 
   /** Download sample data only (template with region IDs for matching). */
@@ -309,6 +325,12 @@ export const ImportDataPanel: FC = () => {
           break;
         case 'excel': {
           await writeRowsToXlsxFile(`${baseName}.xlsx`, rows);
+          trackGa4FileDownload({
+            fileExtension: 'xlsx',
+            assetType: 'sample_dataset',
+            country: selectedCountryId ?? undefined,
+            userPlan: badge,
+          });
           setIsDownloadingSample(false);
           return;
         }
@@ -337,6 +359,12 @@ export const ImportDataPanel: FC = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      trackGa4FileDownload({
+        fileExtension: importDataType,
+        assetType: 'sample_dataset',
+        country: selectedCountryId ?? undefined,
+        userPlan: badge,
+      });
     } catch (error) {
       console.error('Failed to download sample:', error);
       showMessageWithSampleDownload(
@@ -350,12 +378,13 @@ export const ImportDataPanel: FC = () => {
       setIsDownloadingSample(false);
     }
   }, [
-    messageApi,
     selectedCountryId,
     svgTitles,
     limits.historicalDataImport,
+    currentProject.name,
     importDataType,
-    currentProject,
+    badge,
+    messageApi,
     t,
   ]);
 
