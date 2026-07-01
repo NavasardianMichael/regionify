@@ -35,20 +35,12 @@ curl https://regionify.pro/robots.txt            # must contain: Sitemap: https:
    ```
 5. Copy the value of the `content` attribute — that string is your token
 
-The same token is needed in two places:
-
-**GitHub Actions secret** (used by the marketing build step in `deploy.yml`):
+Set it as a single GitHub Actions secret — this is now the only place you maintain it:
 
 - Go to GitHub → repository → Settings → Secrets and variables → Actions
 - Add secret: `GOOGLE_SITE_VERIFICATION` = `<token from GSC>`
 
-**Server production environment** (`server/.env` or platform secrets):
-
-```
-GOOGLE_SITE_VERIFICATION=<token from GSC>
-```
-
-Both use the same token — it's one Google property, one domain.
+`deploy.yml` passes this secret to the Astro marketing build **and** auto-appends it into the server's env file during the "Prepare server env file" deploy step, so both the marketing pages and the main app pick up the same token from this one secret. Do not also hand-add it to `server/.env`/`ENV_FILE_BASE64` — the pipeline keeps that in sync for you.
 
 ---
 

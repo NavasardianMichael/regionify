@@ -18,7 +18,9 @@
 #
 # OPTIONAL GITHUB SECRETS (SEO):
 # - GOOGLE_SITE_VERIFICATION: Google Search Console verification token.
-#   Passed to the Astro marketing build at CI time AND set inside ENV_FILE_BASE64 (.env.production) for the server.
+#   Passed to the Astro marketing build at CI time, AND auto-appended into the
+#   server's env file during deploy (see "Prepare server env file" below) — this
+#   is the single source of truth; do not also hand-maintain it inside ENV_FILE_BASE64.
 #
 # On-host layout after deploy:
 #   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
@@ -328,6 +330,16 @@ jobs:
         if: needs.changes.outputs.deploy_server == 'true'
         run: |
           echo "${{ secrets.ENV_FILE_BASE64 }}" | base64 -d | tr -d '\r' > /tmp/env.production
+
+          # GOOGLE_SITE_VERIFICATION is maintained as its own secret (shared with the
+          # marketing build) instead of being duplicated inside ENV_FILE_BASE64.
+          # Strip any stale line, then append the current value, so this stays the
+          # single source of truth even if the token is ever rotated.
+          if [ -n "${{ secrets.GOOGLE_SITE_VERIFICATION }}" ]; then
+            sed -i '/^GOOGLE_SITE_VERIFICATION=/d' /tmp/env.production
+            printf '\nGOOGLE_SITE_VERIFICATION=%s\n' "${{ secrets.GOOGLE_SITE_VERIFICATION }}" >> /tmp/env.production
+          fi
+
           echo "Env file: $(wc -c < /tmp/env.production) bytes, $(wc -l < /tmp/env.production) lines"
 
       # ── Deploy client (nginx static files) FIRST ──────────────────────────
