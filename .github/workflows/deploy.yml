@@ -18,9 +18,13 @@
 #
 # OPTIONAL GITHUB SECRETS (SEO):
 # - GOOGLE_SITE_VERIFICATION: Google Search Console verification token.
-#   Passed to the Astro marketing build at CI time, AND auto-appended into the
-#   server's env file during deploy (see "Prepare server env file" below) — this
-#   is the single source of truth; do not also hand-maintain it inside ENV_FILE_BASE64.
+#   Passed to the Astro marketing build AND the client build at CI time (client
+#   needs it baked into client/dist/client/index.html — nginx serves that file
+#   statically for `/` and every other SPA route, never proxying to the Express
+#   SSR shell), AND auto-appended into the server's env file during deploy (see
+#   "Prepare server env file" below, used for the /embed/:token and proxied SSR
+#   routes) — this is the single source of truth; do not also hand-maintain it
+#   inside ENV_FILE_BASE64.
 #
 # On-host layout after deploy:
 #   $APP_DIR/client/releases/<sha>/  and  $APP_DIR/client/current -> releases/<sha>
@@ -160,6 +164,7 @@ jobs:
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
           VITE_PADDLE_CLIENT_TOKEN: ${{ secrets.VITE_PADDLE_CLIENT_TOKEN }}
           VITE_PADDLE_ENV: ${{ secrets.VITE_PADDLE_ENV }}
+          VITE_GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
