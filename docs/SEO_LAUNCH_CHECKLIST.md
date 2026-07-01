@@ -69,7 +69,7 @@ After the domain is verified:
 1. Go to **GSC → Sitemaps**
 2. Submit: `https://regionify.pro/sitemap.xml`
 
-Google will follow the sitemap index and discover both `/app-sitemap.xml` and `/marketing/sitemap-index.xml` automatically. No need to submit them individually.
+Google will follow the sitemap index and discover both `/app-sitemap.xml` and `/marketing/sitemap-0.xml` automatically. No need to submit them individually.
 
 ---
 

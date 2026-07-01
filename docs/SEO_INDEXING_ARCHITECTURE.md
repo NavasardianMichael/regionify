@@ -23,8 +23,12 @@ A sitemap index at `/sitemap.xml` points to two child sitemaps:
 ```
 /sitemap.xml                       ← index (served by Express)
   /app-sitemap.xml                 ← static public routes + all enabled embeds (live DB query)
-  /marketing/sitemap-index.xml     ← Astro-generated; all 190+ country pages
+  /marketing/sitemap-0.xml         ← Astro-generated; all 190+ country pages
 ```
+
+The index must point at `sitemap-0.xml` (the actual `<urlset>`), not `sitemap-index.xml` —
+`@astrojs/sitemap` always wraps its output in its own index file, and a `<sitemapindex>`
+referencing another `<sitemapindex>` is invalid ("Nested indexing" in Search Console).
 
 `/robots.txt` (served by Express, not a static file) includes the `Sitemap:` directive pointing at the index.
 

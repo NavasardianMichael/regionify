@@ -48,10 +48,17 @@ ${body}
 
 /**
  * Sitemap index referencing the app sitemap and the Astro-generated marketing sitemap.
+ *
+ * Points at `marketing/sitemap-0.xml` (the actual `<urlset>`), not
+ * `marketing/sitemap-index.xml` — a `<sitemapindex>` must not reference another
+ * `<sitemapindex>` (Google Search Console flags this as "Nested indexing").
+ * `@astrojs/sitemap` always wraps output in an index even for a single file;
+ * `sitemap-0.xml` stays the only leaf file unless the marketing site's URL
+ * count exceeds the integration's 45,000-per-file chunk limit.
  */
 export function buildSitemapIndexXml(siteUrl: string): string {
   const base = siteUrl.replace(/\/$/, '');
-  const sitemaps = [`${base}/app-sitemap.xml`, `${base}/marketing/sitemap-index.xml`];
+  const sitemaps = [`${base}/app-sitemap.xml`, `${base}/marketing/sitemap-0.xml`];
 
   const body = sitemaps
     .map((loc) => `  <sitemap>\n    <loc>${escapeHtml(loc)}</loc>\n  </sitemap>`)
