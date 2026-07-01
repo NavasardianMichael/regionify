@@ -1,8 +1,7 @@
 ---
 import { BASE } from '@/helpers/commons';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
-
-const CLIENT_URL = import.meta.env.CLIENT_URL;
 ---
 
 <nav class="shrink-0 border-b border-gray-200 bg-white shadow-sm">
@@ -10,13 +9,13 @@ const CLIENT_URL = import.meta.env.CLIENT_URL;
     class="flex items-center justify-between gap-2 px-3 py-3 md:px-6"
   >
     <MarketingButton
-      href={CLIENT_URL}
+      href={MARKETING_LINKS_TO_APP.nav.logo}
       target='_blank'
       className="flex shrink-0 items-center outline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [&_img]:max-h-10 [&_img]:w-auto [&_img]:max-w-[min(160px,42vw)] [&_img]:object-contain [&_img]:object-left md:[&_img]:max-h-11"
     >
       <img src={`${BASE}/logo.png`} alt="Regionify" loading="eager" fetchpriority="high" />
     </MarketingButton>
-    <MarketingButton type="primary" href={`${CLIENT_URL}/projects/new`} target='_blank'>
+    <MarketingButton type="primary" href={MARKETING_LINKS_TO_APP.nav.generateMap} target='_blank'>
       Generate your map
     </MarketingButton>
   </div>

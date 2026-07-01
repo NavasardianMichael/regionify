@@ -1,5 +1,6 @@
 ---
 import { BASE } from '@/helpers/commons';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton';
 import ShowcaseItem from './ShowcaseItem.astro';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
@@ -79,7 +80,7 @@ const allItems: ShowcaseItemDef[] = [
 <section class="bg-white py-12">
   <div class="mx-auto max-w-6xl px-4 md:px-6">
     <MarketingTitle level={2} className="mb-2 text-center">
-      What you can create for {name_en} with <><MarketingButton type="link" href={import.meta.env.CLIENT_URL} className="">Regionify</MarketingButton></>
+      What you can create for {name_en} with <><MarketingButton type="link" href={MARKETING_LINKS_TO_APP.showcase.logo} className="">Regionify</MarketingButton></>
     </MarketingTitle>
     <p class="mb-12 text-center text-base text-balance text-gray-500">
       From static maps to animated time-series — every format, ready to export.

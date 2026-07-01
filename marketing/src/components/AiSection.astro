@@ -1,4 +1,5 @@
 ---
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 import type { CountryRow } from '@/data/parseCountries';
@@ -9,8 +10,6 @@ interface Props {
 
 const { country } = Astro.props;
 const { name_en, division_count, division_type } = country;
-
-const CLIENT_URL = import.meta.env.CLIENT_URL;
 const divisionLabel = division_type.toLowerCase();
 ---
 
@@ -55,7 +54,7 @@ const divisionLabel = division_type.toLowerCase();
           <li>✓ Output pre-matched to {name_en}'s {division_count} {divisionLabel}</li>
         </ul>
         <p class="mt-auto pt-2">
-          <MarketingButton type="link" href={`${CLIENT_URL}/projects/new`}>
+          <MarketingButton type="link" href={MARKETING_LINKS_TO_APP.aiSection.generateMap}>
             Try AI Generator →
           </MarketingButton>
         </p>
@@ -97,7 +96,7 @@ const divisionLabel = division_type.toLowerCase();
           <li>✓ Streams results in real time as AI processes</li>
         </ul>
         <p class="mt-auto pt-2">
-          <MarketingButton type="link" href={`${CLIENT_URL}/projects/new`}>
+          <MarketingButton type="link" href={MARKETING_LINKS_TO_APP.aiSection.generateMap}>
             Try AI Parser →
           </MarketingButton>
         </p>

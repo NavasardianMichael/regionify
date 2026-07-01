@@ -1,7 +1,7 @@
 ---
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 
-const CLIENT_URL = import.meta.env.CLIENT_URL;
 const year = new Date().getFullYear();
 ---
 
@@ -10,19 +10,19 @@ const year = new Date().getFullYear();
     <div class="flex flex-col items-center gap-3 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left">
       <p>
         © {year}
-        <MarketingButton type="link" href={CLIENT_URL}>
+        <MarketingButton type="link" href={MARKETING_LINKS_TO_APP.footer.logo}>
           Regionify
         </MarketingButton>
         — Create choropleth maps for any country or region.
       </p>
       <div class="flex flex-wrap items-center justify-center gap-6 md:justify-end py-4">
-        <MarketingButton type="link" muted href={CLIENT_URL}>
+        <MarketingButton type="link" muted href={MARKETING_LINKS_TO_APP.footer.home}>
           Home
         </MarketingButton>
-        <MarketingButton type="link" muted href={`${CLIENT_URL}/pricing`}>
+        <MarketingButton type="link" muted href={MARKETING_LINKS_TO_APP.footer.pricing}>
           Pricing
         </MarketingButton>
-        <MarketingButton type="link" muted href={`${CLIENT_URL}/contact`}>
+        <MarketingButton type="link" muted href={MARKETING_LINKS_TO_APP.footer.contact}>
           Contact
         </MarketingButton>
       </div>

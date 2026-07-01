@@ -1,4 +1,5 @@
 ---
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 
@@ -8,7 +9,6 @@ interface Props {
 }
 
 const { countryName, divisionType } = Astro.props;
-const CLIENT_URL = import.meta.env.CLIENT_URL;
 ---
 
 <section class="bg-primary py-16 md:py-24">
@@ -22,10 +22,10 @@ const CLIENT_URL = import.meta.env.CLIENT_URL;
       anywhere.
     </p>
     <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-      <MarketingButton type="dashed" colorScheme="dark" href={`${CLIENT_URL}/projects/new`}>
+      <MarketingButton type="dashed" colorScheme="dark" href={MARKETING_LINKS_TO_APP.ctaSection.generateMap}>
         Start for free →
       </MarketingButton>
-      <MarketingButton type="dashed" colorScheme="dark" href={`${CLIENT_URL}/billing`}>
+      <MarketingButton type="dashed" colorScheme="dark" href={MARKETING_LINKS_TO_APP.ctaSection.seePlans}>
         View pricing for badges →
       </MarketingButton>
     </div>
