@@ -273,6 +273,19 @@ jobs:
             --exclude='node_modules' \
             --exclude='client/src' \
             --exclude='.git' \
+            --exclude='.env.example' \
+            --exclude='server/.gitignore' \
+            --exclude='server/README.md' \
+            --exclude='server/eslint.config.js' \
+            --exclude='server/scripts/env-to-base64.cjs' \
+            --exclude='client/.cursorrules' \
+            --exclude='client/eslint.config.js' \
+            --exclude='client/index.html' \
+            --exclude='client/tsconfig.json' \
+            --exclude='client/tsconfig.node.json' \
+            --exclude='client/vite.config.ts' \
+            --exclude='client/scripts' \
+            --exclude='client/public' \
             server shared client monitoring docker-compose.prod.yml package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json marketing/package.json
 
       - name: Upload server artifact
