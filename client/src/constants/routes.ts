@@ -16,13 +16,6 @@ export function isFullBleedPathname(pathname: string): boolean {
   return fullBleedPaths.includes(pathname);
 }
 
-/** True for legal pages that are English-only and should not show the language switcher. */
-export function isUntranslatablePathname(pathname: string): boolean {
-  return ([ROUTES.TERMS, ROUTES.PRIVACY_POLICY, ROUTES.REFUND_POLICY] as string[]).includes(
-    pathname,
-  );
-}
-
 /** True for pages that occupy the full viewport and should not show the footer. */
 export function isFooterHiddenPath(pathname: string): boolean {
   const paths = [
