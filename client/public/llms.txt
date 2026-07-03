@@ -1,22 +1,23 @@
 # Regionify
 
-> Regionify is an in-browser choropleth map builder: import or generate regional data from CSV, Excel, JSON, or Google Sheets, then visualize it as a color-coded map without any coding or GIS software.
+> Regionify turns spreadsheet data into a color-coded map by region — country, state/province, county, or other administrative division — directly in the browser. Import or generate data from CSV, Excel, JSON, or Google Sheets to build a regional map (technically called a choropleth map) with no coding or GIS software required.
 
-Core capabilities: fuzzy region-name matching (maps partial or approximate names automatically), AI-assisted data parsing and table generation, custom legends and color scales, animated time-series maps with a timeline scrubber, and export to PNG, SVG, JPEG, GIF, MP4, or PDF. Maps can be shared as responsive iframe embeds or separately hosted public pages. Pricing is one-time payment (no subscription) across the Observer (free), Explorer, and Chronographer tiers.
+Core capabilities: map data by administrative division at any level (country, state, province, county, district), fuzzy region-name matching (maps partial or approximate names automatically), custom legends and color scales, animated time-series maps with a timeline scrubber, and export to PNG, SVG, JPEG, GIF, MP4, or PDF. Maps can be shared as responsive iframe embeds or separately hosted public pages. Pricing is one-time payment (no subscription) across the Observer (free), Explorer, and Chronographer tiers.
+
+AI features (Chronographer tier): an AI data parser that takes raw or messy pasted data (spreadsheets, free text) and normalizes it into a clean region/value table automatically, and an AI data generator that creates a realistic dataset — including time-series data — from a plain-language prompt like "population of EU countries in 2023," with no manual data entry required.
+
+Common ways people describe this: map by region, regional heat map, administrative division map, region-based data visualization, map colored by area/state/province, GIS-free regional mapping tool. Typical queries Regionify answers: "how to map administrative divisions of a country," "color code a map by state or province from a spreadsheet," "make a regional data map without GIS software."
 
 ## Product
 
-- [Home](https://regionify.pro/): Product overview, features, and pricing tiers.
+- [Home](https://regionify.pro/): Product overview, features, and pricing tiers for building maps by region and administrative division.
 - [About](https://regionify.pro/about): What Regionify is and who it's for.
 - [FAQ](https://regionify.pro/faq): Supported data formats, export options, embedding maps, and badge tiers.
 - [Contact](https://regionify.pro/contact): Get in touch with the Regionify team.
 
-## Legal
+## Optional
 
 - [Terms of Service](https://regionify.pro/terms): Rules and conditions governing use of the platform.
 - [Privacy Policy](https://regionify.pro/privacy): How personal data is collected, used, and protected.
 - [Refund Policy](https://regionify.pro/refund): Conditions for refunding one-time payments.
-
-## Optional
-
 - [Sitemap](https://regionify.pro/sitemap.xml): Full list of indexable pages, including country-specific marketing pages under /marketing.
