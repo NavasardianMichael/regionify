@@ -5,6 +5,7 @@ import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
 import { AppError } from '@/middleware/errorHandler.js';
 import { userRepository } from '@/repositories/userRepository.js';
+import { emailService } from '@/services/emailService.js';
 import type { User } from '@prisma/client';
 
 type PayableBadge = Exclude<Badge, typeof BADGES.observer>;
@@ -244,5 +245,20 @@ export const paymentService = {
     }
 
     await userRepository.update(userId, { badge });
+
+    // Congratulatory "you've unlocked ..." email. Failure must not break the webhook — Paddle
+    // would otherwise retry the whole event and the user could be spammed.
+    try {
+      await emailService.sendBadgePurchased(user.email, user.name, badge as PayableBadge);
+      logger.info(
+        { transactionId, userId, badge, action: 'badge_purchase_email_sent' },
+        'badge purchase email sent',
+      );
+    } catch (err) {
+      logger.error(
+        { err, transactionId, userId, badge, action: 'badge_purchase_email_failed' },
+        'failed to send badge purchase email',
+      );
+    }
   },
 };

@@ -1,5 +1,59 @@
+import {
+  BADGES,
+  buildBadgeFeatureRows,
+  type Badge,
+  type BadgeFeatureRowKey,
+  type BadgeFeatureRowParams,
+} from '@regionify/shared';
+
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
+
+type PayableBadge = Exclude<Badge, typeof BADGES.observer>;
+
+const BADGE_DISPLAY: Record<PayableBadge, { name: string; tagline: string }> = {
+  [BADGES.explorer]: {
+    name: 'Explorer',
+    tagline: "You've unlocked the tools to craft polished, professional regional visualizations.",
+  },
+  [BADGES.chronographer]: {
+    name: 'Chronographer',
+    tagline: 'You now have the full Regionify toolkit — including time and AI-powered workflows.',
+  },
+};
+
+/**
+ * English strings for each feature row. MUST stay in sync with `badges.rows.*` in
+ * `client/src/locales/en.ts` so the purchase email lists the exact same wording as the
+ * /billing card. The client renders these via i18n; the server has no i18n, so we mirror
+ * the English source of truth here.
+ */
+const BADGE_FEATURE_ROW_EN: Record<BadgeFeatureRowKey, (params?: BadgeFeatureRowParams) => string> =
+  {
+    projectsLimited: (p) => `Up to ${p?.count ?? 0} saved projects`,
+    projectsUnlimited: () => 'Unlimited saved projects',
+    sessionsLimited: (p) => `Up to ${p?.count ?? 0} simultaneous devices`,
+    imageExport: (p) => `${p?.formats ?? ''} export, up to ${p?.quality ?? 100}% quality`,
+    advancedStyles: () => 'Advanced map & legend styling',
+    noWatermark: () => 'No watermark on image exports',
+    highResolutionExport: () => 'High-resolution export (2K, 4K)',
+    timeSeries: () => 'Time-series data & timeline on the map',
+    animationExport: () => 'Animated export (GIF & MP4)',
+    embedMapIframe: () => 'Embed map (iframe)',
+    publicMapPage: () => 'Public page with map',
+    aiParser: () => 'AI data parser and generator',
+  };
+
+/**
+ * Build the "what you unlocked" feature bullets for a paid badge. Uses the same shared
+ * row-builder as the client billing card (`useBillingBadges`), so both surfaces list
+ * identical features in identical order.
+ */
+function buildPaidBadgeFeatures(badge: PayableBadge): readonly string[] {
+  return buildBadgeFeatureRows(badge)
+    .filter((row) => row.included)
+    .map((row) => BADGE_FEATURE_ROW_EN[row.key](row.params));
+}
 
 const APP_ID = 'regionify';
 const APP_NAME = 'Regionify';
@@ -335,6 +389,64 @@ The ${APP_NAME} Team
     return { subject, text, html };
   },
 
+  /**
+   * Sent after a successful badge purchase (Explorer or Chronographer).
+   * Congratulates the user and lists the features they've just unlocked.
+   */
+  badgePurchased(
+    name: string,
+    badge: PayableBadge,
+  ): { subject: string; text: string; html: string } {
+    const { name: badgeName, tagline } = BADGE_DISPLAY[badge];
+    const features = buildPaidBadgeFeatures(badge);
+    const dashboardUrl = env.CLIENT_URL;
+
+    const subject = `Welcome to ${APP_NAME} ${badgeName} — your new tools are ready`;
+
+    const text = `
+Hi ${name},
+
+Congratulations — you're now a ${APP_NAME} ${badgeName}!
+
+${tagline}
+
+Here's what you've just unlocked:
+${features.map((f) => `  • ${f}`).join('\n')}
+
+Jump back in and start creating:
+${dashboardUrl}
+
+If you have any questions or feedback, just reply to this email — we'd love to hear from you.
+
+Best regards,
+The ${APP_NAME} Team
+`.trim();
+
+    const featuresHtml = features
+      .map(
+        (f) =>
+          `<tr><td style="padding:6px 0;font-size:15px;line-height:22px;color:${COLORS.textLight};"><span style="color:${COLORS.success};font-weight:700;margin-right:8px;">&#10003;</span>${f}</td></tr>`,
+      )
+      .join('');
+
+    const html = emailLayout(
+      `
+        ${emailHeading(`Welcome to ${badgeName}, ${name}`)}
+        ${emailParagraph(tagline)}
+        ${emailParagraph(`<strong>Here's what you've unlocked:</strong>`)}
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:8px 0 4px 0;">
+          ${featuresHtml}
+        </table>
+        ${emailButton('Open Regionify', dashboardUrl)}
+        ${emailMuted(`Questions or feedback? Just reply to this email — we read every message.`)}
+        ${emailMuted(`Your payment receipt is sent separately by our payment provider, Paddle.`)}
+      `,
+      { preheader: `You're now a ${APP_NAME} ${badgeName}. Here's what's new.` },
+    );
+
+    return { subject, text, html };
+  },
+
   /** Email verification (link expires in 48 hours) */
   verifyEmail(
     name: string,
@@ -467,6 +579,14 @@ export const emailService = {
    */
   async sendAccountDeleted(to: string, name: string): Promise<void> {
     const { subject, text, html } = emailTemplates.accountDeleted(name);
+    await this.send({ to, subject, text, html });
+  },
+
+  /**
+   * Send a "badge unlocked" email after a successful purchase.
+   */
+  async sendBadgePurchased(to: string, name: string, badge: PayableBadge): Promise<void> {
+    const { subject, text, html } = emailTemplates.badgePurchased(name, badge);
     await this.send({ to, subject, text, html });
   },
 

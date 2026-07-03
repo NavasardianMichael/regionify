@@ -15,6 +15,7 @@ export * from './schemas/projectsBulkDelete.js';
 
 // Constants
 export * from './constants/badges.js';
+export * from './constants/badgeFeatures.js';
 export * from './constants/projects.js';
 export * from './constants/validation.js';
 export * from './constants/httpStatus.js';
