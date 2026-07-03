@@ -714,6 +714,9 @@ const zh: CommonNs = {
     contact: '联系我们',
     faq: '常见问题',
   },
+  legal: {
+    englishOnlyNote: '本页面仅提供英文版本，以确保存在唯一具有法律效力的版本。',
+  },
   errors: {
     mapRenderFailed: '很抱歉，地图渲染失败。',
     panelFailed: '此面板加载失败。',

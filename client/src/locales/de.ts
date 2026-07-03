@@ -768,6 +768,10 @@ const de: CommonNs = {
     contact: 'Kontakt',
     faq: 'FAQ',
   },
+  legal: {
+    englishOnlyNote:
+      'Diese Seite ist ausschließlich auf Englisch verfügbar, um eine einheitliche, rechtsverbindliche Fassung zu wahren.',
+  },
   errors: {
     mapRenderFailed: 'Es tut uns leid, die Karte konnte nicht gerendert werden.',
     panelFailed: 'Dieses Panel konnte nicht geladen werden.',

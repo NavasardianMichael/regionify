@@ -1,6 +1,7 @@
 import { type FC, type ReactNode } from 'react';
 import { Flex, Typography } from 'antd';
 import { useWorldMapUrl } from '@/hooks/useWorldMapUrl';
+import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 
 type Props = {
   title: string;
@@ -8,8 +9,11 @@ type Props = {
   children: ReactNode;
 };
 
+const MUTED_ON_PRIMARY = { color: 'rgba(255,255,255,0.7)' };
+
 export const LegalPageLayout: FC<Props> = ({ title, lastUpdated, children }) => {
   const mapUrl = useWorldMapUrl();
+  const { t } = useTypedTranslation();
 
   return (
     <>
@@ -30,8 +34,9 @@ export const LegalPageLayout: FC<Props> = ({ title, lastUpdated, children }) => 
             >
               {title}
             </Typography.Title>
-            <Typography.Text style={{ color: 'rgba(255,255,255,0.7)' }}>
-              Last updated: {lastUpdated}
+            <Typography.Text style={MUTED_ON_PRIMARY}>Last updated: {lastUpdated}</Typography.Text>
+            <Typography.Text style={MUTED_ON_PRIMARY} className="text-sm italic">
+              {t('legal.englishOnlyNote')}
             </Typography.Text>
           </Flex>
         </div>

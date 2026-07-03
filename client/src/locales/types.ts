@@ -616,6 +616,10 @@ export type CommonNs = {
     contact: string;
     faq: string;
   };
+  legal: {
+    /** Localized note explaining that legal pages (Terms, Privacy, Refund) are English-only. */
+    englishOnlyNote: string;
+  };
   errors: {
     mapRenderFailed: string;
     panelFailed: string;

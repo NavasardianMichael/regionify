@@ -767,6 +767,10 @@ const fr: CommonNs = {
     contact: 'Contact',
     faq: 'FAQ',
   },
+  legal: {
+    englishOnlyNote:
+      'Cette page n’est disponible qu’en anglais afin de préserver une version unique juridiquement contraignante.',
+  },
   errors: {
     mapRenderFailed: "Nous sommes désolés, l'affichage de la carte a échoué.",
     panelFailed: "Ce panneau n'a pas pu être chargé.",

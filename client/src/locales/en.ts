@@ -686,6 +686,10 @@ const en: CommonNs = {
     contact: 'Contact',
     faq: 'FAQ',
   },
+  legal: {
+    englishOnlyNote:
+      'This page is available in English only to preserve a single, legally accurate version.',
+  },
   errors: {
     mapRenderFailed: 'We are sorry, map failed to render.',
     panelFailed: 'This panel failed to load.',

@@ -758,6 +758,10 @@ const pt: CommonNs = {
     contact: 'Contato',
     faq: 'FAQ',
   },
+  legal: {
+    englishOnlyNote:
+      'Esta página está disponível apenas em inglês para preservar uma única versão juridicamente vinculante.',
+  },
   errors: {
     mapRenderFailed: 'Lamentamos, falha ao renderizar o mapa.',
     panelFailed: 'Este painel não pôde ser carregado.',
