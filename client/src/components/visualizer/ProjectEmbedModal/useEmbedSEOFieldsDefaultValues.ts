@@ -25,7 +25,8 @@ export function useEmbedSEOFieldsDefaultValues(project: Project) {
 
   const defaultAllowedOriginsAllowAll = useMemo(() => {
     const stored = project.embed.seo.allowedOrigins;
-    return Array.isArray(stored) && stored.length === 1 && stored[0] === '*';
+    if (!Array.isArray(stored)) return true;
+    return stored.length === 1 && stored[0] === '*';
   }, [project.embed.seo.allowedOrigins]);
 
   const defaultAllowedOrigins = useMemo(() => {

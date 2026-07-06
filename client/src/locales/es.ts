@@ -383,11 +383,11 @@ const es: CommonNs = {
         'Cada origen debe ser un origen http(s) válido (por ejemplo: https://example.com) sin ruta, query, hash ni *',
       allowedOriginsNoData: 'Pulsa Enter para añadir este origen.',
       allowedOriginsAddCurrent: 'Añadir origen actual',
-      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAll: 'Permitir incrustación desde cualquier origen',
       allowedOriginsAllowAllWarning:
-        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+        'Cualquiera puede incrustar este mapa en cualquier sitio web. Asegúrate de que tu contenido sea apto para exposición pública, o restringe el acceso desactivando este interruptor y añadiendo orígenes específicos a la lista de confianza.',
       allowedOriginsRequired:
-        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
+        'Se requiere al menos un origen permitido. Añade uno o activa "Permitir incrustación desde cualquier origen".',
       seoKeywords: 'Meta palabras clave (opcional)',
       keywordsHint: 'Opcional. Hasta 5 palabras clave (escribe y pulsa Intro o coma).',
       keywordPlaceholder: 'Escribe una palabra clave y pulsa Intro.',

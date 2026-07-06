@@ -387,11 +387,11 @@ const de: CommonNs = {
         'Jede Origin muss eine gültige http(s)-Origin sein (z. B. https://example.com) ohne Pfad, Query, Hash oder *',
       allowedOriginsNoData: 'Drücken Sie Enter, um diese Origin hinzuzufügen.',
       allowedOriginsAddCurrent: 'Aktuelle Origin hinzufügen',
-      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAll: 'Einbettung von beliebigen Origins erlauben',
       allowedOriginsAllowAllWarning:
-        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+        'Jeder kann diese Karte auf beliebigen Websites einbetten. Stellen Sie sicher, dass Ihre Inhalte für die öffentliche Anzeige geeignet sind — oder schränken Sie den Zugriff ein, indem Sie diesen Schalter deaktivieren und bestimmte Origins auf die Whitelist setzen.',
       allowedOriginsRequired:
-        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
+        'Mindestens eine erlaubte Origin ist erforderlich. Fügen Sie eine hinzu oder aktivieren Sie „Einbettung von beliebigen Origins erlauben".',
       seoKeywords: 'Meta-Schlüsselwörter (optional)',
       keywordsHint: 'Optional. Bis zu 5 Schlüsselwörter (Eingabe und Enter oder Komma).',
       keywordPlaceholder: 'Schlüsselwort eingeben und Enter drücken.',

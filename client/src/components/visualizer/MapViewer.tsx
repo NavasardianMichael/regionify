@@ -31,11 +31,15 @@ import { selectUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { LEGEND_POSITIONS } from '@/constants/legendStyles';
 import { resolveOpaqueMapBackgroundColor } from '@/constants/mapStyles';
-import { OBSERVER_BADGE_ZOOM_STACK_LIFT_PX } from '@/constants/mapViewer';
+import {
+  EMBED_BADGE_ZOOM_STACK_LIFT_PX,
+  OBSERVER_BADGE_ZOOM_STACK_LIFT_PX,
+} from '@/constants/mapViewer';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { badgeRibbonColor, badgeRibbonNameKey } from '@/helpers/badgeRibbonColor';
 import { getLocalizedRegionLabel } from '@/helpers/regionDisplay';
 import { scaleFloatingLegendPosition } from '@/helpers/scaleFloatingLegendPosition';
+import { MadeWithRegionifyBadge } from '@/components/visualizer/MapViewer/MadeWithRegionifyBadge';
 import { MapBottomLegend } from '@/components/visualizer/MapViewer/MapBottomLegend';
 import { MapFloatingLegend } from '@/components/visualizer/MapViewer/MapFloatingLegend';
 import { MapPanZoomControls } from '@/components/visualizer/MapViewer/MapPanZoomControls';
@@ -268,13 +272,21 @@ const MapViewer: FC<MapViewerProps> = ({
 
   const isObserverWatermarkForced = enforceObserverWatermark && badge === BADGES.observer;
   const showWatermarkOverlay = useMemo(
-    () => isObserverWatermarkForced || picture.showWatermark,
-    [isObserverWatermarkForced, picture.showWatermark],
+    /** Public embed: `MadeWithRegionifyBadge` occupies the same bottom-right slot — suppress duplicate branding. */
+    () => (isObserverWatermarkForced || picture.showWatermark) && !flatEmbedChrome,
+    [isObserverWatermarkForced, picture.showWatermark, flatEmbedChrome],
   );
 
-  /** Lift only when watermark is drawn inside the map frame (not with bottom legend — see layout below). */
-  const zoomStackExtraBottomPx =
-    isObserverWatermarkForced && !showBottomLegend ? OBSERVER_BADGE_ZOOM_STACK_LIFT_PX : 0;
+  /**
+   * Lift zoom stack so it sits above the bottom-right badge/watermark. Both sit at the outer
+   * wrapper level when a bottom legend is on, so the map frame keeps its default zoom position.
+   */
+  const zoomStackExtraBottomPx = useMemo(() => {
+    if (showBottomLegend) return 0;
+    if (flatEmbedChrome) return EMBED_BADGE_ZOOM_STACK_LIFT_PX;
+    if (isObserverWatermarkForced) return OBSERVER_BADGE_ZOOM_STACK_LIFT_PX;
+    return 0;
+  }, [showBottomLegend, flatEmbedChrome, isObserverWatermarkForced]);
 
   const mapBackgroundStyle = useMemo(
     () => ({
@@ -315,6 +327,8 @@ const MapViewer: FC<MapViewerProps> = ({
 
       {!showBottomLegend && <MapWatermark show={showWatermarkOverlay} />}
 
+      {flatEmbedChrome && !showBottomLegend && <MadeWithRegionifyBadge />}
+
       <MapPanZoomControls
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
@@ -352,6 +366,7 @@ const MapViewer: FC<MapViewerProps> = ({
             </Flex>
             <MapBottomLegend />
             <MapWatermark show={showWatermarkOverlay} />
+            {flatEmbedChrome && <MadeWithRegionifyBadge />}
           </Flex>
         ) : (
           <>

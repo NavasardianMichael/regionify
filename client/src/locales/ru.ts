@@ -380,11 +380,11 @@ const ru: CommonNs = {
         'Каждый origin должен быть валидным http(s)-origin (например: https://example.com) без пути, query, hash и *',
       allowedOriginsNoData: 'Нажмите Enter, чтобы добавить этот origin.',
       allowedOriginsAddCurrent: 'Добавить текущий origin',
-      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAll: 'Разрешить встраивание с любых origin',
       allowedOriginsAllowAllWarning:
-        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+        'Любой может встроить эту карту на любом сайте. Убедитесь, что содержимое подходит для публичного доступа, или ограничьте доступ, отключив этот переключатель и добавив конкретные origin в список доверенных.',
       allowedOriginsRequired:
-        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
+        'Требуется хотя бы один разрешённый origin. Добавьте его или включите «Разрешить встраивание с любых origin».',
       seoKeywords: 'Meta-ключевые слова (необязательно)',
       keywordsHint: 'Необязательно. До 5 ключевых слов (ввод и Enter или запятая).',
       keywordPlaceholder: 'Введите ключевое слово и нажмите Enter.',

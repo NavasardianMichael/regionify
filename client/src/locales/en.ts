@@ -372,7 +372,7 @@ const en: CommonNs = {
         'Add at least one origin allowed to embed this map (e.g.: https://example.com). Only exact origins are supported.',
       allowedOriginsAllowAll: 'Allow embedding from any origin',
       allowedOriginsAllowAllWarning:
-        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure — or restrict access by turning this toggle off and whitelisting specific origins.',
       allowedOriginsRequired:
         'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
       allowedOriginsPlaceholder: 'https://example.com',

@@ -385,11 +385,11 @@ const fr: CommonNs = {
         'Chaque origine doit être une origine http(s) valide (ex. https://example.com), sans chemin, query, hash ou *',
       allowedOriginsNoData: 'Appuyez sur Entrée pour ajouter cette origine.',
       allowedOriginsAddCurrent: 'Ajouter l’origine actuelle',
-      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAll: 'Autoriser l’intégration depuis n’importe quelle origine',
       allowedOriginsAllowAllWarning:
-        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
+        'N’importe qui peut intégrer cette carte sur n’importe quel site. Assurez-vous que votre contenu convient à une exposition publique — ou restreignez l’accès en désactivant cette bascule et en ajoutant des origines spécifiques à la liste de confiance.',
       allowedOriginsRequired:
-        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
+        'Au moins une origine autorisée est requise. Ajoutez-en une ou activez « Autoriser l’intégration depuis n’importe quelle origine ».',
       seoKeywords: 'Meta mots-clés (optionnel)',
       keywordsHint: 'Optionnel. Jusqu’à 5 mots-clés (saisie puis Entrée ou virgule).',
       keywordPlaceholder: 'Saisissez un mot-clé et appuyez sur Entrée.',

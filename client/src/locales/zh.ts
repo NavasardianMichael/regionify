@@ -360,11 +360,10 @@ const zh: CommonNs = {
         '每个来源都必须是有效的 http(s) 来源（例如：https://example.com），且不能包含路径、查询、哈希或 *',
       allowedOriginsNoData: '按 Enter 添加该来源。',
       allowedOriginsAddCurrent: '添加当前来源',
-      allowedOriginsAllowAll: 'Allow embedding from any origin',
+      allowedOriginsAllowAll: '允许从任何来源嵌入',
       allowedOriginsAllowAllWarning:
-        'Anyone can embed this map on any website. Make sure your content is suitable for public exposure.',
-      allowedOriginsRequired:
-        'At least one allowed origin is required. Add one or enable "Allow embedding from any origin".',
+        '任何人都可以在任何网站上嵌入此地图。请确认您的内容适合公开展示，或者关闭此开关并将特定来源添加到受信任列表以限制访问。',
+      allowedOriginsRequired: '至少需要一个允许的来源。请添加一个，或启用"允许从任何来源嵌入"。',
       seoKeywords: 'Meta 关键词（可选）',
       keywordsHint: '可选。最多 5 个关键词（输入后按回车或逗号）。',
       keywordPlaceholder: '输入关键词后按回车。',
