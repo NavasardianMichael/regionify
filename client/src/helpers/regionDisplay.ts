@@ -18,6 +18,14 @@ const ISO2_BY_REGION_ID: Partial<Record<string, string>> = {
   usaMercator: 'US',
 };
 
+/**
+ * Suffix re-appended after localization for regions whose ISO2 override shares
+ * a country code with another region option (otherwise both would render identically).
+ */
+const LABEL_SUFFIX_BY_REGION_ID: Partial<Record<string, string>> = {
+  usaMercator: '(Mercator)',
+};
+
 /** UN M.49 area codes for continent-style maps (Intl `DisplayNames` with type `region`). */
 const UN_M49_BY_REGION_ID: Partial<Record<string, string>> = {
   africa: '002',
@@ -104,22 +112,27 @@ export function getLocalizedRegionLabel(
     return regionId.replace(/([A-Z])/g, ' $1').trim();
   }
 
+  const withSuffix = (name: string): string => {
+    const suffix = LABEL_SUFFIX_BY_REGION_ID[regionId];
+    return suffix ? `${name} ${suffix}` : name;
+  };
+
   const code = resolveAlpha2OrAreaCode(regionId, english);
   if (!code) {
-    return english;
+    return withSuffix(english);
   }
 
   if (isUnM49AreaCode(code)) {
-    return displayNameForRegionCode(code, appLocale, english);
+    return withSuffix(displayNameForRegionCode(code, appLocale, english));
   }
 
   const lang = toIsoCountriesLang(appLocale);
   const localized = getName(code, lang) ?? getName(code, 'en');
   if (localized) {
-    return localized;
+    return withSuffix(localized);
   }
 
-  return displayNameForRegionCode(code, appLocale, english);
+  return withSuffix(displayNameForRegionCode(code, appLocale, english));
 }
 
 /** Ant Design Select options with `label` translated for the current UI locale (values unchanged). */
