@@ -8,7 +8,9 @@
     "build": "node scripts/copy-assets.js && astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
-    "generate-assets": "tsx scripts/playwright-asset-generator.ts"
+    "generate-assets": "tsx scripts/playwright-asset-generator.ts",
+    "generate-marketing-screenshots": "tsx scripts/playwright-marketing-screenshots.ts",
+    "generate-demo-video": "tsx scripts/playwright-demo-video.ts"
   },
   "dependencies": {
     "@regionify/shared": "workspace:*"
