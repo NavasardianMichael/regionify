@@ -18,19 +18,19 @@
 **Primary:**
 
 ```
-I built Regionify — a tool that turns messy Excel/CSV data into publishable choropleth maps in under a minute
+I built Regionify — a tool that turns messy Excel/CSV data into publishable regional maps (by country, state, province, etc.) in under a minute
 ```
 
 **Backup 1:**
 
 ```
-I got tired of D3.js for one-off regional maps, so I built a no-code choropleth maker with an AI CSV parser — Regionify
+I got tired of D3.js for one-off regional maps, so I built a no-code map maker for administrative divisions (regions, states, provinces) with an AI CSV parser — Regionify
 ```
 
 **Backup 2:**
 
 ```
-Regionify — 70+ country maps, AI-powered data import, animated timelines. My side project after 8 months.
+Regionify — color-coded maps for 70+ countries by region/state/province, AI-powered data import, animated timelines. My side project after 3 months.
 ```
 
 Pick the primary unless the sub feed is already saturated with similar phrasing that day.
@@ -41,7 +41,7 @@ Pick the primary unless the sub feed is already saturated with similar phrasing 
 
 Hey r/SideProject,
 
-For the last 8 months I've been building [**Regionify**](https://regionify.pro) — a browser-based tool for turning region-level data (populations, sales, election results, whatever) into publishable choropleth maps without touching D3, QGIS, or a spreadsheet macro.
+For the last 3 months I've been building [**Regionify**](https://regionify.pro) — a browser-based tool for turning region-level data (populations, sales, election results, whatever) into publishable choropleth maps without touching D3, QGIS, or a spreadsheet macro.
 
 <!-- ASSET: hero image, 1600x900 PNG, screenshot or curated composite of the app showing the map editor with a real map loaded (Europe or Spain works well), sidebar visible with data + style controls, "Made with Regionify" watermark bottom-right. -->
 
@@ -53,14 +53,6 @@ For the last 8 months I've been building [**Regionify**](https://regionify.pro) 
 - **Export** — PNG, JPEG, PDF, SVG at up to 4K. GIF/MP4 for animated timelines.
 - **Embed** — public iframe + SSR-rendered public page with SEO metadata (paid tier).
 - **7 languages** — EN, DE, FR, ES, PT, RU, ZH.
-
-**Tech stack (in case anyone cares):**
-
-- React 19 + TypeScript + Vite on the client
-- Ant Design 6 + Tailwind v4
-- Express 5 + Prisma + PostgreSQL + Redis on the server
-- Zustand for state, Passport for Google OAuth, session-based auth
-- Deployed on a plain VPS with Docker Compose + Nginx (not Vercel — I wanted full control over the embed SSR)
 
 **Pricing (freemium):**
 
