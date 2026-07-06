@@ -8,15 +8,18 @@
  *
  * Storyboard (~60-80 s) — tutorial: generate data with AI and export as MP4.
  *   0-3s    land on /projects/new
- *   3-8s    pick "United States" in the country picker
+ *   3-8s    pick "France" in the country picker
  *   8-13s   sample data loads
  *   13-17s  select "AI Agent" import mode
  *   17-21s  click "Parse with AI" → AI Agent modal opens
  *   21-25s  switch to the "Generator" tab inside the modal
- *   25-32s  type the prompt (GDP per capita, 50 states × 10 years)
+ *   25-32s  type the prompt (average annual temperature per region × 10 years)
  *   32-36s  click "Generate with AI"
- *   36-??s  stream in — table view auto-appears when done
+ *   36-??s  stream in — table view auto-appears when done (detected via the
+ *           streaming textarea disappearing, not by polling the Save button)
  *   ??-??s  click "Save" — modal closes, dynamic map paints with the AI data
+ *   ??-??s  expand the "Ranges" accordion in Legend Configuration → click "Normalize ranges"
+ *   ??-??s  click Play on the timeline → animation runs through every year → Pause
  *   ??-??s  click Export → format = Video (MP4) → quality 40 → Download
  *   ??-end  MP4 renders on-camera, video ends after the download event fires
  *
@@ -54,10 +57,26 @@ const VIDEO_TMP_DIR = join(ASSETS_ROOT, '.video-tmp');
 const OUTPUT_DIR = join(__dirname, '..', '..', 'docs', 'marketing', 'assets');
 const OUTPUT_FILE = 'demo-video.webm';
 
-/** 16:9 landscape — the app is a wide dashboard, portrait crops don't show the sidebars well. */
-const VIDEO_SIZE = { width: 1280, height: 720 } as const;
+/**
+ * Landscape, taller than standard 16:9 — the map panel is a `flex-1` block that
+ * fills whatever space is left under the header/timeline, and it needs real
+ * viewport height (not just zooming out) to render France's full outline
+ * (down through Corsica) without the `overflow-hidden` wrapper clipping it.
+ * Zooming out shrinks the available space and the map's required space by the
+ * same factor, so it never changes what fraction gets clipped — only a taller
+ * viewport does that.
+ */
+const VIDEO_SIZE = { width: 1280, height: 960 } as const;
 
-const DEMO_COUNTRY = { slug: 'united-states', name: 'United States' } as const;
+/**
+ * The dashboard's sidebars (Legend Configuration's lower controls, Map Styles'
+ * "Reset Styles" row, etc.) are made of fixed-height controls, so rendering the
+ * page at less than 100% CSS zoom gives them proportionally more headroom to
+ * fit inside `VIDEO_SIZE` without being clipped at the fold.
+ */
+const PAGE_ZOOM = 0.85;
+
+const DEMO_COUNTRY = { slug: 'france', name: 'France' } as const;
 
 /**
  * Prompt fed to the AI Agent → Generator tab. The wording is deliberately
@@ -65,8 +84,8 @@ const DEMO_COUNTRY = { slug: 'united-states', name: 'United States' } as const;
  * language dataset generation.
  */
 const AI_GENERATOR_PROMPT =
-  'Generate GDP per capita for each US state from 2015 to 2024 (10 years). ' +
-  'Return realistic values in USD.';
+  'Generate average annual temperature in Celsius for each region of France from 2015 to 2024 ' +
+  '(10 years). Return realistic values.';
 
 // ---------------------------------------------------------------------------
 // Visible cursor + click-target highlight overlays
@@ -87,6 +106,13 @@ const AI_GENERATOR_PROMPT =
  *      the next click target BEFORE the click happens — so viewers see what's
  *      about to be interacted with.
  */
+/** Applied once per document via `addInitScript` — see the `PAGE_ZOOM` comment. */
+const PAGE_ZOOM_INIT_SCRIPT = `
+  (() => {
+    document.documentElement.style.zoom = '${PAGE_ZOOM}';
+  })();
+`;
+
 const OVERLAY_INIT_SCRIPT = `
   (() => {
     if (window.__marketingOverlaysInjected) return;
@@ -387,18 +413,19 @@ async function recordStoryboard(page: Page): Promise<void> {
   await waitForVisualizerReady(page);
   await page.waitForTimeout(1_500);
 
-  // 3-8s — pick United States from the country dropdown.
+  // 3-8s — pick the demo country from the country dropdown.
   const regionInput = page.locator('input[aria-label="Select a country"]');
   await clickWithHighlight(page, regionInput, { dwellMs: 450 });
   await page.waitForTimeout(400);
   await page.keyboard.type(DEMO_COUNTRY.name, { delay: 80 });
   await page.waitForTimeout(500);
 
+  // Exact match, not substring — some countries have map variants sharing the same
+  // prefix (e.g. "France", "France (2016 Regions)", "France (Departments)"), and a
+  // substring/`.first()` match could silently grab the wrong one.
   const countryOption = page
-    .locator('.ant-select-dropdown:visible .ant-select-item-option-content', {
-      hasText: DEMO_COUNTRY.name,
-    })
-    .first();
+    .locator('.ant-select-dropdown:visible .ant-select-item-option-content')
+    .filter({ hasText: new RegExp(`^${DEMO_COUNTRY.name}$`) });
   await clickWithHighlight(page, countryOption, { dwellMs: 400 });
 
   // 8-13s — sample data loads. Wait for the mode-toggle button as "app is ready".
@@ -448,25 +475,18 @@ async function recordStoryboard(page: Page): Promise<void> {
   const generateBtn = aiModal.getByRole('button', { name: 'Generate with AI' });
   await clickWithHighlight(page, generateBtn, { dwellMs: 500 });
 
-  log('⏳ AI is generating dataset (10 years × 50 states) — can take 15-45s');
-  // Wait for the "Save" button to become enabled — that only happens after the
-  // stream completes and rows are populated (generator becomes dirty).
+  log('⏳ AI is generating dataset — can take 15-45s');
+  // The Generator tab auto-switches from the streaming textarea to a table view the
+  // instant the stream completes (see AiTab.tsx: viewMode flips to 'table' and the
+  // textarea unmounts). That swap is a crisper "AI is done" signal than polling the
+  // Save button's disabled attribute, which previously left the recording idling
+  // for up to two minutes whenever the poll's DOM query never matched.
+  await promptTextarea.waitFor({ state: 'hidden', timeout: 120_000 });
+  const generatedTable = aiModal.locator('.ant-table').first();
+  await generatedTable.waitFor({ state: 'visible', timeout: 15_000 });
+  await page.waitForTimeout(800);
+
   const saveBtn = aiModal.getByRole('button', { name: 'Save' });
-  await saveBtn.waitFor({ timeout: 120_000 });
-  await page
-    .waitForFunction(
-      () => {
-        const modal = document.querySelector('.ant-modal:not([style*="display: none"])');
-        if (!modal) return false;
-        const buttons = Array.from(modal.querySelectorAll('button'));
-        const save = buttons.find((b) => b.textContent?.trim() === 'Save');
-        return !!save && !save.disabled;
-      },
-      undefined,
-      { timeout: 120_000 },
-    )
-    .catch(() => {});
-  await page.waitForTimeout(1_500);
 
   // Click Save — modal closes, data commits, map re-renders in dynamic mode
   // (the prompt asked for 10 years so timeline data will kick in automatically).
@@ -480,6 +500,46 @@ async function recordStoryboard(page: Page): Promise<void> {
     .waitFor({ state: 'visible', timeout: 15_000 })
     .catch(() => {});
   await page.waitForTimeout(3_500);
+
+  // ── Legend Configuration → normalize ranges to the freshly generated data ──
+  const rangesAccordionHeader = page
+    .locator('.ant-collapse-header')
+    .filter({ has: page.locator('[data-i18n-key="visualizer.legendConfig.collapseRanges"]') });
+  await clickWithHighlight(page, rangesAccordionHeader, { dwellMs: 450 });
+
+  const normalizeRangesBtn = page.locator(
+    '[data-i18n-key="visualizer.legendConfig.normalizeRangesAria"]',
+  );
+  await clickWithHighlight(page, normalizeRangesBtn, { dwellMs: 500 });
+  await page.waitForTimeout(1_500);
+
+  // ── Play the timeline animation through all years before exporting ──
+  const playBtn = page.getByRole('button', { name: 'Play animation' });
+  const playBtnAppeared = await playBtn
+    .waitFor({ timeout: 10_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (playBtnAppeared) {
+    // Read the period count off the slider's own aria attributes so the wait scales
+    // with however many years the AI actually generated, instead of hardcoding 10.
+    const sliderHandle = page.locator('.ant-slider [role="slider"]').first();
+    const maxAttr = await sliderHandle.getAttribute('aria-valuemax').catch(() => null);
+    const periodCount = maxAttr !== null ? Number(maxAttr) + 1 : 10;
+
+    await clickWithHighlight(page, playBtn, { dwellMs: 450 });
+
+    // Default playback is 1s/period (AnimationControls.tsx) — wait one full loop
+    // through every period, plus a buffer for the smooth blend transition and a
+    // beat to land on the final frame before pausing.
+    const fullLoopMs = periodCount * 1_300 + 1_000;
+    await page.waitForTimeout(fullLoopMs);
+
+    const pauseBtn = page.getByRole('button', { name: 'Pause animation' });
+    if (await pauseBtn.isVisible().catch(() => false)) {
+      await clickWithHighlight(page, pauseBtn, { dwellMs: 400 });
+    }
+  }
 
   // ── Export as MP4 ──
   const exportBtn = page.getByRole('button', { name: 'Export' });
@@ -570,7 +630,9 @@ async function main(): Promise<void> {
     },
   });
 
-  // Inject cursor + click-target-highlight overlays on every page load.
+  // Zoom out slightly so sidebar content isn't clipped at the fold, then inject
+  // cursor + click-target-highlight overlays — both apply on every page load.
+  await context.addInitScript(PAGE_ZOOM_INIT_SCRIPT);
   await context.addInitScript(OVERLAY_INIT_SCRIPT);
 
   const page = await context.newPage();
