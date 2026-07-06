@@ -5,7 +5,7 @@
  * (playwright-asset-generator.ts) does not — it hides the sidebars for cleaner
  * map exports, whereas the marketing pieces need to show the app's real interface.
  *
- * Outputs land in `docs/marketing/assets/` (co-located with the LinkedIn post
+ * Outputs land in `docs/marketing/assets/images/` (co-located with the LinkedIn post
  * and Medium article files that reference them):
  *   - product-overview.png    — full app with data + styles sidebars visible
  *   - map-picker.png          — country dropdown open on the new-project page
@@ -43,7 +43,7 @@ const PASSWORD = process.env.REGIONIFY_PASSWORD ?? '';
 const ASSETS_ROOT = join(__dirname, '..', 'assets');
 const AUTH_STATE_FILE = join(ASSETS_ROOT, '.auth-state.json');
 /** Screenshot outputs live next to the post/article files that reference them. */
-const OUTPUT_DIR = join(__dirname, '..', '..', 'docs', 'marketing', 'assets');
+const OUTPUT_DIR = join(__dirname, '..', '..', 'docs', 'marketing', 'assets', 'images');
 
 /**
  * Country to use for every screenshot. Spain works well because:

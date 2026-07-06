@@ -26,7 +26,10 @@
  * This is a tutorial, not an export harvester. The final MP4 file the browser
  * receives is deleted immediately — the recording is the sole deliverable.
  *
- * Output: `docs/marketing/assets/demo-video.webm`
+ * Post-processed via ffmpeg: 2× for the whole video; AI streaming + MP4 render waits at 4×.
+ * Without ffmpeg on PATH the raw 1× recording is kept.
+ *
+ * Output: `docs/marketing/assets/video/demo-video.webm`
  *
  * Run:
  *   pnpm --filter @regionify/marketing generate-demo-video
@@ -35,10 +38,13 @@
  * Requires:
  *   marketing/.env with CLIENT_URL, REGIONIFY_EMAIL, REGIONIFY_PASSWORD set.
  *   Account must be on any paid tier.
+ *   ffmpeg on PATH, or the `ffmpeg-static` npm devDependency (bundled binary).
  */
 
 import { chromium, type BrowserContext, type Locator, type Page } from 'playwright';
 import { config as loadEnv } from 'dotenv';
+import ffmpegStaticPath from 'ffmpeg-static';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -50,11 +56,22 @@ const BASE_URL = (process.env.CLIENT_URL ?? '').replace(/\/$/, '');
 const EMAIL = process.env.REGIONIFY_EMAIL ?? '';
 const PASSWORD = process.env.REGIONIFY_PASSWORD ?? '';
 
+/** API origin for session-scoped requests (profile locale patch). */
+function resolveApiBaseUrl(clientUrl: string): string {
+  const fromEnv = process.env.API_BASE_URL ?? process.env.VITE_API_BASE_URL;
+  if (fromEnv) return fromEnv.replace(/\/$/, '');
+  // Local dev default: Vite client :7002 → Express API :9002.
+  if (/localhost:7002$/i.test(clientUrl)) return 'http://localhost:9002';
+  return clientUrl;
+}
+
+const API_BASE_URL = BASE_URL ? resolveApiBaseUrl(BASE_URL) : '';
+
 const ASSETS_ROOT = join(__dirname, '..', 'assets');
 const AUTH_STATE_FILE = join(ASSETS_ROOT, '.auth-state.json');
 /** Playwright writes videos with random filenames — collect them in a scratch dir first. */
 const VIDEO_TMP_DIR = join(ASSETS_ROOT, '.video-tmp');
-const OUTPUT_DIR = join(__dirname, '..', '..', 'docs', 'marketing', 'assets');
+const OUTPUT_DIR = join(__dirname, '..', '..', 'docs', 'marketing', 'assets', 'video');
 const OUTPUT_FILE = 'demo-video.webm';
 
 /**
@@ -87,6 +104,35 @@ const AI_GENERATOR_PROMPT =
   'Generate average annual temperature in Celsius for each region of France from 2015 to 2024 ' +
   '(10 years). Return realistic values.';
 
+/** Default playback speed for all segments (2× = half the real-time duration). */
+const GLOBAL_SPEED_FACTOR = 2;
+
+/** Extra speed for AI streaming and MP4 render wait segments (4× vs real-time). */
+const WAIT_SEGMENT_SPEED_FACTOR = 4;
+
+// ---------------------------------------------------------------------------
+// Speed-range marks (post-processed with ffmpeg after recording)
+// ---------------------------------------------------------------------------
+
+type SpeedRange = { startMs: number; endMs: number; factor: number };
+
+const speedRanges: SpeedRange[] = [];
+/** Wall-clock timestamp when the recorded page opens — video t=0 for trim boundaries. */
+let pageOpenAt = 0;
+
+function markSpeedRangeStart(): number {
+  return Date.now() - pageOpenAt;
+}
+
+function commitSpeedRange(startMs: number, factor: number): void {
+  const endMs = Date.now() - pageOpenAt;
+  if (endMs <= startMs || factor <= 1) return;
+  speedRanges.push({ startMs, endMs, factor });
+  log(
+    `⏩ speed range ${(startMs / 1_000).toFixed(1)}s – ${(endMs / 1_000).toFixed(1)}s @ ${factor}×`,
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Visible cursor + click-target highlight overlays
 // ---------------------------------------------------------------------------
@@ -110,6 +156,13 @@ const AI_GENERATOR_PROMPT =
 const PAGE_ZOOM_INIT_SCRIPT = `
   (() => {
     document.documentElement.style.zoom = '${PAGE_ZOOM}';
+  })();
+`;
+
+/** Force English UI for marketing recordings (logged-in locale overrides localStorage). */
+const LOCALE_EN_INIT_SCRIPT = `
+  (() => {
+    try { localStorage.setItem('regionify-locale', 'en'); } catch {}
   })();
 `;
 
@@ -287,6 +340,24 @@ async function ensureAuthState(
   }
 }
 
+/** Patch the logged-in user's profile locale so button labels match English selectors. */
+async function ensureEnglishProfile(context: BrowserContext): Promise<void> {
+  if (!API_BASE_URL) return;
+  try {
+    const res = await context.request.patch(`${API_BASE_URL}/auth/profile`, {
+      data: { locale: 'en' },
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.ok()) {
+      log('✓ profile locale set to English');
+    } else {
+      log(`⚠ profile locale patch failed (${res.status()}) — UI may not be English`);
+    }
+  } catch (err) {
+    log(`⚠ could not patch profile locale: ${err instanceof Error ? err.message : err}`);
+  }
+}
+
 async function waitForVisualizerReady(page: Page, timeoutMs = 30_000): Promise<void> {
   await page
     .locator('[data-i18n-key="visualizer.embed.openButton"]')
@@ -414,18 +485,24 @@ async function recordStoryboard(page: Page): Promise<void> {
   await page.waitForTimeout(1_500);
 
   // 3-8s — pick the demo country from the country dropdown.
-  const regionInput = page.locator('input[aria-label="Select a country"]');
-  await clickWithHighlight(page, regionInput, { dwellMs: 450 });
+  const regionSelect = antSelectByLabelKey(page, 'visualizer.region.sectionTitle');
+  await clickWithHighlight(page, regionSelect, { dwellMs: 450 });
   await page.waitForTimeout(400);
   await page.keyboard.type(DEMO_COUNTRY.name, { delay: 80 });
   await page.waitForTimeout(500);
 
-  // Exact match, not substring — some countries have map variants sharing the same
-  // prefix (e.g. "France", "France (2016 Regions)", "France (Departments)"), and a
-  // substring/`.first()` match could silently grab the wrong one.
-  const countryOption = page
-    .locator('.ant-select-dropdown:visible .ant-select-item-option-content')
-    .filter({ hasText: new RegExp(`^${DEMO_COUNTRY.name}$`) });
+  // Prefer stable region id over localized label text (works in any UI locale).
+  const countryOptionByValue = page.locator(
+    `.ant-select-dropdown:visible .ant-select-item-option[data-value="${DEMO_COUNTRY.slug}"]`,
+  );
+  let countryOption: Locator;
+  if ((await countryOptionByValue.count()) > 0) {
+    countryOption = countryOptionByValue;
+  } else {
+    countryOption = page
+      .locator('.ant-select-dropdown:visible .ant-select-item-option-content')
+      .filter({ hasText: new RegExp(`^${DEMO_COUNTRY.name}$`) });
+  }
   await clickWithHighlight(page, countryOption, { dwellMs: 400 });
 
   // 8-13s — sample data loads. Wait for the mode-toggle button as "app is ready".
@@ -476,14 +553,11 @@ async function recordStoryboard(page: Page): Promise<void> {
   await clickWithHighlight(page, generateBtn, { dwellMs: 500 });
 
   log('⏳ AI is generating dataset — can take 15-45s');
-  // The Generator tab auto-switches from the streaming textarea to a table view the
-  // instant the stream completes (see AiTab.tsx: viewMode flips to 'table' and the
-  // textarea unmounts). That swap is a crisper "AI is done" signal than polling the
-  // Save button's disabled attribute, which previously left the recording idling
-  // for up to two minutes whenever the poll's DOM query never matched.
+  const aiWaitStart = markSpeedRangeStart();
   await promptTextarea.waitFor({ state: 'hidden', timeout: 120_000 });
   const generatedTable = aiModal.locator('.ant-table').first();
   await generatedTable.waitFor({ state: 'visible', timeout: 15_000 });
+  commitSpeedRange(aiWaitStart, WAIT_SEGMENT_SPEED_FACTOR);
   await page.waitForTimeout(800);
 
   const saveBtn = aiModal.getByRole('button', { name: 'Save' });
@@ -578,19 +652,164 @@ async function recordStoryboard(page: Page): Promise<void> {
   const downloadPromise = page.waitForEvent('download', { timeout: 60_000 });
   await clickWithHighlight(page, downloadBtn, { dwellMs: 500 });
 
+  const downloadWaitStart = markSpeedRangeStart();
   try {
     const download = await downloadPromise;
     log('✓ MP4 render completed on-camera');
-    // We don't need the file itself — this is a tutorial, not an export pipeline.
-    // Cancel/delete the pending stream so it doesn't leak into the OS Downloads folder.
     await download.delete().catch(() => {});
   } catch {
     log('⚠ MP4 render did not finish within 60s — video will end on the progress state');
   }
+  commitSpeedRange(downloadWaitStart, WAIT_SEGMENT_SPEED_FACTOR);
 
   // Small hold after completion so the viewer registers the "done" state
   // (progress bar hits 100 %, success toast appears) before the recording cuts.
   await page.waitForTimeout(2_500);
+}
+
+// ---------------------------------------------------------------------------
+// ffmpeg post-processing — apply speed ranges captured during recording
+// ---------------------------------------------------------------------------
+
+function resolveFfmpegBinary(): string | null {
+  try {
+    const r = spawnSync('ffmpeg', ['-version'], { stdio: 'ignore' });
+    if (r.status === 0) return 'ffmpeg';
+  } catch {
+    // System ffmpeg not on PATH — try bundled binary below.
+  }
+  if (typeof ffmpegStaticPath === 'string' && existsSync(ffmpegStaticPath)) {
+    return ffmpegStaticPath;
+  }
+  return null;
+}
+
+function runFfmpeg(ffmpegBin: string, args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(ffmpegBin, args, { stdio: 'inherit' });
+    child.once('error', reject);
+    child.once('close', (code) =>
+      code === 0 ? resolve() : reject(new Error(`ffmpeg exited with code ${code}`)),
+    );
+  });
+}
+
+function buildSpeedFilter(
+  ranges: SpeedRange[],
+  baseFactor: number,
+): { filter: string; segmentCount: number } {
+  const sorted = [...ranges]
+    .filter((r) => r.endMs > r.startMs && r.factor > 1)
+    .sort((a, b) => a.startMs - b.startMs);
+
+  /** Collect segment specs first so we know how many split outputs we need. */
+  type SegmentSpec = { startMs: number; endMs: number | null; factor: number };
+  const segments: SegmentSpec[] = [];
+  let cursorMs = 0;
+
+  for (const r of sorted) {
+    if (r.startMs < cursorMs) continue;
+    if (r.startMs > cursorMs)
+      segments.push({ startMs: cursorMs, endMs: r.startMs, factor: baseFactor });
+    segments.push({ startMs: r.startMs, endMs: r.endMs, factor: r.factor });
+    cursorMs = r.endMs;
+  }
+  segments.push({ startMs: cursorMs, endMs: null, factor: baseFactor });
+
+  const parts: string[] = [];
+  const labels: string[] = [];
+
+  // Each trim branch needs its own copy of the input — [0:v] cannot be reused without split.
+  const splitOuts = segments.map((_, i) => `[vs${i}]`).join('');
+  parts.push(`[0:v]split=${segments.length}${splitOuts}`);
+
+  segments.forEach((seg, i) => {
+    const label = `s${i}`;
+    const startSec = (seg.startMs / 1_000).toFixed(3);
+    const trim =
+      seg.endMs !== null
+        ? `trim=start=${startSec}:end=${(seg.endMs / 1_000).toFixed(3)}`
+        : `trim=start=${startSec}`;
+    const pts = seg.factor === 1 ? 'setpts=PTS-STARTPTS' : `setpts=(PTS-STARTPTS)/${seg.factor}`;
+    parts.push(`[vs${i}]${trim},${pts}[${label}]`);
+    labels.push(`[${label}]`);
+  });
+
+  const concat = `${labels.join('')}concat=n=${labels.length}:v=1:a=0[v]`;
+  return { filter: `${parts.join(';')};${concat}`, segmentCount: labels.length };
+}
+
+function encodeOutputArgs(outputPath: string): string[] {
+  return [
+    '-c:v',
+    'libvpx-vp9',
+    '-b:v',
+    '0',
+    '-crf',
+    '32',
+    '-deadline',
+    'good',
+    '-cpu-used',
+    '4',
+    '-an',
+    outputPath,
+  ];
+}
+
+async function postProcessSpeedRanges(
+  rawPath: string,
+  finalPath: string,
+  ranges: SpeedRange[],
+): Promise<void> {
+  const needsProcessing = GLOBAL_SPEED_FACTOR > 1 || ranges.length > 0;
+  if (!needsProcessing) {
+    renameSync(rawPath, finalPath);
+    return;
+  }
+
+  const ffmpegBin = resolveFfmpegBinary();
+  if (!ffmpegBin) {
+    log('⚠ ffmpeg not found — writing raw recording without speed-ups.');
+    log('   Restart your terminal after installing ffmpeg, or run:');
+    log('   node node_modules/ffmpeg-static/install.js');
+    renameSync(rawPath, finalPath);
+    return;
+  }
+  if (ffmpegBin !== 'ffmpeg') {
+    log(`▶ using bundled ffmpeg (${ffmpegBin})`);
+  }
+
+  const tmpOut = `${rawPath}.processed.webm`;
+
+  if (ranges.length === 0) {
+    log(`▶ ffmpeg global ${GLOBAL_SPEED_FACTOR}× speed-up`);
+    await runFfmpeg(ffmpegBin, [
+      '-y',
+      '-i',
+      rawPath,
+      '-vf',
+      `setpts=PTS/${GLOBAL_SPEED_FACTOR}`,
+      ...encodeOutputArgs(tmpOut),
+    ]);
+  } else {
+    const { filter, segmentCount } = buildSpeedFilter(ranges, GLOBAL_SPEED_FACTOR);
+    log(
+      `▶ ffmpeg ${GLOBAL_SPEED_FACTOR}× base + ${ranges.length} wait range(s) @ ${WAIT_SEGMENT_SPEED_FACTOR}× (${segmentCount} segments)`,
+    );
+    await runFfmpeg(ffmpegBin, [
+      '-y',
+      '-i',
+      rawPath,
+      '-filter_complex',
+      filter,
+      '-map',
+      '[v]',
+      ...encodeOutputArgs(tmpOut),
+    ]);
+  }
+
+  rmSync(rawPath, { force: true });
+  renameSync(tmpOut, finalPath);
 }
 
 // ---------------------------------------------------------------------------
@@ -634,8 +853,11 @@ async function main(): Promise<void> {
   // cursor + click-target-highlight overlays — both apply on every page load.
   await context.addInitScript(PAGE_ZOOM_INIT_SCRIPT);
   await context.addInitScript(OVERLAY_INIT_SCRIPT);
+  await context.addInitScript(LOCALE_EN_INIT_SCRIPT);
+  await ensureEnglishProfile(context);
 
   const page = await context.newPage();
+  pageOpenAt = Date.now();
 
   try {
     log('▶ recording storyboard');
@@ -656,10 +878,11 @@ async function main(): Promise<void> {
   }
   // If for some reason there are multiple, take the freshest.
   webms.sort();
-  const src = join(VIDEO_TMP_DIR, webms[webms.length - 1]);
+  const rawPath = join(VIDEO_TMP_DIR, webms[webms.length - 1]);
   const dest = join(OUTPUT_DIR, OUTPUT_FILE);
   if (existsSync(dest)) rmSync(dest);
-  renameSync(src, dest);
+
+  await postProcessSpeedRanges(rawPath, dest, speedRanges);
   rmSync(VIDEO_TMP_DIR, { recursive: true, force: true });
 
   console.log(`\n✅  Demo video saved: ${dest}`);

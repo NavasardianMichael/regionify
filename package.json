@@ -68,6 +68,7 @@
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines",
+      "ffmpeg-static",
       "prisma"
     ]
   }
