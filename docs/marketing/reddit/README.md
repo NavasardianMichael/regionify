@@ -219,5 +219,5 @@ After all 9 posts, aggregate: which subs converted best, which titles pulled hig
 - r/dataisbeautiful [official rules](https://www.reddit.com/r/dataisbeautiful/wiki/rules)
 - r/MapPorn [submission guidelines](https://www.reddit.com/r/MapPorn/wiki/index)
 - Reddit Marketing for B2B SaaS: 2026 Playbook (Dupple, RedditGrowthDB, Okara)
-- Internal: `client/src/assets/images/maps/` (70+ country SVGs available)
+- Internal: `client/src/assets/images/maps/` (200+ country/region SVGs available)
 - Internal: `shared/src/constants/badges.ts` (tier features)

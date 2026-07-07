@@ -11,7 +11,7 @@
 | Tags         | `[OC][GIF]` (both mandatory — `[OC]` per Rule 3, `[GIF]` per convention) |
 | UTM campaign | `dataisbeautiful-07`                                                     |
 
-Rationale: Animated timelines are r/dataisbeautiful catnip — the sub's all-time top posts are disproportionately animated maps and rank charts. Eurostat's regional unemployment dataset (NUTS-2 level, code `une_rt_a`) is public, current through 2024, and tells a clear story (2010-13 crisis peaks in southern Europe, gradual recovery, COVID blip, ongoing north-south divide). This showcases the Chronographer tier's animation export — the feature most likely to drive $149/mo signups.
+Rationale: Animated timelines are r/dataisbeautiful catnip — the sub's all-time top posts are disproportionately animated maps and rank charts. Eurostat's regional unemployment dataset (NUTS-2 level, code `une_rt_a`) is public, current through 2024, and tells a clear story (2010-13 crisis peaks in southern Europe, gradual recovery, COVID blip, ongoing north-south divide). This showcases the Chronographer tier's animation export — the feature most likely to drive $149 one-time signups.
 
 **Timing note:** post 03 was in r/dataisbeautiful in Week 1. That was 15 days ago at this point — well past the "no reposts of the same topic within 1 month" rule (this is a different dataset and format anyway), and enough time between two OC submissions from the same account.
 

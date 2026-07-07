@@ -57,7 +57,7 @@ I've been building [Regionify](https://regionify.pro) (a browser-based choroplet
 
 - Client: React 19 + TypeScript, Vite, Zustand for state
 - Server: Express 5, Prisma, PostgreSQL, Redis
-- Maps: 70+ hand-curated SVGs, each region tagged with a stable `data-region-id`
+- Maps: 200+ hand-curated SVGs, each region tagged with a stable `data-region-id`
 
 Each country has a canonical list of region names (in the country's primary language) plus optional alternate names (English, historical, common abbreviations). Example for Spain:
 
@@ -117,7 +117,7 @@ Happy to answer questions on any part — Prisma schema, the front-end binding U
 ```
 For anyone who wants to try it: https://regionify.pro/?utm_source=reddit&utm_medium=organic&utm_campaign=webdev-05
 
-Full disclosure — I'm the solo founder. Observer tier is free, no credit card. The AI parser is currently a paid-tier feature (Chronographer, $149/mo) but the deterministic fuzzy matcher runs for everyone on the free tier and covers ~80% of real inputs.
+Full disclosure — I'm the solo founder. Observer tier is free, no credit card. The AI parser is currently a paid-tier feature (Chronographer, $149 one-time) but the deterministic fuzzy matcher runs for everyone on the free tier and covers ~80% of real inputs.
 
 I open-sourced the deterministic matching layer as a standalone TS package a few weeks ago — if you're building anything similar and want to skip re-inventing the wheel, DM me and I'll share the repo.
 ```

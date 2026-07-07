@@ -124,7 +124,7 @@ Happy to expand on any of the numbers, the copy iterations, or the exact posting
 
 **Q: "Where's Regionify going next?"**
 
-> Product: multi-language template gallery, better mobile embed experience, more country maps (currently 70+, target 120+). Distribution: Show HN, YouTube channel doing "recreate the [famous map] in Regionify" videos, partnership pitches to 2-3 data-journalism outlets.
+> Product: multi-language template gallery, better mobile embed experience — the country-map count actually outpaced the original roadmap already (past 200 now, from 70 at launch), so next there is filling in remaining territories and disputed-boundary variants rather than chasing raw count. Distribution: Show HN, YouTube channel doing "recreate the [famous map] in Regionify" videos, partnership pitches to 2-3 data-journalism outlets.
 
 **Q: (harsh) "3 weeks and only $X MRR? That's tiny."**
 

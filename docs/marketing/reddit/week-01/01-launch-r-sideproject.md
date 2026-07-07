@@ -30,7 +30,7 @@ I got tired of D3.js for one-off regional maps, so I built a no-code map maker f
 **Backup 2:**
 
 ```
-Regionify — color-coded maps for 70+ countries by region/state/province, AI-powered data import, animated timelines. My side project after 3 months.
+Regionify — color-coded maps for 200+ countries by region/state/province, AI-powered data import, animated timelines. My side project after 3 months.
 ```
 
 Pick the primary unless the sub feed is already saturated with similar phrasing that day.
@@ -47,18 +47,18 @@ For the last 3 months I've been building [**Regionify**](https://regionify.pro) 
 
 **What it does:**
 
-- Pick from **70+ country maps** with real administrative divisions (provinces, régions, states, cantons — Spain, France, Germany, USA, Brazil, Japan, etc.).
+- Pick from **200+ country maps** with real administrative divisions (provinces, régions, states, cantons — Spain, France, Germany, USA, Brazil, Japan, etc.).
 - **Paste or upload your data** (Excel, CSV, or just paste from a Google Sheet). The AI parser auto-matches messy region names to the map polygons — "Île-de-France", "ile de france", "IDF" all resolve to the same shape.
 - **Style it** — legend, palette, breakpoints, borders, labels, background. Ant Design under the hood so controls feel native.
-- **Export** — PNG, JPEG, PDF, SVG at up to 4K. GIF/MP4 for animated timelines.
+- **Export** — PNG or JPEG at up to 4K, plus SVG (vector, scales to any size) and PDF. GIF/MP4 for animated timelines.
 - **Embed** — public iframe + SSR-rendered public page with SEO metadata (paid tier).
 - **7 languages** — EN, DE, FR, ES, PT, RU, ZH.
 
-**Pricing (freemium):**
+**Pricing (one-time, not a subscription):**
 
 - **Observer** — free, 5 projects, PNG/JPEG/PDF export
-- **Explorer** — $49/mo, unlimited projects, SVG export, advanced styles, 4K
-- **Chronographer** — $149/mo, time-series data import, animated GIF/MP4 export, public iframe embeds, AI parser
+- **Explorer** — $49 once, unlimited projects, SVG export, advanced styles, 4K
+- **Chronographer** — $149 once, time-series data import, animated GIF/MP4 export, public iframe embeds, AI parser
 
 **What I'm looking for from r/SideProject:**
 
@@ -91,7 +91,7 @@ Full disclosure: I'm the solo founder. This is my first SaaS launch after 6 year
 
 **Q: "Does it support [country X]?"**
 
-> The full list is on the homepage — 70+ countries covering most of Europe, Americas, Africa, Middle East, and East Asia. If yours isn't there, DM me the country and I'll prioritize adding it. Adding a new map is a few hours of work if a clean SVG exists.
+> The full list is on the homepage — 200+ countries covering essentially every UN member state plus most territories. If yours isn't there, DM me the country and I'll prioritize adding it. Adding a new map is a few hours of work if a clean SVG exists.
 
 **Q: "How does the AI parser work?"**
 

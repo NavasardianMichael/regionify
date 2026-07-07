@@ -43,7 +43,7 @@ These are the four screenshots directly embedded in the article/post:
 
 ## `marketing/assets/{country}/` — website + composite source material
 
-`marketing/assets/{country}/` contains a full asset pack for ~130 countries, produced by the country-batch generator (`marketing/scripts/playwright-asset-generator.ts`).
+`marketing/assets/{country}/` contains a full asset pack for ~180 countries, produced by the country-batch generator (`marketing/scripts/playwright-asset-generator.ts`).
 
 Per country, you'll find:
 
@@ -111,7 +111,7 @@ From the repo root:
 pnpm generate-marketing-assets
 ```
 
-This runs against every country listed in `marketing/scripts/countries.ts` (currently ~130). It's the slow one — expect 20-40 minutes on a full run — but it's idempotent: existing files are skipped, so re-runs after failures only regenerate what's missing.
+This runs against every country listed in `marketing/scripts/countries.ts` (currently ~230). It's the slow one — expect 20-40 minutes on a full run — but it's idempotent: existing files are skipped, so re-runs after failures only regenerate what's missing.
 
 ## Composite / hero image
 

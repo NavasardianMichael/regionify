@@ -88,7 +88,7 @@ Happy to share the CSV if anyone wants it. Full disclosure — I'm the founder o
 
 **Q: "Can you do the same for [Italy / Germany / France]?"**
 
-> Yeah, Italy is next on my list — same INE-equivalent (ISTAT) data is public. If you want it faster, all 70+ country maps are on regionify.pro and the data flow is the same (paste CSV → export image). DM if you want a walkthrough.
+> Yeah, Italy is next on my list — same INE-equivalent (ISTAT) data is public. If you want it faster, all 200+ country maps are on regionify.pro and the data flow is the same (paste CSV → export image). DM if you want a walkthrough.
 
 **Q: "Why quantile bins instead of natural breaks?"**
 
