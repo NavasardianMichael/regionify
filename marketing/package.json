@@ -11,6 +11,7 @@
     "generate-assets": "tsx scripts/playwright-asset-generator.ts",
     "generate-marketing-screenshots": "tsx scripts/playwright-marketing-screenshots.ts",
     "generate-demo-video": "tsx scripts/playwright-demo-video.ts",
+    "generate-reddit-coolguide-driving-side": "tsx scripts/playwright-reddit-coolguide-driving-side.ts",
     "postinstall": "node -e \"require('child_process').execSync('node install.js',{cwd:require('path').dirname(require.resolve('ffmpeg-static/package.json')),stdio:'inherit'})\""
   },
   "dependencies": {

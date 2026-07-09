@@ -43,14 +43,12 @@ Primary is best — it matches the sub's convention exactly ("A cool guide to X"
 
 _r/coolguides prefers image posts without body text — the image should stand alone. Submit as an image post; the guide itself is the entire content._
 
-<!-- ASSET: 2160x1350 PNG world choropleth (or best-available global composite from
-     Regionify's country library — Europe + Americas + Asia + Africa in one export
-     if a world map isn't natively available; otherwise a stitched grid of the
-     4 continent maps with the same 2-color palette).
+<!-- ASSET: docs/marketing/reddit/week-01/coolguide-driving-side.png (2160×1350)
+     Generated via: pnpm --filter @regionify/marketing generate-reddit-coolguide-driving-side
      Colors: right-hand traffic = warm blue (#2C6BE5), left-hand traffic = warm coral (#E57C4A).
      Neutral gray for territories with no vehicle traffic (Antarctica, some islands).
-     Legend top-left: two color swatches with labels "Drives on the RIGHT (166 countries)" and
-     "Drives on the LEFT (76 countries and territories)".
+     Legend top-left: two color swatches with labels "Drives on the RIGHT (...)" and
+     "Drives on the LEFT (...)" (counts computed from Wikipedia driving-side data).
      Title bar top: "Which side of the road does each country drive on?"
      Footer bottom-right: "Made with Regionify · regionify.pro" watermark, small.
      Source line bottom-left: "Source: Wikipedia · Left- and right-hand traffic (accessed 2026)". -->
