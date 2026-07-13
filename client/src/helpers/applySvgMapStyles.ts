@@ -18,6 +18,7 @@ import {
   SVG_PATH_NUMBERS_REGEX,
 } from '@/constants/svgPath';
 import { getInterpolatedColorMap } from '@/helpers/legendColorInterpolation';
+import { parseMapSvgElement } from '@/helpers/parseMapSvg';
 
 export type ApplySvgMapStylesOptions = {
   border: BorderConfig;
@@ -165,11 +166,11 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
     pathClassInstant,
   } = options;
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(svg, 'image/svg+xml');
-  const svgElement = doc.querySelector('svg');
+  const parsed = parseMapSvgElement(svg);
+  if (!parsed) return svg;
 
-  if (!svgElement) return svg;
+  const { svgElement } = parsed;
+  const doc = svgElement.ownerDocument;
 
   const paths = svgElement.querySelectorAll('path');
   const { viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight } = computeViewBoxFromPaths(paths);
@@ -333,5 +334,5 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
     svgElement.appendChild(labelsGroup);
   }
 
-  return new XMLSerializer().serializeToString(doc);
+  return new XMLSerializer().serializeToString(svgElement);
 }
