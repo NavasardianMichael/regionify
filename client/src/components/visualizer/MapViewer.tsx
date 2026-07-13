@@ -112,7 +112,7 @@ const MapViewer: FC<MapViewerProps> = ({
     position: { x: number; y: number };
   } | null>(null);
 
-  const { svgContent, isLoading, labelPositionsRef } = useMapSvg();
+  const { svgContent, isLoading, labelPositionsRef, mapPathStyleOptions } = useMapSvg();
 
   const onResetLabelPositions = useCallback(() => {
     labelPositionsRef.current = {};
@@ -305,6 +305,7 @@ const MapViewer: FC<MapViewerProps> = ({
         periodLabelRef={periodLabelRef}
         svgContent={svgContent}
         isLoading={isLoading}
+        mapPathStyleOptions={mapPathStyleOptions}
         suppressMapTransition={suppressMapTransition}
         ariaLabel={mapInteractiveAriaLabel}
         onPointerDown={handlePointerDown}

@@ -2,6 +2,7 @@ import { type FC, startTransition, useCallback, useMemo, useRef } from 'react';
 import { GlobalOutlined } from '@ant-design/icons';
 import { Flex, type RefSelectProps, Select, type SelectProps } from 'antd';
 import {
+  selectClearTimelineData,
   selectData,
   selectSelectedCountryId,
   selectSetVisualizerState,
@@ -22,6 +23,7 @@ export const RegionSelect: FC = () => {
 
   const selectedCountryId = useVisualizerStore(selectSelectedCountryId);
   const setVisualizerState = useVisualizerStore(selectSetVisualizerState);
+  const clearTimelineData = useVisualizerStore(selectClearTimelineData);
   const data = useVisualizerStore(selectData);
   const timePeriods = useVisualizerStore(selectTimePeriods);
   const hasUnsavedChanges = useHasUnsavedChanges();
@@ -35,7 +37,13 @@ export const RegionSelect: FC = () => {
 
       const doChange = () => {
         startTransition(() => {
-          setVisualizerState({ selectedCountryId: newCountryId });
+          // Drop previous country's dataset immediately so the new SVG isn't
+          // painted entirely with no-data gray while IDs still belong to the old map.
+          clearTimelineData();
+          setVisualizerState({
+            selectedCountryId: newCountryId,
+            data: { allIds: [], byId: {} },
+          });
         });
         selectRef.current?.blur();
       };
@@ -52,7 +60,7 @@ export const RegionSelect: FC = () => {
         doChange();
       }
     },
-    [modal, selectedCountryId, setVisualizerState, shouldWarnOnCountryChange, t],
+    [clearTimelineData, modal, selectedCountryId, setVisualizerState, shouldWarnOnCountryChange, t],
   );
 
   const regionOptions = useMemo(

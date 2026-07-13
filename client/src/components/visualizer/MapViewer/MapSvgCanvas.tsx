@@ -1,4 +1,4 @@
-import { type FC, memo, type RefObject } from 'react';
+import { type FC, memo, type RefObject, useLayoutEffect, useRef } from 'react';
 import { Flex, Spin, Typography } from 'antd';
 import {
   selectActiveTimePeriod,
@@ -9,7 +9,23 @@ import { useVisualizerStore } from '@/store/mapData/store';
 import { selectRegionLabels } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
 import type { TimePeriodLabelOffset } from '@/store/mapStyles/types';
+import {
+  applyMapPathStylesInDom,
+  type ApplySvgMapStylesOptions,
+} from '@/helpers/applySvgMapStyles';
 import styles from '../MapViewer.module.css';
+
+type MapPathStyleOptions = Pick<
+  ApplySvgMapStylesOptions,
+  | 'border'
+  | 'data'
+  | 'legendItems'
+  | 'noDataColor'
+  | 'transitionType'
+  | 'colorBlend'
+  | 'pathClass'
+  | 'pathClassInstant'
+>;
 
 type MapSvgCanvasProps = {
   containerRef: RefObject<HTMLButtonElement | null>;
@@ -17,6 +33,7 @@ type MapSvgCanvasProps = {
   periodLabelRef: RefObject<HTMLDivElement | null>;
   svgContent: string;
   isLoading: boolean;
+  mapPathStyleOptions: MapPathStyleOptions;
   /** Disable the CSS transform easing while drag / wheel gestures are active. */
   suppressMapTransition: boolean;
   ariaLabel: string;
@@ -34,6 +51,7 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
   periodLabelRef,
   svgContent,
   isLoading,
+  mapPathStyleOptions,
   suppressMapTransition,
   ariaLabel,
   onPointerDown,
@@ -47,9 +65,16 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
   const isGoogleSheetSyncLoading = useVisualizerStore(selectIsGoogleSheetSyncLoading);
   const activeTimePeriod = useVisualizerStore(selectActiveTimePeriod);
   const regionLabels = useMapStylesStore(selectRegionLabels);
+  const mapSvgContainerRef = useRef<HTMLDivElement>(null);
 
   const showSheetSyncOnMap =
     isGoogleSheetSyncLoading && Boolean(selectedCountryId) && Boolean(svgContent) && !isLoading;
+
+  useLayoutEffect(() => {
+    const container = mapSvgContainerRef.current;
+    if (!container || isLoading || !svgContent) return;
+    applyMapPathStylesInDom(container, mapPathStyleOptions);
+  }, [svgContent, isLoading, mapPathStyleOptions]);
 
   return (
     <button
@@ -81,6 +106,8 @@ export const MapSvgCanvas: FC<MapSvgCanvasProps> = memo(function MapSvgCanvas({
             }}
           >
             <div
+              ref={mapSvgContainerRef}
+              key={selectedCountryId ?? 'no-country'}
               className={`map-svg-container h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:overflow-visible [&>svg]:object-contain ${styles.mapPanCursor} ${
                 regionLabels.show ? styles.labelDragHoverTarget : ''
               } ${showSheetSyncOnMap ? 'blur-[3px]' : ''}`}

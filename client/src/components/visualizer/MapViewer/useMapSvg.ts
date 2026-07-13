@@ -1,13 +1,4 @@
-import {
-  type RefObject,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import DOMPurify from 'dompurify';
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { selectPlaybackPreviewBlend, selectTransitionType } from '@/store/animation/selectors';
 import { useAnimationStore } from '@/store/animation/store';
@@ -26,15 +17,27 @@ import {
   selectShadow,
 } from '@/store/mapStyles/selectors';
 import { useMapStylesStore } from '@/store/mapStyles/store';
-import { applySvgMapStyles } from '@/helpers/applySvgMapStyles';
+import { applySvgMapStyles, type ApplySvgMapStylesOptions } from '@/helpers/applySvgMapStyles';
 import { smoothstep01 } from '@/helpers/legendColorInterpolation';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { sanitizeMapSvgForDisplay } from '@/helpers/sanitizeMapSvgForDisplay';
 import styles from '../MapViewer.module.css';
 
 type UseMapSvgReturn = {
   svgContent: string;
   isLoading: boolean;
   labelPositionsRef: RefObject<Record<string, { x: number; y: number }>>;
+  mapPathStyleOptions: Pick<
+    ApplySvgMapStylesOptions,
+    | 'border'
+    | 'data'
+    | 'legendItems'
+    | 'noDataColor'
+    | 'transitionType'
+    | 'colorBlend'
+    | 'pathClass'
+    | 'pathClassInstant'
+  >;
 };
 
 export function useMapSvg(): UseMapSvgReturn {
@@ -57,9 +60,7 @@ export function useMapSvg(): UseMapSvgReturn {
 
   const labelPositionsRef = useRef<Record<string, { x: number; y: number }>>({});
   const prevSelectedCountryIdRef = useRef<string | null>(null);
-
-  // Defer legend items for expensive SVG processing to keep inputs responsive
-  const deferredLegendItems = useDeferredValue(legendItems);
+  const loadGenerationRef = useRef(0);
 
   const previewColorBlend = useMemo(() => {
     if (!playbackPreviewBlend) return undefined;
@@ -73,44 +74,36 @@ export function useMapSvg(): UseMapSvgReturn {
     };
   }, [playbackPreviewBlend, timelineData]);
 
+  const mapPathStyleOptions = useMemo(
+    () => ({
+      border,
+      data,
+      legendItems,
+      noDataColor,
+      transitionType,
+      colorBlend: previewColorBlend,
+      pathClass: styles.mapPath,
+      pathClassInstant: styles.mapPathInstant,
+    }),
+    [border, data, legendItems, noDataColor, transitionType, previewColorBlend],
+  );
+
   const applyStylesToSvg = useCallback(
     (svg: string) =>
       applySvgMapStyles(svg, {
-        border,
         shadow,
         picture,
         regionLabels,
-        data,
-        legendItems: deferredLegendItems,
-        noDataColor,
-        transitionType,
-        colorBlend: previewColorBlend,
         labelPositions: labelPositionsByRegionId,
-        pathClass: styles.mapPath,
-        pathClassInstant: styles.mapPathInstant,
+        ...mapPathStyleOptions,
       }),
-    [
-      border,
-      shadow,
-      picture,
-      regionLabels,
-      data,
-      deferredLegendItems,
-      noDataColor,
-      transitionType,
-      previewColorBlend,
-      labelPositionsByRegionId,
-    ],
+    [shadow, picture, regionLabels, labelPositionsByRegionId, mapPathStyleOptions],
   );
 
   const svgContent = useMemo(() => {
     if (!rawSvgContent) return '';
     const styledSvg = applyStylesToSvg(rawSvgContent);
-    return DOMPurify.sanitize(styledSvg, {
-      USE_PROFILES: { svg: true, svgFilters: true },
-      ADD_TAGS: ['use'],
-      ADD_ATTR: ['data-region-id', 'cursor', 'pointer-events'],
-    });
+    return sanitizeMapSvgForDisplay(styledSvg);
   }, [rawSvgContent, applyStylesToSvg]);
 
   // Clear region label positions only when switching to a different region (not on initial mount)
@@ -133,31 +126,39 @@ export function useMapSvg(): UseMapSvgReturn {
   useEffect(() => {
     if (!selectedCountryId) {
       setRawSvgContent('');
+      setIsLoading(false);
       labelPositionsRef.current = {};
       return;
     }
 
+    const countryAtStart = selectedCountryId;
+    const generation = ++loadGenerationRef.current;
+
+    setRawSvgContent('');
+    setIsLoading(true);
+    labelPositionsRef.current = {};
+
     const loadMap = async () => {
-      const countryAtStart = selectedCountryId;
-      setIsLoading(true);
       try {
         const svg = await loadMapSvg(countryAtStart);
-        if (useVisualizerStore.getState().selectedCountryId !== countryAtStart) {
-          return;
-        }
-        if (svg) {
-          setRawSvgContent(svg);
-        }
+        if (loadGenerationRef.current !== generation) return;
+        if (useVisualizerStore.getState().selectedCountryId !== countryAtStart) return;
+
+        setRawSvgContent(svg ?? '');
       } catch (error) {
         console.error('Failed to load map:', error);
+        if (loadGenerationRef.current === generation) {
+          setRawSvgContent('');
+        }
       } finally {
-        setIsLoading(false);
+        if (loadGenerationRef.current === generation) {
+          setIsLoading(false);
+        }
       }
     };
 
-    labelPositionsRef.current = {};
-    loadMap();
+    void loadMap();
   }, [selectedCountryId]);
 
-  return { svgContent, isLoading, labelPositionsRef };
+  return { svgContent, isLoading, labelPositionsRef, mapPathStyleOptions };
 }

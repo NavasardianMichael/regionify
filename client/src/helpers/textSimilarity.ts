@@ -8,6 +8,8 @@
  * - "Russian Federation" matching "Russia"
  */
 
+import { parseMapSvgElement } from '@/helpers/parseMapSvg';
+
 /**
  * Normalize text for comparison by:
  * - Converting to lowercase
@@ -136,10 +138,10 @@ export const findBestMatch = (
  */
 export const extractSvgTitles = (svgContent: string): string[] => {
   const titles: string[] = [];
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+  const parsed = parseMapSvgElement(svgContent);
+  if (!parsed) return titles;
 
-  const paths = doc.querySelectorAll('path[title]');
+  const paths = parsed.svgElement.querySelectorAll('path[title]');
   paths.forEach((path) => {
     const title = path.getAttribute('title');
     if (title) {

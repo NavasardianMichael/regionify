@@ -150,6 +150,109 @@ function computeViewBoxFromPaths(paths: NodeListOf<SVGPathElement>): {
   return { viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight };
 }
 
+/** Inline `style` wins over CSS module rules; attributes survive DOMPurify and export. */
+function setPathFill(path: SVGPathElement, fill: string): void {
+  path.setAttribute('fill', fill);
+  path.style.setProperty('fill', fill, 'important');
+}
+
+function setPathStroke(path: SVGPathElement, color: string, width: number): void {
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width', String(width));
+  path.style.setProperty('stroke', color);
+  path.style.setProperty('stroke-width', String(width));
+}
+
+function clearPathStroke(path: SVGPathElement): void {
+  path.setAttribute('stroke', 'none');
+  path.style.setProperty('stroke', 'none');
+}
+
+type MapPathStyleInput = Pick<
+  ApplySvgMapStylesOptions,
+  | 'border'
+  | 'data'
+  | 'legendItems'
+  | 'noDataColor'
+  | 'transitionType'
+  | 'colorBlend'
+  | 'pathClass'
+  | 'pathClassInstant'
+>;
+
+function styleMapPaths(paths: NodeListOf<SVGPathElement>, options: MapPathStyleInput): void {
+  const {
+    border,
+    data,
+    legendItems,
+    noDataColor,
+    transitionType,
+    colorBlend,
+    pathClass,
+    pathClassInstant,
+  } = options;
+
+  const blendColorMap =
+    colorBlend &&
+    getInterpolatedColorMap(
+      colorBlend.dataA,
+      colorBlend.dataB,
+      colorBlend.t,
+      legendItems,
+      noDataColor,
+    );
+
+  paths.forEach((path) => {
+    path.classList.add(pathClass);
+    if (transitionType === 'instant') {
+      path.classList.add(pathClassInstant);
+    }
+
+    if (border.show) {
+      setPathStroke(path, border.color, border.width);
+    } else {
+      clearPathStroke(path);
+    }
+    path.setAttribute('stroke-opacity', '1');
+    path.style.setProperty('stroke-opacity', '1');
+
+    // Prefer stable ids that survive HTML injection better than SVG `title` in some browsers.
+    const regionId =
+      path.getAttribute('data-region-id') || path.getAttribute('title') || path.getAttribute('id');
+    if (regionId) {
+      path.setAttribute('data-region-id', regionId);
+      if (!path.getAttribute('title')) {
+        path.setAttribute('title', regionId);
+      }
+    }
+
+    let fill = noDataColor;
+    if (regionId) {
+      if (blendColorMap) {
+        fill = blendColorMap[regionId] ?? noDataColor;
+      } else {
+        const regionData = data.byId[regionId];
+        if (regionData && !regionData.hidden) {
+          const matchingLegendItem = legendItems.find(
+            (item) => regionData.value >= item.min && regionData.value <= item.max,
+          );
+          fill = matchingLegendItem ? matchingLegendItem.color : noDataColor;
+        }
+      }
+    }
+    setPathFill(path, fill);
+    path.setAttribute('fill-opacity', '1');
+    path.style.setProperty('fill-opacity', '1');
+  });
+}
+
+/** Apply legend fills directly on mounted SVG paths (fallback after innerHTML injection). */
+export function applyMapPathStylesInDom(root: ParentNode, options: MapPathStyleInput): void {
+  const paths = root.querySelectorAll('path');
+  if (paths.length === 0) return;
+  styleMapPaths(paths, options);
+}
+
 export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions): string {
   const {
     border,
@@ -212,45 +315,15 @@ export function applySvgMapStyles(svg: string, options: ApplySvgMapStylesOptions
     styleElement.textContent = cssText;
   }
 
-  const blendColorMap =
-    colorBlend &&
-    getInterpolatedColorMap(
-      colorBlend.dataA,
-      colorBlend.dataB,
-      colorBlend.t,
-      legendItems,
-      noDataColor,
-    );
-
-  paths.forEach((path) => {
-    path.classList.add(pathClass);
-    if (transitionType === 'instant') {
-      path.classList.add(pathClassInstant);
-    }
-
-    if (border.show) {
-      path.style.stroke = border.color;
-      path.style.strokeWidth = String(border.width);
-    } else {
-      path.style.stroke = 'none';
-    }
-
-    const pathTitle = path.getAttribute('title');
-    if (pathTitle) {
-      if (blendColorMap) {
-        path.style.fill = blendColorMap[pathTitle] ?? noDataColor;
-      } else {
-        const regionData = data.byId[pathTitle];
-        if (regionData && !regionData.hidden) {
-          const matchingLegendItem = legendItems.find(
-            (item) => regionData.value >= item.min && regionData.value <= item.max,
-          );
-          path.style.fill = matchingLegendItem ? matchingLegendItem.color : noDataColor;
-        } else {
-          path.style.fill = noDataColor;
-        }
-      }
-    }
+  styleMapPaths(paths, {
+    border,
+    data,
+    legendItems,
+    noDataColor,
+    transitionType,
+    colorBlend,
+    pathClass,
+    pathClassInstant,
   });
 
   if (shadow.show) {
