@@ -23,7 +23,7 @@ export const LegalPageLayout: FC<Props> = ({ title, lastUpdated, children }) => 
             src={mapUrl}
             aria-hidden="true"
             alt=""
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10 select-none"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-20 select-none"
           />
         )}
         <div className="relative z-10 mx-auto w-full max-w-3xl">

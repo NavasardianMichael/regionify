@@ -330,8 +330,12 @@ const VisualizerPage: FC = () => {
     sidePanelLoading
   ) : (
     <CardLayout component="aside" vertical className="h-full">
-      <RegionSelect />
-      <Divider />
+      {isMdUp ? (
+        <>
+          <RegionSelect />
+          <Divider />
+        </>
+      ) : null}
       <ImportDataPanel />
       <Divider />
       <LegendConfigPanel />
@@ -340,6 +344,12 @@ const VisualizerPage: FC = () => {
 
   const mapPanel = (
     <CardLayout className="min-h-md gap-md h-full">
+      {!isMdUp && !isAwaitingProjectFromUrl ? (
+        <>
+          <RegionSelect />
+          <Divider className="m-0! shrink-0" />
+        </>
+      ) : null}
       <Flex align="center" justify="space-between" wrap className="mb-sm shrink-0" gap="middle">
         <Flex align="center" gap="small" className="min-w-0">
           {!isAwaitingProjectFromUrl ? (

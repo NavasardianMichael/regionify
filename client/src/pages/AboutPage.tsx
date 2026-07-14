@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AimOutlined,
@@ -10,79 +10,12 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import { Button, Flex, Typography } from 'antd';
+import { useWorldMapUrl } from '@/hooks/useWorldMapUrl';
 import { ROUTES } from '@/constants/routes';
-import { SVG_PATH_COORD_REGEX, SVG_PATH_NUMBERS_REGEX } from '@/constants/svgPath';
-import { loadMapSvg } from '@/helpers/mapLoader';
-
-function computeViewBox(svgEl: SVGSVGElement): string | null {
-  const paths = svgEl.querySelectorAll<SVGPathElement>('path');
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
-  paths.forEach((path) => {
-    const d = path.getAttribute('d');
-    if (!d) return;
-    const coordRegex = new RegExp(SVG_PATH_COORD_REGEX.source, 'gi');
-    let match,
-      cx = 0,
-      cy = 0;
-    while ((match = coordRegex.exec(d)) !== null) {
-      const cmd = match[1].toUpperCase();
-      const isRel = match[1] !== match[1].toUpperCase() && match[1] !== 'Z';
-      const nums = (match[2].match(new RegExp(SVG_PATH_NUMBERS_REGEX.source, 'g')) ?? []).map(
-        Number,
-      );
-      if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
-        for (let i = 0; i + 1 < nums.length; i += 2) {
-          const x = isRel ? cx + nums[i] : nums[i];
-          const y = isRel ? cy + nums[i + 1] : nums[i + 1];
-          cx = x;
-          cy = y;
-          minX = Math.min(minX, x);
-          maxX = Math.max(maxX, x);
-          minY = Math.min(minY, y);
-          maxY = Math.max(maxY, y);
-        }
-      }
-    }
-  });
-  if (!isFinite(minX)) return null;
-  const pad = 4;
-  return `${minX - pad} ${minY - pad} ${maxX - minX + pad * 2} ${maxY - minY + pad * 2}`;
-}
 
 const AboutPage: FC = () => {
   const navigate = useNavigate();
-  const [mapUrl, setMapUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadMapSvg('worldRussiaSplit')
-      .then((raw) => {
-        if (!raw || cancelled) return;
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(raw, 'image/svg+xml');
-        const svgEl = doc.querySelector('svg');
-        if (!svgEl) return;
-        const viewBox = computeViewBox(svgEl as SVGSVGElement);
-        if (viewBox) svgEl.setAttribute('viewBox', viewBox);
-        svgEl.querySelectorAll('path').forEach((p) => {
-          p.setAttribute('fill', 'white');
-          p.removeAttribute('style');
-        });
-        const blob = new Blob([new XMLSerializer().serializeToString(svgEl)], {
-          type: 'image/svg+xml',
-        });
-        const url = URL.createObjectURL(blob);
-        if (!cancelled) setMapUrl(url);
-        else URL.revokeObjectURL(url);
-      })
-      .catch(() => null);
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const mapUrl = useWorldMapUrl();
 
   const handleFaq = useCallback(() => {
     void navigate(ROUTES.FAQ);
@@ -105,7 +38,7 @@ const AboutPage: FC = () => {
             src={mapUrl}
             aria-hidden="true"
             alt=""
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-10 select-none"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-20 select-none"
           />
         )}
         <div className="relative z-10 mx-auto w-full max-w-5xl">

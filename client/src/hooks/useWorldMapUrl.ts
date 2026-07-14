@@ -1,43 +1,29 @@
 import { useEffect, useState } from 'react';
-import { SVG_PATH_COORD_REGEX, SVG_PATH_NUMBERS_REGEX } from '@/constants/svgPath';
-import { loadMapSvg } from '@/helpers/mapLoader';
 
-function computeViewBox(svgEl: SVGSVGElement): string | null {
-  const paths = svgEl.querySelectorAll<SVGPathElement>('path');
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
-  paths.forEach((path) => {
-    const d = path.getAttribute('d');
-    if (!d) return;
-    const coordRegex = new RegExp(SVG_PATH_COORD_REGEX.source, 'gi');
-    let match,
-      cx = 0,
-      cy = 0;
-    while ((match = coordRegex.exec(d)) !== null) {
-      const cmd = match[1].toUpperCase();
-      const isRel = match[1] !== match[1].toUpperCase() && match[1] !== 'Z';
-      const nums = (match[2].match(new RegExp(SVG_PATH_NUMBERS_REGEX.source, 'g')) ?? []).map(
-        Number,
-      );
-      if (cmd === 'M' || cmd === 'L' || cmd === 'T') {
-        for (let i = 0; i + 1 < nums.length; i += 2) {
-          const x = isRel ? cx + nums[i] : nums[i];
-          const y = isRel ? cy + nums[i + 1] : nums[i + 1];
-          cx = x;
-          cy = y;
-          minX = Math.min(minX, x);
-          maxX = Math.max(maxX, x);
-          minY = Math.min(minY, y);
-          maxY = Math.max(maxY, y);
-        }
-      }
-    }
-  });
-  if (!isFinite(minX)) return null;
-  const pad = 4;
-  return `${minX - pad} ${minY - pad} ${maxX - minX + pad * 2} ${maxY - minY + pad * 2}`;
+/** Precomputed bounds for `worldRussiaSplit.svg` (source file has no viewBox). */
+const WORLD_MAP_VIEW_BOX = '-2.846 -4 1017.115 673.242';
+
+let worldMapUrlPromise: Promise<string | null> | null = null;
+
+function loadWorldMapUrl(): Promise<string | null> {
+  if (!worldMapUrlPromise) {
+    worldMapUrlPromise = import('@/assets/images/maps/worldRussiaSplit.svg?raw')
+      .then((module) => {
+        let svg = String(module.default).replace(/^\uFEFF/, '');
+        svg = svg.replace(
+          /<svg(\s|>)/,
+          `<svg viewBox="${WORLD_MAP_VIEW_BOX}" width="1017" height="673"$1`,
+        );
+        // Source paths have no fill (styles stripped); default black is invisible on bg-primary.
+        svg = svg.replace(/<path\b/g, '<path fill="white"');
+        return URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to load world map background', error);
+        return null;
+      });
+  }
+  return worldMapUrlPromise;
 }
 
 export function useWorldMapUrl(): string | null {
@@ -45,27 +31,9 @@ export function useWorldMapUrl(): string | null {
 
   useEffect(() => {
     let cancelled = false;
-    loadMapSvg('worldRussiaSplit')
-      .then((raw) => {
-        if (!raw || cancelled) return;
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(raw, 'image/svg+xml');
-        const svgEl = doc.querySelector('svg');
-        if (!svgEl) return;
-        const viewBox = computeViewBox(svgEl as SVGSVGElement);
-        if (viewBox) svgEl.setAttribute('viewBox', viewBox);
-        svgEl.querySelectorAll('path').forEach((p) => {
-          p.setAttribute('fill', 'white');
-          p.removeAttribute('style');
-        });
-        const blob = new Blob([new XMLSerializer().serializeToString(svgEl)], {
-          type: 'image/svg+xml',
-        });
-        const url = URL.createObjectURL(blob);
-        if (!cancelled) setMapUrl(url);
-        else URL.revokeObjectURL(url);
-      })
-      .catch(() => null);
+    void loadWorldMapUrl().then((url) => {
+      if (!cancelled && url) setMapUrl(url);
+    });
     return () => {
       cancelled = true;
     };
