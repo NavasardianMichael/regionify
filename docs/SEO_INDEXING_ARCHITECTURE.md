@@ -43,15 +43,24 @@ referencing another `<sitemapindex>` is invalid ("Nested indexing" in Search Con
 
 ## nginx routing requirement
 
-The SPA `location /` in nginx uses `try_files` which intercepts `/robots.txt`, `/sitemap.xml`, and `/app-sitemap.xml` before they reach Node. Three exact-match `location` blocks must appear **before** `location /` in the nginx config to proxy these to Node:
+The SPA `location /` in nginx uses `try_files`, which serves the **static** built `client/index.html` — same `<title>`, same hardcoded canonical (always `/`), empty `<div id="root">` — for every path that isn't explicitly proxied to Node first. Historically only `/robots.txt`, `/sitemap.xml`, `/app-sitemap.xml`, and `/embed/:token` were proxied, which meant `/`, `/about`, `/faq`, `/terms`, `/privacy`, and `/refund` never reached the per-route SSR meta in `server/src/web/setupWebClient.ts` — every public page looked like a duplicate of the homepage to crawlers, and non-JS-executing crawlers (most AI answer-engine bots) saw no real page content anywhere.
+
+**Why not just proxy everything to Node?** `apiRoutes` and `setupWebClient` share one Express process (`server/src/app.ts`), and the API is mounted at bare paths that collide with real SPA page paths — e.g. `GET /projects/:id` (an API route) also matches the literal SPA paths `/projects/new` and `/projects/edit`, and `GET /projects` returns the JSON project list rather than the dashboard page. Proxying `location /` wholesale to Node would make a direct visit or refresh of `/projects`, the project editor, `/auth/callback` (the real post-Google-login redirect target), or `/payments/checkout|return|cancel` return raw API JSON instead of the app shell. Only proxy paths confirmed to have zero overlap with `server/src/routes/*.ts`:
 
 ```nginx
-location = /robots.txt    { proxy_pass http://127.0.0.1:9002; ... }
-location = /sitemap.xml   { proxy_pass http://127.0.0.1:9002; ... }
-location = /app-sitemap.xml { proxy_pass http://127.0.0.1:9002; ... }
+location = /                                    { proxy_pass http://127.0.0.1:9002; ... }
+location ~ ^/(about|faq|terms|privacy|refund)$  { proxy_pass http://127.0.0.1:9002; ... }
+location = /robots.txt                          { proxy_pass http://127.0.0.1:9002; ... }
+location = /sitemap.xml                         { proxy_pass http://127.0.0.1:9002; ... }
+location = /app-sitemap.xml                     { proxy_pass http://127.0.0.1:9002; ... }
+location ~ ^/embed/[^/]+$                       { proxy_pass http://127.0.0.1:9002; ... }
 ```
 
-The example config at `deployment/nginx-spa-and-api.example.conf` already includes these blocks.
+`/contact` is deliberately **not** in the proxied set even though it's a public page with its own `PAGE_META_MAP` entry: it collides with `POST /contact` in `server/src/routes/contact.ts`, and `setupWebClient.ts`'s `isApiPath()` guard (checked in the SSR catch-all) currently treats the whole `/contact` prefix as API-only — a proxied `GET /contact` would 404 today. It stays on the static-shell fallback until that guard is revisited to distinguish "has a POST handler" from "GET should render the SPA shell too."
+
+Everything else (`/billing`, `/login`, `/sign-up`, `/projects*`, `/auth/*` besides `/auth/callback`'s exclusion, `/payments/*`, etc.) keeps the static-shell `location /` fallback unchanged — these are either already `noindex` (see below) or behind-auth, so they were never SEO targets.
+
+The real configs live at `deployment/regionify.pro.conf` (SPA host) and `deployment/api.regionify.pro.conf` (API host).
 
 ---
 
@@ -61,7 +70,9 @@ The Express catch-all in `server/src/web/setupWebClient.ts` renders unique `<tit
 
 **Covered routes:** `/`, `/about`, `/contact`, `/faq`, `/terms`, `/privacy`, `/refund`
 
-Routes not in the map fall back to `HOME_PAGE_DEFAULT` from `server/src/web/homeCopy.ts`.
+Routes not in the map fall back to `HOME_PAGE_DEFAULT` from `server/src/web/homeCopy.ts`. Note: this map is Express-level and correct for all seven routes, but nginx currently only proxies `/`, `/about`, `/faq`, `/terms`, `/privacy`, `/refund` to Node (see "nginx routing requirement" above) — `/contact` has a real entry here that isn't reachable in production yet.
+
+`/` and `/faq` also get real server-rendered visible body text (`server/src/web/homeCopy.ts` → `homeRootInnerHtml()`, `server/src/web/faqContent.ts` → `faqRootInnerHtml()`) plus JSON-LD from `server/src/web/coreJsonLd.ts` (SoftwareApplication/WebSite/Organization, offers sourced from `BADGE_DETAILS`) and, on `/faq`, an additional `FAQPage` schema — so crawlers that don't execute JS (most AI answer-engine bots) still see real content and structured data, not just an empty `<div id="root">`.
 
 ---
 
@@ -130,17 +141,20 @@ Population and area data live in `marketing/data/countries.json`.
 
 ## Code reference
 
-| File                                          | Role                                                        |
-| --------------------------------------------- | ----------------------------------------------------------- |
-| `server/src/web/sitemap.ts`                   | Sitemap and robots.txt builders                             |
-| `server/src/web/setupWebClient.ts`            | Route registration, noindex logic, catch-all SSR            |
-| `server/src/web/pageMeta.ts`                  | Per-route title / description / keywords                    |
-| `server/src/web/homeCopy.ts`                  | Home page SEO copy and fallback defaults                    |
-| `server/src/web/renderHtmlDocument.ts`        | HTML shell renderer; injects all meta tags                  |
-| `server/src/config/env.ts`                    | `GOOGLE_SITE_VERIFICATION` Zod field                        |
-| `marketing/src/layouts/MarketingLayout.astro` | Head tags, OG, JSON-LD for all marketing pages              |
-| `marketing/src/pages/[country].astro`         | Country page template                                       |
-| `marketing/src/pages/index.astro`             | Marketing hub page                                          |
-| `marketing/data/countries.json`               | Country data including population and area                  |
-| `deployment/nginx-spa-and-api.example.conf`   | nginx config with SEO proxy blocks                          |
-| `.github/workflows/deploy.yml`                | CI/CD; passes `GOOGLE_SITE_VERIFICATION` to marketing build |
+| File                                          | Role                                                                                 |
+| --------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `server/src/web/sitemap.ts`                   | Sitemap and robots.txt builders                                                      |
+| `server/src/web/setupWebClient.ts`            | Route registration, noindex logic, catch-all SSR                                     |
+| `server/src/web/pageMeta.ts`                  | Per-route title / description / keywords                                             |
+| `server/src/web/homeCopy.ts`                  | Home page SEO copy and fallback defaults                                             |
+| `server/src/web/faqContent.ts`                | FAQ Q&A body content + `FAQPage` JSON-LD                                             |
+| `server/src/web/coreJsonLd.ts`                | `SoftwareApplication`/`WebSite`/`Organization` JSON-LD, sourced from `BADGE_DETAILS` |
+| `server/src/web/renderHtmlDocument.ts`        | HTML shell renderer; injects all meta tags and JSON-LD                               |
+| `server/src/config/env.ts`                    | `GOOGLE_SITE_VERIFICATION` Zod field                                                 |
+| `marketing/src/layouts/MarketingLayout.astro` | Head tags, OG, JSON-LD for all marketing pages                                       |
+| `marketing/src/pages/[country].astro`         | Country page template                                                                |
+| `marketing/src/pages/index.astro`             | Marketing hub page                                                                   |
+| `marketing/data/countries.json`               | Country data including population and area                                           |
+| `deployment/regionify.pro.conf`               | SPA host nginx config with SEO proxy blocks                                          |
+| `deployment/api.regionify.pro.conf`           | API host nginx config                                                                |
+| `.github/workflows/deploy.yml`                | CI/CD; passes `GOOGLE_SITE_VERIFICATION` to marketing build                          |

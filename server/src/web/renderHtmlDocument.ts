@@ -111,6 +111,8 @@ export function renderHtmlDocument(opts: {
   ogLocale?: string;
   /** Public embed pages only: inject WebPage / WebSite / Organization JSON-LD. */
   includeEmbedJsonLd?: boolean;
+  /** Additional JSON-LD graphs to render as their own `<script>` tags (e.g. core SoftwareApplication, FAQPage). */
+  extraJsonLd?: Record<string, unknown>[];
   /**
    * When true (and `embedSemantic` is unset), applies `embed-page` shell CSS to `<html>` / `<body>`
    * with a minimal `<div id="root">` only — for invalid/disabled embed tokens that still need the embed layout.
@@ -134,6 +136,7 @@ export function renderHtmlDocument(opts: {
     embedShellLayout = false,
     robots = 'index, follow',
     googleSiteVerification,
+    extraJsonLd = [],
   } = opts;
   const base = siteUrl.replace(/\/$/, '');
   const canonical = `${base}${meta.canonicalPath}`;
@@ -169,6 +172,12 @@ export function renderHtmlDocument(opts: {
         regionDisplayNameEn: regionEn.length > 0 ? regionEn : null,
       })
     : '';
+
+  const extraJsonLdBlocks = extraJsonLd
+    .map(
+      (graph) => `    <script type="application/ld+json">${escapeJsonForScript(graph)}</script>\n`,
+    )
+    .join('');
 
   const baseHref = `${base}/`;
   const entryJsAbs = absoluteClientAssetUrl(base, entryJs);
@@ -227,7 +236,7 @@ ${keywordsTag}${geoPlacenameTag}    <link rel="icon" type="image/x-icon" href="/
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Regionify" />
-${jsonLdBlock}${cssLinks ? `${cssLinks}\n` : ''}  </head>
+${jsonLdBlock}${extraJsonLdBlocks}${cssLinks ? `${cssLinks}\n` : ''}  </head>
   <body${useEmbedPageShell ? ' class="embed-page"' : ''}>
 ${
   embedSemantic

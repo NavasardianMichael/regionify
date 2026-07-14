@@ -4,9 +4,12 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, type Plugin } from 'vite';
 
-// Nginx serves client/dist/client/index.html as a static file for `/` and every other
-// SPA route (see deployment/nginx-spa-and-api.example.conf) — it never proxies these to
-// the Express SSR shell, so the verification tag must be baked in at build time instead.
+// Nginx still serves client/dist/client/index.html as a static file for behind-auth/
+// transactional routes that aren't proxied to Node — /login, /billing, /projects*,
+// /auth/*, /payments/*, /contact (see deployment/regionify.pro.conf and
+// docs/SEO_INDEXING_ARCHITECTURE.md for why) — so the verification tag must still be
+// baked in here for those. `/`, `/about`, `/faq`, `/terms`, `/privacy`, `/refund` are
+// proxied to the Express SSR shell instead, which injects the same tag at request time.
 function googleSiteVerificationPlugin(): Plugin {
   return {
     name: 'inject-google-site-verification',

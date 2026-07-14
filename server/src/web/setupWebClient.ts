@@ -9,6 +9,8 @@ import { AppError } from '@/middleware/errorHandler.js';
 import { embedPageLimiter } from '@/middleware/embedPageLimiter.js';
 import { logger } from '@/lib/logger.js';
 import { projectEmbedService } from '@/services/projectEmbedService.js';
+import { buildCoreJsonLd } from '@/web/coreJsonLd.js';
+import { buildFaqJsonLd, faqRootInnerHtml } from '@/web/faqContent.js';
 import { HOME_PAGE_DEFAULT, homeRootInnerHtml } from '@/web/homeCopy.js';
 import { PAGE_META_MAP } from '@/web/pageMeta.js';
 import { readClientEntryAssets } from '@/web/readClientManifest.js';
@@ -123,6 +125,7 @@ export function setupWebClient(app: Application): void {
       entryJs: assets.js,
       entryCss: assets.css,
       googleSiteVerification,
+      extraJsonLd: [buildCoreJsonLd(siteUrl)],
     });
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);
   });
@@ -270,6 +273,7 @@ export function setupWebClient(app: Application): void {
 
     const routeMeta = PAGE_META_MAP[req.path];
     const noindex = isNoIndexPath(req.path);
+    const isFaq = req.path === '/faq';
 
     const html = renderHtmlDocument({
       siteUrl,
@@ -279,10 +283,16 @@ export function setupWebClient(app: Application): void {
         keywords: routeMeta?.keywords ?? HOME_PAGE_DEFAULT.metaKeywords,
         canonicalPath: req.path || '/',
       },
-      rootInnerHtml: '',
+      rootInnerHtml: isFaq ? faqRootInnerHtml() : '',
       entryJs: assets.js,
       entryCss: assets.css,
       googleSiteVerification,
+      // Skip structured data on noindex (private/account) routes — nothing there should be cited.
+      extraJsonLd: noindex
+        ? []
+        : isFaq
+          ? [buildCoreJsonLd(siteUrl), buildFaqJsonLd()]
+          : [buildCoreJsonLd(siteUrl)],
       ...(noindex ? { robots: 'noindex, nofollow' } : {}),
     });
     res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').send(html);

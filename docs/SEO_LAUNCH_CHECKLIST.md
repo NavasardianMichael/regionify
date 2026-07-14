@@ -6,7 +6,7 @@ Everything in code is done. These are the remaining operational and manual steps
 
 ## 1. Apply nginx changes on the live server
 
-The example config (`deployment/nginx-spa-and-api.example.conf`) already has the correct `location` blocks proxying `/robots.txt`, `/sitemap.xml`, and `/app-sitemap.xml` to Node. Apply the same blocks to the live server's nginx config and reload:
+`deployment/regionify.pro.conf` and `deployment/api.regionify.pro.conf` mirror the actual per-host config files on the server. `regionify.pro.conf` now has the correct `location` blocks proxying `/`, `/about`, `/faq`, `/terms`, `/privacy`, `/refund`, `/robots.txt`, `/sitemap.xml`, `/app-sitemap.xml`, and `/embed/:token` to Node — see `docs/SEO_INDEXING_ARCHITECTURE.md` for why `/contact` and behind-auth routes are deliberately excluded. Copy the updated `regionify.pro.conf` to the server and reload:
 
 ```bash
 sudo nginx -t

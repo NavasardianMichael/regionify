@@ -10,10 +10,11 @@ type RouteMeta = {
  */
 export const PAGE_META_MAP: Readonly<Record<string, RouteMeta>> = {
   '/about': {
-    documentTitle: 'About Regionify — Choropleth Map Visualization Tool',
+    documentTitle: 'About Regionify — Choropleth Maps & Live Embedded Maps',
     description:
-      'Learn about Regionify: an in-browser tool for building interactive choropleth maps from CSV, Excel, JSON, and Google Sheets data without any coding.',
-    keywords: 'about Regionify, choropleth map tool, data visualization software, map maker online',
+      'Regionify is an in-browser tool for building interactive choropleth maps from CSV, Excel, JSON, or live Google Sheets data — then sharing them as an embedded regional map (iframe) or exporting an animated regional map as GIF or MP4 video.',
+    keywords:
+      'about Regionify, choropleth map tool, embedded regional map, iframe map embed, animated regional map, live data map, data visualization software',
   },
   '/contact': {
     documentTitle: 'Contact Regionify — Get in Touch',
@@ -22,11 +23,11 @@ export const PAGE_META_MAP: Readonly<Record<string, RouteMeta>> = {
     keywords: 'contact Regionify, support, feedback, map visualization help',
   },
   '/faq': {
-    documentTitle: 'FAQ — Regionify Frequently Asked Questions',
+    documentTitle: 'FAQ — Embedding, Live Data & Animated Maps | Regionify',
     description:
-      'Answers to the most common questions about Regionify: supported data formats, export options, embedding maps, badge tiers, and more.',
+      'Answers to common Regionify questions: how to embed a live regional map with an iframe, export an animated regional map as GIF or MP4 video, import CSV/Excel/Google Sheets data, and more.',
     keywords:
-      'Regionify FAQ, choropleth map questions, data visualization FAQ, map embed help, CSV to map',
+      'Regionify FAQ, how to embed a map, iframe map embed, embedded regional map, animated regional map, live data map, video regional map export, choropleth map questions',
   },
   '/terms': {
     documentTitle: 'Terms of Service — Regionify',
