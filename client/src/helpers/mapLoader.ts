@@ -32,7 +32,10 @@ export const loadMapSvg = async (regionId: string): Promise<string | null> => {
 
   try {
     const svgContent = await loader();
-    return svgContent;
+    // Some source SVGs are saved with a leading UTF-8 BOM (U+FEFF). It's invisible in most
+    // editors but is illegal before an XML declaration, so DOMParser's strict XML mode (used
+    // by useMapThumbnail) fails to produce an <svg> root and silently renders a blank thumbnail.
+    return svgContent.charCodeAt(0) === 0xfeff ? svgContent.slice(1) : svgContent;
   } catch (error) {
     console.error(`Failed to load map: ${regionId}`, error);
     return null;

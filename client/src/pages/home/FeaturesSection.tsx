@@ -6,7 +6,9 @@ import {
   HistoryOutlined,
 } from '@ant-design/icons';
 import { Flex, Typography } from 'antd';
+import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { AppButtonStyleLink } from '@/components/ui/AppButtonStyleLink';
 
 export const FeaturesSection: FC = () => {
   const { t } = useTypedTranslation();
@@ -88,6 +90,15 @@ export const FeaturesSection: FC = () => {
               </Typography.Paragraph>
             </Flex>
           </div>
+          <Flex justify="center">
+            <AppButtonStyleLink
+              href={ROUTES.PROJECT_NEW}
+              type="primary"
+              data-i18n-key="home.ctaStart"
+            >
+              {t('home.ctaStart')} →
+            </AppButtonStyleLink>
+          </Flex>
         </Flex>
       </div>
     </section>
