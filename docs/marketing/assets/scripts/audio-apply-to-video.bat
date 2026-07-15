@@ -7,7 +7,7 @@ set "AUDIO_NAME=Atmospheria - Francis Preve.mp3"
 rem -----------------------------------------------------------
 
 set "AUDIO_DIR=..\audio"
-set "VIDEO_IN=..\video\demo-video.webm"
+set "VIDEO_IN=..\video\ai-to-mp4\demo-video.webm"
 set "AUDIO_FILE=%AUDIO_DIR%\%AUDIO_NAME%"
 
 where ffmpeg >nul 2>&1
@@ -62,5 +62,5 @@ pause
 exit /b 1
 
 :set_output
-set "OUTPUT=..\video\demo-video-with-music-%~n1.mp4"
+set "OUTPUT=..\video\ai-to-mp4\demo-video-with-music-%~n1.mp4"
 exit /b 0

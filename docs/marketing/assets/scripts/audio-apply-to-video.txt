@@ -1,13 +1,13 @@
 # Mux background music onto demo-video.webm
 # Edit AUDIO_NAME in audio-apply-to-video.bat, then double-click it.
 #
-# Output: docs/marketing/assets/video/demo-video-with-music-{mp3-filename}.mp4
+# Output: docs/marketing/assets/video/ai-to-mp4/demo-video-with-music-{mp3-filename}.mp4
 
 ffmpeg -y `
-  -i "docs\marketing\assets\video\demo-video.webm" `
+  -i "docs\marketing\assets\video\ai-to-mp4\demo-video.webm" `
   -i "docs\marketing\assets\audio\{AUDIO_NAME}" `
   -map 0:v:0 -map 1:a:0 `
   -c:v libx264 -pix_fmt yuv420p -crf 22 `
   -c:a aac -b:a 192k `
   -shortest `
-  "docs\marketing\assets\video\demo-video-with-music-{AUDIO_STEM}.mp4"
+  "docs\marketing\assets\video\ai-to-mp4\demo-video-with-music-{AUDIO_STEM}.mp4"
