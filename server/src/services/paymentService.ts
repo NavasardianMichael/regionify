@@ -2,6 +2,8 @@ import { HttpStatus, ErrorCode, Badge, BADGES } from '@regionify/shared';
 import crypto from 'node:crypto';
 
 import { env } from '@/config/env.js';
+import { getDeviceType } from '@/lib/deviceType.js';
+import { sendInternalMail } from '@/lib/internalMail.js';
 import { logger } from '@/lib/logger.js';
 import { AppError } from '@/middleware/errorHandler.js';
 import { userRepository } from '@/repositories/userRepository.js';
@@ -44,10 +46,10 @@ type PaddlePricingPreviewResponse = {
   };
 };
 
-type TransactionCompletedPayload = {
+type TransactionWebhookPayload = {
   data?: {
     id?: string;
-    custom_data?: { user_id?: string };
+    custom_data?: { user_id?: string; device_type?: string };
     items?: Array<{ price?: { id?: string } }>;
   };
 };
@@ -57,7 +59,11 @@ export const paymentService = {
    * Create a Paddle Billing transaction/checkout for a badge tier upgrade. Returns URL to redirect the user.
    * Server-only; API key never sent to client.
    */
-  async createCheckout(userId: string, badge: PayableBadge): Promise<CreateCheckoutResult> {
+  async createCheckout(
+    userId: string,
+    badge: PayableBadge,
+    userAgent: string | undefined,
+  ): Promise<CreateCheckoutResult> {
     const apiKey = env.PADDLE_API_KEY;
     if (!apiKey) {
       throw new AppError(
@@ -72,6 +78,7 @@ export const paymentService = {
     // Paddle.js. Paddle returns this URL with `?_ptxn=…` appended; Paddle.js then auto-opens the
     // overlay. See PaymentCheckoutPage on the client.
     const checkoutPageUrl = `${env.CLIENT_URL}/payments/checkout`;
+    const deviceType = getDeviceType(userAgent);
 
     const res = await fetch(`${PADDLE_API_BASE}/transactions`, {
       method: 'POST',
@@ -81,7 +88,7 @@ export const paymentService = {
       },
       body: JSON.stringify({
         items: [{ price_id: priceId, quantity: 1 }],
-        custom_data: { user_id: userId },
+        custom_data: { user_id: userId, device_type: deviceType },
         checkout: { url: checkoutPageUrl },
       }),
     });
@@ -198,13 +205,56 @@ export const paymentService = {
   },
 
   /**
+   * Send an internal notification email about a badge purchase attempt (success or failure).
+   * Best-effort — failures must never break the webhook response.
+   */
+  async sendPurchaseNotification(params: {
+    user: User;
+    badge: string;
+    transactionId: string | undefined;
+    eventType: 'transaction.completed' | 'transaction.payment_failed';
+    deviceType: string;
+  }): Promise<void> {
+    const { user, badge, transactionId, eventType, deviceType } = params;
+    const status = eventType === 'transaction.completed' ? 'succeeded' : 'failed';
+
+    try {
+      await sendInternalMail({
+        subject: `Badge purchase ${status}: ${badge}`,
+        body: `User ${user.name} (${user.email}) ${
+          status === 'succeeded' ? 'purchased' : 'attempted to purchase'
+        } the "${badge}" badge. Payment status: ${status}.`,
+        details: {
+          userId: user.id,
+          userEmail: user.email,
+          userName: user.name,
+          badge,
+          status,
+          transactionId: transactionId ?? 'unknown',
+          deviceType,
+        },
+      });
+      logger.info(
+        { transactionId, userId: user.id, badge, status, action: 'purchase_notification_sent' },
+        'internal purchase notification email sent',
+      );
+    } catch (err) {
+      logger.error(
+        { err, transactionId, userId: user.id, badge, status, action: 'payment_failed' },
+        'failed to send internal purchase notification email',
+      );
+    }
+  },
+
+  /**
    * Handle transaction.completed webhook: upgrade user badge from custom_data.user_id and price ID.
    * Idempotent — safe to call multiple times for the same transaction.
    */
-  async handleTransactionCompleted(payload: TransactionCompletedPayload): Promise<void> {
+  async handleTransactionCompleted(payload: TransactionWebhookPayload): Promise<void> {
     const userId = payload.data?.custom_data?.user_id;
     const priceId = payload.data?.items?.[0]?.price?.id;
     const transactionId = payload.data?.id;
+    const deviceType = payload.data?.custom_data?.device_type ?? 'unknown';
 
     if (!userId || !priceId) {
       logger.error(
@@ -260,5 +310,57 @@ export const paymentService = {
         'failed to send badge purchase email',
       );
     }
+
+    // Fire-and-forget: never let the internal notification delay or fail the webhook response.
+    // sendPurchaseNotification already catches its own errors and cannot reject.
+    void this.sendPurchaseNotification({
+      user,
+      badge,
+      transactionId,
+      eventType: 'transaction.completed',
+      deviceType,
+    });
+  },
+
+  /**
+   * Handle transaction.payment_failed webhook: send an internal notification only.
+   * Does not touch the user's badge or send the user-facing "badge purchased" email.
+   */
+  async handleTransactionPaymentFailed(payload: TransactionWebhookPayload): Promise<void> {
+    const userId = payload.data?.custom_data?.user_id;
+    const priceId = payload.data?.items?.[0]?.price?.id;
+    const transactionId = payload.data?.id;
+    const deviceType = payload.data?.custom_data?.device_type ?? 'unknown';
+
+    if (!userId) {
+      logger.error(
+        { transactionId, action: 'payment_failed' },
+        'webhook: missing userId in payload, cannot notify about failed payment',
+      );
+      return;
+    }
+
+    let badge: string = 'unknown';
+    if (priceId === env.PADDLE_PRICE_ID_EXPLORER) badge = BADGES.explorer;
+    else if (priceId === env.PADDLE_PRICE_ID_CHRONOGRAPHER) badge = BADGES.chronographer;
+
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      logger.error(
+        { transactionId, userId, badge, action: 'payment_failed' },
+        'webhook: user not found for failed transaction',
+      );
+      return;
+    }
+
+    // Fire-and-forget: never let the internal notification delay or fail the webhook response.
+    // sendPurchaseNotification already catches its own errors and cannot reject.
+    void this.sendPurchaseNotification({
+      user,
+      badge,
+      transactionId,
+      eventType: 'transaction.payment_failed',
+      deviceType,
+    });
   },
 };

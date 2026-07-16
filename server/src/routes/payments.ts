@@ -31,7 +31,7 @@ router.post('/create-checkout', requireAuth, async (req, res, next) => {
       });
       return;
     }
-    const result = await paymentService.createCheckout(userId, badge);
+    const result = await paymentService.createCheckout(userId, badge, req.headers['user-agent']);
     logger.info({ userId, badge, action: 'checkout_initiated' }, 'checkout created');
     res.status(201).json({ success: true, data: result });
   } catch (error) {
@@ -58,7 +58,7 @@ router.post('/client-error', requireAuth, async (req, res, next) => {
   }
 });
 
-/** POST /api/payments/webhook - Paddle webhook (no auth). Verifies Paddle-Signature and handles transaction.completed. */
+/** POST /api/payments/webhook - Paddle webhook (no auth). Verifies Paddle-Signature and handles transaction.completed / transaction.payment_failed. */
 router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   const rawBody = req.rawBody;
   const signature = req.get('Paddle-Signature') ?? '';
@@ -82,35 +82,45 @@ router.post('/webhook', (req: RequestWithRawBody, res, next) => {
   }
 
   const body = req.body as { event_type?: string };
-
-  if (body.event_type !== 'transaction.completed') {
-    logger.info({ eventType: body.event_type }, 'paddle webhook: unhandled event type, skipping');
-    res.status(200).send();
-    return;
-  }
-
   const payload = req.body as Parameters<typeof paymentService.handleTransactionCompleted>[0];
   const userId = payload.data?.custom_data?.user_id;
   const priceId = payload.data?.items?.[0]?.price?.id;
   const transactionId = payload.data?.id;
 
-  logger.info(
-    { userId, priceId, transactionId, action: 'payment_completed' },
-    'paddle webhook: handling transaction.completed',
-  );
-  paymentService
-    .handleTransactionCompleted(payload)
-    .then(() => {
+  let resultPromise: Promise<void>;
+  switch (body.event_type) {
+    case 'transaction.completed':
       logger.info(
         { userId, priceId, transactionId, action: 'payment_completed' },
-        'paddle webhook: badge update complete',
+        'paddle webhook: handling transaction.completed',
+      );
+      resultPromise = paymentService.handleTransactionCompleted(payload);
+      break;
+    case 'transaction.payment_failed':
+      logger.info(
+        { userId, priceId, transactionId, action: 'payment_failed' },
+        'paddle webhook: handling transaction.payment_failed',
+      );
+      resultPromise = paymentService.handleTransactionPaymentFailed(payload);
+      break;
+    default:
+      logger.info({ eventType: body.event_type }, 'paddle webhook: unhandled event type, skipping');
+      res.status(200).send();
+      return;
+  }
+
+  resultPromise
+    .then(() => {
+      logger.info(
+        { userId, priceId, transactionId, eventType: body.event_type },
+        'paddle webhook: handling complete',
       );
       res.status(200).send();
     })
     .catch((error: unknown) => {
       logger.error(
-        { err: error, userId, priceId, transactionId, action: 'payment_failed' },
-        'paddle webhook: badge update failed',
+        { err: error, userId, priceId, transactionId, eventType: body.event_type },
+        'paddle webhook: handling failed',
       );
       next(error);
     });

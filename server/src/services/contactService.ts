@@ -1,53 +1,21 @@
 import { type ContactInput } from '@regionify/shared';
-import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
-
-const APP_ID = 'regionify';
-
-interface MailApiResponse {
-  success: boolean;
-  message: string;
-  messageId?: string;
-}
-
-interface MailApiErrorResponse {
-  success: false;
-  error: string;
-}
+import { sendInternalMail } from '@/lib/internalMail.js';
 
 export const contactService = {
   async sendContactForm(input: ContactInput): Promise<{ success: boolean; message: string }> {
     const { firstName, lastName, email, body, subject, phoneNumber, details } = input;
 
-    const payload = {
-      website: '',
-      appId: APP_ID,
-      subject: subject?.trim() || 'No Subject Provided',
-      body,
-      senderEmail: email,
-      firstName,
-      lastName,
-      phoneNumber,
-      details,
-    };
-
     try {
-      const response = await fetch(`${env.MAIL_API_URL}/mail/internal/send`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': env.MAIL_API_KEY,
-        },
-        body: JSON.stringify(payload),
+      const data = await sendInternalMail({
+        subject: subject?.trim() || 'No Subject Provided',
+        body,
+        senderEmail: email,
+        firstName,
+        lastName,
+        phoneNumber,
+        details,
       });
-
-      const data = (await response.json()) as MailApiResponse | MailApiErrorResponse;
-
-      if (!response.ok || !data.success) {
-        const errorMessage = 'error' in data ? data.error : 'Failed to send email';
-        logger.error({ response: data, statusCode: response.status }, 'Mail API error');
-        throw new Error(errorMessage);
-      }
 
       logger.info({ messageId: data.messageId, email }, 'Contact form email sent successfully');
 
