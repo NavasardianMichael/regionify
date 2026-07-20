@@ -507,6 +507,8 @@ const pt: CommonNs = {
       title: 'Agente de IA',
       limitedRequestsNote:
         'Os pedidos à IA estão limitados a {{max}} por dia. Restam-lhe {{count}} hoje.',
+      aiAccuracyNote:
+        'Os resultados gerados por IA podem não ser sempre precisos. Reveja-os antes de guardar.',
       placeholder:
         'Cole dados não tratados e a IA irá normalizá-los para o formato esperado (id, label, value, opcionalmente time)…',
       submit: 'Analisar com IA',

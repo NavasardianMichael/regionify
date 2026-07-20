@@ -332,6 +332,7 @@ export const AiParserModal: FC<Props> = ({
     count: remaining,
     max: MAX_AI_PARSE_REQUESTS_PER_DAY,
   });
+  const accuracyNote = t('visualizer.aiParserModal.aiAccuracyNote');
 
   // ─── Handlers passed to AiTab ───
   // Functional setState avoids stale closures on phase, so the handlers can stay
@@ -539,7 +540,7 @@ export const AiParserModal: FC<Props> = ({
       focusable={{ trap: false }}
       data-i18n-key="visualizer.aiParserModal.title"
     >
-      <TabHeader note={limitNote} switchViewButton={switchViewButton} />
+      <TabHeader note={limitNote} accuracyNote={accuracyNote} switchViewButton={switchViewButton} />
       <Tabs
         type="card"
         activeKey={activeMode}

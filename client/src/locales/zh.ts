@@ -478,6 +478,7 @@ const zh: CommonNs = {
     aiParserModal: {
       title: 'AI 代理',
       limitedRequestsNote: 'AI 请求每日限 {{max}} 次，今日还可使用 {{count}} 次。',
+      aiAccuracyNote: 'AI 生成的结果可能并不总是准确，请在保存前仔细核对。',
       placeholder: '粘贴杂乱数据，AI 将整理为预期格式（id、label、value，可选 time）…',
       submit: '使用 AI 解析',
       parsing: '解析中…',

@@ -514,6 +514,8 @@ const de: CommonNs = {
       title: 'KI-Agent',
       limitedRequestsNote:
         'KI-Anfragen sind auf {{max}} pro Tag begrenzt. Heute haben Sie noch {{count}} übrig.',
+      aiAccuracyNote:
+        'KI-generierte Ergebnisse sind möglicherweise nicht immer korrekt. Bitte vor dem Speichern überprüfen.',
       placeholder:
         'Fügen Sie unsaubere Daten ein und die KI normalisiert sie in das erwartete Format (id, label, value, optional time)…',
       submit: 'Mit KI analysieren',

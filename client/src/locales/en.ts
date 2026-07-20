@@ -500,6 +500,8 @@ const en: CommonNs = {
       title: 'AI Agent',
       limitedRequestsNote:
         'AI requests are limited to {{max}} per day. You have {{count}} left today.',
+      aiAccuracyNote:
+        'AI-generated results may not always be accurate. Please review before saving.',
       placeholder:
         'Paste raw or dirty data and the AI will normalize it into the expected format (id, label, value, optionally time)…',
       submit: 'Parse with AI',

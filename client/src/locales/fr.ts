@@ -513,6 +513,8 @@ const fr: CommonNs = {
       title: 'Agent IA',
       limitedRequestsNote:
         'Les requ\u00eates IA sont limit\u00e9es \u00e0 {{max}} par jour. Il vous en reste {{count}} aujourd\u2019hui.',
+      aiAccuracyNote:
+        'Les r\u00e9sultats g\u00e9n\u00e9r\u00e9s par l\u2019IA peuvent ne pas toujours \u00eatre pr\u00e9cis. Veuillez les v\u00e9rifier avant d\u2019enregistrer.',
       placeholder:
         'Collez des donn\u00e9es brutes\u00a0; l\u2019IA les normalisera au format attendu (id, label, value, time en option)\u2026',
       submit: 'Analyser avec l\u2019IA',

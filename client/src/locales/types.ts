@@ -434,6 +434,7 @@ export type CommonNs = {
     aiParserModal: {
       title: string;
       limitedRequestsNote: string;
+      aiAccuracyNote: string;
       placeholder: string;
       submit: string;
       parsing: string;
