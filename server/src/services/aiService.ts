@@ -75,7 +75,7 @@ ${buildRegionBlock(mapRegionIds)}Output format (columns separated by a single ta
 
 Rules:
 - Output ONLY the tab-delimited data. No explanations, no markdown, no code fences.
-- First line is always the header row (id, label, value; add time only if data has a time dimension).
+- Either first line is the header row (id, label, value; add time only if data has a time dimension) or you should guess yourself and return with that header row with those columns.
 ${buildIdRule(mapRegionIds)}
 - label: human-readable region name as provided in the input (or inferred if not given).
 - value: numeric (integer or decimal). Omit rows with no parseable numeric value.
