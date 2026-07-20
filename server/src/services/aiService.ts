@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { ErrorCode, HttpStatus } from '@regionify/shared';
+import { ErrorCode, HttpStatus, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@regionify/shared';
 
 import { env, isDev } from '@/config/env.js';
 import { redis } from '@/lib/redis.js';
@@ -7,9 +7,8 @@ import { AppError } from '@/middleware/errorHandler.js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-export const MAX_AI_PARSE_REQUESTS_PER_DAY = 5;
 export const MAX_AI_PARSE_INPUT_CHARS = 50_000;
-export const AI_PARSE_MAX_TOKENS = 8192;
+export const AI_PARSE_MAX_TOKENS = 16384;
 
 // Sentinel value surfaced to clients in dev to indicate the daily cap is disabled.
 const UNLIMITED_REMAINING = 9999;
@@ -62,7 +61,7 @@ function buildRegionBlock(mapRegionIds: string[]): string {
 
 function buildIdRule(mapRegionIds: string[]): string {
   return mapRegionIds.length > 0
-    ? '- id: MUST be one of the valid region IDs listed above. Match each data point to the closest valid region ID using the region name, code, or any other contextual hint. Omit rows you cannot confidently match.'
+    ? `- id: MUST be one of the valid region IDs listed above. Match each data point to the closest valid region ID using the region name, code, or any other contextual hint. This includes recognizing alternate names, local-language names, historical names, or common exonyms for the same region (e.g. input "Tuscany" should resolve to the valid ID for "Toscana" if that is how it appears in the list above) — the id must always be the canonical valid ID, never the raw input spelling. Omit rows you cannot confidently match.`
     : '- id: ISO region code (e.g. US-TX, DE, FR). Infer from region names when possible.';
 }
 
