@@ -540,6 +540,11 @@ const fr: CommonNs = {
       generatorError: 'La g\u00e9n\u00e9ration IA a \u00e9chou\u00e9. Veuillez r\u00e9essayer.',
       generatorEmptyResult:
         'L\u2019IA n\u2019a renvoy\u00e9 aucune ligne exploitable. Affinez votre invite et r\u00e9essayez.',
+      normalizeRangesPromptTitle: 'Normaliser les plages de la l\u00e9gende\u00a0?',
+      normalizeRangesPromptBody:
+        'Les donn\u00e9es import\u00e9es peuvent avoir un intervalle min/max diff\u00e9rent de celui de votre l\u00e9gende actuelle. Normaliser les plages pour qu\u2019elles correspondent uniform\u00e9ment aux nouvelles donn\u00e9es\u00a0?',
+      normalizeRangesPromptHint:
+        'Cela redistribue uniform\u00e9ment les limites des plages entre le nouveau minimum et maximum. Les noms et couleurs des plages restent inchang\u00e9s.',
     },
     legendConfig: {
       sectionTitle: 'Configuration de la légende',

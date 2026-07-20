@@ -1,5 +1,6 @@
 import { type FC, useCallback, useMemo, useRef, useState } from 'react';
 import { ExperimentOutlined, TableOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { MAX_AI_PARSE_REQUESTS_PER_DAY } from '@regionify/shared';
 import { Button, Tabs } from 'antd';
 import { streamAiGenerate, streamAiParse } from '@/api/ai';
 import {
@@ -9,7 +10,7 @@ import {
   selectTimePeriods,
 } from '@/store/mapData/selectors';
 import { useVisualizerStore } from '@/store/mapData/store';
-import { IMPORT_DATA_TYPES, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@/constants/data';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { commitParsedImport } from '@/helpers/commitParsedImport';
 import { datasetToTabDelimited, rowsToTabDelimited } from '@/helpers/datasetToTabDelimited';
@@ -31,6 +32,8 @@ type Mode = 'parser' | 'generator';
 type Props = {
   open: boolean;
   onClose: () => void;
+  /** Called when parsed/generated data is saved to the dataset, before the modal closes. */
+  onSave?: () => void;
   mapRegionIds: string[];
   countryName?: string;
   historicalDataImport: boolean;
@@ -47,6 +50,7 @@ const filterParsedRows = (rows: ParsedRow[]): ParsedRow[] =>
 export const AiParserModal: FC<Props> = ({
   open,
   onClose,
+  onSave,
   mapRegionIds,
   countryName,
   historicalDataImport,
@@ -291,6 +295,7 @@ export const AiParserModal: FC<Props> = ({
     }
 
     setVisualizerState({ importDataType: IMPORT_DATA_TYPES.aiParser });
+    onSave?.();
     onClose();
   }, [
     activeMode,
@@ -299,6 +304,7 @@ export const AiParserModal: FC<Props> = ({
     mapRegionIds,
     messageApi,
     onClose,
+    onSave,
     parserRows,
     parserText,
     parserView,

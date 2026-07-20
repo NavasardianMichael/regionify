@@ -31,9 +31,8 @@ import { useLegendDataStore } from '@/store/legendData/store';
 import type { LegendItem } from '@/store/legendData/types';
 import { selectNoDataColor, selectSetLegendStylesState } from '@/store/legendStyles/selectors';
 import { useLegendStylesStore } from '@/store/legendStyles/store';
-import { selectData, selectTimelineData } from '@/store/mapData/selectors';
-import { useVisualizerStore } from '@/store/mapData/store';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { normalizeLegendRanges } from '@/helpers/normalizeLegendRanges';
 import { samplePaletteColor } from '@/helpers/samplePaletteColor';
 import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { showMessageWithClose } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
@@ -178,8 +177,6 @@ const LegendConfigPanel: FC = () => {
   const reorderItems = useLegendDataStore(selectReorderItems);
   const noDataColor = useLegendStylesStore(selectNoDataColor);
   const setLegendStylesState = useLegendStylesStore(selectSetLegendStylesState);
-  const data = useVisualizerStore(selectData);
-  const timelineData = useVisualizerStore(selectTimelineData);
 
   const legendItems = useMemo(
     () => items.allIds.map((id) => items.byId[id]),
@@ -212,38 +209,15 @@ const LegendConfigPanel: FC = () => {
   }, [addItem]);
 
   const handleNormalizeRanges = useCallback(() => {
-    const values: number[] = [];
-    for (const id of data.allIds) {
-      const v = data.byId[id]?.value;
-      if (typeof v === 'number' && !Number.isNaN(v)) values.push(v);
-    }
-    for (const periodKey of Object.keys(timelineData)) {
-      const ds = timelineData[periodKey];
-      if (!ds) continue;
-      for (const id of ds.allIds) {
-        const v = ds.byId[id]?.value;
-        if (typeof v === 'number' && !Number.isNaN(v)) values.push(v);
-      }
-    }
-    if (values.length === 0 || legendItems.length === 0) {
+    const applied = normalizeLegendRanges();
+    if (!applied) {
       showMessageWithClose(
         messageApi,
         'warning',
         t('visualizer.legendConfig.normalizeRangesNoData'),
       );
-      return;
     }
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const count = legendItems.length;
-    const step = (max - min) / count;
-    const normalized = legendItems.map((item, index) => ({
-      ...item,
-      min: Number((min + step * index).toFixed(2)),
-      max: Number((min + step * (index + 1)).toFixed(2)),
-    }));
-    setItems(normalized);
-  }, [data, legendItems, messageApi, setItems, t, timelineData]);
+  }, [messageApi, t]);
 
   const handleApplyPalette = useCallback(
     (palette: string[]) => {

@@ -22,7 +22,12 @@ import {
   LoadingOutlined,
   SwapOutlined,
 } from '@ant-design/icons';
-import { BADGE_DETAILS, BADGES, extractGid } from '@regionify/shared';
+import {
+  BADGE_DETAILS,
+  BADGES,
+  extractGid,
+  MAX_AI_PARSE_REQUESTS_PER_DAY,
+} from '@regionify/shared';
 import type { RadioChangeEvent, UploadProps } from 'antd';
 import { Button, Flex, Radio, Spin, theme, Tooltip, Typography, Upload } from 'antd';
 import { fetchAiRemaining } from '@/api/ai';
@@ -43,7 +48,7 @@ import { useProfileStore } from '@/store/profile/store';
 import { selectCurrentProject } from '@/store/projects/selectors';
 import { useProjectsStore } from '@/store/projects/store';
 import type { ImportDataType } from '@/types/mapData';
-import { IMPORT_DATA_TYPES, MAX_AI_PARSE_REQUESTS_PER_DAY } from '@/constants/data';
+import { IMPORT_DATA_TYPES } from '@/constants/data';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { trackGa4FileDownload } from '@/helpers/analytics';
@@ -58,6 +63,7 @@ import {
   sanitizeFilename,
 } from '@/helpers/importDataParsers';
 import { loadMapSvg } from '@/helpers/mapLoader';
+import { canNormalizeLegendRanges, normalizeLegendRanges } from '@/helpers/normalizeLegendRanges';
 import { getRegionDisplayName } from '@/helpers/regionDisplay';
 import { extractSvgTitles } from '@/helpers/textSimilarity';
 import { showMessageWithSampleDownload } from '@/components/shared/showMessageWithSampleDownload';
@@ -70,6 +76,7 @@ import {
 } from '@/components/visualizer/ImportDataPanel/importDataPanelUtils';
 import { ImportFormatExamples } from '@/components/visualizer/ImportDataPanel/ImportFormatExamples';
 import { ImportFormatInfoTooltip } from '@/components/visualizer/ImportDataPanel/ImportFormatInfoTooltip';
+import { NormalizeRangesConfirmContent } from '@/components/visualizer/ImportDataPanel/NormalizeRangesConfirmContent';
 import { SwitchModeConfirmContent } from '@/components/visualizer/ImportDataPanel/SwitchModeConfirmContent';
 import { useGoogleSheetSyncEffect } from '@/components/visualizer/ImportDataPanel/useGoogleSheetSyncEffect';
 import { SectionTitle } from '@/components/visualizer/SectionTitle';
@@ -534,6 +541,20 @@ export const ImportDataPanel: FC = () => {
       applySwitchToDynamic();
     }
   }, [modal, hasDataOrTimeline, applySwitchToDynamic, t]);
+
+  /** After the AI Agent modal saves data, offer to redistribute legend ranges to match it. */
+  const handleAiParserSaved = useCallback(() => {
+    if (!canNormalizeLegendRanges()) return;
+    modal.confirm({
+      title: t('visualizer.aiParserModal.normalizeRangesPromptTitle'),
+      content: <NormalizeRangesConfirmContent />,
+      okText: t('visualizer.legendConfig.normalizeRanges'),
+      cancelText: t('nav.cancel'),
+      onOk: () => {
+        normalizeLegendRanges();
+      },
+    });
+  }, [modal, t]);
 
   // Load SVG titles and generate sample data when region changes
   useEffect(() => {
@@ -1155,6 +1176,7 @@ export const ImportDataPanel: FC = () => {
           <AiParserModal
             open={isAiParserModalOpen}
             onClose={() => setIsAiParserModalOpen(false)}
+            onSave={handleAiParserSaved}
             mapRegionIds={svgTitles}
             countryName={getRegionDisplayName(selectedCountryId) ?? undefined}
             historicalDataImport={limits.historicalDataImport}

@@ -524,6 +524,11 @@ const en: CommonNs = {
       generatorParsing: 'Generating…',
       generatorError: 'AI generation failed. Please try again.',
       generatorEmptyResult: 'AI returned no usable rows. Refine your prompt and try again.',
+      normalizeRangesPromptTitle: 'Normalize legend ranges?',
+      normalizeRangesPromptBody:
+        'The imported data may have a different min/max range than your current legend. Normalize the ranges to evenly match the new data?',
+      normalizeRangesPromptHint:
+        'This redistributes the range boundaries evenly between the new min and max. Range names and colors stay the same.',
     },
     legendConfig: {
       sectionTitle: 'Legend Configuration',

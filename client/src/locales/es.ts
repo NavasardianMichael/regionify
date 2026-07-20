@@ -536,6 +536,11 @@ const es: CommonNs = {
       generatorError: 'La generación con IA falló. Por favor, inténtelo de nuevo.',
       generatorEmptyResult:
         'La IA no devolvió filas utilizables. Refina tu prompt y vuelve a intentarlo.',
+      normalizeRangesPromptTitle: '¿Normalizar los rangos de la leyenda?',
+      normalizeRangesPromptBody:
+        'Los datos importados pueden tener un rango mínimo/máximo distinto al de tu leyenda actual. ¿Normalizar los rangos para que coincidan uniformemente con los nuevos datos?',
+      normalizeRangesPromptHint:
+        'Esto redistribuye los límites de los rangos de forma uniforme entre el nuevo mínimo y máximo. Los nombres y colores de los rangos se mantienen.',
     },
     legendConfig: {
       sectionTitle: 'Configuración de leyenda',

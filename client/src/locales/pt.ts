@@ -533,6 +533,11 @@ const pt: CommonNs = {
       generatorError: 'A geração com IA falhou. Por favor, tente novamente.',
       generatorEmptyResult:
         'A IA não devolveu linhas utilizáveis. Refine o seu prompt e tente novamente.',
+      normalizeRangesPromptTitle: 'Normalizar os intervalos da legenda?',
+      normalizeRangesPromptBody:
+        'Os dados importados podem ter um intervalo mínimo/máximo diferente da sua legenda atual. Normalizar os intervalos para corresponder uniformemente aos novos dados?',
+      normalizeRangesPromptHint:
+        'Isto redistribui os limites dos intervalos uniformemente entre o novo mínimo e máximo. Os nomes e cores dos intervalos mantêm-se.',
     },
     legendConfig: {
       sectionTitle: 'Configuração da legenda',

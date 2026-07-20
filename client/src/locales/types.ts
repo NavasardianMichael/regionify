@@ -456,6 +456,9 @@ export type CommonNs = {
       generatorParsing: string;
       generatorError: string;
       generatorEmptyResult: string;
+      normalizeRangesPromptTitle: string;
+      normalizeRangesPromptBody: string;
+      normalizeRangesPromptHint: string;
     };
     legendConfig: {
       sectionTitle: string;

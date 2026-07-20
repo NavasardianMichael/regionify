@@ -541,6 +541,11 @@ const de: CommonNs = {
       generatorError: 'KI-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
       generatorEmptyResult:
         'Die KI lieferte keine verwendbaren Zeilen. Verfeinern Sie Ihren Prompt und versuchen Sie es erneut.',
+      normalizeRangesPromptTitle: 'Legendenbereiche normalisieren?',
+      normalizeRangesPromptBody:
+        'Die importierten Daten haben möglicherweise einen anderen Min-/Max-Bereich als Ihre aktuelle Legende. Möchten Sie die Bereiche gleichmäßig an die neuen Daten anpassen?',
+      normalizeRangesPromptHint:
+        'Dies verteilt die Bereichsgrenzen gleichmäßig zwischen neuem Minimum und Maximum. Namen und Farben der Bereiche bleiben erhalten.',
     },
     legendConfig: {
       sectionTitle: 'Legendenkonfiguration',

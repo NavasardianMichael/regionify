@@ -500,6 +500,11 @@ const zh: CommonNs = {
       generatorParsing: '生成中…',
       generatorError: 'AI 生成失败，请重试。',
       generatorEmptyResult: 'AI 未返回有效行。请优化提示并重试。',
+      normalizeRangesPromptTitle: '标准化图例范围？',
+      normalizeRangesPromptBody:
+        '导入数据的最小值/最大值范围可能与当前图例不同。是否将范围标准化以均匀匹配新数据？',
+      normalizeRangesPromptHint:
+        '这会在新的最小值和最大值之间均匀重新分配范围边界，范围名称和颜色保持不变。',
     },
     legendConfig: {
       sectionTitle: '图例配置',
