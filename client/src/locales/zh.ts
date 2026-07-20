@@ -482,6 +482,7 @@ const zh: CommonNs = {
       submit: '使用 AI 解析',
       parsing: '解析中…',
       parseError: 'AI 解析失败，请重试。',
+      parserEmptyResult: 'AI 未返回有效行。请优化输入并重试。',
       limitReached: '已达到每日 AI 请求限制。24 小时后重置。',
       inputTooLong: '输入超过 {{max}} 个字符。',
       switchToTable: '切换到表格视图',

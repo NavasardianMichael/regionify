@@ -518,6 +518,8 @@ const fr: CommonNs = {
       submit: 'Analyser avec l\u2019IA',
       parsing: 'Analyse en cours\u2026',
       parseError: 'L\u2019analyse IA a \u00e9chou\u00e9. Veuillez r\u00e9essayer.',
+      parserEmptyResult:
+        'L\u2019IA n\u2019a renvoy\u00e9 aucune ligne exploitable. Affinez votre saisie et r\u00e9essayez.',
       limitReached:
         'Limite quotidienne de requ\u00eates IA atteinte. R\u00e9initialisation dans 24 heures.',
       inputTooLong: 'La saisie d\u00e9passe {{max}} caract\u00e8res.',

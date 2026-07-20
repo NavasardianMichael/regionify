@@ -519,6 +519,8 @@ const de: CommonNs = {
       submit: 'Mit KI analysieren',
       parsing: 'Analysiere…',
       parseError: 'KI-Analyse fehlgeschlagen. Bitte versuchen Sie es erneut.',
+      parserEmptyResult:
+        'Die KI lieferte keine verwendbaren Zeilen. Verfeinern Sie Ihre Eingabe und versuchen Sie es erneut.',
       limitReached: 'Tägliches KI-Anfragelimit erreicht. Wird in 24 Stunden zurückgesetzt.',
       inputTooLong: 'Eingabe überschreitet {{max}} Zeichen.',
       switchToTable: 'Zur Tabellenansicht wechseln',

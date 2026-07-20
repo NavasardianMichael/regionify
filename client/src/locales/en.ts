@@ -505,6 +505,7 @@ const en: CommonNs = {
       submit: 'Parse with AI',
       parsing: 'Parsing…',
       parseError: 'AI parsing failed. Please try again.',
+      parserEmptyResult: 'AI returned no usable rows. Refine your input and try again.',
       limitReached: 'Daily AI request limit reached. Resets in 24 hours.',
       inputTooLong: 'Input exceeds {{max}} characters.',
       switchToTable: 'Switch to table view',

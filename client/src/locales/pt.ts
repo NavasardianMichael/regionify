@@ -512,6 +512,8 @@ const pt: CommonNs = {
       submit: 'Analisar com IA',
       parsing: 'Analisando…',
       parseError: 'Análise de IA falhou. Por favor, tente novamente.',
+      parserEmptyResult:
+        'A IA não devolveu linhas utilizáveis. Refine a sua entrada e tente novamente.',
       limitReached: 'Limite diário de pedidos à IA atingido. Redefine em 24 horas.',
       inputTooLong: 'A entrada excede {{max}} caracteres.',
       switchToTable: 'Mudar para vista de tabela',

@@ -438,6 +438,7 @@ export type CommonNs = {
       submit: string;
       parsing: string;
       parseError: string;
+      parserEmptyResult: string;
       limitReached: string;
       inputTooLong: string;
       switchToTable: string;

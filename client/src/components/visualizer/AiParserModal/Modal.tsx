@@ -105,13 +105,39 @@ export const AiParserModal: FC<Props> = ({
     const controller = new AbortController();
     parserAbortRef.current = controller;
 
+    let buffer = ASSISTANT_PREFILL;
+
     try {
       await streamAiParse(
         { text: trimmed, mapRegionIds },
-        (delta) => setParserText((prev) => prev + delta),
+        (delta) => {
+          buffer += delta;
+          setParserText(buffer);
+        },
         (count) => onRemainingChange(count),
         controller.signal,
       );
+
+      const parsed = parseCSV(buffer.trim());
+      if (typeof parsed === 'object' && 'error' in parsed) {
+        showMessageWithClose(messageApi, 'error', t('visualizer.tabDelimitedModal.pasteMissingId'));
+        setParserPhase('error');
+        return;
+      }
+
+      const cleaned = filterParsedRows(parsed);
+      if (cleaned.length === 0) {
+        showMessageWithClose(
+          messageApi,
+          'warning',
+          t('visualizer.aiParserModal.parserEmptyResult'),
+        );
+        setParserPhase('error');
+        return;
+      }
+
+      setParserRows(cleaned);
+      setParserView('table'); // auto-switch to table view on success
       setParserPhase('result');
     } catch (err) {
       if ((err as Error).name === 'AbortError') return;
