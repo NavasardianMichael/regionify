@@ -774,6 +774,8 @@ const zh: CommonNs = {
     refund: '退款政策',
     contact: '联系我们',
     faq: '常见问题',
+    countryMaps: '国家地图',
+    guides: '指南',
   },
   legal: {
     englishOnlyNote: '本页面仅提供英文版本，以确保存在唯一具有法律效力的版本。',

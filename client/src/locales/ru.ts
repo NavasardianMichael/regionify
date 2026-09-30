@@ -817,6 +817,8 @@ const ru: CommonNs = {
     refund: 'Политика возврата',
     contact: 'Контакт',
     faq: 'FAQ',
+    countryMaps: 'Карты стран',
+    guides: 'Руководства',
   },
   legal: {
     englishOnlyNote:

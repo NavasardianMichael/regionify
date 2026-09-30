@@ -1,11 +1,15 @@
 import { type FC } from 'react';
 import { Flex } from 'antd';
+import { MARKETING_URLS } from '@/constants/marketingUrls';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
 import { GooglePreferredSourceButton } from '@/components/shared/GooglePreferredSourceButton';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 const LINK_CLASS = 'underline! font-semibold transition-colors';
+
+/** `AppNavLink` applies these colours itself; plain anchors have to opt in to match. */
+const MARKETING_LINK_CLASS = `text-primary! hover:text-primary-400! ${LINK_CLASS}`;
 
 export const AppFooter: FC = () => {
   const { t, i18n } = useTypedTranslation();
@@ -29,6 +33,14 @@ export const AppFooter: FC = () => {
         <AppNavLink to={ROUTES.FAQ} className={LINK_CLASS}>
           {t('footer.faq')}
         </AppNavLink>
+        {/* Plain anchors: the marketing microsite is served by nginx, not React Router, so a
+            client-side navigation would dead-end in the SPA. */}
+        <a href={MARKETING_URLS.COUNTRY_MAPS} className={MARKETING_LINK_CLASS}>
+          {t('footer.countryMaps')}
+        </a>
+        <a href={MARKETING_URLS.GUIDES} className={MARKETING_LINK_CLASS}>
+          {t('footer.guides')}
+        </a>
       </Flex>
       <GooglePreferredSourceButton language={language} />
     </footer>

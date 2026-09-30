@@ -725,6 +725,8 @@ const en: CommonNs = {
     refund: 'Refund Policy',
     contact: 'Contact',
     faq: 'FAQ',
+    countryMaps: 'Country maps',
+    guides: 'Guides',
   },
   legal: {
     englishOnlyNote:
