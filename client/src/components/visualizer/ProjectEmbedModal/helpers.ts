@@ -2,8 +2,6 @@ import { getEmbedRoute } from '@/constants/routes';
 import {
   ALLOWED_ORIGIN_MAX_COUNT,
   ALLOWED_ORIGIN_MAX_LENGTH,
-  IFRAME_HEIGHT_PX,
-  IFRAME_TITLE,
   KEYWORD_MAX_COUNT,
   KEYWORD_MAX_LENGTH,
   SEO_DESCRIPTION_MAX,
@@ -89,18 +87,4 @@ type BuildEmbedPageUrlInput = {
 export function buildEmbedPageUrl({ origin, token, enabled }: BuildEmbedPageUrlInput): string {
   if (!token || !enabled) return '';
   return `${origin}${getEmbedRoute(token)}`;
-}
-
-/** Iframe only — nothing is emitted into the host page alongside it. */
-export function buildIframeSnippet(embedPageUrl: string): string {
-  if (!embedPageUrl) return '';
-  return [
-    '<iframe',
-    `  src="${embedPageUrl}"`,
-    '  width="100%"',
-    `  height="${IFRAME_HEIGHT_PX}"`,
-    '  style="border:0"',
-    `  title="${IFRAME_TITLE}"`,
-    '></iframe>',
-  ].join('\n');
 }

@@ -1,5 +1,5 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { BADGE_DETAILS } from '@regionify/shared';
+import { BADGE_DETAILS, buildIframeSnippet } from '@regionify/shared';
 import { Form } from 'antd';
 import { getProject, updateProjectEmbed } from '@/api/projects';
 import { selectUser } from '@/store/profile/selectors';
@@ -12,12 +12,7 @@ import { useAppFeedback } from '@/components/shared/useAppFeedback';
 import { EMBED_BADGE_ERROR_EN, SEO_TITLE_MAX } from './constants';
 import { EmbedForm } from './EmbedForm';
 import { Footer } from './Footer';
-import {
-  buildEmbedPageUrl,
-  buildIframeSnippet,
-  sanitizeAllowedOrigins,
-  sanitizeKeywords,
-} from './helpers';
+import { buildEmbedPageUrl, sanitizeAllowedOrigins, sanitizeKeywords } from './helpers';
 import { ShareSection } from './ShareSection';
 import { Title } from './Title';
 import type { ProjectEmbedFormValues, ProjectEmbedModalProps } from './types';
