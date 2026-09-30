@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { Locale } from '@regionify/shared';
 import { Collapse, type CollapseProps, Flex, Typography } from 'antd';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
-import { renderFaqAnswer } from '@/helpers/faqAnswer';
+import { renderEmphasisText } from '@/helpers/emphasisText';
 
 import { resources } from '@/locales';
 
@@ -25,7 +25,7 @@ const FaqPage: FC = () => {
       ),
       children: (
         <Typography.Paragraph className="mb-0! text-gray-600">
-          {renderFaqAnswer(item.answer)}
+          {renderEmphasisText(item.answer)}
         </Typography.Paragraph>
       ),
     }));

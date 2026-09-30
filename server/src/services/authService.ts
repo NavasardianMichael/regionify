@@ -23,6 +23,10 @@ import { passwordResetRepository } from '@/repositories/passwordResetRepository.
 import { userRepository } from '@/repositories/userRepository.js';
 import { emailService } from '@/services/emailService.js';
 
+/** `**phrase**` markers are rendered semibold by the client (`renderEmphasisText`). */
+const CHECK_INBOX_HINT =
+  "Please **check your inbox**. **If you don't see it, check your spam folder.**";
+
 function toPublicUser(user: User): UserPublic {
   return {
     id: user.id,
@@ -41,7 +45,7 @@ export const authService = {
     const user = await userRepository.findByEmail(email);
     if (!user) {
       return {
-        message: 'If an account exists with this email, a verification email has been sent.',
+        message: `If an account exists with this email, a verification email has been sent. ${CHECK_INBOX_HINT}`,
       };
     }
     if (user.emailVerified) {
@@ -49,7 +53,7 @@ export const authService = {
     }
     const verificationToken = await emailVerificationRepository.create(user.id);
     await emailService.sendVerifyEmail(user.email, user.name, verificationToken.token);
-    return { message: 'Verification email sent. Please check your inbox.' };
+    return { message: `Verification email sent. ${CHECK_INBOX_HINT}` };
   },
 
   async register(input: RegisterInput): Promise<RegisterResponse> {

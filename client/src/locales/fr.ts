@@ -220,7 +220,7 @@ const fr: CommonNs = {
       subtitle: 'Inscrivez-vous pour commencer avec Regionify',
       verifyTitle: 'Vérifiez votre e-mail',
       verifyBody:
-        "Nous avons envoyé un lien de vérification à votre adresse e-mail. Consultez votre boîte de réception et cliquez sur le lien pour terminer l'inscription.",
+        "Nous avons envoyé un lien de vérification à votre adresse e-mail. **Consultez votre boîte de réception** et cliquez sur le lien pour terminer l'inscription. **Si vous ne le trouvez pas, vérifiez votre dossier spam.**",
       verifyNote: 'Une fois vérifié, vous pourrez vous connecter avec vos identifiants.',
       goToLogin: 'Aller à la connexion',
       continueGoogle: 'Continuer avec Google',

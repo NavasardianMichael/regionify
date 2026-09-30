@@ -208,7 +208,8 @@ const zh: CommonNs = {
       title: '创建账户',
       subtitle: '注册以开始使用 Regionify',
       verifyTitle: '验证您的邮箱',
-      verifyBody: '我们已向您的邮箱发送验证链接。请查收邮件并点击链接完成注册。',
+      verifyBody:
+        '我们已向您的邮箱发送验证链接。请**查收邮件**并点击链接完成注册。**如果没有收到，请检查垃圾邮件文件夹。**',
       verifyNote: '验证后即可使用您的凭据登录。',
       goToLogin: '前往登录',
       continueGoogle: '使用 Google 继续',

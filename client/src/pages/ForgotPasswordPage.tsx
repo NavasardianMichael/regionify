@@ -58,7 +58,9 @@ const ForgotPasswordPage: FC = () => {
           </Typography.Title>
           <Typography.Paragraph className="mt-2 text-gray-500">
             If an account with the provided email exists, we will send a password reset link to your
-            email address. Please check your inbox and follow the instructions.
+            email address. Please <span className="font-semibold">check your inbox</span> and follow
+            the instructions.{' '}
+            <span className="font-semibold">If you don&apos;t see it, check your spam folder.</span>
           </Typography.Paragraph>
           <AppNavLink to={ROUTES.LOGIN}>
             <Button type="primary" className="mt-4">

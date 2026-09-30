@@ -219,7 +219,7 @@ const en: CommonNs = {
       subtitle: 'Sign up to get started with Regionify',
       verifyTitle: 'Verify Your Email',
       verifyBody:
-        "We've sent a verification link to your email address. Please check your inbox and click the link to complete your registration.",
+        "We've sent a verification link to your email address. Please **check your inbox** and click the link to complete your registration. **If you don't see it, check your spam folder.**",
       verifyNote: "Once verified, you'll be able to log in with your credentials.",
       goToLogin: 'Go to Login',
       continueGoogle: 'Continue with Google',

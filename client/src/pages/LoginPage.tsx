@@ -12,6 +12,7 @@ import { selectSetUser } from '@/store/profile/selectors';
 import { useProfileStore } from '@/store/profile/store';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { renderEmphasisText } from '@/helpers/emphasisText';
 import {
   clearReturnUrl,
   clearTemporaryProjectState,
@@ -172,7 +173,7 @@ const LoginPage: FC = () => {
     setResendLoading(true);
     try {
       const result = await resendVerificationEmail(email);
-      message.success(result.message, 5);
+      message.success(renderEmphasisText(result.message), 5);
     } catch {
       message.error(t('messages.resendVerificationFailed'));
     } finally {

@@ -79,7 +79,7 @@ export type CommonNs = {
   faq: {
     title: string;
     intro: string;
-    /** Answers may use **term** markers around real keywords; see `renderFaqAnswer`. */
+    /** Answers may use **term** markers around real keywords; see `renderEmphasisText`. */
     items: ReadonlyArray<{ question: string; answer: string }>;
   };
   badges: {
@@ -161,6 +161,7 @@ export type CommonNs = {
       title: string;
       subtitle: string;
       verifyTitle: string;
+      /** May use **phrase** markers around key instructions; see `renderEmphasisText`. */
       verifyBody: string;
       verifyNote: string;
       goToLogin: string;

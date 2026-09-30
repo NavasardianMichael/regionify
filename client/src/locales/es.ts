@@ -219,7 +219,7 @@ const es: CommonNs = {
       subtitle: 'Regístrate para empezar con Regionify',
       verifyTitle: 'Verifica tu correo',
       verifyBody:
-        'Hemos enviado un enlace de verificación a tu correo. Revisa la bandeja de entrada y haz clic en el enlace para completar el registro.',
+        'Hemos enviado un enlace de verificación a tu correo. **Revisa la bandeja de entrada** y haz clic en el enlace para completar el registro. **Si no lo ves, revisa la carpeta de spam.**',
       verifyNote: 'Una vez verificado, podrás iniciar sesión con tus credenciales.',
       goToLogin: 'Ir a iniciar sesión',
       continueGoogle: 'Continuar con Google',

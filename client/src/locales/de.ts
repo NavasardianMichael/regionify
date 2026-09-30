@@ -222,7 +222,7 @@ const de: CommonNs = {
       subtitle: 'Registrieren Sie sich, um mit Regionify zu starten',
       verifyTitle: 'E-Mail bestätigen',
       verifyBody:
-        'Wir haben einen Bestätigungslink an Ihre E-Mail gesendet. Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um die Registrierung abzuschließen.',
+        'Wir haben einen Bestätigungslink an Ihre E-Mail gesendet. Bitte **prüfen Sie Ihren Posteingang** und klicken Sie auf den Link, um die Registrierung abzuschließen. **Falls Sie die E-Mail nicht finden, sehen Sie in Ihrem Spam-Ordner nach.**',
       verifyNote: 'Nach der Bestätigung können Sie sich mit Ihren Zugangsdaten anmelden.',
       goToLogin: 'Zur Anmeldung',
       continueGoogle: 'Mit Google fortfahren',

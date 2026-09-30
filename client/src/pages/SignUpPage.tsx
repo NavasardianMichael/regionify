@@ -5,6 +5,7 @@ import { register } from '@/api/auth';
 import { AUTH_ENDPOINTS } from '@/api/auth/endpoints';
 import { ROUTES } from '@/constants/routes';
 import { useTypedTranslation } from '@/i18n/useTypedTranslation';
+import { renderEmphasisText } from '@/helpers/emphasisText';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 type SignUpFormValues = {
@@ -73,7 +74,7 @@ const SignUpPage: FC = () => {
             className="mt-2 text-gray-500"
             data-i18n-key="auth.signUp.verifyBody"
           >
-            {t('auth.signUp.verifyBody')}
+            {renderEmphasisText(t('auth.signUp.verifyBody'))}
           </Typography.Paragraph>
           <Typography.Paragraph
             className="text-sm text-gray-400"
