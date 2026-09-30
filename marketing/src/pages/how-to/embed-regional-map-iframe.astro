@@ -1,0 +1,118 @@
+---
+import CtaSection from '@/components/CtaSection.astro';
+import GuideFaq from '@/components/guide/GuideFaq.astro';
+import GuideHero from '@/components/guide/GuideHero.astro';
+import GuideRelated from '@/components/guide/GuideRelated.astro';
+import GuideSection from '@/components/guide/GuideSection.astro';
+import GuideSteps from '@/components/guide/GuideSteps.astro';
+import GuideToc from '@/components/guide/GuideToc.astro';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { embedRegionalMapIframeGuide as guide } from '@/data/guides/embedRegionalMapIframe';
+import { type GuideSectionRef } from '@/data/guides/types';
+import { guideCanonicalPath, guideIndexUrl, guidePath, guideUrl, hubUrl } from '@/helpers/guides';
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildHowToJsonLd,
+  compactJsonLd,
+} from '@/helpers/jsonLd';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
+import { embedBadgeLabel } from '@/helpers/tiers';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import MarketingPage from '@/layouts/MarketingPage.astro';
+
+const canonicalUrl = guideUrl(guide.slug);
+const steps = guide.steps ?? [];
+const faq = guide.faq ?? [];
+
+const sections: GuideSectionRef[] = [
+  { id: 'what-an-embed-is', title: 'What a live embed is' },
+  ...steps.map((step) => ({ id: step.id, title: step.name })),
+  { id: 'embed-vs-image', title: 'Embed or export an image?' },
+  { id: 'faq', title: 'Common questions' },
+];
+
+const jsonLd = compactJsonLd([
+  buildBreadcrumbJsonLd([
+    { name: 'Regionify maps', url: hubUrl() },
+    { name: 'Guides', url: guideIndexUrl() },
+    { name: guide.navLabel, url: canonicalUrl },
+  ]),
+  buildHowToJsonLd(guide, canonicalUrl),
+  buildFaqJsonLd(faq, canonicalUrl),
+]);
+---
+
+<MarketingLayout
+  seoTitle={guide.seoTitle}
+  seoDescription={guide.seoDescription}
+  seoKeywords={guide.seoKeywords}
+  canonicalPath={guideCanonicalPath(guide.slug)}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <MarketingPage>
+    <GuideHero guide={guide} />
+
+    <div class="mx-auto flex max-w-6xl gap-12 px-4 py-12 md:px-6 md:py-16">
+      <GuideToc sections={sections} variant="sidebar" />
+
+      <article class="min-w-0 flex-1">
+        <GuideToc sections={sections} variant="inline" />
+
+        <div class="flex flex-col gap-12">
+          <GuideSection id="what-an-embed-is" title="What a live embed is">
+            <p>
+              An embedded regional map is an <strong>iframe</strong> pointing at a page Regionify
+              hosts for your project. Because the host page is live rather than a snapshot, the
+              map your readers see is the map as it stands right now — edit the data or restyle
+              the colours and every site showing it updates, with no new export and no re-paste.
+            </p>
+            <p>
+              That is the practical difference from a PNG: an image freezes your data at the
+              moment you exported it, and someone has to notice and replace it when the numbers
+              move. An embed does not go stale.
+            </p>
+            <p>
+              Public embed is available on <strong>{embedBadgeLabel()}</strong>. Everything below
+              takes about five minutes.
+            </p>
+          </GuideSection>
+
+          <section>
+            <MarketingTitle level={2} className="mb-6">Embedding a map, step by step</MarketingTitle>
+            <GuideSteps steps={steps} />
+          </section>
+
+          <GuideSection id="embed-vs-image" title="Embed or export an image?">
+            <p>Pick the embed when:</p>
+            <ul>
+              <li>the underlying figures will be revised, and you would rather not revisit the post</li>
+              <li>you want readers to hover, pan or read region values themselves</li>
+              <li>the map is the centrepiece of a page you control</li>
+            </ul>
+            <p>Pick a PNG, SVG or PDF export when:</p>
+            <ul>
+              <li>the destination will not run an iframe — print, PDF, email, most social platforms</li>
+              <li>the figure is tied to a moment in time and <em>should</em> stay frozen, such as a chart in a published article of record</li>
+              <li>you need it in a design tool at print resolution, where SVG is the better answer</li>
+            </ul>
+            <p>
+              Many people use both: an embed on the live page, and a static export for the
+              newsletter that links back to it. If your data changes over time rather than
+              being a single snapshot, an <a href={guidePath('animated-regional-map-gif-mp4')}>animated GIF or MP4</a>
+              is a third option worth knowing about.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="faq" title="Common questions">
+            <GuideFaq items={faq} />
+          </GuideSection>
+        </div>
+      </article>
+    </div>
+
+    <GuideRelated currentSlug={guide.slug} countrySlugs={guide.exampleCountrySlugs} />
+    <CtaSection links={MARKETING_LINKS_TO_APP.guideEmbed} />
+  </MarketingPage>
+</MarketingLayout>

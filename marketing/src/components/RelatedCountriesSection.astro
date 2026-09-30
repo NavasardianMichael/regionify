@@ -1,0 +1,71 @@
+---
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { type CountryRow, getCountries } from '@/data/parseCountries';
+import { countryPath, hubPath } from '@/helpers/guides';
+
+interface Props {
+  country: CountryRow;
+}
+
+const { country } = Astro.props;
+
+const MAX_RELATED = 8;
+/** Below this, a subregion is too thin to fill a row — widen to the whole continent. */
+const MIN_SUBREGION_PEERS = 4;
+
+const all = getCountries().filter((candidate) => candidate.slug !== country.slug);
+
+const sameSubregion = country.subregion
+  ? all.filter((candidate) => candidate.subregion === country.subregion)
+  : [];
+const sameContinent = country.continent
+  ? all.filter((candidate) => candidate.continent === country.continent)
+  : [];
+
+const useSubregion = sameSubregion.length >= MIN_SUBREGION_PEERS;
+const pool = useSubregion ? sameSubregion : sameContinent;
+const groupLabel = useSubregion ? country.subregion : country.continent;
+
+const related = pool.slice(0, MAX_RELATED);
+---
+
+{
+  related.length > 0 && (
+    <section class="bg-white py-12 md:py-16">
+      <div class="mx-auto max-w-6xl px-4 md:px-6">
+        <MarketingTitle level={2} className="mb-2 text-center">
+          More regional maps in {groupLabel}
+        </MarketingTitle>
+        <p class="mb-8 text-center text-base text-balance text-gray-500">
+          Same tools, different boundaries — each page lists that country's divisions and export
+          formats.
+        </p>
+
+        <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {related.map((peer) => (
+            <li>
+              <MarketingButton type="card" href={countryPath(peer.slug)}>
+                <span class="flex w-full flex-col gap-0.5 text-left">
+                  <span class="text-sm font-semibold text-gray-800">{peer.name_en}</span>
+                  {/* One expression, not two: this section is inside a `{cond && (...)}`
+                      wrapper, so JSX whitespace rules strip the gap between adjacent
+                      expressions and would render "5governorates". */}
+                  <span class="text-xs text-gray-400">
+                    {`${peer.division_count} ${peer.division_type.toLowerCase()}`}
+                  </span>
+                </span>
+              </MarketingButton>
+            </li>
+          ))}
+        </ul>
+
+        <p class="mt-6 text-center">
+          <MarketingButton type="link" href={hubPath()}>
+            Browse all 190 countries →
+          </MarketingButton>
+        </p>
+      </div>
+    </section>
+  )
+}

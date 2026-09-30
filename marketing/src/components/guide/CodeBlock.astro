@@ -1,0 +1,93 @@
+---
+import { composeButtonClasses } from '@/components/ui/MarketingButton/appearance';
+
+interface Props {
+  /** Literal code. Rendered as an escaped expression — never `set:html`. */
+  code: string;
+  language: 'html' | 'csv' | 'text';
+  /** Accessible name fragment, e.g. "the iframe embed snippet". */
+  label: string;
+}
+
+const { code, language, label } = Astro.props;
+
+// A native <button> rather than <MarketingButton>: `AsButton` extends ButtonHTMLAttributes,
+// and TypeScript only permits hyphenated attributes (data-copy-button) on intrinsic
+// elements, so passing one to the component is an `astro check` error.
+const copyButtonClass = composeButtonClasses('secondary', 'light');
+---
+
+<div class="rounded-lg border border-gray-200 bg-gray-50" data-code-block>
+  <div
+    class="flex min-h-11 items-center justify-between gap-2 border-b border-gray-200 px-3 py-2"
+  >
+    <span class="text-xs font-medium tracking-wide text-gray-500 uppercase">{language}</span>
+    <button type="button" class={copyButtonClass} aria-label={`Copy ${label}`} data-copy-button hidden>
+      <span data-copy-label>Copy</span>
+    </button>
+  </div>
+
+  {/* tabindex makes the scrollable region keyboard-reachable (WCAG 2.1.1), which in turn
+      requires an accessible name. */}
+  <pre
+    tabindex="0"
+    role="group"
+    aria-label={label}
+    class="overflow-x-auto p-4 text-sm leading-relaxed text-gray-800"
+  ><code class={`language-${language}`} data-code-source>{code}</code></pre>
+
+  <span class="sr-only" role="status" aria-live="polite" data-copy-status></span>
+</div>
+
+<script>
+  const COPY_RESET_MS = 2000;
+
+  function setLabel(button: Element, text: string): void {
+    const label = button.querySelector('[data-copy-label]');
+    if (label) label.textContent = text;
+  }
+
+  function setStatus(block: Element, text: string): void {
+    const status = block.querySelector('[data-copy-status]');
+    if (status) status.textContent = text;
+  }
+
+  async function copyFrom(button: Element): Promise<void> {
+    const block = button.closest('[data-code-block]');
+    if (!block) return;
+
+    const source = block.querySelector('[data-code-source]');
+    if (!source) return;
+
+    try {
+      await navigator.clipboard.writeText(source.textContent ?? '');
+    } catch {
+      // Surfaced, never swallowed — the user still has a way to get the code.
+      setStatus(block, 'Copy failed. Select the code and press Ctrl+C.');
+      return;
+    }
+
+    setStatus(block, 'Copied to clipboard');
+    setLabel(button, 'Copied');
+
+    window.setTimeout(() => {
+      setStatus(block, '');
+      setLabel(button, 'Copy');
+    }, COPY_RESET_MS);
+  }
+
+  // Delegated, so it is live as soon as this module runs — no hydration gap in which a
+  // click or keyboard activation would be dropped.
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const button = target.closest('[data-copy-button]');
+    if (button) void copyFrom(button);
+  });
+
+  // The button ships hidden so that a JS-less reader is never shown a dead control.
+  document
+    .querySelectorAll('[data-copy-button]')
+    .forEach((button) => button.removeAttribute('hidden'));
+</script>

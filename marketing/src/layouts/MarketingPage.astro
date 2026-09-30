@@ -3,9 +3,22 @@ import Footer from '@/components/Footer.astro';
 import Nav from '@/components/Nav.astro';
 ---
 
-<div class="flex h-svh min-h-svh flex-col overflow-hidden">
-  <Nav />
-  <main class="w-full min-w-0 min-h-0 flex-1 overflow-y-auto">
+{/*
+  The document scrolls, so the footer sits at the end of the content rather than being pinned
+  to the bottom of the viewport. `min-h-svh` still pushes it down on short pages.
+
+  This shell used to be `h-svh overflow-hidden` with the scrolling happening inside `<main>`,
+  which pinned the footer on every page and permanently spent ~90px of viewport on it. Only the
+  root scroller drives mobile URL-bar collapse, `scroll-padding-top`, smooth scrolling and
+  back/forward scroll restoration, so the inner scroller cost those too.
+
+  `src/pages/404.astro` deliberately keeps a viewport-height shell — it does not use this layout.
+*/}
+<div class="flex min-h-svh flex-col">
+  <div class="sticky top-0 z-30 shrink-0">
+    <Nav />
+  </div>
+  <main class="w-full min-w-0 flex-1">
     <slot />
   </main>
   <Footer />

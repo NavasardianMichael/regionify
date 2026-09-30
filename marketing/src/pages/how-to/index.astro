@@ -1,0 +1,74 @@
+---
+import CtaSection from '@/components/CtaSection.astro';
+import GuideBreadcrumbs from '@/components/guide/GuideBreadcrumbs.astro';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { GUIDES } from '@/data/guides/registry';
+import {
+  GUIDE_INDEX_CANONICAL_PATH,
+  guideIndexUrl,
+  guidePath,
+  guideUrl,
+  hubPath,
+  hubUrl,
+} from '@/helpers/guides';
+import { buildBreadcrumbJsonLd, buildGuideCollectionJsonLd } from '@/helpers/jsonLd';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import MarketingPage from '@/layouts/MarketingPage.astro';
+
+const canonicalUrl = guideIndexUrl();
+
+const breadcrumbs = [{ name: 'Regionify maps', url: hubPath() }, { name: 'Guides' }];
+
+const jsonLd = [
+  buildBreadcrumbJsonLd([
+    { name: 'Regionify maps', url: hubUrl() },
+    { name: 'Guides', url: canonicalUrl },
+  ]),
+  buildGuideCollectionJsonLd(GUIDES, canonicalUrl, guideUrl),
+];
+---
+
+<MarketingLayout
+  seoTitle="Regional Map Guides — Embed, Import & Animate | Regionify"
+  seoDescription="Step-by-step guides for building regional maps from a spreadsheet, embedding a live map with an iframe, and exporting an animated GIF or MP4."
+  seoKeywords="regional map guides, how to make a choropleth map, embed a regional map, map from spreadsheet, animated map tutorial"
+  canonicalPath={GUIDE_INDEX_CANONICAL_PATH}
+  jsonLd={jsonLd}
+>
+  <MarketingPage>
+    <section class="border-b border-gray-200 bg-gray-50 py-10 md:py-14">
+      <div class="mx-auto max-w-6xl px-4 md:px-6">
+        <div class="mb-6"><GuideBreadcrumbs items={breadcrumbs} /></div>
+        <MarketingTitle level={1} className="mb-4 max-w-3xl">
+          Regional map guides
+        </MarketingTitle>
+        <p class="max-w-3xl text-lg leading-relaxed text-balance text-gray-600">
+          Short, practical guides for turning a spreadsheet into a map by region — importing your
+          data, embedding the result on your own site, animating it over time, and getting the
+          terminology straight.
+        </p>
+      </div>
+    </section>
+
+    <div class="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
+      <ul class="grid gap-4 md:grid-cols-2">
+        {
+          GUIDES.map((guide) => (
+            <li>
+              <MarketingButton type="card" href={guidePath(guide.slug)}>
+                <span class="flex w-full flex-col gap-2 text-left">
+                  <span class="text-base font-semibold text-gray-800">{guide.h1}</span>
+                  <span class="text-sm leading-relaxed text-gray-500">{guide.summary}</span>
+                </span>
+              </MarketingButton>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <CtaSection links={MARKETING_LINKS_TO_APP.guideIndex} />
+  </MarketingPage>
+</MarketingLayout>

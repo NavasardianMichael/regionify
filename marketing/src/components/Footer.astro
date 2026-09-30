@@ -1,6 +1,7 @@
 ---
 import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
 import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { guideIndexPath } from '@/helpers/guides';
 
 const year = new Date().getFullYear();
 ---
@@ -18,6 +19,11 @@ const year = new Date().getFullYear();
       <div class="flex flex-wrap items-center justify-center gap-6 py-4 md:justify-end">
         <MarketingButton type="link" muted href={MARKETING_LINKS_TO_APP.footer.home}>
           Home
+        </MarketingButton>
+        {/* The only marketing-internal link in the footer — it reaches every guide from all
+            190 country pages. */}
+        <MarketingButton type="link" muted href={guideIndexPath()}>
+          Guides
         </MarketingButton>
         <MarketingButton type="link" muted href={MARKETING_LINKS_TO_APP.footer.pricing}>
           Pricing

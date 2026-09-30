@@ -1,0 +1,70 @@
+---
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { assertCountrySlugs, otherGuides } from '@/data/guides/registry';
+import { getCountry } from '@/data/parseCountries';
+import { countryPath, guidePath, hubPath } from '@/helpers/guides';
+
+interface Props {
+  currentSlug: string;
+  /** Curated worked-example countries. Validated at build time — a typo fails the build. */
+  countrySlugs: string[];
+}
+
+const { currentSlug, countrySlugs } = Astro.props;
+
+const validatedSlugs = assertCountrySlugs(countrySlugs, `GuideRelated (${currentSlug})`);
+const countries = validatedSlugs
+  .map((slug) => getCountry(slug))
+  .filter((country): country is NonNullable<typeof country> => country !== null);
+
+const guides = otherGuides(currentSlug);
+---
+
+<section class="border-t border-gray-200 bg-gray-50 py-12 md:py-16">
+  <div class="mx-auto flex max-w-6xl flex-col gap-10 px-4 md:px-6">
+    <div>
+      <MarketingTitle level={2} className="mb-4">Keep reading</MarketingTitle>
+      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          guides.map((guide) => (
+            <li>
+              <MarketingButton type="card" href={guidePath(guide.slug)}>
+                <span class="flex w-full flex-col gap-1 text-left">
+                  <span class="text-sm font-semibold text-gray-800">{guide.navLabel}</span>
+                  <span class="text-xs text-gray-400">{guide.h1}</span>
+                </span>
+              </MarketingButton>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <MarketingTitle level={2} className="mb-2">Try it for a country</MarketingTitle>
+      <p class="mb-4 text-base text-gray-500">
+        Every country page lists its administrative divisions and the formats you can export.
+      </p>
+      <ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {
+          countries.map((country) => (
+            <li>
+              <MarketingButton type="card" href={countryPath(country.slug)}>
+                <span class="flex w-full flex-col gap-0.5 text-left">
+                  <span class="text-sm font-semibold text-gray-800">{country.name_en}</span>
+                  <span class="text-xs text-gray-400">
+                    {country.division_count} {country.division_type.toLowerCase()}
+                  </span>
+                </span>
+              </MarketingButton>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-4">
+        <MarketingButton type="link" href={hubPath()}>Browse all 190 countries →</MarketingButton>
+      </p>
+    </div>
+  </div>
+</section>

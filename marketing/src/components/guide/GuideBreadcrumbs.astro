@@ -1,0 +1,32 @@
+---
+interface Props {
+  /** Ordered, root first. The final entry is the current page and must omit `url`. */
+  items: { name: string; url?: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb">
+  <ol class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+    {
+      items.map((item, index) => (
+        <li class="flex items-center gap-2">
+          {item.url ? (
+            <a
+              href={item.url}
+              class="underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary"
+            >
+              {item.name}
+            </a>
+          ) : (
+            <span aria-current="page" class="text-gray-700">
+              {item.name}
+            </span>
+          )}
+          {index < items.length - 1 && <span aria-hidden="true">/</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
