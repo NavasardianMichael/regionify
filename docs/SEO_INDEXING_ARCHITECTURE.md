@@ -23,7 +23,7 @@ A sitemap index at `/sitemap.xml` points to two child sitemaps:
 ```
 /sitemap.xml                       ← index (served by Express)
   /app-sitemap.xml                 ← static public routes + all enabled embeds (live DB query)
-  /marketing/sitemap-0.xml         ← Astro-generated; all 190+ country pages
+  /marketing/sitemap-0.xml         ← Astro-generated; 190 country pages + hub + 4 guides + guide index
 ```
 
 The index must point at `sitemap-0.xml` (the actual `<urlset>`), not `sitemap-index.xml` —
@@ -117,14 +117,65 @@ Both variables hold the **same token** and both must be set before deploying for
 
 ---
 
-## Marketing layer — country page JSON-LD
+## Marketing layer — JSON-LD
 
-`marketing/src/layouts/MarketingLayout.astro` emits two JSON-LD blocks on every country page:
+`marketing/src/layouts/MarketingLayout.astro` always emits a `SoftwareApplication` node, plus
+whatever a page passes via its `jsonLd` prop:
 
-- `SoftwareApplication` — describes Regionify, with `Offer` entries sourced from `BADGE_DETAILS` in `@regionify/shared`
-- `Country` — `name`, `alternateName` (local name), `numberOfPeople`, `area (QuantitativeValue, unitCode KMQ)`, `containsPlace` (division names)
+- `SoftwareApplication` — every marketing page. `@id` is `${CLIENT_URL}#software` and the
+  category pair matches `server/src/web/coreJsonLd.ts`, so the app and the marketing site
+  describe **one** product entity rather than two anonymous, diverging ones. `Offer` entries come
+  from `BADGE_DETAILS` in `@regionify/shared`.
+- `Country` — country pages only. `name`, `alternateName` (local name), `numberOfPeople`,
+  `area (QuantitativeValue, unitCode KMQ)`, `containsPlace` (division names).
+- `BreadcrumbList` + `HowTo` + `FAQPage` — the three how-to guides.
+- `BreadcrumbList` + `TechArticle` + `FAQPage` — the `regional-map-vs-choropleth-map` explainer.
+- `BreadcrumbList` + `CollectionPage`/`ItemList` — the guide index.
 
-Population and area data live in `marketing/data/countries.json`.
+Builders live in `marketing/src/helpers/jsonLd.ts`. All nodes go through `jsonLdScriptText()`,
+which escapes `<` as `<` — mirroring `escapeJsonForScript` in
+`server/src/web/renderHtmlDocument.ts`. Guide steps embed literal `<iframe …>` markup, so this
+matters.
+
+Note Google retired `HowTo` rich results (Sept 2023) and limited `FAQPage` rich results to
+authoritative gov/health sites (Aug 2023). Both are emitted for answer-engine ingestion, not for
+a SERP rich result.
+
+`HowTo.step[]` and `FAQPage.mainEntity[]` are generated from the same arrays that render the
+visible DOM (`marketing/src/data/guides/*.ts`) — structured data that does not mirror visible
+content gets ignored.
+
+Population, area and the `continent`/`subregion` grouping used for country-to-country
+cross-links all live in `marketing/data/countries.json`.
+
+---
+
+## Marketing layer — guides
+
+Four guides plus an index, at `/marketing/how-to/`:
+
+```
+/marketing/how-to/                                   ← index
+/marketing/how-to/embed-regional-map-iframe/
+/marketing/how-to/regional-map-from-google-sheets/
+/marketing/how-to/animated-regional-map-gif-mp4/
+/marketing/how-to/regional-map-vs-choropleth-map/
+```
+
+They exist to cover query intent the 190 country pages cannot: how-to and definitional searches,
+and the "regional map" vocabulary that the country pages (which say "choropleth") do not carry.
+
+`@astrojs/sitemap` has no filter, so new pages enter `sitemap-0.xml` automatically and need no
+server change. nginx's `location /marketing` uses `alias` + `try_files $uri $uri/ =404`, which
+already serves arbitrary nested paths.
+
+Guide slugs are kebab-case; the 190 country slugs are camelCase. There is no collision, and a
+static `src/pages/how-to/*` route outranks the root `[country].astro` dynamic route regardless.
+
+Tier claims in guide copy resolve through `marketing/src/helpers/tiers.ts`
+(`lowestBadgeWhere` / `badgeLabel`) over `BADGE_DETAILS` — never hardcoded, so pricing and gating
+changes propagate on the next build. The iframe snippet shown on guides and country pages comes
+from `buildIframeSnippet()` in `@regionify/shared`, the same function the app uses.
 
 ---
 
@@ -152,8 +203,16 @@ Population and area data live in `marketing/data/countries.json`.
 | `server/src/web/renderHtmlDocument.ts`        | HTML shell renderer; injects all meta tags and JSON-LD                               |
 | `server/src/config/env.ts`                    | `GOOGLE_SITE_VERIFICATION` Zod field                                                 |
 | `marketing/src/layouts/MarketingLayout.astro` | Head tags, OG, JSON-LD for all marketing pages                                       |
+| `marketing/src/layouts/MarketingPage.astro`   | Nav/main/Footer shell; `scroll="document"` for long-form guides                      |
 | `marketing/src/pages/[country].astro`         | Country page template                                                                |
 | `marketing/src/pages/index.astro`             | Marketing hub page                                                                   |
+| `marketing/src/pages/how-to/*.astro`          | Guide index and the four guide pages                                                 |
+| `marketing/src/data/guides/*.ts`              | Guide copy: steps and FAQs, the single source for DOM and JSON-LD                    |
+| `marketing/src/helpers/jsonLd.ts`             | JSON-LD builders and `<`-escaping                                                    |
+| `marketing/src/helpers/guides.ts`             | Guide URL and canonical-path helpers (`BASE`-aware)                                  |
+| `marketing/src/helpers/tiers.ts`              | Tier labels derived from `BADGE_DETAILS`                                             |
+| `shared/src/constants/embed.ts`               | `buildIframeSnippet()` — one snippet definition for app and marketing                |
+| `client/src/constants/marketingUrls.ts`       | App → marketing links (plain `<a>`; deliberately not in `ROUTES`)                    |
 | `marketing/data/countries.json`               | Country data including population and area                                           |
 | `deployment/regionify.pro.conf`               | SPA host nginx config with SEO proxy blocks                                          |
 | `deployment/api.regionify.pro.conf`           | API host nginx config                                                                |

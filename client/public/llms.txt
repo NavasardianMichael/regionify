@@ -15,6 +15,14 @@ Common ways people describe this: map by region, regional heat map, administrati
 - [FAQ](https://regionify.pro/faq): Supported data formats, export options, embedding maps, and badge tiers.
 - [Contact](https://regionify.pro/contact): Get in touch with the Regionify team.
 
+## Guides
+
+- [How to embed a live regional map on your website](https://regionify.pro/marketing/how-to/embed-regional-map-iframe/): Publish a map as a public embed, copy the iframe snippet, and paste it into any site. The embed stays live and reflects current data.
+- [How to make a regional map from Excel, CSV or Google Sheets](https://regionify.pro/marketing/how-to/regional-map-from-google-sheets/): Structure a spreadsheet, import from Excel, CSV, JSON or a linked Google Sheet, and check region matching. Available on every tier including free.
+- [How to create an animated regional map (GIF or MP4)](https://regionify.pro/marketing/how-to/animated-regional-map-gif-mp4/): Shape time-series data with one column per period, then export a looping GIF or an MP4 video.
+- [Regional map vs choropleth map: what is the difference?](https://regionify.pro/marketing/how-to/regional-map-vs-choropleth-map/): They are two names for the same map type. Explains the terms, how a choropleth differs from a heat map, and why to map rates rather than counts.
+- [All guides](https://regionify.pro/marketing/how-to/): Index of Regionify's how-to guides.
+
 ## Optional
 
 - [Terms of Service](https://regionify.pro/terms): Rules and conditions governing use of the platform.

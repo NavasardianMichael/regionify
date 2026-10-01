@@ -829,6 +829,8 @@ const es: CommonNs = {
     refund: 'Política de reembolso',
     contact: 'Contacto',
     faq: 'FAQ',
+    countryMaps: 'Mapas por país',
+    guides: 'Guías',
   },
   legal: {
     englishOnlyNote:

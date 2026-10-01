@@ -1,0 +1,62 @@
+---
+import { buildIframeSnippet } from '@regionify/shared';
+import CodeBlock from '@/components/guide/CodeBlock.astro';
+import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton.tsx';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { type CountryRow } from '@/data/parseCountries';
+import { guidePath } from '@/helpers/guides';
+import { embedBadgeLabel } from '@/helpers/tiers';
+import showcaseEmbedUrls from '../../data/showcase-embed-urls.json';
+
+interface Props {
+  country: CountryRow;
+}
+
+const { country } = Astro.props;
+
+// 160 of 190 countries have a live demo embed; the rest show the same snippet with a
+// placeholder token so the page still answers "what does the embed code look like?".
+const liveEmbedUrl: string | undefined =
+  showcaseEmbedUrls[country.slug as keyof typeof showcaseEmbedUrls];
+const isLive = liveEmbedUrl !== undefined;
+const embedUrl = liveEmbedUrl ?? 'https://regionify.pro/embed/YOUR_TOKEN';
+
+// Built by the same function the app uses, so this can never drift from the real snippet.
+const snippet = buildIframeSnippet(embedUrl);
+---
+
+<section class="bg-gray-50 py-12 md:py-16">
+  <div class="mx-auto max-w-4xl px-4 md:px-6">
+    {/* "<country> regional map" is the phrase the target audience actually searches — the page
+        title uses the cartographic term "choropleth", so carry the everyday one in a heading.
+        Phrased without "a"/"an": 36 of the 190 country names start with a vowel. */}
+    <MarketingTitle level={2} className="mb-2 text-center">
+      Embed the {country.name_en} regional map on your site
+    </MarketingTitle>
+    <p class="mx-auto mb-8 max-w-2xl text-center text-base text-balance text-gray-500">
+      Publishing your {country.name_en} regional map gives you a single line of HTML. The embed
+      stays live — update your data and every page showing the map updates too.
+    </p>
+
+    <CodeBlock
+      code={snippet}
+      language="html"
+      label={`the ${country.name_en} iframe embed snippet`}
+    />
+
+    <p class="mt-4 text-sm text-gray-500">
+      {
+        isLive
+          ? `This is the live demo embed for ${country.name_en} — paste it into a page and it renders. Swap in your own project's URL once you publish one.`
+          : `Replace YOUR_TOKEN with the token Regionify generates when you publish your ${country.name_en} project.`
+      }
+      {' '}Public embed is available on {embedBadgeLabel()}.
+    </p>
+
+    <p class="mt-4">
+      <MarketingButton type="link" href={guidePath('embed-regional-map-iframe')}>
+        Read the full embed guide →
+      </MarketingButton>
+    </p>
+  </div>
+</section>

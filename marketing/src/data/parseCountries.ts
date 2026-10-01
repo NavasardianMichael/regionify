@@ -11,6 +11,13 @@ export type CountryRow = {
   capital: string;
   division_type: string;
   division_count: number;
+  /**
+   * Geographic grouping used to cross-link neighbouring country pages. Assigned on a purely
+   * geographic basis (UN M49 style) and carries no political claim. Optional so the build
+   * survives a country added to `countries.json` before it is grouped.
+   */
+  continent?: string;
+  subregion?: string;
   /** Approximate population (head count). */
   population_approx?: number;
   /** Land area in km². */

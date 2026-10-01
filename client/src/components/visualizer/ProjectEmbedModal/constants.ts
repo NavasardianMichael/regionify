@@ -11,9 +11,6 @@ export const KEYWORD_MAX_LENGTH = 80;
 export const ALLOWED_ORIGIN_MAX_COUNT = 20;
 export const ALLOWED_ORIGIN_MAX_LENGTH = 200;
 
-export const IFRAME_HEIGHT_PX = 560;
-export const IFRAME_TITLE = 'Regionify map';
-
 export const TEXTAREA_STYLES = {
   textarea: { resize: 'none' as const },
 };

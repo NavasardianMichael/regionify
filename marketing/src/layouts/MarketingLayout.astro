@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { BADGE_DETAILS, BADGES } from '@regionify/shared';
 import { BASE } from '@/helpers/commons';
+import { type JsonLdNode, jsonLdScriptText, SOFTWARE_ID } from '@/helpers/jsonLd';
 
 interface Props {
   seoTitle: string;
@@ -9,6 +10,15 @@ interface Props {
   seoKeywords: string;
   /** Country slug — omit for the hub index page, which uses `${BASE}/` as its canonical. */
   slug?: string;
+  /**
+   * Canonical path under `BASE` for pages that are not a country slug, without leading or
+   * trailing slashes (e.g. `how-to/embed-regional-map-iframe`). Takes precedence over `slug`.
+   */
+  canonicalPath?: string;
+  /** `website` for the hub and country pages; `article` for guides. */
+  ogType?: 'website' | 'article';
+  /** Page-specific JSON-LD, emitted before the always-present SoftwareApplication node. */
+  jsonLd?: JsonLdNode[];
   nameEn?: string;
   nameLocal?: string;
   divisionNames?: string[];
@@ -25,6 +35,9 @@ const {
   seoDescription,
   seoKeywords,
   slug,
+  canonicalPath,
+  ogType = 'website',
+  jsonLd,
   nameEn,
   nameLocal,
   divisionNames,
@@ -34,19 +47,26 @@ const {
 } = Astro.props;
 
 const CLIENT_URL = import.meta.env.CLIENT_URL;
-const canonicalUrl = slug ? `${CLIENT_URL}${BASE}/${slug}/` : `${CLIENT_URL}${BASE}/`;
+const canonicalSuffix = (canonicalPath ?? slug ?? '').replace(/^\/+|\/+$/g, '');
+const canonicalUrl = canonicalSuffix
+  ? `${CLIENT_URL}${BASE}/${canonicalSuffix}/`
+  : `${CLIENT_URL}${BASE}/`;
 const ogImageUrl = ogImagePublicPath
   ? `${CLIENT_URL}${ogImagePublicPath}`
   : `${CLIENT_URL}/og-image.jpg`;
 
+// `@id` and the category pair mirror `server/src/web/coreJsonLd.ts` so both pipelines
+// describe one product entity; without it each page minted an anonymous, diverging copy.
 const softwareAppJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
+  '@id': SOFTWARE_ID,
   name: 'Regionify',
   description:
     'Create choropleth maps for any country or region. Import from CSV, Excel, JSON, Google Sheets (including live sync), pasted tabular data, or AI-assisted parsing of unstructured text; customize styling and legends; export as PNG, SVG, GIF, MP4, or PDF.',
   url: CLIENT_URL,
-  applicationCategory: 'DataVisualization',
+  applicationCategory: 'DesignApplication',
+  applicationSubCategory: 'Data Visualization',
   offers: [BADGES.observer, BADGES.explorer, BADGES.chronographer].map((badge) => ({
     '@type': 'Offer',
     name: badge.charAt(0).toUpperCase() + badge.slice(1),
@@ -91,7 +111,7 @@ const countryJsonLd =
     <meta property="og:description" content={seoDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Regionify" />
     <meta property="og:locale" content="en_US" />
 
@@ -105,18 +125,14 @@ const countryJsonLd =
     <script async is:inline src="https://news.google.com/swg/js/v1/publisher.js"></script>
 
     {
-      countryJsonLd && (
-        <script
-          is:inline
-          type="application/ld+json"
-          set:html={JSON.stringify(countryJsonLd)}
-        />
-      )
+      [...(jsonLd ?? []), ...(countryJsonLd ? [countryJsonLd] : [])].map((node) => (
+        <script is:inline type="application/ld+json" set:html={jsonLdScriptText(node)} />
+      ))
     }
     <script
       is:inline
       type="application/ld+json"
-      set:html={JSON.stringify(softwareAppJsonLd)}
+      set:html={jsonLdScriptText(softwareAppJsonLd)}
     />
   </head>
   <body class="bg-white text-gray-900">

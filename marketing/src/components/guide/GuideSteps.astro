@@ -1,0 +1,43 @@
+---
+import CodeBlock from '@/components/guide/CodeBlock.astro';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { type GuideStep } from '@/data/guides/types';
+
+interface Props {
+  steps: GuideStep[];
+}
+
+const { steps } = Astro.props;
+---
+
+{/* Each `id` is also the fragment in the matching HowToStep.url — the visible DOM and the
+    structured data are rendered from this one array. */}
+<ol class="flex flex-col gap-10">
+  {
+    steps.map((step, index) => (
+      <li id={step.id} tabindex="-1" class="scroll-mt-24">
+        <div class="flex items-start gap-4">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white"
+            aria-hidden="true"
+          >
+            {index + 1}
+          </span>
+          <div class="min-w-0 flex-1">
+            <MarketingTitle level={3} className="mb-2">
+              {step.name}
+            </MarketingTitle>
+            <p class="mb-4 text-base leading-relaxed text-gray-600">{step.text}</p>
+            {step.code && (
+              <CodeBlock
+                code={step.code.code}
+                language={step.code.language}
+                label={step.code.label}
+              />
+            )}
+          </div>
+        </div>
+      </li>
+    ))
+  }
+</ol>

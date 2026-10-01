@@ -1,0 +1,42 @@
+---
+import GuideBreadcrumbs from '@/components/guide/GuideBreadcrumbs.astro';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { type GuideMeta } from '@/data/guides/types';
+import { guideIndexPath, hubPath } from '@/helpers/guides';
+
+interface Props {
+  guide: GuideMeta;
+}
+
+const { guide } = Astro.props;
+
+const breadcrumbs = [
+  { name: 'Regionify maps', url: hubPath() },
+  { name: 'Guides', url: guideIndexPath() },
+  { name: guide.navLabel },
+];
+
+const updated = new Date(`${guide.dateModified}T00:00:00Z`).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<section class="border-b border-gray-200 bg-gray-50 py-10 md:py-14">
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <div class="mb-6"><GuideBreadcrumbs items={breadcrumbs} /></div>
+
+    <MarketingTitle level={1} className="mb-4 max-w-3xl">
+      {guide.h1}
+    </MarketingTitle>
+
+    {/* The answer-first summary: the span answer engines are most likely to quote. */}
+    <p class="max-w-3xl text-lg leading-relaxed text-balance text-gray-600">{guide.summary}</p>
+
+    <p class="mt-6 text-xs text-gray-400">
+      Last updated <time datetime={guide.dateModified}>{updated}</time>
+    </p>
+  </div>
+</section>

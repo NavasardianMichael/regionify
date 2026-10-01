@@ -1,0 +1,172 @@
+---
+import CtaSection from '@/components/CtaSection.astro';
+import GuideFaq from '@/components/guide/GuideFaq.astro';
+import GuideHero from '@/components/guide/GuideHero.astro';
+import GuideRelated from '@/components/guide/GuideRelated.astro';
+import GuideSection from '@/components/guide/GuideSection.astro';
+import GuideToc from '@/components/guide/GuideToc.astro';
+import { regionalMapVsChoroplethGuide as guide } from '@/data/guides/regionalMapVsChoropleth';
+import { guideCanonicalPath, guideIndexUrl, guidePath, guideUrl, hubUrl } from '@/helpers/guides';
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildTechArticleJsonLd,
+  compactJsonLd,
+} from '@/helpers/jsonLd';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import MarketingPage from '@/layouts/MarketingPage.astro';
+
+const canonicalUrl = guideUrl(guide.slug);
+const faq = guide.faq ?? [];
+const sections = [...(guide.sections ?? []), { id: 'faq', title: 'Common questions' }];
+
+const jsonLd = compactJsonLd([
+  buildBreadcrumbJsonLd([
+    { name: 'Regionify maps', url: hubUrl() },
+    { name: 'Guides', url: guideIndexUrl() },
+    { name: guide.navLabel, url: canonicalUrl },
+  ]),
+  buildTechArticleJsonLd(guide, canonicalUrl),
+  buildFaqJsonLd(faq, canonicalUrl),
+]);
+---
+
+<MarketingLayout
+  seoTitle={guide.seoTitle}
+  seoDescription={guide.seoDescription}
+  seoKeywords={guide.seoKeywords}
+  canonicalPath={guideCanonicalPath(guide.slug)}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <MarketingPage>
+    <GuideHero guide={guide} />
+
+    <div class="mx-auto flex max-w-6xl gap-12 px-4 py-12 md:px-6 md:py-16">
+      <GuideToc sections={sections} variant="sidebar" />
+
+      <article class="min-w-0 flex-1">
+        <GuideToc sections={sections} variant="inline" />
+
+        <div class="flex flex-col gap-12">
+          <GuideSection id="same-thing-two-names" title="They are the same thing">
+            <p>
+              If you came here to find out how a regional map differs from a choropleth map, the
+              short answer is that it does not. <strong>They are two names for one kind of map.</strong>
+              "Choropleth" is the term cartographers use; "regional map", "area map" and "map by
+              region" are what almost everyone else says.
+            </p>
+            <p>
+              The word comes from the Greek <em>khōra</em> (area) and <em>plēthos</em> (multitude),
+              which is a reasonable summary of what it does: it shows a quantity, area by area.
+              Neither term is more correct — use whichever your audience will recognise.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="what-a-choropleth-is" title="What a choropleth map actually is">
+            <p>
+              A choropleth map has exactly two ingredients: a set of <strong>predefined areas</strong>
+              with fixed boundaries, and <strong>one value per area</strong>. Colour or shading encodes
+              the value; the boundaries come from somewhere official rather than from your data.
+            </p>
+            <p>Those areas are usually administrative divisions:</p>
+            <ul>
+              <li>countries, for a world or continental map</li>
+              <li>states, provinces, regions or counties, within one country</li>
+              <li>districts, municipalities or electoral constituencies, for finer detail</li>
+            </ul>
+            <p>
+              The fixed-boundary part is what makes it a choropleth. You are not drawing shapes
+              from the data — you are colouring in shapes that already exist.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="choropleth-vs-heat-map" title="Choropleth vs heat map: a real difference">
+            <p>
+              This is the distinction worth learning, and the one people usually mean when they
+              sense two different things are being described.
+            </p>
+            <p>
+              In a <strong>choropleth</strong>, the shapes are fixed administrative boundaries and
+              colour encodes a value for each. In a <strong>heat map</strong>, the shapes come from
+              the data itself: it renders a continuous density surface, with no regard for borders,
+              typically from many individual points.
+            </p>
+            <p>
+              A simple way to choose: if your data arrives as one number per named region, you want
+              a choropleth. If it arrives as thousands of individual locations and you want to show
+              where they cluster, you want a heat map. Calling a choropleth a "heat map" is common
+              and rarely causes confusion — but they answer different questions.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="other-thematic-maps" title="Other thematic map types, briefly">
+            <ul>
+              <li>
+                <strong>Proportional symbol map.</strong> A circle over each area, sized by value.
+                Better than a choropleth for raw totals, because size reads as quantity and does not
+                inherit the area's physical size.
+              </li>
+              <li>
+                <strong>Dot density map.</strong> One dot per <em>n</em> units, scattered within each
+                area. Good at conveying magnitude and distribution at once.
+              </li>
+              <li>
+                <strong>Cartogram.</strong> Areas resized by value, distorting geography deliberately
+                — the standard fix for "big empty regions dominate the map".
+              </li>
+              <li>
+                <strong>Isopleth (contour) map.</strong> Lines joining equal values across a
+                continuous surface, like elevation or temperature. Ignores administrative borders.
+              </li>
+            </ul>
+          </GuideSection>
+
+          <GuideSection id="normalise-your-data" title="The mistake that ruins most choropleths">
+            <p>
+              Mapping <strong>raw counts instead of rates</strong> is the single most common error,
+              and it is worth understanding because it makes a map look authoritative while telling
+              you almost nothing.
+            </p>
+            <p>
+              Because a choropleth colours whole areas, a large or populous region will show a large
+              total for nearly any variable you pick. Map the number of anything by province and you
+              will mostly produce a map of where the people live.
+            </p>
+            <p>
+              The fix is to divide by a sensible denominator — population, area, households, total
+              cases — so the areas become comparable. Per capita, per square kilometre, or a
+              percentage almost always beats a count. A related caveat: because the boundaries are
+              arbitrary units drawn for administrative reasons, the same underlying data can look
+              quite different at province level than at district level.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="which-term-to-use" title="Which term should you use?">
+            <p>
+              Write for whoever is reading. In a newsroom, a classroom or a client deck, "regional
+              map" or "map by region" is immediately understood. In a methods section, a GIS team or
+              an academic paper, "choropleth map" is the precise term and signals that you know
+              which map type you chose and why.
+            </p>
+            <p>
+              Regionify builds these either way — the boundaries for 190 countries and their
+              divisions are already there, so you provide only the values. The practical next steps
+              are <a href={guidePath('regional-map-from-google-sheets')}>importing a spreadsheet</a>,
+              then <a href={guidePath('embed-regional-map-iframe')}>embedding the map</a> or
+              <a href={guidePath('animated-regional-map-gif-mp4')}>animating it over time</a>.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="faq" title="Common questions">
+            <GuideFaq items={faq} />
+          </GuideSection>
+        </div>
+      </article>
+    </div>
+
+    <GuideRelated currentSlug={guide.slug} countrySlugs={guide.exampleCountrySlugs} />
+    <CtaSection links={MARKETING_LINKS_TO_APP.guideExplainer} />
+  </MarketingPage>
+</MarketingLayout>

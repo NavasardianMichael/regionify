@@ -1,0 +1,126 @@
+---
+import CtaSection from '@/components/CtaSection.astro';
+import GuideFaq from '@/components/guide/GuideFaq.astro';
+import GuideHero from '@/components/guide/GuideHero.astro';
+import GuideRelated from '@/components/guide/GuideRelated.astro';
+import GuideSection from '@/components/guide/GuideSection.astro';
+import GuideSteps from '@/components/guide/GuideSteps.astro';
+import GuideToc from '@/components/guide/GuideToc.astro';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { animatedRegionalMapGifMp4Guide as guide } from '@/data/guides/animatedRegionalMapGifMp4';
+import { type GuideSectionRef } from '@/data/guides/types';
+import { guideCanonicalPath, guideIndexUrl, guidePath, guideUrl, hubUrl } from '@/helpers/guides';
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildHowToJsonLd,
+  compactJsonLd,
+} from '@/helpers/jsonLd';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
+import { animationBadgeLabel } from '@/helpers/tiers';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import MarketingPage from '@/layouts/MarketingPage.astro';
+
+const canonicalUrl = guideUrl(guide.slug);
+const steps = guide.steps ?? [];
+const faq = guide.faq ?? [];
+
+const sections: GuideSectionRef[] = [
+  { id: 'when-animation-helps', title: 'When animation actually helps' },
+  ...steps.map((step) => ({ id: step.id, title: step.name })),
+  { id: 'gif-vs-mp4', title: 'GIF vs MP4 at a glance' },
+  { id: 'faq', title: 'Common questions' },
+];
+
+const jsonLd = compactJsonLd([
+  buildBreadcrumbJsonLd([
+    { name: 'Regionify maps', url: hubUrl() },
+    { name: 'Guides', url: guideIndexUrl() },
+    { name: guide.navLabel, url: canonicalUrl },
+  ]),
+  buildHowToJsonLd(guide, canonicalUrl),
+  buildFaqJsonLd(faq, canonicalUrl),
+]);
+---
+
+<MarketingLayout
+  seoTitle={guide.seoTitle}
+  seoDescription={guide.seoDescription}
+  seoKeywords={guide.seoKeywords}
+  canonicalPath={guideCanonicalPath(guide.slug)}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <MarketingPage>
+    <GuideHero guide={guide} />
+
+    <div class="mx-auto flex max-w-6xl gap-12 px-4 py-12 md:px-6 md:py-16">
+      <GuideToc sections={sections} variant="sidebar" />
+
+      <article class="min-w-0 flex-1">
+        <GuideToc sections={sections} variant="inline" />
+
+        <div class="flex flex-col gap-12">
+          <GuideSection id="when-animation-helps" title="When animation actually helps">
+            <p>
+              Animation earns its place when the <em>change</em> is the story — a metric spreading
+              outward from a capital, a gap between regions widening over two decades, a policy
+              taking effect in some provinces before others. If your point is a single year's
+              ranking, a static map says it faster and can be read at a glance.
+            </p>
+            <p>
+              The honest test: would a reader who paused the animation on any single frame still
+              understand it? If yes, the motion is adding something. If the map only makes sense
+              in motion, consider a small multiple — several static maps side by side — instead.
+            </p>
+            <p>
+              Time-series import and animated export start at <strong>{animationBadgeLabel()}</strong>.
+            </p>
+          </GuideSection>
+
+          <section>
+            <MarketingTitle level={2} className="mb-6">
+              Building an animated map, step by step
+            </MarketingTitle>
+            <GuideSteps steps={steps} />
+          </section>
+
+          <GuideSection id="gif-vs-mp4" title="GIF vs MP4 at a glance">
+            <ul>
+              <li>
+                <strong>File size.</strong> MP4 is dramatically smaller for the same duration and
+                quality. A long GIF can run to tens of megabytes.
+              </li>
+              <li>
+                <strong>Colour.</strong> GIF is limited to 256 colours, which can band a smooth
+                sequential colour scale. MP4 handles gradients cleanly.
+              </li>
+              <li>
+                <strong>Autoplay and looping.</strong> GIF loops anywhere with no player and no
+                user gesture. MP4 autoplay depends on the platform and usually needs to be muted.
+              </li>
+              <li>
+                <strong>Where it is going.</strong> Slack, newsletters, wikis and blog posts
+                favour GIF. Slides, YouTube and most social platforms favour MP4.
+              </li>
+            </ul>
+            <p>
+              If the destination is a web page you control, weigh both against
+              <a href={guidePath('embed-regional-map-iframe')}>a live embed</a>: the timeline stays
+              interactive, and the data does not freeze at export time. Not sure your spreadsheet
+              is shaped correctly yet? Start with
+              <a href={guidePath('regional-map-from-google-sheets')}>importing a spreadsheet</a>.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="faq" title="Common questions">
+            <GuideFaq items={faq} />
+          </GuideSection>
+        </div>
+      </article>
+    </div>
+
+    <GuideRelated currentSlug={guide.slug} countrySlugs={guide.exampleCountrySlugs} />
+    <CtaSection links={MARKETING_LINKS_TO_APP.guideAnimation} />
+  </MarketingPage>
+</MarketingLayout>

@@ -1,0 +1,128 @@
+---
+import CtaSection from '@/components/CtaSection.astro';
+import GuideFaq from '@/components/guide/GuideFaq.astro';
+import GuideHero from '@/components/guide/GuideHero.astro';
+import GuideRelated from '@/components/guide/GuideRelated.astro';
+import GuideSection from '@/components/guide/GuideSection.astro';
+import GuideSteps from '@/components/guide/GuideSteps.astro';
+import GuideToc from '@/components/guide/GuideToc.astro';
+import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
+import { regionalMapFromGoogleSheetsGuide as guide } from '@/data/guides/regionalMapFromGoogleSheets';
+import { type GuideSectionRef } from '@/data/guides/types';
+import { guideCanonicalPath, guideIndexUrl, guidePath, guideUrl, hubUrl } from '@/helpers/guides';
+import {
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildHowToJsonLd,
+  compactJsonLd,
+} from '@/helpers/jsonLd';
+import { MARKETING_LINKS_TO_APP } from '@/helpers/marketing';
+import MarketingLayout from '@/layouts/MarketingLayout.astro';
+import MarketingPage from '@/layouts/MarketingPage.astro';
+
+const canonicalUrl = guideUrl(guide.slug);
+const steps = guide.steps ?? [];
+const faq = guide.faq ?? [];
+
+const sections: GuideSectionRef[] = [
+  { id: 'what-you-need', title: 'What you need' },
+  ...steps.map((step) => ({ id: step.id, title: step.name })),
+  { id: 'common-data-problems', title: 'Data problems worth knowing about' },
+  { id: 'faq', title: 'Common questions' },
+];
+
+const jsonLd = compactJsonLd([
+  buildBreadcrumbJsonLd([
+    { name: 'Regionify maps', url: hubUrl() },
+    { name: 'Guides', url: guideIndexUrl() },
+    { name: guide.navLabel, url: canonicalUrl },
+  ]),
+  buildHowToJsonLd(guide, canonicalUrl),
+  buildFaqJsonLd(faq, canonicalUrl),
+]);
+---
+
+<MarketingLayout
+  seoTitle={guide.seoTitle}
+  seoDescription={guide.seoDescription}
+  seoKeywords={guide.seoKeywords}
+  canonicalPath={guideCanonicalPath(guide.slug)}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <MarketingPage>
+    <GuideHero guide={guide} />
+
+    <div class="mx-auto flex max-w-6xl gap-12 px-4 py-12 md:px-6 md:py-16">
+      <GuideToc sections={sections} variant="sidebar" />
+
+      <article class="min-w-0 flex-1">
+        <GuideToc sections={sections} variant="inline" />
+
+        <div class="flex flex-col gap-12">
+          <GuideSection id="what-you-need" title="What you need">
+            <p>
+              Two things: a spreadsheet with one row per region, and a decision about which
+              administrative level you are mapping. That is genuinely all — no GIS software, no
+              shapefiles, no coordinates. Regionify already holds the boundaries for 190 countries
+              and their provinces, states, counties and districts, so you supply only the numbers.
+            </p>
+            <p>
+              Spreadsheet import is <strong>not</strong> restricted by tier: Google Sheets, CSV,
+              Excel and JSON all work on the free Observer tier. The paid tiers change what you can
+              export and share afterwards, not how your data gets in.
+            </p>
+          </GuideSection>
+
+          <section>
+            <MarketingTitle level={2} className="mb-6">
+              From spreadsheet to map, step by step
+            </MarketingTitle>
+            <GuideSteps steps={steps} />
+          </section>
+
+          <GuideSection id="common-data-problems" title="Data problems worth knowing about">
+            <p>
+              Nearly every import that goes wrong goes wrong for one of four reasons:
+            </p>
+            <ul>
+              <li>
+                <strong>Wrong administrative level.</strong> City-level rows against a province map
+                leave most regions blank. Check what the map expects before importing — each
+                country page lists its divisions by name.
+              </li>
+              <li>
+                <strong>Totals and subtotals.</strong> A "Total" or "All regions" row has nowhere
+                to land. Delete those rows before importing.
+              </li>
+              <li>
+                <strong>Counts where rates belong.</strong> A choropleth colours whole areas, so
+                raw totals mostly show where the population is. Divide by population, area or
+                another denominator so regions are comparable. There is more on this in
+                <a href={guidePath('regional-map-vs-choropleth-map')}>regional map vs choropleth map</a>.
+              </li>
+              <li>
+                <strong>Numbers stored as text.</strong> Currency symbols, percent signs and
+                thousands separators can stop a column being read as numeric. Strip them in the
+                sheet first.
+              </li>
+            </ul>
+            <p>
+              Once the data is in and the map looks right, you can
+              <a href={guidePath('embed-regional-map-iframe')}>embed it live on your own site</a>
+              or, if your sheet has a column per year,
+              <a href={guidePath('animated-regional-map-gif-mp4')}>animate it over time</a>.
+            </p>
+          </GuideSection>
+
+          <GuideSection id="faq" title="Common questions">
+            <GuideFaq items={faq} />
+          </GuideSection>
+        </div>
+      </article>
+    </div>
+
+    <GuideRelated currentSlug={guide.slug} countrySlugs={guide.exampleCountrySlugs} />
+    <CtaSection links={MARKETING_LINKS_TO_APP.guideSheets} />
+  </MarketingPage>
+</MarketingLayout>

@@ -49,3 +49,17 @@ html,
 body {
   height: 100%;
 }
+
+/*
+ * Clears the sticky nav (py-3 + <=max-h-11 logo, ~68px) on every fragment jump, including the
+ * one on initial load. Targets `html` because that is the scrollport for `MarketingPage`.
+ */
+html {
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

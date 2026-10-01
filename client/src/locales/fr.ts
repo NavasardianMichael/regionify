@@ -836,6 +836,8 @@ const fr: CommonNs = {
     refund: 'Politique de remboursement',
     contact: 'Contact',
     faq: 'FAQ',
+    countryMaps: 'Cartes par pays',
+    guides: 'Guides',
   },
   legal: {
     englishOnlyNote:

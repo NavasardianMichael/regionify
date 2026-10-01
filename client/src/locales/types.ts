@@ -651,6 +651,9 @@ export type CommonNs = {
     refund: string;
     contact: string;
     faq: string;
+    /** Links to the Astro marketing microsite at /marketing/ — not React Router routes. */
+    countryMaps: string;
+    guides: string;
   };
   legal: {
     /** Localized note explaining that legal pages (Terms, Privacy, Refund) are English-only. */

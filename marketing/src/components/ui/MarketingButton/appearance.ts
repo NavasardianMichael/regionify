@@ -4,7 +4,9 @@ export type MarketingButtonType = 'primary' | 'secondary' | 'dashed' | 'default'
 const focusOutline =
   'transition-opacity focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary';
 
-const buttonBase = `inline-flex items-center gap-1 rounded-sm hover:transition-all no-underline ${focusOutline}`;
+// `cursor-pointer` is explicit because Tailwind v4's preflight sets `cursor: default` on
+// `button`, so a control rendered as a real <button> (rather than an <a>) has no pointer.
+const buttonBase = `inline-flex cursor-pointer items-center gap-1 rounded-sm hover:transition-all no-underline ${focusOutline}`;
 
 /** Single marketing control size (compact / sm). */
 const buttonSizeDefault = 'px-4 py-1.5 text-sm justify-center';

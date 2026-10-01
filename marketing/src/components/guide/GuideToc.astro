@@ -1,0 +1,55 @@
+---
+import { type GuideSectionRef } from '@/data/guides/types';
+
+interface Props {
+  sections: GuideSectionRef[];
+  /**
+   * `sidebar` is the sticky desktop column (hidden below `lg`); `inline` is the collapsible
+   * block that sits at the top of the article on small screens. Content inside a closed
+   * `<details>` is still in the DOM, so the inline variant costs nothing for indexing.
+   */
+  variant: 'sidebar' | 'inline';
+}
+
+const { sections, variant } = Astro.props;
+
+const linkClass =
+  'block py-1 text-sm text-gray-500 underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-primary';
+---
+
+{
+  variant === 'sidebar' ? (
+    /* `lg:self-start` is required: a flex item stretches to the row height by default,
+       which stops `position: sticky` from ever engaging. */
+    <nav
+      aria-labelledby="toc-heading"
+      class="hidden lg:sticky lg:top-24 lg:block lg:w-56 lg:shrink-0 lg:self-start"
+    >
+      <p id="toc-heading" class="mb-2 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+        On this page
+      </p>
+      <ol class="border-l border-gray-200">
+        {sections.map((section) => (
+          <li>
+            <a href={`#${section.id}`} class={`${linkClass} -ml-px border-l border-transparent pl-3 hover:border-primary`}>
+              {section.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  ) : (
+    <details class="mb-8 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 lg:hidden">
+      <summary class="cursor-pointer text-sm font-semibold text-primary">On this page</summary>
+      <ol class="mt-2">
+        {sections.map((section) => (
+          <li>
+            <a href={`#${section.id}`} class={linkClass}>
+              {section.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </details>
+  )
+}

@@ -5,6 +5,8 @@
     "capital": "Kabul",
     "division_type": "Provinces",
     "division_count": 34,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 42000000,
     "area_km2": 652090
   },
@@ -14,6 +16,8 @@
     "capital": "Tirana",
     "division_type": "Counties",
     "division_count": 12,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 2800000,
     "area_km2": 28748
   },
@@ -23,6 +27,8 @@
     "capital": "Algiers",
     "division_type": "Provinces",
     "division_count": 48,
+    "continent": "Africa",
+    "subregion": "Northern Africa",
     "population_approx": 46000000,
     "area_km2": 2381741
   },
@@ -32,6 +38,8 @@
     "capital": "Andorra la Vella",
     "division_type": "Parishes",
     "division_count": 7,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 80000,
     "area_km2": 468
   },
@@ -41,6 +49,8 @@
     "capital": "Luanda",
     "division_type": "Provinces",
     "division_count": 18,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 36000000,
     "area_km2": 1246700
   },
@@ -50,6 +60,8 @@
     "capital": "Saint John's",
     "division_type": "Parishes",
     "division_count": 8,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 100000,
     "area_km2": 443
   },
@@ -59,6 +71,8 @@
     "capital": "Buenos Aires",
     "division_type": "Provinces",
     "division_count": 24,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 46000000,
     "area_km2": 2780400
   },
@@ -68,6 +82,8 @@
     "capital": "Yerevan",
     "division_type": "Provinces",
     "division_count": 11,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 3000000,
     "area_km2": 29743
   },
@@ -77,6 +93,8 @@
     "capital": "Canberra",
     "division_type": "States",
     "division_count": 8,
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
     "population_approx": 26000000,
     "area_km2": 7692024
   },
@@ -86,6 +104,8 @@
     "capital": "Vienna",
     "division_type": "States",
     "division_count": 9,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 9200000,
     "area_km2": 83871
   },
@@ -95,6 +115,8 @@
     "capital": "Nassau",
     "division_type": "Districts",
     "division_count": 32,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 400000,
     "area_km2": 13943
   },
@@ -104,6 +126,8 @@
     "capital": "Manama",
     "division_type": "Governorates",
     "division_count": 5,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 1800000,
     "area_km2": 760
   },
@@ -113,6 +137,8 @@
     "capital": "Dhaka",
     "division_type": "Divisions",
     "division_count": 7,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 173000000,
     "area_km2": 147570
   },
@@ -122,6 +148,8 @@
     "capital": "Bridgetown",
     "division_type": "Parishes",
     "division_count": 11,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 280000,
     "area_km2": 431
   },
@@ -131,6 +159,8 @@
     "capital": "Minsk",
     "division_type": "Regions",
     "division_count": 7,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 9400000,
     "area_km2": 207600
   },
@@ -140,6 +170,8 @@
     "capital": "Brussels",
     "division_type": "Provinces",
     "division_count": 11,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 11600000,
     "area_km2": 30528
   },
@@ -149,6 +181,8 @@
     "capital": "Belmopan",
     "division_type": "Districts",
     "division_count": 6,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 420000,
     "area_km2": 22966
   },
@@ -158,6 +192,8 @@
     "capital": "Porto-Novo",
     "division_type": "Departments",
     "division_count": 12,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 13500000,
     "area_km2": 112622
   },
@@ -167,6 +203,8 @@
     "capital": "Hamilton",
     "division_type": "Parishes",
     "division_count": 11,
+    "continent": "Americas",
+    "subregion": "Northern America",
     "population_approx": 64000,
     "area_km2": 54
   },
@@ -176,6 +214,8 @@
     "capital": "Thimphu",
     "division_type": "Districts",
     "division_count": 20,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 780000,
     "area_km2": 38394
   },
@@ -185,6 +225,8 @@
     "capital": "Sucre",
     "division_type": "Departments",
     "division_count": 9,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 12300000,
     "area_km2": 1098581
   },
@@ -194,6 +236,8 @@
     "capital": "Gaborone",
     "division_type": "Districts",
     "division_count": 9,
+    "continent": "Africa",
+    "subregion": "Southern Africa",
     "population_approx": 2700000,
     "area_km2": 581730
   },
@@ -203,6 +247,8 @@
     "capital": "Brasília",
     "division_type": "States",
     "division_count": 27,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 215000000,
     "area_km2": 8515767
   },
@@ -212,6 +258,8 @@
     "capital": "Bandar Seri Begawan",
     "division_type": "Districts",
     "division_count": 4,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 450000,
     "area_km2": 5765
   },
@@ -221,6 +269,8 @@
     "capital": "Sofia",
     "division_type": "Provinces",
     "division_count": 28,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 6500000,
     "area_km2": 110879
   },
@@ -230,6 +280,8 @@
     "capital": "Ouagadougou",
     "division_type": "Regions",
     "division_count": 13,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 23000000,
     "area_km2": 274222
   },
@@ -239,6 +291,8 @@
     "capital": "Gitega",
     "division_type": "Provinces",
     "division_count": 17,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 13000000,
     "area_km2": 27834
   },
@@ -248,6 +302,8 @@
     "capital": "Phnom Penh",
     "division_type": "Provinces",
     "division_count": 24,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 17000000,
     "area_km2": 181035
   },
@@ -257,6 +313,8 @@
     "capital": "Yaoundé",
     "division_type": "Regions",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 29000000,
     "area_km2": 475442
   },
@@ -266,6 +324,8 @@
     "capital": "Ottawa",
     "division_type": "Provinces",
     "division_count": 13,
+    "continent": "Americas",
+    "subregion": "Northern America",
     "population_approx": 38000000,
     "area_km2": 9984670
   },
@@ -275,6 +335,8 @@
     "capital": "Praia",
     "division_type": "Municipalities",
     "division_count": 22,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 580000,
     "area_km2": 4033
   },
@@ -284,6 +346,8 @@
     "capital": "Bangui",
     "division_type": "Prefectures",
     "division_count": 17,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 5700000,
     "area_km2": 622984
   },
@@ -293,6 +357,8 @@
     "capital": "N'Djamena",
     "division_type": "Provinces",
     "division_count": 22,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 18500000,
     "area_km2": 1284000
   },
@@ -302,6 +368,8 @@
     "capital": "Santiago",
     "division_type": "Regions",
     "division_count": 15,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 19500000,
     "area_km2": 756102
   },
@@ -311,6 +379,8 @@
     "capital": "Beijing",
     "division_type": "Provinces",
     "division_count": 34,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 1400000000,
     "area_km2": 9596960
   },
@@ -320,6 +390,8 @@
     "capital": "Bogotá",
     "division_type": "Departments",
     "division_count": 33,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 52000000,
     "area_km2": 1141748
   },
@@ -329,6 +401,8 @@
     "capital": "Moroni",
     "division_type": "Islands",
     "division_count": 3,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 870000,
     "area_km2": 2235
   },
@@ -338,6 +412,8 @@
     "capital": "Brazzaville",
     "division_type": "Departments",
     "division_count": 12,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 6000000,
     "area_km2": 342000
   },
@@ -347,6 +423,8 @@
     "capital": "Kinshasa",
     "division_type": "Provinces",
     "division_count": 26,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 102000000,
     "area_km2": 2344858
   },
@@ -356,6 +434,8 @@
     "capital": "San José",
     "division_type": "Provinces",
     "division_count": 8,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 5200000,
     "area_km2": 51100
   },
@@ -365,6 +445,8 @@
     "capital": "Zagreb",
     "division_type": "Counties",
     "division_count": 21,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 3900000,
     "area_km2": 56594
   },
@@ -374,6 +456,8 @@
     "capital": "Havana",
     "division_type": "Provinces",
     "division_count": 16,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 11200000,
     "area_km2": 109884
   },
@@ -383,6 +467,8 @@
     "capital": "Nicosia",
     "division_type": "Districts",
     "division_count": 6,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 1300000,
     "area_km2": 9251
   },
@@ -392,6 +478,8 @@
     "capital": "Prague",
     "division_type": "Regions",
     "division_count": 14,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 10900000,
     "area_km2": 78866
   },
@@ -401,6 +489,8 @@
     "capital": "Copenhagen",
     "division_type": "Regions",
     "division_count": 5,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 5900000,
     "area_km2": 43094
   },
@@ -410,6 +500,8 @@
     "capital": "Djibouti",
     "division_type": "Regions",
     "division_count": 6,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 1100000,
     "area_km2": 23200
   },
@@ -419,6 +511,8 @@
     "capital": "Roseau",
     "division_type": "Parishes",
     "division_count": 10,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 72000,
     "area_km2": 751
   },
@@ -428,6 +522,8 @@
     "capital": "Santo Domingo",
     "division_type": "Provinces",
     "division_count": 32,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 11000000,
     "area_km2": 48671
   },
@@ -437,6 +533,8 @@
     "capital": "Dili",
     "division_type": "Municipalities",
     "division_count": 13,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 1350000,
     "area_km2": 14874
   },
@@ -446,6 +544,8 @@
     "capital": "Quito",
     "division_type": "Provinces",
     "division_count": 24,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 18000000,
     "area_km2": 283561
   },
@@ -455,6 +555,8 @@
     "capital": "Cairo",
     "division_type": "Governorates",
     "division_count": 29,
+    "continent": "Africa",
+    "subregion": "Northern Africa",
     "population_approx": 106000000,
     "area_km2": 1001449
   },
@@ -464,6 +566,8 @@
     "capital": "San Salvador",
     "division_type": "Departments",
     "division_count": 14,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 6500000,
     "area_km2": 21041
   },
@@ -473,6 +577,8 @@
     "capital": "Malabo",
     "division_type": "Provinces",
     "division_count": 7,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 1500000,
     "area_km2": 28051
   },
@@ -482,6 +588,8 @@
     "capital": "Asmara",
     "division_type": "Regions",
     "division_count": 6,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 3600000,
     "area_km2": 117600
   },
@@ -491,6 +599,8 @@
     "capital": "Tallinn",
     "division_type": "Counties",
     "division_count": 15,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 1350000,
     "area_km2": 45228
   },
@@ -500,6 +610,8 @@
     "capital": "Mbabane",
     "division_type": "Regions",
     "division_count": 4,
+    "continent": "Africa",
+    "subregion": "Southern Africa",
     "population_approx": 1200000,
     "area_km2": 17364
   },
@@ -509,6 +621,8 @@
     "capital": "Addis Ababa",
     "division_type": "Regions",
     "division_count": 11,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 127000000,
     "area_km2": 1104300
   },
@@ -518,6 +632,8 @@
     "capital": "Helsinki",
     "division_type": "Regions",
     "division_count": 19,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 5600000,
     "area_km2": 338145
   },
@@ -527,6 +643,8 @@
     "capital": "Paris",
     "division_type": "Regions",
     "division_count": 22,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 68000000,
     "area_km2": 551695
   },
@@ -536,6 +654,8 @@
     "capital": "Libreville",
     "division_type": "Provinces",
     "division_count": 9,
+    "continent": "Africa",
+    "subregion": "Middle Africa",
     "population_approx": 2400000,
     "area_km2": 267668
   },
@@ -545,6 +665,8 @@
     "capital": "Banjul",
     "division_type": "Regions",
     "division_count": 6,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 2700000,
     "area_km2": 11295
   },
@@ -554,6 +676,8 @@
     "capital": "Tbilisi",
     "division_type": "Regions",
     "division_count": 12,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 3700000,
     "area_km2": 69700
   },
@@ -563,6 +687,8 @@
     "capital": "Berlin",
     "division_type": "States",
     "division_count": 16,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 84000000,
     "area_km2": 357114
   },
@@ -572,6 +698,8 @@
     "capital": "Accra",
     "division_type": "Regions",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 33000000,
     "area_km2": 238533
   },
@@ -581,6 +709,8 @@
     "capital": "Athens",
     "division_type": "Regions",
     "division_count": 14,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 10600000,
     "area_km2": 131957
   },
@@ -590,6 +720,8 @@
     "capital": "Nuuk",
     "division_type": "Municipalities",
     "division_count": 6,
+    "continent": "Americas",
+    "subregion": "Northern America",
     "population_approx": 56000,
     "area_km2": 2166086
   },
@@ -599,6 +731,8 @@
     "capital": "Saint George's",
     "division_type": "Parishes",
     "division_count": 7,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 120000,
     "area_km2": 344
   },
@@ -608,6 +742,8 @@
     "capital": "Guatemala City",
     "division_type": "Departments",
     "division_count": 22,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 17500000,
     "area_km2": 108889
   },
@@ -617,6 +753,8 @@
     "capital": "Conakry",
     "division_type": "Regions",
     "division_count": 8,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 13500000,
     "area_km2": 245857
   },
@@ -626,6 +764,8 @@
     "capital": "Bissau",
     "division_type": "Regions",
     "division_count": 9,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 2100000,
     "area_km2": 36125
   },
@@ -635,6 +775,8 @@
     "capital": "Georgetown",
     "division_type": "Regions",
     "division_count": 10,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 790000,
     "area_km2": 214969
   },
@@ -644,6 +786,8 @@
     "capital": "Port-au-Prince",
     "division_type": "Departments",
     "division_count": 10,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 11500000,
     "area_km2": 27750
   },
@@ -653,6 +797,8 @@
     "capital": "Tegucigalpa",
     "division_type": "Departments",
     "division_count": 18,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 10300000,
     "area_km2": 112492
   },
@@ -662,6 +808,8 @@
     "capital": "Hong Kong",
     "division_type": "Districts",
     "division_count": 18,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 7500000,
     "area_km2": 1104
   },
@@ -671,6 +819,8 @@
     "capital": "Budapest",
     "division_type": "Counties",
     "division_count": 40,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 9700000,
     "area_km2": 93028
   },
@@ -680,6 +830,8 @@
     "capital": "Reykjavik",
     "division_type": "Regions",
     "division_count": 18,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 380000,
     "area_km2": 103000
   },
@@ -689,6 +841,8 @@
     "capital": "New Delhi",
     "division_type": "States",
     "division_count": 36,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 1430000000,
     "area_km2": 3287263
   },
@@ -698,6 +852,8 @@
     "capital": "Jakarta",
     "division_type": "Provinces",
     "division_count": 38,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 278000000,
     "area_km2": 1904569
   },
@@ -707,6 +863,8 @@
     "capital": "Tehran",
     "division_type": "Provinces",
     "division_count": 31,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 89000000,
     "area_km2": 1648195
   },
@@ -716,6 +874,8 @@
     "capital": "Baghdad",
     "division_type": "Governorates",
     "division_count": 18,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 43000000,
     "area_km2": 438317
   },
@@ -725,6 +885,8 @@
     "capital": "Dublin",
     "division_type": "Counties",
     "division_count": 27,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 5100000,
     "area_km2": 70273
   },
@@ -734,6 +896,8 @@
     "capital": "Jerusalem",
     "division_type": "Districts",
     "division_count": 8,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 9900000,
     "area_km2": 20770
   },
@@ -743,6 +907,8 @@
     "capital": "Rome",
     "division_type": "Regions",
     "division_count": 24,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 59000000,
     "area_km2": 301340
   },
@@ -752,6 +918,8 @@
     "capital": "Yamoussoukro",
     "division_type": "Districts",
     "division_count": 19,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 27000000,
     "area_km2": 322463
   },
@@ -761,6 +929,8 @@
     "capital": "Kingston",
     "division_type": "Parishes",
     "division_count": 14,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 2800000,
     "area_km2": 10991
   },
@@ -770,6 +940,8 @@
     "capital": "Tokyo",
     "division_type": "Prefectures",
     "division_count": 47,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 124000000,
     "area_km2": 377975
   },
@@ -779,6 +951,8 @@
     "capital": "Amman",
     "division_type": "Governorates",
     "division_count": 12,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 10200000,
     "area_km2": 89342
   },
@@ -788,6 +962,8 @@
     "capital": "Astana",
     "division_type": "Regions",
     "division_count": 15,
+    "continent": "Asia",
+    "subregion": "Central Asia",
     "population_approx": 19500000,
     "area_km2": 2724900
   },
@@ -797,6 +973,8 @@
     "capital": "Nairobi",
     "division_type": "Counties",
     "division_count": 47,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 56000000,
     "area_km2": 580367
   },
@@ -806,6 +984,8 @@
     "capital": "South Tarawa",
     "division_type": "Islands",
     "division_count": 3,
+    "continent": "Oceania",
+    "subregion": "Micronesia",
     "population_approx": 120000,
     "area_km2": 811
   },
@@ -815,6 +995,8 @@
     "capital": "Pristina",
     "division_type": "Districts",
     "division_count": 7,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 1800000,
     "area_km2": 10887
   },
@@ -824,6 +1006,8 @@
     "capital": "Kuwait City",
     "division_type": "Governorates",
     "division_count": 6,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 4800000,
     "area_km2": 17818
   },
@@ -833,6 +1017,8 @@
     "capital": "Bishkek",
     "division_type": "Regions",
     "division_count": 7,
+    "continent": "Asia",
+    "subregion": "Central Asia",
     "population_approx": 7000000,
     "area_km2": 199951
   },
@@ -842,6 +1028,8 @@
     "capital": "Vientiane",
     "division_type": "Provinces",
     "division_count": 17,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 7500000,
     "area_km2": 236800
   },
@@ -851,6 +1039,8 @@
     "capital": "Riga",
     "division_type": "Municipalities",
     "division_count": 119,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 1830000,
     "area_km2": 64589
   },
@@ -860,6 +1050,8 @@
     "capital": "Beirut",
     "division_type": "Governorates",
     "division_count": 6,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 5500000,
     "area_km2": 10452
   },
@@ -869,6 +1061,8 @@
     "capital": "Maseru",
     "division_type": "Districts",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Southern Africa",
     "population_approx": 2200000,
     "area_km2": 30355
   },
@@ -878,6 +1072,8 @@
     "capital": "Monrovia",
     "division_type": "Counties",
     "division_count": 15,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 5400000,
     "area_km2": 111369
   },
@@ -887,6 +1083,8 @@
     "capital": "Tripoli",
     "division_type": "Districts",
     "division_count": 22,
+    "continent": "Africa",
+    "subregion": "Northern Africa",
     "population_approx": 7200000,
     "area_km2": 1759540
   },
@@ -896,6 +1094,8 @@
     "capital": "Vaduz",
     "division_type": "Municipalities",
     "division_count": 11,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 38000,
     "area_km2": 160
   },
@@ -905,6 +1105,8 @@
     "capital": "Vilnius",
     "division_type": "Counties",
     "division_count": 10,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 2800000,
     "area_km2": 65300
   },
@@ -914,6 +1116,8 @@
     "capital": "Luxembourg City",
     "division_type": "Cantons",
     "division_count": 3,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 660000,
     "area_km2": 2586
   },
@@ -923,6 +1127,8 @@
     "capital": "Antananarivo",
     "division_type": "Regions",
     "division_count": 22,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 29000000,
     "area_km2": 587041
   },
@@ -932,6 +1138,8 @@
     "capital": "Lilongwe",
     "division_type": "Districts",
     "division_count": 28,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 20000000,
     "area_km2": 118484
   },
@@ -941,6 +1149,8 @@
     "capital": "Kuala Lumpur",
     "division_type": "States",
     "division_count": 17,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 33000000,
     "area_km2": 329847
   },
@@ -950,6 +1160,8 @@
     "capital": "Bamako",
     "division_type": "Regions",
     "division_count": 9,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 23000000,
     "area_km2": 1240192
   },
@@ -959,6 +1171,8 @@
     "capital": "Valletta",
     "division_type": "Regions",
     "division_count": 5,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 540000,
     "area_km2": 316
   },
@@ -968,6 +1182,8 @@
     "capital": "Nouakchott",
     "division_type": "Regions",
     "division_count": 13,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 4700000,
     "area_km2": 1030700
   },
@@ -977,6 +1193,8 @@
     "capital": "Port Louis",
     "division_type": "Districts",
     "division_count": 9,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 1300000,
     "area_km2": 2040
   },
@@ -986,6 +1204,8 @@
     "capital": "Mexico City",
     "division_type": "States",
     "division_count": 32,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 128000000,
     "area_km2": 1964375
   },
@@ -995,6 +1215,8 @@
     "capital": "Chișinău",
     "division_type": "Districts",
     "division_count": 37,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 2600000,
     "area_km2": 33846
   },
@@ -1004,6 +1226,8 @@
     "capital": "Ulaanbaatar",
     "division_type": "Provinces",
     "division_count": 22,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 3400000,
     "area_km2": 1564110
   },
@@ -1013,6 +1237,8 @@
     "capital": "Podgorica",
     "division_type": "Municipalities",
     "division_count": 22,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 620000,
     "area_km2": 13812
   },
@@ -1022,6 +1248,8 @@
     "capital": "Rabat",
     "division_type": "Regions",
     "division_count": 16,
+    "continent": "Africa",
+    "subregion": "Northern Africa",
     "population_approx": 38000000,
     "area_km2": 446550
   },
@@ -1031,6 +1259,8 @@
     "capital": "Maputo",
     "division_type": "Provinces",
     "division_count": 11,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 33000000,
     "area_km2": 801590
   },
@@ -1040,6 +1270,8 @@
     "capital": "Naypyidaw",
     "division_type": "States",
     "division_count": 14,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 54000000,
     "area_km2": 676578
   },
@@ -1049,6 +1281,8 @@
     "capital": "Windhoek",
     "division_type": "Regions",
     "division_count": 14,
+    "continent": "Africa",
+    "subregion": "Southern Africa",
     "population_approx": 2700000,
     "area_km2": 824292
   },
@@ -1058,6 +1292,8 @@
     "capital": "Kathmandu",
     "division_type": "Provinces",
     "division_count": 14,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 30000000,
     "area_km2": 147181
   },
@@ -1067,6 +1303,8 @@
     "capital": "Amsterdam",
     "division_type": "Provinces",
     "division_count": 12,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 17900000,
     "area_km2": 41543
   },
@@ -1076,6 +1314,8 @@
     "capital": "Wellington",
     "division_type": "Regions",
     "division_count": 17,
+    "continent": "Oceania",
+    "subregion": "Australia and New Zealand",
     "population_approx": 5100000,
     "area_km2": 270467
   },
@@ -1085,6 +1325,8 @@
     "capital": "Managua",
     "division_type": "Departments",
     "division_count": 17,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 7000000,
     "area_km2": 130370
   },
@@ -1094,6 +1336,8 @@
     "capital": "Niamey",
     "division_type": "Regions",
     "division_count": 8,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 25000000,
     "area_km2": 1267000
   },
@@ -1103,6 +1347,8 @@
     "capital": "Abuja",
     "division_type": "States",
     "division_count": 37,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 225000000,
     "area_km2": 923768
   },
@@ -1112,6 +1358,8 @@
     "capital": "Pyongyang",
     "division_type": "Provinces",
     "division_count": 11,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 26000000,
     "area_km2": 120538
   },
@@ -1121,6 +1369,8 @@
     "capital": "Skopje",
     "division_type": "Municipalities",
     "division_count": 86,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 2100000,
     "area_km2": 25713
   },
@@ -1130,6 +1380,8 @@
     "capital": "Oslo",
     "division_type": "Counties",
     "division_count": 19,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 5500000,
     "area_km2": 385207
   },
@@ -1139,6 +1391,8 @@
     "capital": "Muscat",
     "division_type": "Governorates",
     "division_count": 17,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 4900000,
     "area_km2": 309500
   },
@@ -1148,6 +1402,8 @@
     "capital": "Islamabad",
     "division_type": "Provinces",
     "division_count": 8,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 231000000,
     "area_km2": 881913
   },
@@ -1157,6 +1413,8 @@
     "capital": "Ngerulmud",
     "division_type": "States",
     "division_count": 16,
+    "continent": "Oceania",
+    "subregion": "Micronesia",
     "population_approx": 18000,
     "area_km2": 459
   },
@@ -1166,6 +1424,8 @@
     "capital": "Ramallah",
     "division_type": "Governorates",
     "division_count": 17,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 5400000,
     "area_km2": 6020
   },
@@ -1175,6 +1435,8 @@
     "capital": "Panama City",
     "division_type": "Provinces",
     "division_count": 13,
+    "continent": "Americas",
+    "subregion": "Central America",
     "population_approx": 4400000,
     "area_km2": 75420
   },
@@ -1184,6 +1446,8 @@
     "capital": "Port Moresby",
     "division_type": "Provinces",
     "division_count": 20,
+    "continent": "Oceania",
+    "subregion": "Melanesia",
     "population_approx": 10000000,
     "area_km2": 462840
   },
@@ -1193,6 +1457,8 @@
     "capital": "Asunción",
     "division_type": "Departments",
     "division_count": 18,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 7400000,
     "area_km2": 406752
   },
@@ -1202,6 +1468,8 @@
     "capital": "Lima",
     "division_type": "Regions",
     "division_count": 27,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 33500000,
     "area_km2": 1285216
   },
@@ -1211,6 +1479,8 @@
     "capital": "Manila",
     "division_type": "Regions",
     "division_count": 81,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 114000000,
     "area_km2": 300000
   },
@@ -1220,6 +1490,8 @@
     "capital": "Warsaw",
     "division_type": "Voivodeships",
     "division_count": 16,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 38000000,
     "area_km2": 312696
   },
@@ -1229,6 +1501,8 @@
     "capital": "Lisbon",
     "division_type": "Districts",
     "division_count": 20,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 10300000,
     "area_km2": 92212
   },
@@ -1238,6 +1512,8 @@
     "capital": "Doha",
     "division_type": "Municipalities",
     "division_count": 7,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 2900000,
     "area_km2": 11586
   },
@@ -1247,6 +1523,8 @@
     "capital": "Bucharest",
     "division_type": "Counties",
     "division_count": 42,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 19000000,
     "area_km2": 238397
   },
@@ -1256,6 +1534,8 @@
     "capital": "Moscow",
     "division_type": "Federal Subjects",
     "division_count": 83,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 144000000,
     "area_km2": 17098242
   },
@@ -1265,6 +1545,8 @@
     "capital": "Kigali",
     "division_type": "Provinces",
     "division_count": 5,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 14000000,
     "area_km2": 26338
   },
@@ -1274,6 +1556,8 @@
     "capital": "Apia",
     "division_type": "Districts",
     "division_count": 11,
+    "continent": "Oceania",
+    "subregion": "Polynesia",
     "population_approx": 220000,
     "area_km2": 2842
   },
@@ -1283,6 +1567,8 @@
     "capital": "San Marino",
     "division_type": "Castles",
     "division_count": 9,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 34000,
     "area_km2": 61
   },
@@ -1292,6 +1578,8 @@
     "capital": "Riyadh",
     "division_type": "Regions",
     "division_count": 13,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 36000000,
     "area_km2": 2149690
   },
@@ -1301,6 +1589,8 @@
     "capital": "Dakar",
     "division_type": "Regions",
     "division_count": 14,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 17000000,
     "area_km2": 196722
   },
@@ -1310,6 +1600,8 @@
     "capital": "Belgrade",
     "division_type": "Districts",
     "division_count": 30,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 6800000,
     "area_km2": 77474
   },
@@ -1319,6 +1611,8 @@
     "capital": "Victoria",
     "division_type": "Districts",
     "division_count": 26,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 100000,
     "area_km2": 455
   },
@@ -1328,6 +1622,8 @@
     "capital": "Freetown",
     "division_type": "Provinces",
     "division_count": 4,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 8400000,
     "area_km2": 71740
   },
@@ -1337,6 +1633,8 @@
     "capital": "Singapore",
     "division_type": "Districts",
     "division_count": 5,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 5900000,
     "area_km2": 728
   },
@@ -1346,6 +1644,8 @@
     "capital": "Bratislava",
     "division_type": "Regions",
     "division_count": 8,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 5500000,
     "area_km2": 49035
   },
@@ -1355,6 +1655,8 @@
     "capital": "Ljubljana",
     "division_type": "Municipalities",
     "division_count": 12,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 2100000,
     "area_km2": 20273
   },
@@ -1364,6 +1666,8 @@
     "capital": "Honiara",
     "division_type": "Provinces",
     "division_count": 10,
+    "continent": "Oceania",
+    "subregion": "Melanesia",
     "population_approx": 720000,
     "area_km2": 28896
   },
@@ -1373,6 +1677,8 @@
     "capital": "Mogadishu",
     "division_type": "Regions",
     "division_count": 18,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 18000000,
     "area_km2": 637657
   },
@@ -1382,6 +1688,8 @@
     "capital": "Pretoria",
     "division_type": "Provinces",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Southern Africa",
     "population_approx": 60000000,
     "area_km2": 1221037
   },
@@ -1391,6 +1699,8 @@
     "capital": "Seoul",
     "division_type": "Provinces",
     "division_count": 17,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 51700000,
     "area_km2": 100210
   },
@@ -1400,6 +1710,8 @@
     "capital": "Juba",
     "division_type": "States",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 11000000,
     "area_km2": 619745
   },
@@ -1409,6 +1721,8 @@
     "capital": "Madrid",
     "division_type": "Autonomous Communities",
     "division_count": 17,
+    "continent": "Europe",
+    "subregion": "Southern Europe",
     "population_approx": 48000000,
     "area_km2": 505990
   },
@@ -1418,6 +1732,8 @@
     "capital": "Colombo",
     "division_type": "Provinces",
     "division_count": 25,
+    "continent": "Asia",
+    "subregion": "Southern Asia",
     "population_approx": 22000000,
     "area_km2": 65610
   },
@@ -1427,6 +1743,8 @@
     "capital": "Jamestown",
     "division_type": "Districts",
     "division_count": 8,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 6000,
     "area_km2": 122
   },
@@ -1436,6 +1754,8 @@
     "capital": "Basseterre",
     "division_type": "Parishes",
     "division_count": 14,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 53000,
     "area_km2": 261
   },
@@ -1445,6 +1765,8 @@
     "capital": "Castries",
     "division_type": "Quarters",
     "division_count": 10,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 184000,
     "area_km2": 616
   },
@@ -1454,6 +1776,8 @@
     "capital": "Khartoum",
     "division_type": "States",
     "division_count": 18,
+    "continent": "Africa",
+    "subregion": "Northern Africa",
     "population_approx": 47000000,
     "area_km2": 1886068
   },
@@ -1463,6 +1787,8 @@
     "capital": "Paramaribo",
     "division_type": "Districts",
     "division_count": 10,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 620000,
     "area_km2": 163820
   },
@@ -1472,6 +1798,8 @@
     "capital": "Stockholm",
     "division_type": "Counties",
     "division_count": 21,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 10500000,
     "area_km2": 450295
   },
@@ -1481,6 +1809,8 @@
     "capital": "Bern",
     "division_type": "Cantons",
     "division_count": 27,
+    "continent": "Europe",
+    "subregion": "Western Europe",
     "population_approx": 8700000,
     "area_km2": 41285
   },
@@ -1490,6 +1820,8 @@
     "capital": "Damascus",
     "division_type": "Governorates",
     "division_count": 14,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 22000000,
     "area_km2": 185180
   },
@@ -1499,6 +1831,8 @@
     "capital": "Taipei",
     "division_type": "Counties",
     "division_count": 22,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 23600000,
     "area_km2": 36193
   },
@@ -1508,6 +1842,8 @@
     "capital": "Dushanbe",
     "division_type": "Regions",
     "division_count": 4,
+    "continent": "Asia",
+    "subregion": "Central Asia",
     "population_approx": 10000000,
     "area_km2": 143100
   },
@@ -1517,6 +1853,8 @@
     "capital": "Dodoma",
     "division_type": "Regions",
     "division_count": 30,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 65000000,
     "area_km2": 945087
   },
@@ -1526,6 +1864,8 @@
     "capital": "Bangkok",
     "division_type": "Provinces",
     "division_count": 78,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 72000000,
     "area_km2": 513120
   },
@@ -1535,6 +1875,8 @@
     "capital": "Lhasa",
     "division_type": "Prefectures",
     "division_count": 7,
+    "continent": "Asia",
+    "subregion": "Eastern Asia",
     "population_approx": 3500000,
     "area_km2": 1228400
   },
@@ -1544,6 +1886,8 @@
     "capital": "Lomé",
     "division_type": "Regions",
     "division_count": 5,
+    "continent": "Africa",
+    "subregion": "Western Africa",
     "population_approx": 8900000,
     "area_km2": 56785
   },
@@ -1553,6 +1897,8 @@
     "capital": "Nukuʻalofa",
     "division_type": "Divisions",
     "division_count": 5,
+    "continent": "Oceania",
+    "subregion": "Polynesia",
     "population_approx": 100000,
     "area_km2": 747
   },
@@ -1562,6 +1908,8 @@
     "capital": "Port of Spain",
     "division_type": "Regions",
     "division_count": 15,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 1400000,
     "area_km2": 5131
   },
@@ -1571,6 +1919,8 @@
     "capital": "Tunis",
     "division_type": "Governorates",
     "division_count": 24,
+    "continent": "Africa",
+    "subregion": "Northern Africa",
     "population_approx": 12000000,
     "area_km2": 163610
   },
@@ -1580,6 +1930,8 @@
     "capital": "Ashgabat",
     "division_type": "Regions",
     "division_count": 5,
+    "continent": "Asia",
+    "subregion": "Central Asia",
     "population_approx": 6100000,
     "area_km2": 488100
   },
@@ -1589,6 +1941,8 @@
     "capital": "Cockburn Town",
     "division_type": "Districts",
     "division_count": 6,
+    "continent": "Americas",
+    "subregion": "Caribbean",
     "population_approx": 44000,
     "area_km2": 948
   },
@@ -1598,6 +1952,8 @@
     "capital": "Kampala",
     "division_type": "Districts",
     "division_count": 112,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 48000000,
     "area_km2": 241038
   },
@@ -1607,6 +1963,8 @@
     "capital": "Kyiv",
     "division_type": "Oblasts",
     "division_count": 27,
+    "continent": "Europe",
+    "subregion": "Eastern Europe",
     "population_approx": 37000000,
     "area_km2": 603550
   },
@@ -1616,6 +1974,8 @@
     "capital": "Abu Dhabi",
     "division_type": "Emirates",
     "division_count": 10,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 9900000,
     "area_km2": 83600
   },
@@ -1625,6 +1985,8 @@
     "capital": "London",
     "division_type": "Countries",
     "division_count": 16,
+    "continent": "Europe",
+    "subregion": "Northern Europe",
     "population_approx": 68000000,
     "area_km2": 242495
   },
@@ -1634,6 +1996,8 @@
     "capital": "Montevideo",
     "division_type": "Departments",
     "division_count": 19,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 3500000,
     "area_km2": 176215
   },
@@ -1643,6 +2007,8 @@
     "capital": "Washington, D.C.",
     "division_type": "States",
     "division_count": 51,
+    "continent": "Americas",
+    "subregion": "Northern America",
     "population_approx": 335000000,
     "area_km2": 9372610
   },
@@ -1652,6 +2018,8 @@
     "capital": "Tashkent",
     "division_type": "Regions",
     "division_count": 16,
+    "continent": "Asia",
+    "subregion": "Central Asia",
     "population_approx": 36000000,
     "area_km2": 448978
   },
@@ -1661,6 +2029,8 @@
     "capital": "Port Vila",
     "division_type": "Provinces",
     "division_count": 6,
+    "continent": "Oceania",
+    "subregion": "Melanesia",
     "population_approx": 330000,
     "area_km2": 12189
   },
@@ -1670,6 +2040,8 @@
     "capital": "Caracas",
     "division_type": "States",
     "division_count": 28,
+    "continent": "Americas",
+    "subregion": "South America",
     "population_approx": 28000000,
     "area_km2": 916445
   },
@@ -1679,6 +2051,8 @@
     "capital": "Hanoi",
     "division_type": "Provinces",
     "division_count": 64,
+    "continent": "Asia",
+    "subregion": "South-eastern Asia",
     "population_approx": 98000000,
     "area_km2": 331212
   },
@@ -1688,6 +2062,8 @@
     "capital": "Sanaa",
     "division_type": "Governorates",
     "division_count": 21,
+    "continent": "Asia",
+    "subregion": "Western Asia",
     "population_approx": 34000000,
     "area_km2": 527968
   },
@@ -1697,6 +2073,8 @@
     "capital": "Lusaka",
     "division_type": "Provinces",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 20000000,
     "area_km2": 752618
   },
@@ -1706,6 +2084,8 @@
     "capital": "Harare",
     "division_type": "Provinces",
     "division_count": 10,
+    "continent": "Africa",
+    "subregion": "Eastern Africa",
     "population_approx": 16500000,
     "area_km2": 390757
   }

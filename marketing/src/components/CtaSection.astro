@@ -4,28 +4,58 @@ import { MarketingButton } from '@/components/ui/MarketingButton/MarketingButton
 import { MarketingTitle } from '@/components/ui/MarketingTitle.tsx';
 
 interface Props {
-  countryName: string;
-  divisionType: string;
+  /** Country pages pass both; guide pages pass neither and get the generic wording. */
+  countryName?: string;
+  divisionType?: string;
+  /**
+   * UTM-tagged app links. Defaults to the `cta_section` medium so country pages are
+   * unchanged; guides pass their own so their conversions stay separable in analytics.
+   */
+  links?: { generateMap: string; seePlans: string };
 }
 
-const { countryName, divisionType } = Astro.props;
+const {
+  countryName,
+  divisionType,
+  links = MARKETING_LINKS_TO_APP.ctaSection,
+} = Astro.props;
+
+const hasCountry = countryName !== undefined && divisionType !== undefined;
 ---
 
 <section class="bg-primary py-16 md:py-24">
   <div class="mx-auto w-full max-w-6xl px-4 text-center md:px-6">
-    <MarketingTitle level={2} colorScheme="dark" className="mx-auto mb-4 w-full max-w-4xl">
-      Build your own {countryName} choropleth map — free
-    </MarketingTitle>
-    <p class="mx-auto mb-8 w-full max-w-144 text-balance text-white/80">
-      Upload any dataset, color {countryName}'s {divisionType.toLowerCase()} by any numeric metric,
-      and export as PNG, SVG, GIF, or MP4. No design skills required — start in seconds, publish
-      anywhere.
-    </p>
+    {
+      hasCountry ? (
+        <MarketingTitle level={2} colorScheme="dark" className="mx-auto mb-4 w-full max-w-4xl">
+          Build your own {countryName} choropleth map — free
+        </MarketingTitle>
+      ) : (
+        <MarketingTitle level={2} colorScheme="dark" className="mx-auto mb-4 w-full max-w-4xl">
+          Build your own regional map — free
+        </MarketingTitle>
+      )
+    }
+    {
+      hasCountry ? (
+        <p class="mx-auto mb-8 w-full max-w-144 text-balance text-white/80">
+          Upload any dataset, color {countryName}'s {divisionType.toLowerCase()} by any numeric
+          metric, and export as PNG, SVG, GIF, or MP4. No design skills required — start in
+          seconds, publish anywhere.
+        </p>
+      ) : (
+        <p class="mx-auto mb-8 w-full max-w-144 text-balance text-white/80">
+          Upload any dataset, color a country's regions by any numeric metric, and export as PNG,
+          SVG, GIF, or MP4 — or embed the map live. No design skills required, and no
+          subscription.
+        </p>
+      )
+    }
     <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-      <MarketingButton type="dashed" colorScheme="dark" href={MARKETING_LINKS_TO_APP.ctaSection.generateMap}>
+      <MarketingButton type="dashed" colorScheme="dark" href={links.generateMap}>
         Start for free →
       </MarketingButton>
-      <MarketingButton type="dashed" colorScheme="dark" href={MARKETING_LINKS_TO_APP.ctaSection.seePlans}>
+      <MarketingButton type="dashed" colorScheme="dark" href={links.seePlans}>
         View pricing for badges →
       </MarketingButton>
     </div>

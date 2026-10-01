@@ -30,7 +30,12 @@ if (existsSync(playwrightAssetsSrc)) {
     recursive: true,
     filter: (src) => {
       const name = src.split(/[\\/]/).pop() ?? '';
-      return !name.startsWith('.') && !name.startsWith('_') && !name.endsWith('.json') && !name.endsWith('.txt');
+      return (
+        !name.startsWith('.') &&
+        !name.startsWith('_') &&
+        !name.endsWith('.json') &&
+        !name.endsWith('.txt')
+      );
     },
   });
   console.log('✓ Playwright assets copied to public/assets/');
