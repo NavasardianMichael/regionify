@@ -338,7 +338,7 @@ async function ensureSaneMapExportFrame(page: Page): Promise<void> {
     const targetH = Math.max(360, Math.round(rawH / 5) * 5);
     const targetW = Math.max(480, Math.round(rawW / 5) * 5);
 
-    let el = root;
+    let el: HTMLElement | null = root;
     while (el && el !== document.body) {
       el.style.minHeight = '0';
       const isPanel =
@@ -633,11 +633,11 @@ async function runAutomation(page: Page, tabDelimitedData: string): Promise<void
       throw new Error(`Exported MP4 is too small (${size} bytes) — likely incomplete`);
     }
 
-    const head = Buffer.alloc(8);
+    const head = new Uint8Array(8);
     const fd = openSync(EXPORTED_MP4_DEST, 'r');
     readSync(fd, head, 0, 8, 0);
     closeSync(fd);
-    const asText = head.toString('utf8');
+    const asText = Buffer.from(head).toString('utf8');
     if (asText.startsWith('<?xml') || asText.startsWith('<svg')) {
       throw new Error('Exported file is SVG/XML, not an MP4');
     }
