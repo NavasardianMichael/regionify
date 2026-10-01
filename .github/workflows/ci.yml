@@ -44,6 +44,9 @@ jobs:
 
       - name: Run TypeScript type check
         run: pnpm typecheck
+        env:
+          # marketing/astro.config.mjs refuses to load without it; `astro check` loads the config.
+          CLIENT_URL: https://regionify.pro
 
       - name: Build all packages
         run: pnpm build
