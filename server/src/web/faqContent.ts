@@ -21,12 +21,12 @@ export const FAQ_ITEMS: readonly FaqItem[] = [
   {
     question: 'Which file formats can I import?',
     answer:
-      'You can import **CSV** and **Excel** spreadsheets, **JSON** data, and connect a **Google Sheet** for **live sync** on supported badge tiers — so your map always reflects live data, not a one-time snapshot. Regionify uses **fuzzy text matching** to associate rows in your data with regions on the map when names are close but not identical.',
+      'You can import **CSV** and **Excel** spreadsheets, **JSON** data, and connect a **Google Sheet** for **live sync** on every badge, including the free one — so your map always reflects live data, not a one-time snapshot. Regionify uses **fuzzy text matching** to associate rows in your data with regions on the map when names are close but not identical.',
   },
   {
     question: 'Which export formats are available?',
     answer:
-      'Export options depend on your badge tier. The free **Observer** badge already includes **JPEG**, **PNG**, and **PDF** export with core maps and legends, advanced map styling, and high-resolution (2K/4K) output. The **Explorer** badge adds **SVG** export, historical time-series data with an interactive timeline, an **animated regional map** export (**GIF** and **MP4** video), and an AI data parser. The **Chronographer** badge includes everything in Explorer, plus a public embed (iframe and public page) and a higher daily AI request allowance.',
+      'Export options depend on your badge tier. The free **Observer** badge already includes **JPEG**, **PNG**, and **PDF** export with a watermark, core maps and legends, advanced map styling, and high-resolution (2K/4K) output. The **Explorer** badge removes the watermark and adds **SVG** export, historical time-series data with an interactive timeline, an **animated regional map** export (**GIF** and **MP4** video), and an AI data parser. The **Chronographer** badge includes everything in Explorer, plus a public embed (iframe and public page) and a higher daily AI request allowance.',
   },
   {
     question: 'Can I embed a map on my website?',
@@ -46,7 +46,7 @@ export const FAQ_ITEMS: readonly FaqItem[] = [
   {
     question: 'Do I need an account?',
     answer:
-      'Yes. Regionify uses accounts for saving projects, billing, and optional Google sign-in. You can review current badge tiers and limits on the **Pricing** page inside the app.',
+      'Not to get started. You can build a map, import data, and export it without signing up. A free account (email or Google sign-in) is needed to save projects and to buy a badge. You can review current badge tiers and limits on the **Pricing** page inside the app.',
   },
   {
     question: 'How do I get help or send feedback?',

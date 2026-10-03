@@ -43,7 +43,8 @@ const es: CommonNs = {
     featureCustomizeDesc:
       'Escalas de color, leyendas personalizadas, formato de etiquetas y control total del aspecto del mapa.',
     featureExportTitle: 'Exportación de alta calidad',
-    featureExportDesc: 'Descarga tus mapas como PNG, SVG o JPEG con hasta 100 % de calidad.',
+    featureExportDesc:
+      'Descarga tus mapas como PNG, JPEG o PDF a calidad completa, hasta 4K. Los badges de pago añaden SVG y quitan la marca de agua.',
     featureTimeSeriesTitle: 'Series temporales y animación',
     featureTimeSeriesDesc:
       'Importa datos históricos, navega en el tiempo y exporta cronologías animadas en GIF o MP4.',
@@ -101,12 +102,12 @@ const es: CommonNs = {
       {
         question: '¿Qué formatos puedo importar?',
         answer:
-          'Hojas **CSV** y **Excel**, **JSON** y **Google Sheets** con sincronización en vivo en cuentas compatibles. Regionify usa **coincidencia difusa de texto** entre tus etiquetas y los nombres de región.',
+          'Hojas **CSV** y **Excel**, **JSON** y **Google Sheets** con sincronización en vivo en todos los badges, incluido el gratuito. Regionify usa **coincidencia difusa de texto** entre tus etiquetas y los nombres de región.',
       },
       {
         question: '¿Qué formatos de exportación hay?',
         answer:
-          'Depende del badge. El badge gratuito **Observer** ya incluye exportación **JPEG**, **PNG** y **PDF**, estilos avanzados de mapa y leyenda, y exportación en alta resolución (2K/4K). El badge **Explorador** añade exportación **SVG**, datos temporales con línea de tiempo, exportación animada (**GIF** y **MP4**) y un analizador de datos con IA. El badge **Cronógrafo** incluye todo lo de Explorador, más incrustación pública y un límite diario de IA más alto.',
+          'Depende del badge. El badge gratuito **Observador** ya incluye exportación **JPEG**, **PNG** y **PDF** con marca de agua, estilos avanzados de mapa y leyenda, y exportación en alta resolución (2K/4K). El badge **Explorador** quita la marca de agua y añade exportación **SVG**, datos temporales con línea de tiempo, exportación animada (**GIF** y **MP4**) y un analizador de datos con IA. El badge **Cronógrafo** incluye todo lo de Explorador, más incrustación pública y un límite diario de IA más alto.',
       },
       {
         question: '¿Puedo incrustar un mapa en mi sitio?',
@@ -126,7 +127,7 @@ const es: CommonNs = {
       {
         question: '¿Necesito una cuenta?',
         answer:
-          'Sí. Las cuentas guardan proyectos, facturación y el inicio de sesión opcional con Google. Consulta la página **Precios** para límites actuales.',
+          'No para empezar. Puedes crear un mapa, importar datos y exportarlo sin registrarte. Necesitas una cuenta gratuita (correo electrónico o Google) para guardar proyectos y comprar un badge. Consulta la página **Precios** para límites actuales.',
       },
       {
         question: '¿Cómo pido ayuda?',
@@ -181,13 +182,13 @@ const es: CommonNs = {
       observer: {
         name: 'Observador (gratis)',
         description:
-          'Exportación PNG y JPEG a calidad completa con marca de agua, estilos avanzados de mapa y leyenda, exportación en alta resolución hasta 4K, y hasta 5 proyectos.',
+          'Exportación PNG, JPEG y PDF a calidad completa con marca de agua, estilos avanzados de mapa y leyenda, exportación en alta resolución hasta 4K, y hasta 5 proyectos.',
         buttonText: 'Badge gratuito',
       },
       explorer: {
         name: 'Explorador',
         description:
-          'PNG, SVG y JPEG a calidad completa, sin marca de agua, proyectos ilimitados, estilos avanzados, líneas de tiempo con datos temporales, exportación animada en GIF/MP4 y un analizador de datos con IA (hasta 5 solicitudes al día).',
+          'PNG, SVG, JPEG y PDF a calidad completa, sin marca de agua, proyectos ilimitados, estilos avanzados, líneas de tiempo con datos temporales, exportación animada en GIF/MP4 y un analizador y generador de datos con IA (hasta 5 solicitudes al día).',
         buttonText: 'Comprar Explorador (pago único)',
       },
       chronographer: {
@@ -334,7 +335,7 @@ const es: CommonNs = {
       editManuallyInTable: 'Editar manualmente en tabla',
       editManuallyInText: 'Editar manualmente en texto',
       aiParserChronographerTooltip:
-        'El Agente IA solo est\u00e1 disponible con el badge {{badgeName}}.',
+        'El Agente IA está disponible a partir del badge {{badgeName}}.',
       connectSheets: 'Conectar Google Sheets',
       changeSheetsSource: 'Cambiar origen de Google Sheets',
       uploadCsv: 'Subir archivo CSV',
@@ -614,7 +615,7 @@ const es: CommonNs = {
       collapseControls: 'Controles',
       collapseRegionLabels: 'Etiquetas de región',
       freeBadgeNoteBeforeUpgrade:
-        'Puedes seguir cambiando el color de fondo, pero el fondo transparente y quitar la marca de agua requieren una ',
+        'Puedes cambiar el color de fondo o hacerlo transparente, pero quitar la marca de agua requiere una ',
       freeBadgeUpgradeLink: 'mejora de insignia',
       freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Mostrar marca de agua',

@@ -145,7 +145,7 @@ const ProjectEmbedModal: FC<ProjectEmbedModalProps> = (props) => {
         if (raw === EMBED_BADGE_ERROR_EN) {
           message.error(
             t('visualizer.embed.badgeRequired', {
-              badgeName: t('badges.items.explorer.name'),
+              badgeName: t('badges.items.chronographer.name'),
             }),
           );
         } else {

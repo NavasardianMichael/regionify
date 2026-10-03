@@ -14,7 +14,7 @@ export const HOME_PAGE_DEFAULT = {
 
 const HOME_FEATURE_BULLETS: readonly string[] = [
   'Import CSV, Excel, JSON, or connect a live Google Sheets data source.',
-  'Export publication-ready PNG, SVG, or JPEG choropleth maps.',
+  'Export publication-ready PNG, JPEG, or PDF choropleth maps up to 4K — plus SVG on paid badges.',
   'Turn time-series data into an animated regional map — export as GIF or MP4 video.',
   'Share a live embedded regional map anywhere with a responsive iframe, always in sync with your data.',
   'Publish a public map page with its own SEO title and description.',

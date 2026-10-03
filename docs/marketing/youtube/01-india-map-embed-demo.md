@@ -68,7 +68,7 @@ What happens in this video:
 
 Data shown: OECD Regional Economy database, GDP by TL2 region (OECD.CFE.EDS:DSD_REG_ECO@DF_GDP), USD PPP-converted, constant prices, 2001–2023.
 
-Made with Regionify (regionify.pro) — I'm the founder. Public embeds and animated GIF/MP4 export are Chronographer-tier features; the free Observer tier covers PNG/JPEG/PDF export and all 200+ region sets.
+Made with Regionify (regionify.pro) — I'm the founder. Animated GIF/MP4 export starts at the Explorer tier ($19 once) and public embeds at Chronographer ($39 once); the free Observer tier covers watermarked PNG/JPEG/PDF export and all 200+ region sets.
 
 Try it free: https://regionify.pro/?utm_source=youtube&utm_medium=organic&utm_campaign=tutorial-india-embed-01
 

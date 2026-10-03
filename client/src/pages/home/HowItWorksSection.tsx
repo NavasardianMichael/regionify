@@ -19,7 +19,7 @@ const steps: Step[] = [
   },
   {
     title: 'Export or share',
-    desc: 'Download a static PNG, SVG, or JPEG — or on higher plans, export an animated GIF or MP4, publish a public page, or drop an iframe into any site.',
+    desc: 'Download a static PNG, JPEG, or PDF — or on higher plans, export SVG or an animated GIF or MP4, publish a public page, or drop an iframe into any site.',
   },
 ];
 

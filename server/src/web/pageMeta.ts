@@ -44,7 +44,7 @@ export const PAGE_META_MAP: Readonly<Record<string, RouteMeta>> = {
   '/refund': {
     documentTitle: 'Refund Policy — Regionify',
     description:
-      'Regionify refund policy: conditions under which subscription payments can be refunded and how to request one.',
-    keywords: 'Regionify refund policy, subscription refund, payment terms',
+      'Regionify refund policy: conditions under which one-time badge purchases can be refunded and how to request one.',
+    keywords: 'Regionify refund policy, one-time purchase refund, payment terms',
   },
 } as const;
