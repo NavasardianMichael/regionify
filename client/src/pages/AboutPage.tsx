@@ -165,7 +165,7 @@ const AboutPage: FC = () => {
                 </Typography.Title>
                 <Typography.Paragraph className="mb-0! text-gray-500">
                   No subscriptions. The free tier is genuinely useful. Paid tiers are one-time
-                  purchases that unlock more formats, higher quality, and advanced features.
+                  purchases that unlock more formats, watermark-free exports, and advanced features.
                 </Typography.Paragraph>
               </Flex>
               <Flex vertical gap="small" align="center" className="text-center">

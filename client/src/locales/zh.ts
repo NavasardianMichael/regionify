@@ -41,7 +41,8 @@ const zh: CommonNs = {
     featureCustomizeTitle: '高级样式',
     featureCustomizeDesc: '色阶、自定义图例、标签格式和完整的地图外观控制。',
     featureExportTitle: '高质量导出',
-    featureExportDesc: '以最高 100% 质量下载 PNG、SVG 或 JPEG 格式的地图。',
+    featureExportDesc:
+      '以全质量下载 PNG、JPEG 或 PDF 格式的地图，最高 4K。付费徽章另含 SVG 导出并去除水印。',
     featureTimeSeriesTitle: '时间序列与动画',
     featureTimeSeriesDesc: '导入历史数据、浏览时间线，并导出 GIF 或 MP4 动画时间轴。',
     mapsTitle: '包含 200+ 张地图',
@@ -92,12 +93,12 @@ const zh: CommonNs = {
       {
         question: '可以导入哪些格式？',
         answer:
-          '支持 **CSV**、**Excel** 表格、**JSON**，以及在支持的定价层级下与 **Google 表格**实时同步。系统会用**模糊文本匹配**将行标签与地图区域名称对应。',
+          '支持 **CSV**、**Excel** 表格、**JSON**，以及与 **Google 表格**实时同步（所有徽章均可用，包括免费徽章）。系统会用**模糊文本匹配**将行标签与地图区域名称对应。',
       },
       {
         question: '支持哪些导出格式？',
         answer:
-          '取决于徽章层级。免费 **Observer** 已包含 **JPEG**、**PNG** 与 **PDF** 导出、高级地图与图例样式，以及高分辨率（2K/4K）导出。**探索者**徽章增加 **SVG** 导出、带时间轴的时间序列数据、动画导出（**GIF** 与 **MP4**）以及 AI 数据解析器。**纪时者**徽章包含探索者的全部功能，另加公开嵌入以及更高的每日 AI 请求额度。',
+          '取决于徽章层级。免费的**观察者**徽章已包含带水印的 **JPEG**、**PNG** 与 **PDF** 导出、高级地图与图例样式，以及高分辨率（2K/4K）导出。**探索者**徽章去除水印，并增加 **SVG** 导出、带时间轴的时间序列数据、动画导出（**GIF** 与 **MP4**）以及 AI 数据解析器。**纪时者**徽章包含探索者的全部功能，另加公开嵌入以及更高的每日 AI 请求额度。',
       },
       {
         question: '能把地图嵌入自己的网站吗？',
@@ -117,7 +118,7 @@ const zh: CommonNs = {
       {
         question: '需要注册账户吗？',
         answer:
-          '需要。账户用于保存项目、计费以及可选的 Google 登录。具体限制请查看应用内的**「定价」**页面。',
+          '入门无需账户。无需注册即可创建地图、导入数据并导出。保存项目和购买徽章需要免费账户（邮箱或 Google 登录）。具体限制请查看应用内的**「定价」**页面。',
       },
       {
         question: '如何获取帮助？',
@@ -171,13 +172,13 @@ const zh: CommonNs = {
       observer: {
         name: '观察者（免费）',
         description:
-          '带水印的 PNG 与 JPEG 全质量导出、高级地图与图例样式、最高 4K 的高分辨率导出，最多 5 个项目。',
+          '带水印的 PNG、JPEG 与 PDF 全质量导出、高级地图与图例样式、最高 4K 的高分辨率导出，最多 5 个项目。',
         buttonText: '免费徽章',
       },
       explorer: {
         name: '探索者',
         description:
-          'PNG、SVG、JPEG 全质量导出，无水印，不限项目，含高级样式、时间序列与地图时间轴、GIF/MP4 动画导出，以及 AI 数据解析器（每日最多 5 次请求）。',
+          'PNG、SVG、JPEG、PDF 全质量导出，无水印，不限项目，含高级样式、时间序列与地图时间轴、GIF/MP4 动画导出，以及 AI 数据解析与生成器（每日最多 5 次请求）。',
         buttonText: '购买探索者（一次性）',
       },
       chronographer: {
@@ -316,7 +317,7 @@ const zh: CommonNs = {
       sheetsTabId: '表格标签页 (gid)：{{gid}}',
       editManuallyInTable: '在表格中手动编辑',
       editManuallyInText: '\u624b\u52a8\u7f16\u8f91\u6587\u672c',
-      aiParserChronographerTooltip: 'AI 代理仅在 {{badgeName}} 徽章中可用。',
+      aiParserChronographerTooltip: '{{badgeName}} 及更高徽章可使用 AI 代理。',
       connectSheets: '连接 Google 表格',
       changeSheetsSource: '更改 Google 表格来源',
       uploadCsv: '上传 CSV 文件',
@@ -576,7 +577,7 @@ const zh: CommonNs = {
       collapseShadow: '阴影',
       collapseControls: '控件',
       collapseRegionLabels: '区域标签',
-      freeBadgeNoteBeforeUpgrade: '您仍可更改背景色，但透明背景和去除水印需要',
+      freeBadgeNoteBeforeUpgrade: '您可以更改背景色或将背景设为透明，但去除水印需要',
       freeBadgeUpgradeLink: '徽章升级',
       freeBadgeNoteAfterUpgrade: '。',
       showWatermark: '显示水印',

@@ -43,7 +43,8 @@ const fr: CommonNs = {
     featureCustomizeDesc:
       "Échelles de couleurs, légendes personnalisées, mise en forme des étiquettes et contrôle total de l'apparence de la carte.",
     featureExportTitle: 'Export haute qualité',
-    featureExportDesc: 'Téléchargez vos cartes en PNG, SVG ou JPEG à 100 % de qualité.',
+    featureExportDesc:
+      'Téléchargez vos cartes en PNG, JPEG ou PDF en pleine qualité, jusqu’à 4K. Les badges payants ajoutent le SVG et retirent le filigrane.',
     featureTimeSeriesTitle: 'Séries temporelles et animation',
     featureTimeSeriesDesc:
       'Importez des données historiques, parcourez le temps et exportez des chronologies animées en GIF ou MP4.',
@@ -102,12 +103,12 @@ const fr: CommonNs = {
       {
         question: 'Quels formats puis-je importer ?',
         answer:
-          'Tableurs **CSV** et **Excel**, **JSON** et **Google Sheets** avec synchronisation en direct sur les badges concernés. Regionify utilise une **correspondance textuelle floue** pour relier vos libellés aux noms des régions.',
+          'Tableurs **CSV** et **Excel**, **JSON** et **Google Sheets** avec synchronisation en direct sur tous les badges, y compris le gratuit. Regionify utilise une **correspondance textuelle floue** pour relier vos libellés aux noms des régions.',
       },
       {
         question: 'Quels formats d’export sont disponibles ?',
         answer:
-          "Cela dépend du badge. L'offre gratuite **Observer** inclut déjà l'export **JPEG**, **PNG** et **PDF**, des styles avancés de carte et légende, et l'export haute résolution (2K/4K). Le badge **Explorateur** ajoute l'export **SVG**, les données temporelles avec frise chronologique, l'export animé (**GIF** et **MP4**) et un analyseur de données IA. Le badge **Chronographe** inclut tout ce qu'offre Explorateur, plus l'intégration publique et un quota IA quotidien plus élevé.",
+          "Cela dépend du badge. L'offre gratuite **Observateur** inclut déjà l'export **JPEG**, **PNG** et **PDF** avec filigrane, des styles avancés de carte et légende, et l'export haute résolution (2K/4K). Le badge **Explorateur** retire le filigrane et ajoute l'export **SVG**, les données temporelles avec frise chronologique, l'export animé (**GIF** et **MP4**) et un analyseur de données IA. Le badge **Chronographe** inclut tout ce qu'offre Explorateur, plus l'intégration publique et un quota IA quotidien plus élevé.",
       },
       {
         question: 'Puis-je intégrer une carte sur mon site ?',
@@ -127,7 +128,7 @@ const fr: CommonNs = {
       {
         question: 'Ai-je besoin d’un compte ?',
         answer:
-          "Oui. Les comptes servent à enregistrer les projets, la facturation et la connexion Google optionnelle. Consultez la page **Plans** dans l'application pour les limites actuelles.",
+          "Pas pour commencer. Vous pouvez créer une carte, importer des données et l'exporter sans inscription. Un compte gratuit (e-mail ou connexion Google) est nécessaire pour enregistrer vos projets et acheter un badge. Consultez la page **Tarifs** dans l'application pour les limites actuelles.",
       },
       {
         question: 'Comment obtenir de l’aide ?',
@@ -182,13 +183,13 @@ const fr: CommonNs = {
       observer: {
         name: 'Observateur (gratuit)',
         description:
-          "Export PNG et JPEG en pleine qualité avec filigrane, styles avancés de carte et légende, export haute résolution jusqu'à 4K, et jusqu'à 5 projets.",
+          "Export PNG, JPEG et PDF en pleine qualité avec filigrane, styles avancés de carte et légende, export haute résolution jusqu'à 4K, et jusqu'à 5 projets.",
         buttonText: 'Badge gratuit',
       },
       explorer: {
         name: 'Explorateur',
         description:
-          "PNG, SVG et JPEG en pleine qualité, sans filigrane, projets illimités, styles avancés, frises chronologiques temporelles, export animé GIF/MP4, et un analyseur de données IA (jusqu'à 5 requêtes par jour).",
+          "PNG, SVG, JPEG et PDF en pleine qualité, sans filigrane, projets illimités, styles avancés, frises chronologiques temporelles, export animé GIF/MP4, et un analyseur et générateur de données IA (jusqu'à 5 requêtes par jour).",
         buttonText: 'Acheter Explorateur (paiement unique)',
       },
       chronographer: {
@@ -337,8 +338,7 @@ const fr: CommonNs = {
       sheetsTabId: 'Onglet de la feuille (gid) : {{gid}}',
       editManuallyInTable: 'Modifier manuellement dans le tableau',
       editManuallyInText: 'Modifier manuellement en texte',
-      aiParserChronographerTooltip:
-        'L\u2019Agent IA est disponible uniquement avec le badge {{badgeName}}.',
+      aiParserChronographerTooltip: 'L’Agent IA est disponible à partir du badge {{badgeName}}.',
       connectSheets: 'Connecter Google Sheets',
       changeSheetsSource: 'Changer la source Google Sheets',
       uploadCsv: 'Téléverser un fichier CSV',
@@ -620,7 +620,7 @@ const fr: CommonNs = {
       collapseControls: 'Contrôles',
       collapseRegionLabels: 'Libellés des régions',
       freeBadgeNoteBeforeUpgrade:
-        'Vous pouvez toujours modifier la couleur d’arrière-plan, mais le fond transparent et la suppression du filigrane nécessitent une ',
+        'Vous pouvez modifier la couleur d’arrière-plan ou rendre le fond transparent, mais la suppression du filigrane nécessite une ',
       freeBadgeUpgradeLink: 'mise à niveau du badge',
       freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Afficher le filigrane',

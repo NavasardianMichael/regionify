@@ -7,7 +7,7 @@ import { LegalSection } from '@/components/shared/LegalSection';
 import { AppNavLink } from '@/components/ui/AppNavLink';
 
 const RefundPolicyPage: FC = () => (
-  <LegalPageLayout title="Refund Policy" lastUpdated="September 1, 2026">
+  <LegalPageLayout title="Refund Policy" lastUpdated="October 2, 2026">
     <LegalSection heading="1. One-Time Purchases">
       <Typography.Paragraph className="mb-0! text-gray-600">
         Regionify offers two paid tiers — Explorer ({formatBadgePriceUsd(BADGES.explorer)}) and
@@ -25,8 +25,8 @@ const RefundPolicyPage: FC = () => (
       <ul className="list-disc pl-6 text-gray-600">
         <li>The request is made within 14 days of the original purchase date.</li>
         <li>
-          The paid features (high-resolution export, animation export, public map page, or embed
-          iframe) have not been actively used to produce or publish output.
+          The paid features (watermark-free or SVG export, animation export, public map page, or
+          embed iframe) have not been actively used to produce or publish output.
         </li>
       </ul>
     </LegalSection>

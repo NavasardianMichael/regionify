@@ -44,7 +44,7 @@ const de: CommonNs = {
       'Farbskalen, benutzerdefinierte Legenden, Beschriftungsformate und volle Kontrolle über das Kartendesign.',
     featureExportTitle: 'Hochwertiger Export',
     featureExportDesc:
-      'Laden Sie Ihre Karten als PNG, SVG oder JPEG in bis zu 100 % Qualität herunter.',
+      'Laden Sie Ihre Karten als PNG, JPEG oder PDF in voller Qualität bis 4K herunter. Kostenpflichtige Badges ergänzen SVG und entfernen das Wasserzeichen.',
     featureTimeSeriesTitle: 'Zeitreihen & Animation',
     featureTimeSeriesDesc:
       'Importieren Sie historische Daten, navigieren Sie durch die Zeit und exportieren Sie animierte GIF- oder MP4-Zeitachsen.',
@@ -103,12 +103,12 @@ const de: CommonNs = {
       {
         question: 'Welche Dateiformate kann ich importieren?',
         answer:
-          '**CSV**- und **Excel**-Tabellen, **JSON** sowie **Google Sheets** mit Live-Sync auf unterstützten Tarifen. Regionify nutzt **unscharfe Textzuordnung**, damit Zeilenbeschriftungen nicht exakt den Kartennamen entsprechen müssen.',
+          '**CSV**- und **Excel**-Tabellen, **JSON** sowie **Google Sheets** mit Live-Sync — mit jedem Badge, auch dem kostenlosen. Regionify nutzt **unscharfe Textzuordnung**, damit Zeilenbeschriftungen nicht exakt den Kartennamen entsprechen müssen.',
       },
       {
         question: 'Welche Exportformate gibt es?',
         answer:
-          'Das hängt von Ihrer Badge-Stufe ab. Die kostenlose Stufe **Observer** umfasst bereits **JPEG**-, **PNG**- und **PDF**-Export, erweiterte Karten- und Legendenstile sowie hochauflösenden Export (2K/4K). Das **Entdecker**-Badge ergänzt **SVG**-Export, Zeitreihen-Daten mit Zeitstrahl, animierten **GIF**- und **MP4**-Export sowie einen KI-Datenparser. Das **Chronograph**-Badge enthält alles aus Entdecker, plus öffentliche Einbettung und ein höheres tägliches KI-Kontingent.',
+          'Das hängt von Ihrer Badge-Stufe ab. Die kostenlose Stufe **Beobachter** umfasst bereits **JPEG**-, **PNG**- und **PDF**-Export mit Wasserzeichen, erweiterte Karten- und Legendenstile sowie hochauflösenden Export (2K/4K). Das **Entdecker**-Badge entfernt das Wasserzeichen und ergänzt **SVG**-Export, Zeitreihen-Daten mit Zeitstrahl, animierten **GIF**- und **MP4**-Export sowie einen KI-Datenparser. Das **Chronograph**-Badge enthält alles aus Entdecker, plus öffentliche Einbettung und ein höheres tägliches KI-Kontingent.',
       },
       {
         question: 'Kann ich eine Karte in meine Website einbetten?',
@@ -128,7 +128,7 @@ const de: CommonNs = {
       {
         question: 'Brauche ich ein Konto?',
         answer:
-          'Ja. Konten sichern Projekte, Abrechnung und optional Google-Login. Aktuelle Badge-Stufen und Limits finden Sie unter **Preise** in der App.',
+          'Nicht für den Einstieg. Sie können ohne Registrierung eine Karte erstellen, Daten importieren und exportieren. Ein kostenloses Konto (E-Mail oder Google-Login) benötigen Sie, um Projekte zu speichern und ein Badge zu kaufen. Aktuelle Badge-Stufen und Limits finden Sie unter **Preise** in der App.',
       },
       {
         question: 'Wie erhalte ich Hilfe oder Feedback?',
@@ -184,13 +184,13 @@ const de: CommonNs = {
       observer: {
         name: 'Beobachter (kostenlos)',
         description:
-          'PNG- und JPEG-Export in voller Qualität mit Wasserzeichen, erweiterte Karten- und Legendenstile, hochauflösender Export bis 4K und bis zu 5 Projekte.',
+          'PNG-, JPEG- und PDF-Export in voller Qualität mit Wasserzeichen, erweiterte Karten- und Legendenstile, hochauflösender Export bis 4K und bis zu 5 Projekte.',
         buttonText: 'Kostenloses Badge',
       },
       explorer: {
         name: 'Entdecker',
         description:
-          'PNG, SVG und JPEG in voller Qualität, kein Wasserzeichen, unbegrenzte Projekte, erweiterte Stile, Zeitreihen-Timelines, animierter GIF-/MP4-Export und ein KI-Datenparser (bis zu 5 Anfragen/Tag).',
+          'PNG, SVG, JPEG und PDF in voller Qualität, kein Wasserzeichen, unbegrenzte Projekte, erweiterte Stile, Zeitreihen-Timelines, animierter GIF-/MP4-Export und ein KI-Datenparser und -generator (bis zu 5 Anfragen/Tag).',
         buttonText: 'Entdecker kaufen (einmalig, dauerhaft)',
       },
       chronographer: {
@@ -338,8 +338,7 @@ const de: CommonNs = {
       sheetsTabId: 'Tabellenregister (gid): {{gid}}',
       editManuallyInTable: 'Manuell in Tabelle bearbeiten',
       editManuallyInText: 'Manuell im Text bearbeiten',
-      aiParserChronographerTooltip:
-        'Der KI-Agent ist nur mit dem {{badgeName}}-Badge verf\u00fcgbar.',
+      aiParserChronographerTooltip: 'Der KI-Agent ist ab dem {{badgeName}}-Badge verfügbar.',
       connectSheets: 'Google Tabellen verbinden',
       changeSheetsSource: 'Google-Tabellenquelle ändern',
       uploadCsv: 'CSV-Datei hochladen',
@@ -619,7 +618,7 @@ const de: CommonNs = {
       collapseControls: 'Steuerung',
       collapseRegionLabels: 'Regionsbeschriftungen',
       freeBadgeNoteBeforeUpgrade:
-        'Sie können weiterhin die Hintergrundfarbe ändern; transparenter Hintergrund und Entfernen des Wasserzeichens erfordern ein ',
+        'Sie können die Hintergrundfarbe ändern oder den Hintergrund transparent machen; das Entfernen des Wasserzeichens erfordert ein ',
       freeBadgeUpgradeLink: 'Upgrade des Badges',
       freeBadgeNoteAfterUpgrade: '.',
       showWatermark: 'Wasserzeichen anzeigen',
