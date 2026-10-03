@@ -2,11 +2,12 @@ import { BADGE_DETAILS, BADGES } from '@regionify/shared';
 
 /** Mirrors the old static `client/index.html` graph, kept live via SSR on every public page. */
 const BADGE_OFFER_DESCRIPTIONS: Readonly<Record<string, string>> = {
-  [BADGES.observer]: 'Free tier: core choropleth maps, JPEG export, up to 5 saved projects.',
+  [BADGES.observer]:
+    'Free tier: PNG, JPEG and PDF export up to 4K with a watermark, advanced map and legend styling, and up to 5 saved projects.',
   [BADGES.explorer]:
-    'One-time payment. PNG/SVG export, advanced styling, high-resolution export, unlimited projects.',
+    'One-time payment. Everything in Observer without the watermark, plus SVG export, time-series import, animated GIF/MP4 video export, an AI data parser and generator, and unlimited projects.',
   [BADGES.chronographer]:
-    'One-time payment. Everything in Explorer plus time-series import, animated GIF/MP4 video export, live Google Sheets sync, and an embeddable live map iframe.',
+    'One-time payment. Everything in Explorer plus an embeddable live map iframe, public map pages with their own SEO title and description, and a higher daily AI request allowance.',
 };
 
 /** SoftwareApplication + WebSite + Organization JSON-LD, included on every public SSR page for brand/entity consistency. */
