@@ -1,8 +1,9 @@
 # ==============================================================================
 # Continuous Integration - Lint, Type Check, and Build
 # ==============================================================================
-# Runs on pull requests to master branch
-# Validates code quality before merge
+# Runs on pull requests to master branch, and is called by deploy.yml on every
+# push to master, so direct pushes get the same checks and nothing deploys
+# unless they pass.
 # ==============================================================================
 
 name: CI
@@ -10,6 +11,7 @@ name: CI
 on:
   pull_request:
     branches: [master]
+  workflow_call:
 
 permissions:
   contents: read

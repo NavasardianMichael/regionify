@@ -40,14 +40,11 @@
 
 name: Deploy to Production
 
+# No paths-ignore: CI must also check docs-only pushes (Prettier covers Markdown).
+# They still deploy nothing — the `changes` job finds no package changes.
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'LICENSE'
-      - '.cursorrules'
 
 permissions:
   contents: read
@@ -59,9 +56,16 @@ env:
   SSH_OPTS: '-o ServerAliveInterval=30 -o ServerAliveCountMax=120 -o TCPKeepAlive=yes -o ConnectTimeout=30'
 
 jobs:
+  # Same checks as pull requests (format, lint, typecheck, build, Docker image) —
+  # direct pushes to master must not skip them. Every later job waits on this.
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
+    needs: ci
     outputs:
       deploy_client: ${{ steps.flags.outputs.deploy_client }}
       deploy_server: ${{ steps.flags.outputs.deploy_server }}
@@ -305,9 +309,10 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-production
-    needs: [changes, build-client, build-server, build-marketing]
+    needs: [ci, changes, build-client, build-server, build-marketing]
     if: |
       always() &&
+      needs.ci.result == 'success' &&
       (needs.changes.outputs.deploy_client == 'true' || needs.changes.outputs.deploy_server == 'true' || needs.changes.outputs.deploy_marketing == 'true') &&
       (needs.build-client.result == 'success' || needs.build-client.result == 'skipped') &&
       (needs.build-server.result == 'success' || needs.build-server.result == 'skipped') &&

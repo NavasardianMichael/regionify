@@ -74,6 +74,7 @@ Dev setup:
 - Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 - Keep commits atomic and focused.
 - When user says "commit", run git commands in terminal (not GitKraken MCP tools).
+- Changes are usually pushed straight to `master`, which deploys. Checks are split, not repeated: the pre-commit hook (Husky + lint-staged) auto-fixes Prettier and ESLint on staged files; `deploy.yml` runs the full CI workflow (format, lint, typecheck, build, Docker image) on the push and deploys nothing if it fails. Do not re-run those checks manually before pushing — if CI fails, fix and push again.
 
 ### Forbidden (All Packages)
 

@@ -1,3 +1,5 @@
 dist
 node_modules
 pnpm-lock.yaml
+marketing/.astro
+marketing/assets/.auth-state.json
