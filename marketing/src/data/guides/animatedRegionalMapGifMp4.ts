@@ -1,4 +1,5 @@
 import { type GuideMeta } from '@/data/guides/types';
+import { GUIDE_LAST_MODIFIED } from '@/data/lastModified';
 import { animationBadgeLabel } from '@/helpers/tiers';
 
 const WIDE_TIME_SERIES_EXAMPLE = `region,2000,2005,2010,2015,2020,2023
@@ -19,8 +20,8 @@ export const animatedRegionalMapGifMp4Guide: GuideMeta = {
     'Turn time-series data into an animated regional map. Structure the years as columns, scrub the timeline, then export a looping GIF or an MP4 video.',
   seoKeywords:
     'animated regional map, animated choropleth map, map animation gif, time series map video, mp4 map export, animated map from data, how to animate a map over time',
-  datePublished: '2026-09-24',
-  dateModified: '2026-09-24',
+  datePublished: '2026-10-01',
+  dateModified: GUIDE_LAST_MODIFIED['animated-regional-map-gif-mp4'],
   totalTime: 'PT10M',
   exampleCountrySlugs: ['armenia', 'india', 'china', 'germany', 'france', 'usa', 'brazil', 'japan'],
   steps: [

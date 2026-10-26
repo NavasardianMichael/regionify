@@ -1,5 +1,6 @@
 import { buildIframeSnippet } from '@regionify/shared';
 import { type GuideMeta } from '@/data/guides/types';
+import { GUIDE_LAST_MODIFIED } from '@/data/lastModified';
 import { embedBadgeLabel } from '@/helpers/tiers';
 import showcaseEmbedUrls from '../../../data/showcase-embed-urls.json';
 
@@ -40,8 +41,8 @@ export const embedRegionalMapIframeGuide: GuideMeta = {
     'Step-by-step: publish a regional map as a public embed, copy the iframe code, and paste it into any site. The embed stays live and shows your current data.',
   seoKeywords:
     'embed regional map, regional map iframe, iframe map embed, embed choropleth map, map iframe code, embed a live map, embedded regional map, how to embed a map on a website',
-  datePublished: '2026-09-24',
-  dateModified: '2026-09-24',
+  datePublished: '2026-10-01',
+  dateModified: GUIDE_LAST_MODIFIED['embed-regional-map-iframe'],
   totalTime: 'PT5M',
   exampleCountrySlugs: ['armenia', 'france', 'germany', 'india', 'brazil', 'spain', 'japan', 'usa'],
   steps: [

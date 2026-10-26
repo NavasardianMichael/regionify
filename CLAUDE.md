@@ -47,6 +47,14 @@ Dev setup:
 - An unlisted path is not a 404 — nginx falls it through to the SPA shell, React Router throws `No route matches URL`, and it surfaces in Sentry as a production error.
 - Renaming or retiring a path leaves already-shared and already-crawled links behind: add a `location = /old { return 301 /new$is_args$args; }` to `deployment/regionify.pro.conf` (the `$is_args$args` preserves `?utm_*` attribution).
 
+### Sitemap `lastmod`
+
+- Sitemap dates are maintained by hand. When a change touches a public page's **primary text, links or structured data**, bump that page's date in the same commit — without being asked. The date is the day the change **goes live** (push or merge to `master` — both deploy), never earlier: a `lastmod` older than Google's last crawl makes it skip the page. If it reaches `master` on a later day than it was written, update its dates first.
+  - App pages (`/`, `/about`, `/faq`, …) → `PUBLIC_STATIC_PATHS_LAST_MODIFIED` in `server/src/web/sitemap.ts`. Sources: `client/src/pages/` + `client/src/locales/` for those pages, and `server/src/web/` (SSR copy, `pageMeta.ts`, JSON-LD — `coreJsonLd.ts` is on every page, so a change there bumps all of them).
+  - Marketing hub, country pages, guide index, guides → `marketing/src/data/lastModified.ts`. A guide's `dateModified` must read from `GUIDE_LAST_MODIFIED` (the build fails otherwise); a new guide or page type needs its own entry.
+- Do **not** bump for nav, footer, the shared CTA, styling, formatting or refactors that leave the rendered content unchanged, and never set dates from the build or deploy time — Google ignores `lastmod` on sites where it does not match reality.
+- Mention every bumped date in the change summary.
+
 ### TypeScript
 
 - No `any` without explicit justification.

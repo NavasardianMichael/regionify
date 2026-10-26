@@ -1,7 +1,22 @@
 import { prisma } from '@/db/index.js';
 import { escapeHtml } from '@/lib/htmlEscape.js';
 
-const PUBLIC_STATIC_PATHS = ['/', '/about', '/contact', '/faq', '/terms', '/privacy', '/refund'];
+/**
+ * Public static routes → date (ISO 8601) of each page's last *significant* change: its SSR
+ * copy, links or JSON-LD (`buildCoreJsonLd` is on every page, so a plan-offer change
+ * touches them all). Bump an entry only when that page's content changes — never on deploy:
+ * Google only trusts `lastmod` on sites where it consistently matches reality.
+ * https://developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping
+ */
+const PUBLIC_STATIC_PATHS_LAST_MODIFIED: Readonly<Record<string, string>> = {
+  '/': '2026-10-04',
+  '/about': '2026-10-04',
+  '/contact': '2026-10-04',
+  '/faq': '2026-10-04',
+  '/terms': '2026-10-04',
+  '/privacy': '2026-10-04',
+  '/refund': '2026-10-04',
+};
 
 function formatLastMod(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -12,8 +27,11 @@ function formatLastMod(d: Date): string {
  */
 export async function buildAppSitemapXml(siteUrl: string): Promise<string> {
   const base = siteUrl.replace(/\/$/, '');
-  const rows: { loc: string; lastmod?: string }[] = PUBLIC_STATIC_PATHS.map((path) => ({
+  const rows: { loc: string; lastmod?: string }[] = Object.entries(
+    PUBLIC_STATIC_PATHS_LAST_MODIFIED,
+  ).map(([path, lastmod]) => ({
     loc: `${base}${path}`,
+    lastmod,
   }));
 
   const embeds = await prisma.project.findMany({

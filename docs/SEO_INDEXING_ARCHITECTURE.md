@@ -36,8 +36,33 @@ referencing another `<sitemapindex>` is invalid ("Nested indexing" in Search Con
 
 - `server/src/web/sitemap.ts` — `buildSitemapIndexXml`, `buildAppSitemapXml`, `buildRobotsTxt`
 - `marketing/astro.config.mjs` — configures `@astrojs/sitemap`
+- `marketing/src/data/lastModified.ts` — marketing `<lastmod>` dates
 
 **Important:** The marketing sitemap is baked at build time. Adding/removing countries or changing slugs requires a fresh `pnpm --filter @regionify/marketing build` and redeploy.
+
+### `<lastmod>`
+
+Google stopped accepting sitemap pings in 2023; `<lastmod>` is now the main way to tell it a
+page changed and should be recrawled. It uses the value only when it
+[consistently matches reality](https://developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping),
+and only for _significant_ changes: primary text, links or structured data. It does not count
+nav, footer or the CTA block that repeats on every page.
+
+Every URL therefore carries a hand-maintained date, never the build or deploy date:
+
+| Pages                        | Source                                                                  |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| App static routes (`/faq`…)  | `PUBLIC_STATIC_PATHS_LAST_MODIFIED` in `server/src/web/sitemap.ts`      |
+| Embeds                       | `Project.updatedAt`                                                     |
+| Marketing hub, country pages | `HUB_LAST_MODIFIED`, `COUNTRY_PAGES_LAST_MODIFIED` in `lastModified.ts` |
+| Guide index, guides          | `GUIDE_INDEX_LAST_MODIFIED`, `GUIDE_LAST_MODIFIED` in `lastModified.ts` |
+
+A guide's `dateModified` (visible "Last updated" + JSON-LD) reads from `GUIDE_LAST_MODIFIED`, so
+the page and the sitemap cannot disagree; `assertGuideDates` in `registry.ts` fails `astro build`
+if a guide hard-codes its own date or has no entry. **When you change a page's content, bump its
+date in the same commit** to the day it goes live (push or merge to `master` deploys) — never earlier,
+or Google may treat a page it crawled before the deploy as current. A marketing path that is not the hub, a slug in `countries.json` or a
+listed guide gets no `<lastmod>` rather than a guessed one — a new page type needs its own entry.
 
 ---
 

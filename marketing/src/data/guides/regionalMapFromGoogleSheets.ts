@@ -1,4 +1,5 @@
 import { type GuideMeta } from '@/data/guides/types';
+import { GUIDE_LAST_MODIFIED } from '@/data/lastModified';
 import { embedBadgeLabel, watermarkFreeBadgeLabel } from '@/helpers/tiers';
 
 const TIDY_CSV_EXAMPLE = `region,unemployment_rate
@@ -35,8 +36,8 @@ export const regionalMapFromGoogleSheetsGuide: GuideMeta = {
     'Turn a spreadsheet into a colour-coded regional map: structure your columns, import from Excel, CSV or Google Sheets, match regions, then export or embed.',
   seoKeywords:
     'map from excel, excel map by region, excel choropleth map, regional map from google sheets, map from spreadsheet, csv to map, google sheets map, colour map by region, spreadsheet to choropleth map, map data by state or province',
-  datePublished: '2026-09-24',
-  dateModified: '2026-09-24',
+  datePublished: '2026-10-01',
+  dateModified: GUIDE_LAST_MODIFIED['regional-map-from-google-sheets'],
   totalTime: 'PT10M',
   exampleCountrySlugs: ['armenia', 'germany', 'italy', 'india', 'usa', 'france', 'spain', 'poland'],
   steps: [

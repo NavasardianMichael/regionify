@@ -1,4 +1,5 @@
 import { type GuideMeta } from '@/data/guides/types';
+import { GUIDE_LAST_MODIFIED } from '@/data/lastModified';
 
 export const regionalMapVsChoroplethGuide: GuideMeta = {
   slug: 'regional-map-vs-choropleth-map',
@@ -12,8 +13,8 @@ export const regionalMapVsChoroplethGuide: GuideMeta = {
     'A regional map and a choropleth map are the same thing under two names. Here is what the terms mean, how they differ from heat maps, and when to use each.',
   seoKeywords:
     'regional map vs choropleth map, what is a choropleth map, what is a regional map, choropleth vs heat map, thematic map types, map shaded by region, area map definition',
-  datePublished: '2026-09-24',
-  dateModified: '2026-09-24',
+  datePublished: '2026-10-01',
+  dateModified: GUIDE_LAST_MODIFIED['regional-map-vs-choropleth-map'],
   exampleCountrySlugs: ['armenia', 'france', 'usa', 'germany', 'india', 'brazil', 'italy', 'spain'],
   sections: [
     { id: 'same-thing-two-names', title: 'They are the same thing' },
