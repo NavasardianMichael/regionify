@@ -11,7 +11,7 @@ const ENV_IN_COMMAND_PATTERN = /(?:^|[\s"'`=/\\:(<>|;&,[{])(\.env(?![\w-])(?:\.[
 // Scripts that print .env contents to stdout without naming the file in the command.
 const ENV_DUMPING_SCRIPT_PATTERN = /env-?to-?base64/i;
 
-const isEnvName =(name) => !ALLOWED_NAMES.has(name.toLowerCase()) && ENV_NAME_PATTERN.test(name);
+const isEnvName = (name) => !ALLOWED_NAMES.has(name.toLowerCase()) && ENV_NAME_PATTERN.test(name);
 
 const pathTargetsEnv = (value) => {
   if (typeof value !== 'string' || value === '') return false;
