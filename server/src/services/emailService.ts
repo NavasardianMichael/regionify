@@ -250,7 +250,7 @@ The ${APP_NAME} Team
     text: string;
     html: string;
   } {
-    const subject = `How to sign in to ${APP_NAME}`;
+    const subject = `Your ${APP_NAME} account uses ${signInWithLabel} sign-in`;
 
     const text = `
 Hi ${name},
