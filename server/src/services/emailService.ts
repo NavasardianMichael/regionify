@@ -8,6 +8,7 @@ import {
 
 import { env } from '@/config/env.js';
 import { logger } from '@/lib/logger.js';
+import { postMailApi } from '@/lib/mailApi.js';
 
 type PayableBadge = Exclude<Badge, typeof BADGES.observer>;
 
@@ -56,8 +57,14 @@ function buildPaidBadgeFeatures(badge: PayableBadge): readonly string[] {
     .map((row) => BADGE_FEATURE_ROW_EN[row.key](row.params));
 }
 
-const APP_ID = 'regionify';
 const APP_NAME = 'Regionify';
+
+/**
+ * Sender shown to users: `Regionify <regionify@eapps.site>`. The Mail Engine builds sender
+ * reputation per address, so keep both values stable.
+ */
+const MAIL_FROM_NAME = APP_NAME;
+const MAIL_FROM_PREFIX = 'regionify';
 
 /** Logo URL for auth emails. Place logo at client/public/logo.png so it is served at /logo.png. */
 const LOGO_URL = `${env.CLIENT_URL.replace(/\/$/, '')}/logo.png`;
@@ -78,17 +85,6 @@ const COLORS = {
   success: '#52c41a',
 };
 
-interface MailApiResponse {
-  success: boolean;
-  message: string;
-  messageId?: string;
-}
-
-interface MailApiErrorResponse {
-  success: false;
-  error: string;
-}
-
 interface SendEmailParams {
   to: string;
   subject: string;
@@ -99,7 +95,10 @@ interface SendEmailParams {
 type EmailLayoutOptions = { preheader?: string; logoUrl?: string };
 
 /**
- * Base email layout: minimal, logo in header, compact spacing
+ * Base email layout: minimal, logo in header, compact spacing.
+ * The Mail Engine sanitizes HTML down to body-level tags with inline `style` — `<head>`, `<style>`,
+ * `<body>`, conditional comments and `role` are stripped — so every style here must be inline and
+ * the container must shrink on its own (`max-width`) rather than through a media query.
  */
 function emailLayout(content: string, options?: EmailLayoutOptions): string {
   const preheader = options?.preheader;
@@ -108,83 +107,42 @@ function emailLayout(content: string, options?: EmailLayoutOptions): string {
     ? `<div style="display:none;font-size:1px;color:#f5f5f5;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">${preheader}</div>`
     : '';
 
-  const headerContent = `<img src="${logoUrl}" alt="${APP_NAME}" width="140" height="32" style="display:block;max-height:32px;width:auto;height:auto;" />`;
+  const headerContent = `<img src="${logoUrl}" alt="${APP_NAME}" width="140" height="32" style="display:block;margin:0 auto;max-height:32px;width:auto;height:auto;border:0;" />`;
 
   return `
-<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="x-apple-disable-message-reformatting">
-  <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
-  <title>${APP_NAME}</title>
-  <!--[if mso]>
-  <noscript>
-    <xml>
-      <o:OfficeDocumentSettings>
-        <o:PixelsPerInch>96</o:PixelsPerInch>
-      </o:OfficeDocumentSettings>
-    </xml>
-  </noscript>
-  <![endif]-->
-  <style>
-    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
-    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
-    @media only screen and (max-width: 600px) {
-      .email-container { width: 100% !important; }
-      .mobile-padding { padding: 16px 20px !important; }
-    }
-  </style>
-</head>
-<body style="margin:0;padding:0;background-color:${COLORS.background};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
-  ${preheaderHtml}
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:${COLORS.background};">
-    <tr>
-      <td style="padding:24px 16px;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="560" class="email-container" style="margin:0 auto;background-color:${COLORS.white};border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-          <tr>
-            <td style="padding:20px 24px 16px;text-align:center;">
-              ${headerContent}
-            </td>
-          </tr>
-          <tr>
-            <td class="mobile-padding" style="padding:0 24px 24px;">
-              ${content}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:12px 24px;text-align:center;color:${COLORS.textMuted};font-size:12px;">
-              &copy; ${new Date().getFullYear()} ${APP_NAME}
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
+${preheaderHtml}
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:${COLORS.background};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <tr>
+    <td style="padding:24px 16px;">
+      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="width:100%;max-width:560px;margin:0 auto;background-color:${COLORS.white};border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+        <tr>
+          <td style="padding:20px 24px 16px;text-align:center;">
+            ${headerContent}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 24px 24px;">
+            ${content}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:12px 24px;text-align:center;color:${COLORS.textMuted};font-size:12px;">
+            &copy; ${new Date().getFullYear()} ${APP_NAME}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
 `.trim();
 }
 
 function emailButton(text: string, url: string): string {
   return `
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:16px 0;">
+<table cellspacing="0" cellpadding="0" border="0" style="margin:16px 0;">
   <tr>
     <td style="border-radius:6px;background-color:${COLORS.primary};">
-      <!--[if mso]>
-      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:44px;v-text-anchor:middle;width:180px;" arcsize="14%" strokecolor="${COLORS.primary}" fillcolor="${COLORS.primary}">
-        <w:anchorlock/>
-        <center style="color:#ffffff;font-family:sans-serif;font-size:15px;font-weight:600;">${text}</center>
-      </v:roundrect>
-      <![endif]-->
-      <!--[if !mso]><!-->
       <a href="${url}" target="_blank" style="display:inline-block;padding:10px 32px;font-size:15px;font-weight:600;color:${COLORS.white};text-decoration:none;border-radius:6px;background-color:${COLORS.primary};">${text}</a>
-      <!--<![endif]-->
     </td>
   </tr>
 </table>
@@ -499,40 +457,21 @@ export const emailService = {
     text,
     html,
   }: SendEmailParams): Promise<{ success: boolean; messageId?: string }> {
-    const payload = {
-      appId: APP_ID,
-      to,
-      subject,
-      text,
-      html,
-    };
-
     try {
-      const response = await fetch(`${env.MAIL_API_URL}/mail/external/send`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': env.MAIL_API_KEY,
-        },
-        body: JSON.stringify(payload),
+      const data = await postMailApi('/mail/external/send', {
+        fromName: MAIL_FROM_NAME,
+        mailFromPrefix: MAIL_FROM_PREFIX,
+        to,
+        subject,
+        text,
+        html,
       });
 
-      const data = (await response.json()) as MailApiResponse | MailApiErrorResponse;
-
-      if (!response.ok || !data.success) {
-        const errorMessage = 'error' in data ? data.error : 'Failed to send email';
-        logger.error({ response: data, statusCode: response.status }, 'Mail API error');
-        throw new Error(errorMessage);
-      }
-
-      logger.info(
-        { to, subject, messageId: (data as MailApiResponse).messageId },
-        'Email sent successfully',
-      );
+      logger.info({ to, subject, messageId: data.messageId }, 'Email sent successfully');
 
       return {
         success: true,
-        messageId: (data as MailApiResponse).messageId,
+        messageId: data.messageId,
       };
     } catch (error) {
       logger.error({ error, to, subject }, 'Failed to send email');
